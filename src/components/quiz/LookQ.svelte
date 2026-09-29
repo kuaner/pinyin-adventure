@@ -28,7 +28,7 @@
       onclick={() => armLook(idx)}
     >
       <Icon name="headphones" size={34} />
-      <span class="ob" class:confirm={armed === idx}>{armed === idx ? T('再点一次确认') : CIRC[idx]}</span>
+      <span class="ob" class:confirm={armed === idx}>{#if armed === idx}{@html T('再点一次确认')}{:else}{CIRC[idx]}{/if}</span>
     </button>
   {/each}
 </div>
