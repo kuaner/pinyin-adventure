@@ -1,6 +1,6 @@
 /* 声音三层架构（v5c 终局：纯预生成 mp3，无设备 TTS 层）
    第一层 AudioContext 解锁与反馈音合成；第二层 mp3 播放器；第三层 🔊 自检 */
-import { LETTERS } from '../data'
+import { LETTERS, HYP } from '../data'
 import { S } from '../stores/progress.svelte'
 import { toast } from '../stores/ui.svelte'
 import { T } from './ruby'
@@ -48,10 +48,30 @@ export function letterAudio(k: string): string {
 }
 
 export function audioURL(name: string): string {
-  return import.meta.env.BASE_URL + 'audio/' + name + '.mp3'
+  const h = HYP[name]
+  return import.meta.env.BASE_URL + 'audio/' + (h ? 'hyp/' + h : name) + '.mp3'
 }
 
 export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => void }
+
+function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
+  /* hyp 播放失败 → 回落现有 mimo 同名文件（audio/{name}.mp3，只回落一次） */
+  try {
+    const m = new Audio(import.meta.env.BASE_URL + 'audio/' + name + '.mp3')
+    AUDIO_CACHE[name] = m
+    const p = m.play()
+    if (p && p.catch) p.catch(() => {
+      if (opts.hint) toast(opts.hint)
+      if (opts.onerror) opts.onerror()
+    })
+    if (opts.onend) m.onended = () => { if (opts.onend) opts.onend() }
+    return m
+  } catch {
+    if (opts.hint) toast(opts.hint)
+    if (opts.onerror) opts.onerror()
+    return null
+  }
+}
 
 export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement | null {
   if (S.mute) { if (opts.onerror) opts.onerror(); return null }
@@ -61,8 +81,13 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
     try { a.currentTime = 0 } catch { /* ignore */ }
     const p = a.play()
     if (p && p.catch) p.catch(() => {
-      if (opts.hint) toast(opts.hint)
-      if (opts.onerror) opts.onerror()
+      if (HYP[name] && !a.dataset.mimoFb) {
+        a.dataset.mimoFb = '1'
+        playMimo(name, opts)
+      } else {
+        if (opts.hint) toast(opts.hint)
+        if (opts.onerror) opts.onerror()
+      }
     })
     if (opts.onend) a.onended = () => { if (opts.onend) opts.onend() }
     return a

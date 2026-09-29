@@ -4,7 +4,12 @@ import confusion from './confusion.json'
 import zi from './zi180.json'
 import words from './words.json'
 import phrases from './phrases.json'
+import hypMap from './hyp.json'
 import type { Letter, Anchor, LevelDef, Pair, ZiItem, ZWord } from '../lib/types'
+
+/* hyp 音频映射（hanyu-pinyin-audio 数据集）：播放名 → audio/hyp/ 文件名（无扩展名）。
+   拼音点读与常见字读音优先走 hyp，缺失回落 mimo 同名文件（见 lib/audio.ts） */
+export const HYP = hypMap as unknown as Record<string, string>
 
 export const LETTERS = pinyinData.letters as unknown as Record<string, Letter>
 export const ANCHORS = pinyinData.anchors as unknown as Record<string, Anchor>
