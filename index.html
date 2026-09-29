@@ -14,14 +14,32 @@ body{
   background:#FFEFD6;color:#4A3728;
   user-select:none;-webkit-user-select:none;touch-action:manipulation;
 }
+/* ---------- ruby 注音体系（v4） ---------- */
+ruby{ruby-align:center}
+rt{font-size:12px;font-weight:700;color:inherit;opacity:.6;line-height:1.1;letter-spacing:.5px;padding:0 1px 0 2px}
+.btn rt,.ftab rt,.ratebtn rt{opacity:.85}
+.mirror{display:inline-block;transform:scaleX(-1)}
+
 #wrap{max-width:430px;margin:0 auto;min-height:100vh;min-height:100dvh;background:#FFF8EE;position:relative;box-shadow:0 0 40px rgba(180,120,40,.15)}
-.view{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 24px)}
+.view{display:none;flex-direction:column;min-height:100vh;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 24px);
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
 .view.on{display:flex}
 
+/* ---------- 解锁层（声音第一层：iOS 首触解锁） ---------- */
+#unlock{position:fixed;inset:0;z-index:95;background:linear-gradient(180deg,#FFE9BE,#FFD584);
+  display:none;align-items:center;justify-content:center;padding:24px}
+#unlock.on{display:flex}
+.ulcard{background:#fff;border-radius:34px;padding:36px 22px 30px;max-width:340px;width:100%;text-align:center;
+  box-shadow:0 10px 0 rgba(160,100,20,.18);display:flex;flex-direction:column;gap:16px;align-items:center}
+.ulemoji{font-size:72px;line-height:1;animation:bob 2.4s ease-in-out infinite}
+.ultitle{font-size:29px;font-weight:900;color:#FF7A1A;letter-spacing:1px}
+.ulsub{font-size:17px;color:#B58A4E;font-weight:700;line-height:2.1}
+.ulnote{font-size:13px;color:#CBB08A;font-weight:600}
+
 /* ---------- 通用按钮 ---------- */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:64px;border:none;border-radius:22px;
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:66px;border:none;border-radius:22px;
   font-family:inherit;font-size:22px;font-weight:800;color:#fff;cursor:pointer;
-  background:#FF9A3D;box-shadow:0 5px 0 #E07B1A;transition:transform .06s,box-shadow .06s}
+  background:#FF9A3D;box-shadow:0 5px 0 #E07B1A;transition:transform .06s,box-shadow .06s;line-height:1.9}
 .btn:active{transform:translateY(4px);box-shadow:0 1px 0 #E07B1A}
 .btn.blue{background:#4FA3F7;box-shadow:0 5px 0 #2F7FD0}
 .btn.blue:active{box-shadow:0 1px 0 #2F7FD0}
@@ -29,203 +47,219 @@ body{
 .btn.green:active{box-shadow:0 1px 0 #26A052}
 .btn.purple{background:#9B6BF2;box-shadow:0 5px 0 #7A4BD1}
 .btn.purple:active{box-shadow:0 1px 0 #7A4BD1}
+.btn.teal{background:#22B8A8;box-shadow:0 5px 0 #149587}
+.btn.teal:active{box-shadow:0 1px 0 #149587}
 .btn.ghost{background:#fff;color:#B58A4E;box-shadow:0 3px 0 #EBD9BC;border:2px solid #EBD9BC}
-.btn.small{min-height:48px;font-size:18px;border-radius:16px}
+.btn.small{min-height:52px;font-size:19px;border-radius:16px;line-height:1.7}
 
 /* ---------- 顶栏 ---------- */
-.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .backbtn{flex:0 0 48px;height:48px;border:none;border-radius:16px;background:#fff;color:#B58A4E;font-size:24px;font-weight:800;
   box-shadow:0 3px 0 #EBD9BC;cursor:pointer;font-family:inherit}
 .backbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #EBD9BC}
-.topbar h2{flex:1;font-size:22px;font-weight:900;color:#7A4B1E}
-.topbar .scorechip{background:#FFEDD2;color:#C77B1E;font-size:16px;font-weight:800;padding:6px 12px;border-radius:14px}
+.topbar h2{flex:1;font-size:22px;font-weight:900;color:#7A4B1E;line-height:1.8}
+.topbar .scorechip{background:#FFEDD2;color:#C77B1E;font-size:16px;font-weight:800;padding:6px 12px;border-radius:14px;white-space:nowrap}
 
 /* ---------- 首页 ---------- */
-#v-home{align-items:center;justify-content:center;text-align:center;gap:14px}
-.hero-emoji{font-size:84px;line-height:1;animation:bob 2.6s ease-in-out infinite}
+#v-home{align-items:center;justify-content:center;text-align:center;gap:10px;position:relative}
+.diagbtn{position:absolute;top:calc(env(safe-area-inset-top) + 10px);right:12px;width:50px;height:50px;border:none;border-radius:17px;
+  background:#fff;color:#2F7FD0;font-size:24px;box-shadow:0 3px 0 #EBD9BC;cursor:pointer;font-family:inherit;z-index:5}
+.diagbtn:active{transform:translateY(2px);box-shadow:0 1px 0 #EBD9BC}
+.hero-emoji{font-size:60px;line-height:1.2;animation:bob 2.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-.appname{font-size:36px;font-weight:900;color:#FF7A1A;letter-spacing:2px;text-shadow:0 3px 0 #FFE1B8}
-.subtitle{font-size:16px;color:#B58A4E;font-weight:700;margin-bottom:10px}
-.starsline{font-size:20px;font-weight:900;color:#E8A200;background:#FFF3D6;padding:8px 20px;border-radius:18px;margin-bottom:14px}
-.menu .btn{margin-bottom:12px}
+.appname{font-size:30px;font-weight:900;color:#FF7A1A;letter-spacing:1px;text-shadow:0 3px 0 #FFE1B8;line-height:1.7}
+.subtitle{font-size:16px;color:#B58A4E;font-weight:700;line-height:2;margin-bottom:4px}
+.starsline{font-size:19px;font-weight:900;color:#E8A200;background:#FFF3D6;padding:7px 18px;border-radius:18px;margin-bottom:8px}
 .menu{width:100%;max-width:340px}
-.foot{font-size:12px;color:#CBB08A;margin-top:6px}
+.menu .btn{margin-bottom:10px;min-height:60px;font-size:21px}
+.foot{font-size:12px;color:#CBB08A;margin-top:4px;line-height:1.8}
 
 /* ---------- 关卡地图 ---------- */
-#lvgrid{display:flex;flex-direction:column;gap:12px}
-.lvlcard{display:flex;align-items:center;gap:14px;background:#fff;border-radius:24px;padding:14px 16px;cursor:pointer;
+#lvgrid{display:flex;flex-direction:column;gap:11px;padding-bottom:10px}
+.lvlcard{display:flex;align-items:center;gap:13px;background:#fff;border-radius:24px;padding:13px 15px;cursor:pointer;
   box-shadow:0 4px 0 #F0DFC4;border:2px solid #F6EBD7;font-family:inherit;text-align:left;width:100%}
 .lvlcard:active{transform:translateY(2px);box-shadow:0 2px 0 #F0DFC4}
 .lvlcard.locked{opacity:.55;filter:grayscale(.6)}
 .lvlcard .lvnum{flex:0 0 56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:30px;background:#FFEDD2}
 .lvlcard.boss .lvnum{background:#FFE3EF}
-.lvlcard .lvinfo{flex:1;display:flex;flex-direction:column;gap:3px}
-.lvlcard .lvname{font-size:20px;font-weight:900;color:#5C4326}
+.lvlcard .lvinfo{flex:1;display:flex;flex-direction:column;gap:2px}
+.lvlcard .lvname{font-size:20px;font-weight:900;color:#5C4326;line-height:1.9}
 .lvlcard .lvsub{font-size:14px;color:#B99A6B;font-weight:700}
-.lvlcard .lvstars{font-size:20px;letter-spacing:2px}
+.lvlcard .lvstars{font-size:19px;letter-spacing:2px}
 .bosstag{font-size:12px;color:#E84393;font-weight:900}
 
 /* ---------- 答题页 ---------- */
-.progresswrap{margin:4px 0 14px}
+.progresswrap{margin:2px 0 12px}
 .pbar{height:14px;background:#F3E4C8;border-radius:8px;overflow:hidden}
 .pfill{height:100%;width:0%;background:linear-gradient(90deg,#FFC53D,#FF9A3D);border-radius:8px;transition:width .3s}
 .ptext{font-size:14px;color:#B99A6B;font-weight:800;margin-bottom:5px;display:flex;justify-content:space-between}
-.qcard{background:#fff;border-radius:28px;padding:18px 16px 22px;box-shadow:0 5px 0 #F0DFC4;border:2px solid #F6EBD7;
-  display:flex;flex-direction:column;align-items:center;gap:12px}
-.qhint{font-size:18px;font-weight:800;color:#8A6A3E;text-align:center}
-.glyphbox{display:flex;align-items:center;justify-content:center;min-height:130px;gap:12px}
-.glyph{font-size:clamp(88px,25vw,120px);font-weight:800;line-height:1.1;color:#4A3728;
-  background:#FFF6E3;border:4px solid #F0DFC4;border-radius:28px;padding:6px 26px;min-width:140px;text-align:center}
-.glyph.soundonly{font-size:76px;background:#E8F3FF;border-color:#BBD9F7}
-.qextra{font-size:15px;color:#B99A6B;font-weight:700;text-align:center;min-height:20px}
-.ruletext{font-size:24px;font-weight:900;color:#5C4326;text-align:center;line-height:1.5;background:#FFF6E3;border-radius:20px;padding:14px}
+.qcard{background:#fff;border-radius:28px;padding:16px 14px 20px;box-shadow:0 5px 0 #F0DFC4;border:2px solid #F6EBD7;
+  display:flex;flex-direction:column;align-items:center;gap:11px}
+.qhint{font-size:22px;font-weight:800;color:#8A6A3E;text-align:center;line-height:2.05}
+.glyphbox{display:flex;align-items:center;justify-content:center;min-height:118px;gap:12px;flex-wrap:wrap}
+.glyph{font-size:clamp(84px,24vw,116px);font-weight:800;line-height:1.15;color:#4A3728;
+  background:#FFF6E3;border:4px solid #F0DFC4;border-radius:28px;padding:4px 24px;min-width:130px;text-align:center}
+.glyph.soundonly{font-size:74px;background:#E8F3FF;border-color:#BBD9F7}
+.qbubble{font-size:22px;font-weight:900;color:#7A4B1E;background:#FFF3D6;border-radius:18px;padding:8px 16px;
+  display:flex;align-items:center;gap:8px;line-height:1.9}
+.qbubble .bem{font-size:30px}
+.qextra{font-size:16px;color:#B99A6B;font-weight:700;text-align:center;line-height:2;min-height:16px}
+.ruletext{font-size:23px;font-weight:900;color:#5C4326;text-align:center;line-height:2.15;background:#FFF6E3;border-radius:20px;padding:12px 14px}
 .replaybtn{border:none;background:#FFEFD2;border-radius:50%;width:64px;height:64px;font-size:32px;cursor:pointer;box-shadow:0 3px 0 #F0D9A8;font-family:inherit}
 .replaybtn:active{transform:translateY(2px)}
-.bigsound{border:none;background:#E8F3FF;border:4px solid #BBD9F7;border-radius:32px;width:150px;height:130px;
-  font-size:64px;cursor:pointer;box-shadow:0 5px 0 #BBD9F7;font-family:inherit;display:flex;align-items:center;justify-content:center}
+.bigsound{position:relative;border:none;background:#E8F3FF;border:4px solid #BBD9F7;border-radius:32px;width:158px;height:138px;
+  font-size:56px;cursor:pointer;box-shadow:0 5px 0 #BBD9F7;font-family:inherit;display:flex;align-items:flex-start;justify-content:center;padding-top:16px}
 .bigsound:active{transform:translateY(3px);box-shadow:0 2px 0 #BBD9F7}
-.bigsound .bslabel{position:absolute;bottom:10px;font-size:14px;font-weight:900;color:#2F7FD0}
-#optbox{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:10px}
-.opt{min-height:88px;border:none;border-radius:22px;background:#fff;font-family:inherit;cursor:pointer;
-  box-shadow:0 4px 0 #EADCC2;border:3px solid #F0E4CC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  transition:transform .06s}
+.bigsound .bslabel{position:absolute;bottom:9px;left:0;right:0;font-size:15px;font-weight:900;color:#2F7FD0;line-height:1.7}
+#optbox{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;margin-top:8px}
+.opt{min-height:98px;border:none;border-radius:22px;background:#fff;font-family:inherit;cursor:pointer;
+  box-shadow:0 4px 0 #EADCC2;border:3px solid #F0E4CC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  transition:transform .06s;padding:6px 4px}
 .opt:active{transform:translateY(3px)}
-.opt .og{font-size:52px;font-weight:800;color:#4A3728;line-height:1.15}
-.opt .ob{font-size:13px;font-weight:800;color:#C4A876}
+.opt .og{font-size:50px;font-weight:800;color:#4A3728;line-height:1.2}
+.opt .og.small{font-size:44px}
+.opt .ob{font-size:16px;font-weight:800;color:#C4A876;line-height:1.9}
+.opt .ob.confirm{font-size:15px;line-height:1.8}
 .opt.armed{border-color:#4FA3F7;background:#EFF7FF;box-shadow:0 4px 0 #BBD9F7}
 .opt.armed .ob{color:#2F7FD0}
 .opt.correct{border-color:#3EC46D;background:#EAFBF0;box-shadow:0 4px 0 #9ADFB4}
 .opt.wrong{border-color:#F65E5E;background:#FFEDED;animation:shake .4s}
 .opt.tf{min-height:104px}
-.opt.tf .og{font-size:56px}
+.opt.tf .og{font-size:52px}
+.opt.tf .ob{font-size:20px;font-weight:900}
 .opt.tf.yes .og{color:#2FA95C}
 .opt.tf.no .og{color:#E8434F}
-.opt.wide{grid-column:1 / -1;flex-direction:row;gap:14px}
+.opt.wide{grid-column:1 / -1;flex-direction:row;gap:14px;min-height:76px}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-.subhint{font-size:14px;color:#C4A876;font-weight:700;text-align:center;margin-top:10px}
+.subhint{font-size:15px;color:#C4A876;font-weight:700;text-align:center;margin-top:8px;line-height:1.9}
 
 /* ---------- 反馈层 ---------- */
-#fb{position:fixed;inset:0;background:rgba(255,248,238,.94);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:60;padding:20px}
+#fb{position:fixed;inset:0;background:rgba(255,248,238,.95);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:60;padding:20px}
 #fb.on{display:flex}
-#fbicon{font-size:110px;line-height:1}
+#fbicon{font-size:104px;line-height:1.2}
 #fb.good #fbicon{animation:popin .35s ease}
 #fb.bad #fbicon{animation:shake .4s}
-#fbtext{font-size:30px;font-weight:900}
+#fbtext{font-size:30px;font-weight:900;line-height:1.9}
 #fb.good #fbtext{color:#2FA95C}
 #fb.bad #fbtext{color:#E8434F}
-#fbdetail{display:flex;align-items:center;gap:10px;background:#fff;border-radius:22px;padding:12px 20px;box-shadow:0 4px 0 #F0DFC4}
-#fbdetail .glyph{font-size:64px;min-width:0;padding:4px 18px;border-width:3px}
-#fbdetail .fdesc{font-size:17px;font-weight:800;color:#8A6A3E;max-width:200px;line-height:1.4}
+#fbdetail{display:flex;align-items:center;gap:12px;background:#fff;border-radius:22px;padding:12px 18px;box-shadow:0 4px 0 #F0DFC4;max-width:340px}
+#fbdetail .glyph{font-size:60px;min-width:0;padding:2px 16px;border-width:3px}
+#fbdetail .fdesc{font-size:18px;font-weight:800;color:#8A6A3E;line-height:2;flex:1}
 #fbskip{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 28px);border:none;background:#F3E4C8;color:#8A6A3E;
-  font-family:inherit;font-size:16px;font-weight:800;padding:10px 26px;border-radius:18px;cursor:pointer}
+  font-family:inherit;font-size:18px;font-weight:800;padding:10px 28px;border-radius:18px;cursor:pointer}
 @keyframes popin{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
 .floatstar{position:absolute;font-size:34px;animation:floatup 1s ease forwards}
 @keyframes floatup{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:1}100%{transform:translateY(-90px) scale(1.2);opacity:0}}
 
 /* ---------- 结算页 ---------- */
 #v-result{align-items:center;justify-content:center;text-align:center;gap:10px}
-#rstars{display:flex;gap:12px;margin:8px 0}
-.rstar{font-size:68px;opacity:.22;transform:scale(.85)}
+#rstars{display:flex;gap:12px;margin:6px 0}
+.rstar{font-size:64px;opacity:.22;transform:scale(.85)}
 .rstar.on{opacity:1;transform:scale(1);animation:starpop .55s ease both}
 .rstar.on:nth-child(2){animation-delay:.25s}
 .rstar.on:nth-child(3){animation-delay:.5s}
 @keyframes starpop{0%{transform:scale(0) rotate(-40deg)}60%{transform:scale(1.3) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
-#rtitle{font-size:34px;font-weight:900;color:#FF7A1A}
-#rscore{font-size:20px;font-weight:800;color:#8A6A3E}
-#rworst{font-size:16px;font-weight:800;color:#C77B1E;background:#FFEDD2;padding:8px 18px;border-radius:16px;max-width:320px}
-#runlock{font-size:18px;font-weight:900;color:#2FA95C;animation:bob 1.6s ease-in-out infinite}
-.rbtns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:14px}
+#rtitle{font-size:32px;font-weight:900;color:#FF7A1A;line-height:1.9}
+#rscore{font-size:20px;font-weight:800;color:#8A6A3E;line-height:2}
+#rworst{font-size:16px;font-weight:800;color:#C77B1E;background:#FFEDD2;padding:8px 16px;border-radius:16px;max-width:330px;line-height:2.1}
+#runlock{font-size:18px;font-weight:900;color:#2FA95C;line-height:2;animation:bob 1.6s ease-in-out infinite}
+.rbtns{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px;margin-top:12px}
 
 /* ---------- 闪卡 ---------- */
-.ftabs{display:flex;gap:8px;margin-bottom:12px}
-.ftab{flex:1;min-height:44px;border:none;border-radius:14px;background:#fff;color:#B99A6B;font-family:inherit;font-size:16px;font-weight:800;
-  box-shadow:0 3px 0 #EBDDBE;cursor:pointer}
+.ftabs{display:flex;gap:7px;margin-bottom:10px}
+.ftab{flex:1;min-height:48px;border:none;border-radius:14px;background:#fff;color:#B99A6B;font-family:inherit;font-size:16px;font-weight:800;
+  box-shadow:0 3px 0 #EBDDBE;cursor:pointer;line-height:1.8;padding:4px 2px}
 .ftab.on{background:#FF9A3D;color:#fff;box-shadow:0 3px 0 #E07B1A}
-#deckinfo{font-size:14px;font-weight:800;color:#B99A6B;text-align:center;margin-bottom:10px}
-#flashcard{background:#fff;border-radius:30px;min-height:380px;box-shadow:0 6px 0 #F0DFC4;border:3px solid #F6EBD7;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;cursor:pointer;position:relative}
-#flashcard .fcglyph{font-size:120px;font-weight:800;line-height:1.1;color:#4A3728}
-#flashcard .fchint{font-size:15px;color:#C4A876;font-weight:800}
-#flashcard .fcbox{position:absolute;top:14px;right:16px;font-size:13px;font-weight:900;color:#fff;background:#C4A876;padding:4px 12px;border-radius:12px}
-#flashcard .fcback{display:flex;flex-direction:column;align-items:center;gap:10px}
-#flashcard .fcread{font-size:40px;font-weight:900;color:#FF7A1A}
-#flashcard .fcword{font-size:30px;font-weight:900;color:#5C4326}
-#flashcard .fcwp{font-size:17px;color:#B99A6B;font-weight:800}
-#flashcard .fckj{font-size:18px;font-weight:800;color:#2FA95C;background:#EAFBF0;padding:8px 16px;border-radius:14px;text-align:center;line-height:1.4}
-#flashcard .fcem{font-size:56px}
-#rate{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
-.ratebtn{min-height:60px;border:none;border-radius:18px;font-family:inherit;font-size:17px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+#deckinfo{font-size:16px;font-weight:800;color:#B99A6B;text-align:center;margin-bottom:8px;line-height:1.9}
+#flashcard{background:#fff;border-radius:30px;min-height:360px;box-shadow:0 6px 0 #F0DFC4;border:3px solid #F6EBD7;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:22px 16px;cursor:pointer;position:relative}
+#flashcard .fcglyph{font-size:110px;font-weight:800;line-height:1.15;color:#4A3728}
+#flashcard .fchint{font-size:16px;color:#C4A876;font-weight:800;line-height:1.9}
+#flashcard .fcbox{position:absolute;top:13px;right:15px;font-size:14px;font-weight:900;color:#fff;background:#C4A876;padding:4px 12px;border-radius:12px}
+#flashcard .fcback{display:flex;flex-direction:column;align-items:center;gap:9px}
+#flashcard .fcread{font-size:38px;font-weight:900;color:#FF7A1A}
+#flashcard .fckj{font-size:18px;font-weight:800;color:#2FA95C;background:#EAFBF0;padding:8px 14px;border-radius:14px;text-align:center;line-height:2.1}
+#flashcard .fcword{font-size:26px;font-weight:900;color:#5C4326;line-height:1.9}
+#flashcard .fcwp{font-size:18px;color:#B99A6B;font-weight:800}
+#flashcard .fcem{font-size:52px;line-height:1.2}
+#rate{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:12px}
+.ratebtn{min-height:66px;border:none;border-radius:18px;font-family:inherit;font-size:17px;font-weight:900;color:#fff;cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.15);line-height:1.9;padding:4px 2px}
 .ratebtn:active{transform:translateY(3px)}
 .ratebtn.r1{background:#F65E5E;box-shadow:0 4px 0 #D13A3A}
 .ratebtn.r2{background:#FFB020;box-shadow:0 4px 0 #D98F0A}
 .ratebtn.r3{background:#3EC46D;box-shadow:0 4px 0 #26A052}
 #flashnav{display:flex;gap:10px;margin-top:10px}
 
-/* ---------- 专练 ---------- */
-.pgroup{background:#fff;border-radius:24px;padding:16px;box-shadow:0 4px 0 #F0DFC4;border:2px solid #F6EBD7;margin-bottom:14px}
-.pgroup h3{font-size:19px;font-weight:900;color:#5C4326;margin-bottom:4px}
-.pgroup .gdesc{font-size:14px;color:#B99A6B;font-weight:700;margin-bottom:10px}
+/* ---------- 专练 / 自由练习 ---------- */
+.pgroup{background:#fff;border-radius:24px;padding:15px;box-shadow:0 4px 0 #F0DFC4;border:2px solid #F6EBD7;margin-bottom:13px}
+.pgroup h3{font-size:20px;font-weight:900;color:#5C4326;margin-bottom:3px;line-height:1.9}
+.pgroup .gdesc{font-size:16px;color:#B99A6B;font-weight:700;margin-bottom:10px;line-height:2}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .chip{border:2px solid #F0DFC4;background:#FFF6E3;color:#5C4326;font-family:inherit;font-size:22px;font-weight:900;
-  padding:8px 18px;border-radius:16px;cursor:pointer;min-height:52px}
+  padding:6px 16px;border-radius:16px;cursor:pointer;min-height:52px}
 .chip:active{transform:translateY(2px)}
 
 /* ---------- 历史 ---------- */
-.hitem{background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 3px 0 #F0DFC4;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.hitem{background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 3px 0 #F0DFC4;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .hitem .ht{font-size:13px;color:#C4A876;font-weight:800;flex:1}
 .hitem .hl{font-size:16px;font-weight:900;color:#5C4326;flex:1.4}
 .hitem .hs{font-size:16px;font-weight:900;color:#E8A200}
-.hempty{text-align:center;color:#CBB08A;font-weight:800;padding:40px 0;font-size:17px}
+.hempty{text-align:center;color:#CBB08A;font-weight:800;padding:40px 0;font-size:17px;line-height:2}
 
 /* ---------- 辨析卡弹窗 ---------- */
 .modal{position:fixed;inset:0;background:rgba(74,55,40,.45);display:none;align-items:center;justify-content:center;z-index:70;padding:20px}
 .modal.on{display:flex}
-.mcard{background:#FFF8EE;border-radius:28px;padding:22px 18px;max-width:360px;width:100%;box-shadow:0 8px 0 rgba(0,0,0,.12);position:relative}
+.mcard{background:#FFF8EE;border-radius:28px;padding:20px 16px;max-width:360px;width:100%;box-shadow:0 8px 0 rgba(0,0,0,.12);position:relative}
 .mclose{position:absolute;top:10px;right:12px;border:none;background:#F3E4C8;width:40px;height:40px;border-radius:14px;
   font-size:18px;font-weight:900;color:#8A6A3E;cursor:pointer;font-family:inherit}
-.mtitle{font-size:22px;font-weight:900;color:#5C4326;text-align:center;margin-bottom:12px}
-.mduo{display:flex;gap:12px;justify-content:center;margin-bottom:12px}
-.mhalf{flex:1;background:#fff;border-radius:22px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 3px 0 #F0DFC4}
-.mhalf .mg{font-size:72px;font-weight:800;line-height:1.15}
-.mhalf .mkj{font-size:14px;font-weight:800;color:#2FA95C;text-align:center;line-height:1.4}
-.mhalf .msay{border:none;background:#FFEDD2;border-radius:12px;font-family:inherit;font-size:15px;font-weight:900;color:#C77B1E;padding:6px 14px;cursor:pointer}
-.mtip{font-size:16px;font-weight:800;color:#8A6A3E;background:#fff;border-radius:16px;padding:10px 14px;text-align:center;line-height:1.5}
+.mtitle{font-size:22px;font-weight:900;color:#5C4326;text-align:center;margin-bottom:12px;line-height:1.9}
+.mduo{display:flex;gap:11px;justify-content:center;margin-bottom:11px}
+.mhalf{flex:1;background:#fff;border-radius:22px;padding:11px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 3px 0 #F0DFC4}
+.mhalf .mg{font-size:64px;font-weight:800;line-height:1.2}
+.mhalf .mkj{font-size:15px;font-weight:800;color:#2FA95C;text-align:center;line-height:2}
+.mhalf .msay{border:none;background:#FFEDD2;border-radius:12px;font-family:inherit;font-size:16px;font-weight:900;color:#C77B1E;padding:6px 14px;cursor:pointer}
+.mhalf .mword{font-size:14px;font-weight:800;color:#B99A6B;line-height:1.9}
+.mtip{font-size:17px;font-weight:800;color:#8A6A3E;background:#fff;border-radius:16px;padding:10px 14px;text-align:center;line-height:2.05}
 
 /* ---------- 探针横幅 ---------- */
 #probe{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom) + 8px);z-index:99;
   background:#222;color:#7CFC98;font-family:Menlo,monospace;font-size:13px;font-weight:700;
   padding:10px 12px;border-radius:12px;text-align:center;opacity:.94}
 
-/* ---------- 兜底提示 ---------- */
+/* ---------- 兜底提示（家长向，不注音） ---------- */
 #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(74,55,40,.92);color:#fff;
-  font-size:15px;font-weight:800;padding:10px 20px;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:80}
+  font-size:16px;font-weight:800;padding:10px 20px;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:80;
+  max-width:340px;text-align:center;line-height:1.8}
 #toast.on{opacity:1}
 </style>
 </head>
 <body>
 <div id="wrap">
 
-  <!-- 首页 -->
+  <!-- 首页（静态文字直接写 ruby 注音） -->
   <section id="v-home" class="view on">
+    <button class="diagbtn" id="diagbtn" type="button">🔊</button>
     <div class="hero-emoji">🐣</div>
-    <div class="appname">拼音闯关大冒险</div>
-    <div class="subtitle">跟小鸡一起学拼音 · 专治 b d 分不清</div>
-    <div class="starsline" id="homestars">⭐ 星星：0 颗</div>
+    <div class="appname"><ruby>拼<rt>pīn</rt></ruby><ruby>音<rt>yīn</rt></ruby><ruby>闯<rt>chuǎng</rt></ruby><ruby>关<rt>guān</rt></ruby><ruby>大<rt>dà</rt></ruby><ruby>冒<rt>mào</rt></ruby><ruby>险<rt>xiǎn</rt></ruby></div>
+    <div class="subtitle"><ruby>跟<rt>gēn</rt></ruby><ruby>小<rt>xiǎo</rt></ruby><ruby>鸡<rt>jī</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>起<rt>qǐ</rt></ruby><ruby>学<rt>xué</rt></ruby><ruby>拼<rt>pīn</rt></ruby><ruby>音<rt>yīn</rt></ruby> · <ruby>专<rt>zhuān</rt></ruby><ruby>治<rt>zhì</rt></ruby> b d <ruby>分<rt>fēn</rt></ruby><ruby>不<rt>bù</rt></ruby><ruby>清<rt>qīng</rt></ruby></div>
+    <div class="starsline" id="homestars"><ruby>星<rt>xīng</rt></ruby><ruby>星<rt>xīng</rt></ruby>：0 <ruby>颗<rt>kē</rt></ruby></div>
     <div class="menu">
-      <button class="btn" data-go="levels">🚩 闯关冒险</button>
-      <button class="btn purple" data-go="pairs">⚔️ 易混对专练</button>
-      <button class="btn blue" data-go="flash">🃏 闪卡复习</button>
-      <button class="btn green" data-go="practice">🎯 自由练习</button>
-      <button class="btn ghost" data-go="history">📜 历史成绩</button>
+      <button class="btn" data-go="levels">🚩 <ruby>闯<rt>chuǎng</rt></ruby><ruby>关<rt>guān</rt></ruby><ruby>冒<rt>mào</rt></ruby><ruby>险<rt>xiǎn</rt></ruby></button>
+      <button class="btn teal" data-go="detect">🔍 <ruby>正<rt>zhèng</rt></ruby><ruby>反<rt>fǎn</rt></ruby><ruby>小<rt>xiǎo</rt></ruby><ruby>侦<rt>zhēn</rt></ruby><ruby>探<rt>tàn</rt></ruby></button>
+      <button class="btn purple" data-go="pairs">⚔️ <ruby>易<rt>yì</rt></ruby><ruby>混<rt>hùn</rt></ruby><ruby>对<rt>duì</rt></ruby><ruby>专<rt>zhuān</rt></ruby><ruby>练<rt>liàn</rt></ruby></button>
+      <button class="btn blue" data-go="flash">🃏 <ruby>闪<rt>shǎn</rt></ruby><ruby>卡<rt>kǎ</rt></ruby><ruby>复<rt>fù</rt></ruby><ruby>习<rt>xí</rt></ruby></button>
+      <button class="btn green" data-go="practice">🎯 <ruby>自<rt>zì</rt></ruby><ruby>由<rt>yóu</rt></ruby><ruby>练<rt>liàn</rt></ruby><ruby>习<rt>xí</rt></ruby></button>
+      <button class="btn ghost" data-go="history">📜 <ruby>历<rt>lì</rt></ruby><ruby>史<rt>shǐ</rt></ruby><ruby>成<rt>chéng</rt></ruby><ruby>绩<rt>jì</rt></ruby></button>
     </div>
-    <div class="foot">全部数据保存在本机 · 无需联网</div>
+    <div class="foot">全部数据保存在本机 · 无需联网 · 家长点右上 🔊 可测声音</div>
   </section>
 
   <!-- 关卡地图 -->
   <section id="v-levels" class="view">
     <div class="topbar">
       <button class="backbtn" data-back="home">‹</button>
-      <h2>选择关卡</h2>
+      <h2><ruby>选<rt>xuǎn</rt></ruby><ruby>择<rt>zé</rt></ruby><ruby>关<rt>guān</rt></ruby><ruby>卡<rt>kǎ</rt></ruby></h2>
     </div>
     <div id="lvgrid"></div>
   </section>
@@ -258,9 +292,9 @@ body{
     <div id="rworst"></div>
     <div id="runlock"></div>
     <div class="rbtns">
-      <button class="btn" id="rnext">下一关 ➜</button>
-      <button class="btn blue" id="ragain">🔄 再玩一次</button>
-      <button class="btn ghost" id="rhome">回主页</button>
+      <button class="btn" id="rnext"><ruby>下<rt>xià</rt></ruby><ruby>一<rt>yí</rt></ruby><ruby>关<rt>guān</rt></ruby> ➜</button>
+      <button class="btn blue" id="ragain">🔄 <ruby>再<rt>zài</rt></ruby><ruby>玩<rt>wán</rt></ruby><ruby>一<rt>yí</rt></ruby><ruby>次<rt>cì</rt></ruby></button>
+      <button class="btn ghost" id="rhome"><ruby>回<rt>huí</rt></ruby><ruby>主<rt>zhǔ</rt></ruby><ruby>页<rt>yè</rt></ruby></button>
     </div>
   </section>
 
@@ -268,24 +302,24 @@ body{
   <section id="v-flash" class="view">
     <div class="topbar">
       <button class="backbtn" data-back="home">‹</button>
-      <h2>闪卡复习</h2>
+      <h2><ruby>闪<rt>shǎn</rt></ruby><ruby>卡<rt>kǎ</rt></ruby><ruby>复<rt>fù</rt></ruby><ruby>习<rt>xí</rt></ruby></h2>
     </div>
     <div class="ftabs" id="ftabs">
-      <button class="ftab on" data-cat="all">全部</button>
-      <button class="ftab" data-cat="sm">声母</button>
-      <button class="ftab" data-cat="ym">韵母</button>
-      <button class="ftab" data-cat="zt">整体认读</button>
+      <button class="ftab on" data-cat="all"><ruby>全<rt>quán</rt></ruby><ruby>部<rt>bù</rt></ruby></button>
+      <button class="ftab" data-cat="sm"><ruby>声<rt>shēng</rt></ruby><ruby>母<rt>mǔ</rt></ruby></button>
+      <button class="ftab" data-cat="ym"><ruby>韵<rt>yùn</rt></ruby><ruby>母<rt>mǔ</rt></ruby></button>
+      <button class="ftab" data-cat="zt"><ruby>整<rt>zhěng</rt></ruby><ruby>体<rt>tǐ</rt></ruby><ruby>认<rt>rèn</rt></ruby><ruby>读<rt>dú</rt></ruby></button>
     </div>
     <div id="deckinfo"></div>
     <div id="flashcard">
-      <div class="fcbox" id="fcbox">盒 1</div>
+      <div class="fcbox" id="fcbox"><ruby>盒<rt>hé</rt></ruby> 1</div>
       <div id="fcinner"></div>
-      <div class="fchint" id="fchint">点卡片翻面 👆</div>
+      <div class="fchint" id="fchint"><ruby>点<rt>diǎn</rt></ruby><ruby>卡<rt>kǎ</rt></ruby><ruby>片<rt>piàn</rt></ruby><ruby>翻<rt>fān</rt></ruby><ruby>面<rt>miàn</rt></ruby> 👆</div>
     </div>
     <div id="rate">
-      <button class="ratebtn r1" data-rate="1">还不会<br>今天再学</button>
-      <button class="ratebtn r2" data-rate="2">快会了<br>明天再来</button>
-      <button class="ratebtn r3" data-rate="3">会啦！<br>3天后再见</button>
+      <button class="ratebtn r1" data-rate="1"><ruby>还<rt>hái</rt></ruby><ruby>不<rt>bú</rt></ruby><ruby>会<rt>huì</rt></ruby><br><ruby>今<rt>jīn</rt></ruby><ruby>天<rt>tiān</rt></ruby><ruby>再<rt>zài</rt></ruby><ruby>学<rt>xué</rt></ruby></button>
+      <button class="ratebtn r2" data-rate="2"><ruby>快<rt>kuài</rt></ruby><ruby>会<rt>huì</rt></ruby><ruby>了<rt>le</rt></ruby><br><ruby>明<rt>míng</rt></ruby><ruby>天<rt>tiān</rt></ruby><ruby>再<rt>zài</rt></ruby><ruby>来<rt>lái</rt></ruby></button>
+      <button class="ratebtn r3" data-rate="3"><ruby>会<rt>huì</rt></ruby><ruby>啦<rt>la</rt></ruby>！<br>3<ruby>天<rt>tiān</rt></ruby><ruby>后<rt>hòu</rt></ruby><ruby>再<rt>zài</rt></ruby><ruby>见<rt>jiàn</rt></ruby></button>
     </div>
   </section>
 
@@ -293,7 +327,7 @@ body{
   <section id="v-pairs" class="view">
     <div class="topbar">
       <button class="backbtn" data-back="home">‹</button>
-      <h2>易混对专练</h2>
+      <h2><ruby>易<rt>yì</rt></ruby><ruby>混<rt>hùn</rt></ruby><ruby>对<rt>duì</rt></ruby><ruby>专<rt>zhuān</rt></ruby><ruby>练<rt>liàn</rt></ruby></h2>
     </div>
     <div id="pgroups"></div>
   </section>
@@ -302,21 +336,32 @@ body{
   <section id="v-practice" class="view">
     <div class="topbar">
       <button class="backbtn" data-back="home">‹</button>
-      <h2>自由练习</h2>
+      <h2><ruby>自<rt>zì</rt></ruby><ruby>由<rt>yóu</rt></ruby><ruby>练<rt>liàn</rt></ruby><ruby>习<rt>xí</rt></ruby></h2>
     </div>
-    <div id="pgroups2" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div id="pgroups2" style="display:flex;flex-direction:column;gap:11px"></div>
   </section>
 
-  <!-- 历史 -->
+  <!-- 历史（家长向表格：行内容可不注音） -->
   <section id="v-history" class="view">
     <div class="topbar">
       <button class="backbtn" data-back="home">‹</button>
-      <h2>历史成绩</h2>
+      <h2><ruby>历<rt>lì</rt></ruby><ruby>史<rt>shǐ</rt></ruby><ruby>成<rt>chéng</rt></ruby><ruby>绩<rt>jì</rt></ruby></h2>
     </div>
     <div id="histlist"></div>
-    <button class="btn ghost small" id="hclear" style="margin-top:8px">清空记录</button>
+    <button class="btn ghost small" id="hclear" style="margin-top:8px"><ruby>清<rt>qīng</rt></ruby><ruby>空<rt>kōng</rt></ruby><ruby>记<rt>jì</rt></ruby><ruby>录<rt>lù</rt></ruby></button>
   </section>
 
+</div>
+
+<!-- 声音解锁层（首次触屏手势 = iOS 音频解锁） -->
+<div id="unlock" class="on">
+  <div class="ulcard">
+    <div class="ulemoji">🐣</div>
+    <div class="ultitle"><ruby>拼<rt>pīn</rt></ruby><ruby>音<rt>yīn</rt></ruby><ruby>闯<rt>chuǎng</rt></ruby><ruby>关<rt>guān</rt></ruby><ruby>大<rt>dà</rt></ruby><ruby>冒<rt>mào</rt></ruby><ruby>险<rt>xiǎn</rt></ruby></div>
+    <button class="btn green" id="ulgo" type="button">🔊 <ruby>点<rt>diǎn</rt></ruby><ruby>一<rt>yí</rt></ruby><ruby>下<rt>xià</rt></ruby>，<ruby>开<rt>kāi</rt></ruby><ruby>启<rt>qǐ</rt></ruby><ruby>声<rt>shēng</rt></ruby><ruby>音<rt>yīn</rt></ruby></button>
+    <div class="ulsub"><ruby>听<rt>tīng</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>听<rt>tīng</rt></ruby>、<ruby>读<rt>dú</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>读<rt>dú</rt></ruby>，<ruby>学<rt>xué</rt></ruby><ruby>拼<rt>pīn</rt></ruby><ruby>音<rt>yīn</rt></ruby><ruby>更<rt>gèng</rt></ruby><ruby>轻<rt>qīng</rt></ruby><ruby>松<rt>sōng</rt></ruby>！</div>
+    <div class="ulnote">若手机设为静音，请先取消静音</div>
+  </div>
 </div>
 
 <!-- 辨析卡弹窗 -->
@@ -334,7 +379,7 @@ body{
   <div id="fbicon"></div>
   <div id="fbtext"></div>
   <div id="fbdetail" style="display:none"><div class="glyph" id="fbglyph"></div><div class="fdesc" id="fbdesc"></div></div>
-  <button id="fbskip">继续 ›</button>
+  <button id="fbskip"><ruby>继<rt>jì</rt></ruby><ruby>续<rt>xù</rt></ruby> ›</button>
 </div>
 
 <div id="probe" style="display:none"></div>
@@ -344,101 +389,117 @@ body{
 (function(){
 'use strict';
 
+/* ================= 注音 DSL =================
+   T('听{tīng}一{yì}听{tīng}') → <ruby>听<rt>tīng</rt></ruby>…（拉丁字母/emoji/标点原样通过） */
+function T(s){return String(s).replace(/([\u4e00-\u9fff])\{([^{}]*)\}/g,function(m,h,p){return '<ruby>'+h+'<rt>'+p+'</rt></ruby>';});}
+
 /* ================= 数据：字母表 =================
    cat: sm声母 ym韵母 zt整体认读
    tts: 发音文本(呼读音/直读)  han: 拼音直注汉字(TTS兜底)
-   kj: 正确口诀  kjf: 干扰口诀(T4判断题用)
-   word/wp/em: 例词/注音/emoji */
+   kj/kjf: 正确/干扰口诀（已带注音标记）  word/wp/em: 例词(已带注音标记)/纯注音/emoji */
 var LETTERS={
-b:{cat:'sm',tts:'bō',han:'玻',kj:'右下半圆 b b b',kjf:'左下半圆 b b b',word:'菠萝',wp:'bō luó',em:'🍍'},
-p:{cat:'sm',tts:'pō',han:'坡',kj:'右上半圆 p p p',kjf:'左上半圆 p p p',word:'苹果',wp:'píng guǒ',em:'🍎'},
-m:{cat:'sm',tts:'mō',han:'摸',kj:'两个门洞 m m m',kjf:'一个门洞 m m m',word:'马',wp:'mǎ',em:'🐴'},
-f:{cat:'sm',tts:'fó',han:'佛',kj:'一根拐杖 f f f',kjf:'一把椅子 f f f',word:'斧头',wp:'fǔ tou',em:'🪓'},
-d:{cat:'sm',tts:'dé',han:'得',kj:'左下半圆 d d d',kjf:'右下半圆 d d d',word:'大鼓',wp:'dà gǔ',em:'🥁'},
-t:{cat:'sm',tts:'tè',han:'特',kj:'伞柄朝下 t t t',kjf:'一根棍子 t t t',word:'兔子',wp:'tù zi',em:'🐰'},
-n:{cat:'sm',tts:'né',han:'讷',kj:'一个门洞 n n n',kjf:'两个门洞 n n n',word:'牛',wp:'niú',em:'🐮'},
-l:{cat:'sm',tts:'lè',han:'乐',kj:'一根棍子 l l l',kjf:'一个门洞 l l l',word:'老虎',wp:'lǎo hǔ',em:'🐯'},
-g:{cat:'sm',tts:'gē',han:'哥',kj:'像个9字加弯 g g g',kjf:'蝌蚪水草 g g g',word:'鸽子',wp:'gē zi',em:'🕊️'},
-k:{cat:'sm',tts:'kē',han:'科',kj:'蝌蚪水草 k k k',kjf:'像个9字加弯 k k k',word:'蝌蚪',wp:'kē dǒu',em:'🐸'},
-h:{cat:'sm',tts:'hē',han:'喝',kj:'一把椅子 h h h',kjf:'一根拐杖 h h h',word:'河马',wp:'hé mǎ',em:'🦛'},
-j:{cat:'sm',tts:'jī',han:'鸡',kj:'小鸡啄米 j j j',kjf:'竖弯没有点 j j j',word:'小鸡',wp:'xiǎo jī',em:'🐔'},
-q:{cat:'sm',tts:'qī',han:'七',kj:'左上半圆 q q q',kjf:'右上半圆 q q q',word:'气球',wp:'qì qiú',em:'🎈'},
-x:{cat:'sm',tts:'xī',han:'西',kj:'切个西瓜 x x x',kjf:'圆圈滚滚 x x x',word:'西瓜',wp:'xī guā',em:'🍉'},
-zh:{cat:'sm',tts:'zhī',han:'知',kj:'舌尖翘起 zh zh zh',kjf:'舌头放平 zh zh zh',word:'竹子',wp:'zhú zi',em:'🎋'},
-ch:{cat:'sm',tts:'chī',han:'吃',kj:'翘舌发音 ch ch ch',kjf:'舌头放平 ch ch ch',word:'茶',wp:'chá',em:'🍵'},
-sh:{cat:'sm',tts:'shī',han:'诗',kj:'翘舌发音 sh sh sh',kjf:'舌头放平 sh sh sh',word:'狮子',wp:'shī zi',em:'🦁'},
-r:{cat:'sm',tts:'rì',han:'日',kj:'苗芽出土 r r r',kjf:'苗芽朝下 r r r',word:'肉',wp:'ròu',em:'🍖'},
-z:{cat:'sm',tts:'zī',han:'资',kj:'像个2字 z z z',kjf:'像个5字 z z z',word:'写字',wp:'xiě zì',em:'📝'},
-c:{cat:'sm',tts:'cī',han:'雌',kj:'半圆带钩 c c c',kjf:'直钩朝下 c c c',word:'刺猬',wp:'cì wei',em:'🦔'},
-s:{cat:'sm',tts:'sī',han:'丝',kj:'蚕儿吐丝 s s s',kjf:'直直一条 s s s',word:'蚕宝宝',wp:'cán bǎo bao',em:'🐛'},
-y:{cat:'sm',tts:'yī',han:'一',kj:'树杈树杈 y y y',kjf:'伞柄朝下 y y y',word:'鸭子',wp:'yā zi',em:'🦆'},
-w:{cat:'sm',tts:'wū',han:'乌',kj:'屋顶相连 w w w',kjf:'一个门洞 w w w',word:'乌龟',wp:'wū guī',em:'🐢'},
-a:{cat:'ym',tts:'a',han:'阿',kj:'张大嘴巴 a a a',kjf:'闭上嘴巴 a a a',word:'阿姨',wp:'ā yí',em:'👩'},
-o:{cat:'ym',tts:'o',han:'喔',kj:'圆圆嘴巴 o o o',kjf:'扁扁嘴巴 o o o',word:'公鸡喔喔叫',wp:'gōng jī ō',em:'🐓'},
-e:{cat:'ym',tts:'e',han:'鹅',kj:'扁扁嘴巴 e e e',kjf:'圆圆嘴巴 e e e',word:'大白鹅',wp:'dà bái é',em:'🦢'},
-i:{cat:'ym',tts:'i',han:'衣',kj:'牙齿对齐 i i i',kjf:'嘴巴突出 i i i',word:'衣服',wp:'yī fu',em:'👕'},
-u:{cat:'ym',tts:'u',han:'屋',kj:'嘴巴突出 u u u',kjf:'牙齿对齐 u u u',word:'小屋子',wp:'xiǎo wū zi',em:'🏠'},
-'ü':{cat:'ym',tts:'yú',han:'鱼',kj:'小鱼吐泡 ü ü ü',kjf:'嘴巴突出 ü ü ü',word:'小鱼',wp:'xiǎo yú',em:'🐟'},
-ai:{cat:'ym',tts:'āi',han:'挨',kj:'a 和 i 挨在一起 ai',kjf:'a 和 u 在一起 ai',word:'白菜',wp:'bái cài',em:'🥬'},
-ei:{cat:'ym',tts:'ēi',han:'欸',kj:'用力砍树 ei ei ei',kjf:'i 在前面 ei ei ei',word:'杯子',wp:'bēi zi',em:'🥤'},
-ui:{cat:'ym',tts:'uēi',han:'围',kj:'u 在前是 ui（围巾）',kjf:'i 在前是 ui（皮球）',word:'水花',wp:'shuǐ huā',em:'💧'},
-ao:{cat:'ym',tts:'áo',han:'袄',kj:'棉袄棉袄 ao ao ao',kjf:'海鸥海鸥 ao ao ao',word:'小猫',wp:'xiǎo māo',em:'🐱'},
-ou:{cat:'ym',tts:'ōu',han:'鸥',kj:'海鸥海鸥 ou ou ou',kjf:'棉袄棉袄 ou ou ou',word:'猴子',wp:'hóu zi',em:'🐵'},
-iu:{cat:'ym',tts:'iōu',han:'邮',kj:'i 在前是 iu（皮球）',kjf:'u 在前是 iu（围巾）',word:'牛奶',wp:'niú nǎi',em:'🥛'},
-ie:{cat:'ym',tts:'iē',han:'耶',kj:'i 在前是 ie（椰子树）',kjf:'e 在前是 ie（砍树声）',word:'椰子',wp:'yē zi',em:'🌴'},
-an:{cat:'ym',tts:'ān',han:'安',kj:'an 是前鼻音，舌尖顶上牙',kjf:'an 是后鼻音，嘴巴张大响',word:'大山',wp:'dà shān',em:'⛰️'},
-ang:{cat:'ym',tts:'áng',han:'昂',kj:'ang 是后鼻音，嘴巴张大响',kjf:'ang 是前鼻音，舌尖顶上牙',word:'山羊',wp:'shān yáng',em:'🐐'},
-en:{cat:'ym',tts:'ēn',han:'恩',kj:'en 是前鼻音，舌尖顶上牙',kjf:'en 是后鼻音，嘴巴张大响',word:'大门',wp:'dà mén',em:'🚪'},
-eng:{cat:'ym',tts:'ēng',han:'鞥',kj:'eng 是后鼻音，嘴巴张大响',kjf:'eng 是前鼻音，舌尖顶上牙',word:'台灯',wp:'tái dēng',em:'💡'},
-in:{cat:'ym',tts:'īn',han:'音',kj:'in 是前鼻音，舌尖顶上牙',kjf:'in 是后鼻音，嘴巴张大响',word:'音乐',wp:'yīn yuè',em:'🎵'},
-ing:{cat:'ym',tts:'īng',han:'鹰',kj:'ing 是后鼻音，嘴巴张大响',kjf:'ing 是前鼻音，舌尖顶上牙',word:'老鹰',wp:'lǎo yīng',em:'🦅'},
-un:{cat:'ym',tts:'wēn',han:'温',kj:'u 加 n 组成 un',kjf:'ü 加 n 组成 un',word:'蚊子',wp:'wén zi',em:'🦟'},
-'ün':{cat:'ym',tts:'yūn',han:'晕',kj:'ü 加 n 组成 ün',kjf:'u 加 n 组成 ün',word:'白云',wp:'bái yún',em:'☁️'},
-zhi:{cat:'zt',tts:'zhī',han:'之',kj:'zhi 是整体认读音节，直接读',kjf:'zhi 要拆开 z 和 i 拼着读',word:'蜘蛛',wp:'zhī zhū',em:'🕷️'},
-chi:{cat:'zt',tts:'chī',han:'吃',kj:'chi 是整体认读音节，直接读',kjf:'chi 要拆开 c 和 i 拼着读',word:'尺子',wp:'chǐ zi',em:'📏'},
-shi:{cat:'zt',tts:'shī',han:'是',kj:'shi 是整体认读音节，直接读',kjf:'shi 要拆开 s 和 i 拼着读',word:'一个十',wp:'yí gè shí',em:'🔟'},
-ri:{cat:'zt',tts:'rì',han:'日',kj:'ri 是整体认读音节，直接读',kjf:'ri 要拆开 r 和 i 拼着读',word:'日出',wp:'rì chū',em:'🌅'},
-zi:{cat:'zt',tts:'zī',han:'字',kj:'zi 是整体认读音节，直接读',kjf:'zi 要拆开 z 和 i 拼着读',word:'字典',wp:'zì diǎn',em:'📚'},
-ci:{cat:'zt',tts:'cí',han:'词',kj:'ci 是整体认读音节，直接读',kjf:'ci 要拆开 c 和 i 拼着读',word:'词卡',wp:'cí kǎ',em:'🃏'},
-si:{cat:'zt',tts:'sī',han:'丝',kj:'si 是整体认读音节，直接读',kjf:'si 要拆开 s 和 i 拼着读',word:'丝瓜',wp:'sī guā',em:'🥒'}
+b:{cat:'sm',tts:'bō',han:'玻',kj:'右{yòu}下{xià}半{bàn}圆{yuán} b b b',kjf:'左{zuǒ}下{xià}半{bàn}圆{yuán} b b b',word:'菠{bō}萝{luó}',wp:'bō luó',em:'🍍'},
+p:{cat:'sm',tts:'pō',han:'坡',kj:'右{yòu}上{shàng}半{bàn}圆{yuán} p p p',kjf:'左{zuǒ}上{shàng}半{bàn}圆{yuán} p p p',word:'苹{píng}果{guǒ}',wp:'píng guǒ',em:'🍎'},
+m:{cat:'sm',tts:'mō',han:'摸',kj:'两{liǎng}个{gè}门{mén}洞{dòng} m m m',kjf:'一{yí}个{gè}门{mén}洞{dòng} m m m',word:'马{mǎ}',wp:'mǎ',em:'🐴'},
+f:{cat:'sm',tts:'fó',han:'佛',kj:'一{yí}根{gēn}拐{guǎi}杖{zhàng} f f f',kjf:'一{yí}把{bǎ}椅{yǐ}子{zi} f f f',word:'斧{fǔ}头{tou}',wp:'fǔ tou',em:'🪓'},
+d:{cat:'sm',tts:'dé',han:'得',kj:'左{zuǒ}下{xià}半{bàn}圆{yuán} d d d',kjf:'右{yòu}下{xià}半{bàn}圆{yuán} d d d',word:'大{dà}鼓{gǔ}',wp:'dà gǔ',em:'🥁'},
+t:{cat:'sm',tts:'tè',han:'特',kj:'伞{sǎn}柄{bǐng}朝{cháo}下{xià} t t t',kjf:'一{yí}根{gēn}棍{gùn}子{zi} t t t',word:'兔{tù}子{zi}',wp:'tù zi',em:'🐰'},
+n:{cat:'sm',tts:'né',han:'讷',kj:'一{yí}个{gè}门{mén}洞{dòng} n n n',kjf:'两{liǎng}个{gè}门{mén}洞{dòng} n n n',word:'牛{niú}',wp:'niú',em:'🐮'},
+l:{cat:'sm',tts:'lè',han:'乐',kj:'一{yí}根{gēn}棍{gùn}子{zi} l l l',kjf:'一{yí}个{gè}门{mén}洞{dòng} l l l',word:'老{lǎo}虎{hǔ}',wp:'lǎo hǔ',em:'🐯'},
+g:{cat:'sm',tts:'gē',han:'哥',kj:'像{xiàng}个{gè}9字{zì}加{jiā}弯{wān} g g g',kjf:'蝌{kē}蚪{dǒu}水{shuǐ}草{cǎo} g g g',word:'鸽{gē}子{zi}',wp:'gē zi',em:'🕊️'},
+k:{cat:'sm',tts:'kē',han:'科',kj:'蝌{kē}蚪{dǒu}水{shuǐ}草{cǎo} k k k',kjf:'像{xiàng}个{gè}9字{zì}加{jiā}弯{wān} k k k',word:'蝌{kē}蚪{dǒu}',wp:'kē dǒu',em:'🐸'},
+h:{cat:'sm',tts:'hē',han:'喝',kj:'一{yí}把{bǎ}椅{yǐ}子{zi} h h h',kjf:'一{yí}根{gēn}拐{guǎi}杖{zhàng} h h h',word:'河{hé}马{mǎ}',wp:'hé mǎ',em:'🦛'},
+j:{cat:'sm',tts:'jī',han:'鸡',kj:'小{xiǎo}鸡{jī}啄{zhuó}米{mǐ} j j j',kjf:'竖{shù}弯{wān}没{méi}有{yǒu}点{diǎn} j j j',word:'小{xiǎo}鸡{jī}',wp:'xiǎo jī',em:'🐔'},
+q:{cat:'sm',tts:'qī',han:'七',kj:'左{zuǒ}上{shàng}半{bàn}圆{yuán} q q q',kjf:'右{yòu}上{shàng}半{bàn}圆{yuán} q q q',word:'气{qì}球{qiú}',wp:'qì qiú',em:'🎈'},
+x:{cat:'sm',tts:'xī',han:'西',kj:'切{qiē}个{gè}西{xī}瓜{guā} x x x',kjf:'圆{yuán}圈{quān}滚{gǔn}滚{gǔn} x x x',word:'西{xī}瓜{guā}',wp:'xī guā',em:'🍉'},
+zh:{cat:'sm',tts:'zhī',han:'知',kj:'舌{shé}尖{jiān}翘{qiào}起{qǐ} zh zh zh',kjf:'舌{shé}头{tou}放{fàng}平{píng} zh zh zh',word:'竹{zhú}子{zi}',wp:'zhú zi',em:'🎋'},
+ch:{cat:'sm',tts:'chī',han:'吃',kj:'翘{qiào}舌{shé}发{fā}音{yīn} ch ch ch',kjf:'舌{shé}头{tou}放{fàng}平{píng} ch ch ch',word:'茶{chá}',wp:'chá',em:'🍵'},
+sh:{cat:'sm',tts:'shī',han:'诗',kj:'翘{qiào}舌{shé}发{fā}音{yīn} sh sh sh',kjf:'舌{shé}头{tou}放{fàng}平{píng} sh sh sh',word:'狮{shī}子{zi}',wp:'shī zi',em:'🦁'},
+r:{cat:'sm',tts:'rì',han:'日',kj:'苗{miáo}芽{yá}出{chū}土{tǔ} r r r',kjf:'苗{miáo}芽{yá}朝{cháo}下{xià} r r r',word:'肉{ròu}',wp:'ròu',em:'🍖'},
+z:{cat:'sm',tts:'zī',han:'资',kj:'像{xiàng}个{gè}2字{zì} z z z',kjf:'像{xiàng}个{gè}5字{zì} z z z',word:'写{xiě}字{zì}',wp:'xiě zì',em:'📝'},
+c:{cat:'sm',tts:'cī',han:'雌',kj:'半{bàn}圆{yuán}带{dài}钩{gōu} c c c',kjf:'直{zhí}钩{gōu}朝{cháo}下{xià} c c c',word:'刺{cì}猬{wei}',wp:'cì wei',em:'🦔'},
+s:{cat:'sm',tts:'sī',han:'丝',kj:'蚕{cán}儿{ér}吐{tǔ}丝{sī} s s s',kjf:'直{zhí}直{zhí}一{yì}条{tiáo} s s s',word:'蚕{cán}宝{bǎo}宝{bao}',wp:'cán bǎo bao',em:'🐛'},
+y:{cat:'sm',tts:'yī',han:'一',kj:'树{shù}杈{chà}树{shù}杈{chà} y y y',kjf:'伞{sǎn}柄{bǐng}朝{cháo}下{xià} y y y',word:'鸭{yā}子{zi}',wp:'yā zi',em:'🦆'},
+w:{cat:'sm',tts:'wū',han:'乌',kj:'屋{wū}顶{dǐng}相{xiāng}连{lián} w w w',kjf:'一{yí}个{gè}门{mén}洞{dòng} w w w',word:'乌{wū}龟{guī}',wp:'wū guī',em:'🐢'},
+a:{cat:'ym',tts:'a',han:'阿',kj:'张{zhāng}大{dà}嘴{zuǐ}巴{ba} a a a',kjf:'闭{bì}上{shàng}嘴{zuǐ}巴{ba} a a a',word:'阿{ā}姨{yí}',wp:'ā yí',em:'👩'},
+o:{cat:'ym',tts:'o',han:'喔',kj:'圆{yuán}圆{yuán}嘴{zuǐ}巴{ba} o o o',kjf:'扁{biǎn}扁{biǎn}嘴{zuǐ}巴{ba} o o o',word:'公{gōng}鸡{jī}喔{ō}喔{ō}叫{jiào}',wp:'gōng jī ō',em:'🐓'},
+e:{cat:'ym',tts:'e',han:'鹅',kj:'扁{biǎn}扁{biǎn}嘴{zuǐ}巴{ba} e e e',kjf:'圆{yuán}圆{yuán}嘴{zuǐ}巴{ba} e e e',word:'大{dà}白{bái}鹅{é}',wp:'dà bái é',em:'🦢'},
+i:{cat:'ym',tts:'i',han:'衣',kj:'牙{yá}齿{chǐ}对{duì}齐{qí} i i i',kjf:'嘴{zuǐ}巴{ba}突{tū}出{chū} i i i',word:'衣{yī}服{fu}',wp:'yī fu',em:'👕'},
+u:{cat:'ym',tts:'u',han:'屋',kj:'嘴{zuǐ}巴{ba}突{tū}出{chū} u u u',kjf:'牙{yá}齿{chǐ}对{duì}齐{qí} u u u',word:'小{xiǎo}屋{wū}子{zi}',wp:'xiǎo wū zi',em:'🏠'},
+'ü':{cat:'ym',tts:'yú',han:'鱼',kj:'小{xiǎo}鱼{yú}吐{tǔ}泡{pào} ü ü ü',kjf:'嘴{zuǐ}巴{ba}突{tū}出{chū} ü ü ü',word:'小{xiǎo}鱼{yú}',wp:'xiǎo yú',em:'🐟'},
+ai:{cat:'ym',tts:'āi',han:'挨',kj:'a 和{hé} i 挨{āi}在{zài}一{yì}起{qǐ} ai',kjf:'a 和{hé} u 在{zài}一{yì}起{qǐ} ai',word:'白{bái}菜{cài}',wp:'bái cài',em:'🥬'},
+ei:{cat:'ym',tts:'ēi',han:'欸',kj:'用{yòng}力{lì}砍{kǎn}树{shù} ei ei ei',kjf:'i 在{zài}前{qián}面{miàn} ei ei ei',word:'杯{bēi}子{zi}',wp:'bēi zi',em:'🥤'},
+ui:{cat:'ym',tts:'uēi',han:'围',kj:'u 在{zài}前{qián}是{shì} ui（围{wéi}巾{jīn}）',kjf:'i 在{zài}前{qián}是{shì} ui（皮{pí}球{qiú}）',word:'水{shuǐ}花{huā}',wp:'shuǐ huā',em:'💧'},
+ao:{cat:'ym',tts:'áo',han:'袄',kj:'棉{mián}袄{ǎo}棉{mián}袄{ǎo} ao ao ao',kjf:'海{hǎi}鸥{ōu}海{hǎi}鸥{ōu} ao ao ao',word:'小{xiǎo}猫{māo}',wp:'xiǎo māo',em:'🐱'},
+ou:{cat:'ym',tts:'ōu',han:'鸥',kj:'海{hǎi}鸥{ōu}海{hǎi}鸥{ōu} ou ou ou',kjf:'棉{mián}袄{ǎo}棉{mián}袄{ǎo} ou ou ou',word:'猴{hóu}子{zi}',wp:'hóu zi',em:'🐵'},
+iu:{cat:'ym',tts:'iōu',han:'邮',kj:'i 在{zài}前{qián}是{shì} iu（皮{pí}球{qiú}）',kjf:'u 在{zài}前{qián}是{shì} iu（围{wéi}巾{jīn}）',word:'牛{niú}奶{nǎi}',wp:'niú nǎi',em:'🥛'},
+ie:{cat:'ym',tts:'iē',han:'耶',kj:'i 在{zài}前{qián}是{shì} ie（椰{yē}子{zi}树{shù}）',kjf:'e 在{zài}前{qián}是{shì} ie（砍{kǎn}树{shù}声{shēng}）',word:'椰{yē}子{zi}',wp:'yē zi',em:'🌴'},
+an:{cat:'ym',tts:'ān',han:'安',kj:'an 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',kjf:'an 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',word:'大{dà}山{shān}',wp:'dà shān',em:'⛰️'},
+ang:{cat:'ym',tts:'áng',han:'昂',kj:'ang 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',kjf:'ang 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',word:'山{shān}羊{yáng}',wp:'shān yáng',em:'🐐'},
+en:{cat:'ym',tts:'ēn',han:'恩',kj:'en 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',kjf:'en 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',word:'大{dà}门{mén}',wp:'dà mén',em:'🚪'},
+eng:{cat:'ym',tts:'ēng',han:'鞥',kj:'eng 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',kjf:'eng 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',word:'台{tái}灯{dēng}',wp:'tái dēng',em:'💡'},
+in:{cat:'ym',tts:'īn',han:'音',kj:'in 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',kjf:'in 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',word:'音{yīn}乐{yuè}',wp:'yīn yuè',em:'🎵'},
+ing:{cat:'ym',tts:'īng',han:'鹰',kj:'ing 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}',kjf:'ing 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}',word:'老{lǎo}鹰{yīng}',wp:'lǎo yīng',em:'🦅'},
+un:{cat:'ym',tts:'wēn',han:'温',kj:'u 加{jiā} n 组{zǔ}成{chéng} un',kjf:'ü 加{jiā} n 组{zǔ}成{chéng} un',word:'蚊{wén}子{zi}',wp:'wén zi',em:'🦟'},
+'ün':{cat:'ym',tts:'yūn',han:'晕',kj:'ü 加{jiā} n 组{zǔ}成{chéng} ün',kjf:'u 加{jiā} n 组{zǔ}成{chéng} ün',word:'白{bái}云{yún}',wp:'bái yún',em:'☁️'},
+zhi:{cat:'zt',tts:'zhī',han:'之',kj:'zhi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'zhi 要{yào}拆{chāi}开{kāi} z 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'蜘{zhī}蛛{zhū}',wp:'zhī zhū',em:'🕷️'},
+chi:{cat:'zt',tts:'chī',han:'吃',kj:'chi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'chi 要{yào}拆{chāi}开{kāi} c 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'尺{chǐ}子{zi}',wp:'chǐ zi',em:'📏'},
+shi:{cat:'zt',tts:'shī',han:'是',kj:'shi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'shi 要{yào}拆{chāi}开{kāi} s 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'一{yí}个{gè}十{shí}',wp:'yí gè shí',em:'🔟'},
+ri:{cat:'zt',tts:'rì',han:'日',kj:'ri 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'ri 要{yào}拆{chāi}开{kāi} r 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'日{rì}出{chū}',wp:'rì chū',em:'🌅'},
+zi:{cat:'zt',tts:'zī',han:'字',kj:'zi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'zi 要{yào}拆{chāi}开{kāi} z 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'字{zì}典{diǎn}',wp:'zì diǎn',em:'📚'},
+ci:{cat:'zt',tts:'cí',han:'词',kj:'ci 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'ci 要{yào}拆{chāi}开{kāi} c 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'词{cí}卡{kǎ}',wp:'cí kǎ',em:'🃏'},
+si:{cat:'zt',tts:'sī',han:'丝',kj:'si 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}',kjf:'si 要{yào}拆{chāi}开{kāi} s 和{hé} i 拼{pīn}着{zhe}读{dú}',word:'丝{sī}瓜{guā}',wp:'sī guā',em:'🥒'}
 };
 
 /* ================= 数据：易混对 ================= */
 var PAIRS=[
-{a:'b',b:'d',grp:'mirror',tip:'圆圈写在右边是 b，写在左边是 d——右 b 左 d'},
-{a:'p',b:'q',grp:'mirror',tip:'圆圈写在右边是 p，写在左边是 q——右 p 左 q'},
-{a:'b',b:'p',grp:'mirror',tip:'肚子朝上抬是 b，肚子朝下垂是 p——上 b 下 p'},
-{a:'d',b:'q',grp:'mirror',tip:'肚子朝上抬是 d，肚子朝下垂是 q——上 d 下 q'},
-{a:'n',b:'l',grp:'near',tip:'一个门洞 n n n，一根棍子 l l l'},
-{a:'f',b:'h',grp:'near',tip:'拐杖 f 弯朝右，椅子 h 弯朝左'},
-{a:'d',b:'t',grp:'near',tip:'d 半圆在左下，t 伞柄朝下弯朝右'},
-{a:'g',b:'k',grp:'near',tip:'g 像个9字加尾巴，k 竖着踢出两条腿'},
-{a:'an',b:'ang',grp:'nasal',tip:'前鼻 an 舌尖顶上牙，后鼻 ang 嘴巴张大响'},
-{a:'en',b:'eng',grp:'nasal',tip:'en 前鼻轻轻收，eng 后鼻喉咙响'},
-{a:'in',b:'ing',grp:'nasal',tip:'in 前鼻轻轻收，ing 后鼻喉咙响'},
-{a:'ui',b:'iu',grp:'final',tip:'u 在前是 ui 围巾，i 在前是 iu 皮球'},
-{a:'ie',b:'ei',grp:'final',tip:'i 在前是 ie 椰子树，e 在前是 ei 砍树声'},
-{a:'un',b:'ün',grp:'final',tip:'u 加 n 是 un 蚊子，ü 加 n 是 ün 白云'}
+{a:'b',b:'d',grp:'mirror',tip:'圆{yuán}圈{quān}写{xiě}在{zài}右{yòu}边{biān}是{shì} b，写{xiě}在{zài}左{zuǒ}边{biān}是{shì} d —— 右{yòu} b 左{zuǒ} d'},
+{a:'p',b:'q',grp:'mirror',tip:'圆{yuán}圈{quān}写{xiě}在{zài}右{yòu}边{biān}是{shì} p，写{xiě}在{zài}左{zuǒ}边{biān}是{shì} q —— 右{yòu} p 左{zuǒ} q'},
+{a:'b',b:'p',grp:'mirror',tip:'肚{dù}子{zi}朝{cháo}上{shàng}抬{tái}是{shì} b，肚{dù}子{zi}朝{cháo}下{xià}垂{chuí}是{shì} p —— 上{shàng} b 下{xià} p'},
+{a:'d',b:'q',grp:'mirror',tip:'肚{dù}子{zi}朝{cháo}上{shàng}抬{tái}是{shì} d，肚{dù}子{zi}朝{cháo}下{xià}垂{chuí}是{shì} q —— 上{shàng} d 下{xià} q'},
+{a:'n',b:'l',grp:'near',tip:'一{yí}个{gè}门{mén}洞{dòng} n n n，一{yí}根{gēn}棍{gùn}子{zi} l l l'},
+{a:'f',b:'h',grp:'near',tip:'拐{guǎi}杖{zhàng} f 弯{wān}朝{cháo}右{yòu}，椅{yǐ}子{zi} h 弯{wān}朝{cháo}左{zuǒ}'},
+{a:'d',b:'t',grp:'near',tip:'d 半{bàn}圆{yuán}在{zài}左{zuǒ}下{xià}，t 伞{sǎn}柄{bǐng}朝{cháo}下{xià}弯{wān}朝{cháo}右{yòu}'},
+{a:'g',b:'k',grp:'near',tip:'g 像{xiàng}个{gè}9字{zì}加{jiā}尾{wěi}巴{ba}，k 竖{shù}着{zhe}踢{tī}出{chū}两{liǎng}条{tiáo}腿{tuǐ}'},
+{a:'an',b:'ang',grp:'nasal',tip:'前{qián}鼻{bí} an 舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}，后{hòu}鼻{bí} ang 嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}'},
+{a:'en',b:'eng',grp:'nasal',tip:'en 前{qián}鼻{bí}轻{qīng}轻{qīng}收{shōu}，eng 后{hòu}鼻{bí}喉{hóu}咙{lóng}响{xiǎng}'},
+{a:'in',b:'ing',grp:'nasal',tip:'in 前{qián}鼻{bí}轻{qīng}轻{qīng}收{shōu}，ing 后{hòu}鼻{bí}喉{hóu}咙{lóng}响{xiǎng}'},
+{a:'ui',b:'iu',grp:'final',tip:'u 在{zài}前{qián}是{shì} ui 围{wéi}巾{jīn}，i 在{zài}前{qián}是{shì} iu 皮{pí}球{qiú}'},
+{a:'ie',b:'ei',grp:'final',tip:'i 在{zài}前{qián}是{shì} ie 椰{yē}子{zi}树{shù}，e 在{zài}前{qián}是{shì} ei 砍{kǎn}树{shù}声{shēng}'},
+{a:'un',b:'ün',grp:'final',tip:'u 加{jiā} n 是{shì} un 蚊{wén}子{zi}，ü 加{jiā} n 是{shì} ün 白{bái}云{yún}'}
 ];
-var GRPNAME={mirror:'镜像反写组',near:'近音组',nasal:'前后鼻音组',final:'韵母易混组'};
+var GRPNAME={mirror:'镜{jìng}像{xiàng}反{fǎn}写{xiě}组{zǔ}',near:'近{jìn}音{yīn}组{zǔ}',nasal:'前{qián}后{hòu}鼻{bí}音{yīn}组{zǔ}',final:'韵{yùn}母{mǔ}易{yì}混{hùn}组{zǔ}'};
 var PMAP={};PAIRS.forEach(function(p,i){PMAP[p.a+'|'+p.b]=i;PMAP[p.b+'|'+p.a]=i;});
 
 /* ================= 数据：关卡 ================= */
 var LEVELS=[
-{n:1,em:'🌈',name:'单韵母乐园',sub:'a o e i u ü',pool:['a','o','e','i','u','ü'],pairs:[]},
-{n:2,em:'🚂',name:'声母 b p m f',sub:'b p m f + d 预埋',pool:['b','p','m','f','d'],pairs:['b|d','b|p']},
-{n:3,em:'🐯',name:'声母 d t n l',sub:'n / l 高压区',pool:['d','t','n','l'],pairs:['d|t','n|l'],hot:['n|l']},
-{n:4,em:'🎈',name:'声母 g k h j q x',sub:'q 混入 p / q',pool:['g','k','h','j','q','x'],pairs:['g|k','p|q','d|q']},
-{n:5,em:'🐝',name:'声母 z c s y w',sub:'平舌三兄弟',pool:['z','c','s','y','w'],pairs:['z|c','c|s']},
-{n:6,em:'🌊',name:'复韵母',sub:'ai ei ui ao ou iu ie',pool:['ai','ei','ui','ao','ou','iu','ie'],pairs:['ui|iu','ie|ei']},
-{n:7,em:'🏔️',name:'前后鼻音家族',sub:'an ang en eng in ing un ün',pool:['an','ang','en','eng','in','ing','un','ün'],pairs:['an|ang','en|eng','in|ing','un|ün']},
-{n:8,em:'⭐',name:'整体认读',sub:'zhi chi shi ri zi ci si',pool:['zhi','chi','shi','ri','zi','ci','si'],pairs:['zhi|chi','chi|shi','zi|ci','ci|si','shi|ri']},
-{n:9,em:'👑',name:'易混对大师 · 毕业关',sub:'全部 14 组易混对高压混战',boss:true,pairs:null}
+{n:1,em:'🌈',name:'单{dān}韵{yùn}母{mǔ}乐{lè}园{yuán}',sub:'a o e i u ü',pool:['a','o','e','i','u','ü'],pairs:[]},
+{n:2,em:'🚂',name:'声{shēng}母{mǔ} b p m f',sub:'b p m f + d 预{yù}埋{mái}',pool:['b','p','m','f','d'],pairs:['b|d','b|p']},
+{n:3,em:'🐯',name:'声{shēng}母{mǔ} d t n l',sub:'n / l 最{zuì}容{róng}易{yì}混{hùn}',pool:['d','t','n','l'],pairs:['d|t','n|l'],hot:['n|l']},
+{n:4,em:'🎈',name:'声{shēng}母{mǔ} g k h j q x',sub:'q 混{hùn}入{rù} p / q',pool:['g','k','h','j','q','x'],pairs:['g|k','p|q','d|q']},
+{n:5,em:'🐝',name:'声{shēng}母{mǔ} z c s y w',sub:'平{píng}舌{shé}三{sān}兄{xiōng}弟{dì}',pool:['z','c','s','y','w'],pairs:['z|c','c|s']},
+{n:6,em:'🌊',name:'复{fù}韵{yùn}母{mǔ}',sub:'ai ei ui ao ou iu ie',pool:['ai','ei','ui','ao','ou','iu','ie'],pairs:['ui|iu','ie|ei']},
+{n:7,em:'🏔️',name:'前{qián}后{hòu}鼻{bí}音{yīn}家{jiā}族{zú}',sub:'an ang en eng in ing un ün',pool:['an','ang','en','eng','in','ing','un','ün'],pairs:['an|ang','en|eng','in|ing','un|ün']},
+{n:8,em:'⭐',name:'整{zhěng}体{tǐ}认{rèn}读{dú}',sub:'zhi chi shi ri zi ci si',pool:['zhi','chi','shi','ri','zi','ci','si'],pairs:['zhi|chi','chi|shi','zi|ci','ci|si','shi|ri']},
+{n:9,em:'👑',name:'易{yì}混{hùn}对{duì}大{dà}师{shī}',sub:'全{quán}部{bù} 14 组{zǔ}易{yì}混{hùn}对{duì}高{gāo}压{yā}混{hùn}战{zhàn}',boss:true,pairs:null}
 ];
 var ALLPAIRS=PAIRS.map(function(p){return p.a+'|'+p.b;});
 LEVELS[8].pairs=ALLPAIRS;
 
-var KINDNAME={listen:'听音选字',look:'看字选音',ll:'听看一致',rule:'口诀判断'};
+/* ================= 数据：正反小侦探 =================
+   覆盖字母集（轴对称 o/x/m/w/i 等已跳过） */
+var DETSET=['b','d','p','q','t','f','j','l','r','s','z','e','c','g','y','u','n','h','a'];
+var DETNAME=T('正{zhèng}反{fǎn}小{xiǎo}侦{zhēn}探{tàn}');
+var HINT={
+listen:T('听{tīng}一{yì}听{tīng}，选{xuǎn}出{chū}你{nǐ}听{tīng}到{dào}的{de}拼{pīn}音{yīn}'),
+look:T('点{diǎn}小{xiǎo}喇{lǎ}叭{ba}听{tīng}一{yì}听{tīng}，哪{nǎ}个{gè}读{dú}音{yīn}和{hé}它{tā}一{yí}样{yàng}？'),
+ll:T('听{tīng}到{dào}的{de}和{hé}看{kàn}到{dào}的{de}一{yí}样{yàng}吗{ma}？'),
+rule:T('判{pàn}断{duàn}：这{zhè}句{jù}话{huà}说{shuō}得{de}对{duì}吗{ma}？'),
+djudge:T('小{xiǎo}侦{zhēn}探{tàn}看{kàn}一{yì}看{kàn}：这{zhè}个{gè}字{zì}母{mǔ}写{xiě}对{duì}了{le}吗{ma}？'),
+dfix:T('它{tā}写{xiě}反{fǎn}啦{la}！哪{nǎ}个{gè}才{cái}是{shì}写{xiě}对{duì}的{de}样{yàng}子{zi}？')
+};
+var KINDNAME={listen:'听{tīng}音{yīn}选{xuǎn}字{zì}',look:'看{kàn}字{zì}选{xuǎn}音{yīn}',ll:'听{tīng}看{kàn}一{yí}致{zhì}',rule:'口{kǒu}诀{jué}判{pàn}断{duàn}',djudge:'正{zhèng}反{fǎn}判{pàn}断{duàn}',dfix:'写{xiě}反{fǎn}修{xiū}复{fù}'};
+var CIRC=['①','②','③','④'];
 
 /* ================= 存储引擎 ================= */
 var KEY='pinyin_app_v1';
@@ -458,7 +519,7 @@ function markResult(k,ok){
 }
 function todayStr(d){d=d||new Date();var m=d.getMonth()+1,dd=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(dd<10?'0':'')+dd;}
 
-/* ================= 音效引擎（WebAudio 合成） ================= */
+/* ================= 声音第一层：AudioContext 触屏解锁 ================= */
 var AC=null;
 function ac(){
   if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
@@ -477,38 +538,59 @@ function tone(freq,delay,dur,type,vol){
     o.start(t0);o.stop(t0+dur+0.05);
   }catch(e){}
 }
-function sndOk(){tone(784,0,0.12);tone(1046,0.1,0.22);}          /* 叮咚 */
-function sndNo(){tone(196,0,0.16,'square',0.09);tone(147,0.14,0.24,'square',0.09);} /* 嘟嘟 */
+function sndOk(){tone(784,0,0.12);tone(1046,0.1,0.22);}
+function sndNo(){tone(196,0,0.16,'square',0.09);tone(147,0.14,0.24,'square',0.09);}
 function sndStar(){tone(659,0,0.1);tone(784,0.09,0.1);tone(1046,0.18,0.3);}
 
-/* ================= 读音引擎（Web Speech） ================= */
+/* ================= 声音第二层：中文语音优选（voiceschanged + utterance.lang 双保险） ================= */
 var zhVoice=null,noTTS=false;
+function pickZh(vs){
+  var zh=vs.filter(function(v){return v.lang&&v.lang.toLowerCase().indexOf('zh')===0;});
+  return zh.filter(function(v){return v.lang.replace('_','-').toLowerCase()==='zh-cn';})[0]||zh[0]||null;
+}
 function loadVoices(){
-  if(!('speechSynthesis' in window)){noTTS=true;return;}
+  if(!('speechSynthesis' in window)){noTTS=true;return false;}
   try{
     var vs=window.speechSynthesis.getVoices();
-    if(!vs||!vs.length){return;}
-    var zh=vs.filter(function(v){return v.lang&&v.lang.toLowerCase().indexOf('zh')===0;});
-    zhVoice=zh.filter(function(v){return v.lang.replace('_','-').toLowerCase()==='zh-cn';})[0]||zh[0]||null;
-    noTTS=false;
-  }catch(e){noTTS=true;}
+    if(!vs||!vs.length){return false;}
+    zhVoice=pickZh(vs);noTTS=false;
+    return !!zhVoice;
+  }catch(e){noTTS=true;return false;}
 }
 if('speechSynthesis' in window){
-  try{loadVoices();window.speechSynthesis.onvoiceschanged=loadVoices;
-    setTimeout(loadVoices,300);setTimeout(loadVoices,1200);}catch(e){}
+  try{
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged=function(){loadVoices();};
+    setTimeout(loadVoices,300);setTimeout(loadVoices,1200);setTimeout(loadVoices,3000);
+  }catch(e){}
 }else{noTTS=true;}
 function speak(txt){
-  if(S.mute)return;
-  if(noTTS||!('speechSynthesis' in window)){return;}
+  if(S.mute||noTTS||!('speechSynthesis' in window))return;
   try{
+    if(!zhVoice)loadVoices();               /* 双保险：说话前再补选一次 */
     window.speechSynthesis.cancel();
     var u=new SpeechSynthesisUtterance(txt);
-    u.lang='zh-CN';if(zhVoice)u.voice=zhVoice;
-    u.rate=0.8;u.pitch=1.15;u.volume=1;
+    u.lang='zh-CN';                          /* 双保险：语言码每次都带上 */
+    if(zhVoice)u.voice=zhVoice;
+    u.rate=0.75;u.pitch=1.15;u.volume=1;
     window.speechSynthesis.speak(u);
   }catch(e){}
 }
 function say(k){var L=LETTERS[k];if(L)speak(L.tts);}
+
+/* ================= 声音第三层：🔊 诊断按钮（降级不静默） ================= */
+function soundDiag(){
+  var c=ac();sndOk();
+  var parts=[];
+  parts.push('音效:'+(c?(c.state==='running'?'正常':'待激活'):'不支持'));
+  if(!('speechSynthesis' in window)||noTTS){parts.push('语音:不可用(已用文字提示兜底)');}
+  else{
+    var got=loadVoices();
+    parts.push('语音:'+(zhVoice?('正常·'+zhVoice.name):'暂无中文语音(已用文字提示兜底)'));
+    if(got)speak('声音测试，叮咚！');
+  }
+  toast('🔊 '+parts.join(' · '));
+}
 
 /* ================= 视图切换 ================= */
 function el(id){return document.getElementById(id);}
@@ -519,8 +601,8 @@ function show(id){
   CUR=id;window.scrollTo(0,0);
 }
 function toast(msg){
-  var t=el('toast');t.textContent=msg;t.classList.add('on');
-  clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('on');},2200);
+  var t=el('toast');t.innerHTML=msg;t.classList.add('on');
+  clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('on');},2600);
 }
 
 /* ================= 首页 / 关卡 ================= */
@@ -532,7 +614,7 @@ function levelUnlocked(n){
   return passed(n-1);
 }
 function renderHome(){
-  el('homestars').textContent='⭐ 星星：'+totalStars()+' 颗';
+  el('homestars').innerHTML='<ruby>星<rt>xīng</rt></ruby><ruby>星<rt>xīng</rt></ruby>：'+totalStars()+' <ruby>颗<rt>kē</rt></ruby>';
 }
 function renderLevels(){
   var g=el('lvgrid');g.innerHTML='';
@@ -543,14 +625,15 @@ function renderLevels(){
     card.id='lv-'+L.n;
     var stars='';for(var i=1;i<=3;i++)stars+=i<=st?'⭐':'☆';
     card.innerHTML='<div class="lvnum">'+(un?L.em:'🔒')+'</div>'
-      +'<div class="lvinfo"><div class="lvname">第'+L.n+'关 · '+L.name+(L.boss?' <span class="bosstag">毕业</span>':'')+'</div>'
-      +'<div class="lvsub">'+L.sub+'</div></div>'
+      +'<div class="lvinfo"><div class="lvname">'+T('第{dì}')+L.n+T('关{guān}')+' · '+T(L.name)+(L.boss?' <span class="bosstag">'+T('毕{bì}业{yè}')+'</span>':'')+'</div>'
+      +'<div class="lvsub">'+T(L.sub)+'</div></div>'
       +'<div class="lvstars">'+stars+'</div>';
     if(un)card.addEventListener('click',function(){startLevel(L.n);});
-    else card.addEventListener('click',function(){toast('先通过上一关才能解锁哦！');});
+    else card.addEventListener('click',function(){toast(T('先{xiān}通{tōng}过{guò}上{shàng}一{yí}关{guān}才{cái}能{néng}解{jiě}锁{suǒ}哦{ó}！'));});
     g.appendChild(card);
   });
 }
+
 /* ================= 出题引擎（自适应加权） ================= */
 var QZ={tk:0,fbt:null};
 function shuffle(arr){var a=arr.slice(),i,j,t;for(i=a.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -586,7 +669,7 @@ function partnerOf(letter){
 }
 function sameCatOthers(letter,n,exclude,scope){
   var cat=LETTERS[letter].cat,pool=[],i,k;
-  if(scope&&scope.length){ /* 干扰项先取当前关卡字母池（符合学习顺序） */
+  if(scope&&scope.length){
     for(i=0;i<scope.length;i++){k=scope[i];
       if(LETTERS[k]&&LETTERS[k].cat===cat&&exclude.indexOf(k)<0&&pool.indexOf(k)<0)pool.push(k);}
   }
@@ -599,19 +682,15 @@ function makeQ(level,key,type){
   var q={type:type,key:key},A,B,isPair=key.indexOf('|')>=0;
   if(isPair){var s=key.split('|');A=s[0];B=s[1];if(Math.random()<0.5){A=s[1];B=s[0];}}
   else{A=key.slice(2);B=partnerOf(A)||sameCatOthers(A,1,[A],level.pool)[0];}
-  q.A=A;q.B=B;
+  q.A=A;q.B=B;q.hint=HINT[type];
   if(type==='listen'){
     q.opts=shuffle([A,B].concat(sameCatOthers(A,2,[A,B],level.pool)));q.ans=q.opts.indexOf(A);
-    q.hint='听一听，选出你听到的拼音';
   }else if(type==='look'){
     q.opts=shuffle([A,B].concat(sameCatOthers(A,2,[A,B],level.pool)));q.ans=q.opts.indexOf(A);
-    q.hint='点小喇叭听一听，哪个读音和它一样？';
   }else if(type==='ll'){
     q.same=Math.random()<0.5;q.sound=q.same?A:B;q.ans=q.same?0:1;
-    q.hint='听到和看到的一样吗？';
   }else{
     q.true=Math.random()<0.5;q.stmt=q.true?LETTERS[A].kj:LETTERS[A].kjf;q.ans=q.true?0:1;
-    q.hint='判断：这句话说得对吗？';
   }
   return q;
 }
@@ -622,42 +701,92 @@ function buildQuestions(level){
   return qs;
 }
 
+/* ================= 正反小侦探引擎 ================= */
+function pickDet(used){
+  var items=[],i;
+  for(i=0;i<DETSET.length;i++){var k=DETSET[i];items.push({k:k,w:Math.max(1,getW('M:'+k))});}
+  var n=used.length,c=null;
+  for(var t=0;t<12;t++){c=wpick(items).k;if(!(n>=1&&used[n-1]===c))return c;}
+  return c;
+}
+function makeDfix(X){
+  /* 选项全部正常字形且互不相同（镜像字形会和正常字形撞形，孩子无法分辨）；
+     镜像只出现在题面大字上——孩子要把“写反的字”修复成正确写法 */
+  var cat=LETTERS[X].cat,P=partnerOf(X),opts=[X],excl=[X],i;
+  if(P){opts.push(P);excl.push(P);}
+  var detPool=[];
+  for(i=0;i<DETSET.length;i++){var dk=DETSET[i];
+    if(excl.indexOf(dk)<0&&LETTERS[dk].cat===cat)detPool.push(dk);}
+  detPool=shuffle(detPool);
+  while(opts.length<4&&detPool.length){var c=detPool.pop();if(excl.indexOf(c)<0){opts.push(c);excl.push(c);}}
+  for(var k in LETTERS){if(opts.length>=4)break;
+    if(LETTERS[k].cat===cat&&excl.indexOf(k)<0){opts.push(k);excl.push(k);}}
+  opts=shuffle(opts);
+  var ans=0;for(i=0;i<opts.length;i++){if(opts[i]===X){ans=i;break;}}
+  return {type:'dfix',key:'M:'+X,X:X,opts:opts,ans:ans,hint:HINT.dfix};
+}
+function buildDetQs(force){
+  var types=['djudge','djudge','dfix','djudge','dfix','djudge','djudge','dfix','djudge','dfix'];
+  if(!force)types=shuffle(types);
+  var qs=[],used=[],judjFlips=shuffle([true,true,true,false,false,false]),fi=0,i;
+  for(i=0;i<10;i++){
+    var X=pickDet(used);used.push(X);
+    if(types[i]==='djudge'){
+      var fl=judjFlips[fi++];if(force&&i===0)fl=true;   /* 验收截图：首题固定为写反的 b */
+      qs.push({type:'djudge',key:'M:'+X,X:X,flipped:fl,ans:fl?1:0,hint:HINT.djudge});
+    }else{
+      qs.push(makeDfix(X));
+    }
+  }
+  return qs;
+}
+function startDet(){
+  speak('正反小侦探，开始！');
+  newSession({name:DETNAME,det:true,qs:buildDetQs(false)});
+}
+
 /* ================= 答题流程 ================= */
 function newSession(cfg){
   if(QZ.fbt){clearTimeout(QZ.fbt);QZ.fbt=null;}
   QZ={tk:(QZ.tk||0)+1,fbt:null,cfg:cfg,i:0,score:0,miss:{},q:cfg.qs[0],armed:-1,done:false};
-  el('qtitle').textContent=cfg.name;
+  el('qtitle').innerHTML=cfg.name;
   show('v-quiz');
   renderQ();
 }
 function startLevel(n){
   var L=LEVELS[n-1];
   speak(n===9?'毕业大挑战，开始！':'第'+n+'关，开始！');
-  newSession({name:'第'+n+'关 · '+L.name,level:L,levelNo:n,qs:buildQuestions(L)});
+  newSession({name:T('第{dì}')+n+T('关{guān}')+' · '+T(L.name),level:L,levelNo:n,qs:buildQuestions(L)});
 }
 function mkOpt(){var b=document.createElement('button');b.className='opt';b.type='button';return b;}
+function tfOpt(icon,label,cls,idx){
+  var b=mkOpt();b.className='opt tf '+cls;
+  b.innerHTML='<div class="og">'+icon+'</div><div class="ob">'+label+'</div>';
+  b.addEventListener('click',function(){answer(idx);});
+  return b;
+}
 function renderQ(){
   var q=QZ.q,tk=QZ.tk;
-  el('qprog').textContent='第 '+(QZ.i+1)+'/10 题';
-  el('qkind').textContent=KINDNAME[q.type];
+  el('qprog').innerHTML=T('第{dì} ')+(QZ.i+1)+'/10 '+T('题{tí}');
+  el('qkind').innerHTML=T(KINDNAME[q.type]);
   el('pfill').style.width=(QZ.i*10)+'%';
-  el('qscore').textContent='得分 '+QZ.score;
-  el('qhint').textContent=q.hint;
-  el('qextra').textContent='';
-  el('subhint').textContent='';
+  el('qscore').innerHTML=T('得{dé}分{fēn} ')+QZ.score;
+  el('qhint').innerHTML=q.hint;
+  el('qextra').innerHTML='';
+  el('subhint').innerHTML='';
   QZ.armed=-1;
   var gb=el('glyphbox'),ob=el('optbox');
   gb.innerHTML='';ob.innerHTML='';
   if(q.type==='listen'){
     var wrapr=document.createElement('div');wrapr.style.position='relative';
     var rb=document.createElement('button');rb.className='bigsound';rb.type='button';
-    rb.innerHTML='🔊<span class="bslabel">点我再听一遍</span>';
+    rb.innerHTML='🔊<span class="bslabel">'+T('再{zài}听{tīng}一{yí}遍{biàn}')+'</span>';
     rb.addEventListener('click',function(){say(q.A);});
     wrapr.appendChild(rb);gb.appendChild(wrapr);
-    if(noTTS)el('qextra').textContent='语音不可用 · 提示：读音像「'+LETTERS[q.A].han+'」（'+LETTERS[q.A].word+' '+LETTERS[q.A].wp+'）';
+    if(noTTS)el('qextra').innerHTML=T('语{yǔ}音{yīn}不{bù}可{kě}用{yòng} · 提{tí}示{shì}：读{dú}音{yīn}像{xiàng}「'+LETTERS[q.A].han+'」')+'（'+LETTERS[q.A].em+' '+T(LETTERS[q.A].word)+'）';
     q.opts.forEach(function(k,idx){
       var b=mkOpt();
-      b.innerHTML='<div class="og">'+k+'</div><div class="ob">'+(idx+1)+'</div>';
+      b.innerHTML='<div class="og">'+k+'</div><div class="ob">'+CIRC[idx]+'</div>';
       b.addEventListener('click',function(){answer(idx);});
       ob.appendChild(b);
     });
@@ -667,41 +796,52 @@ function renderQ(){
     q.opts.forEach(function(k,idx){
       var b=mkOpt();b.className='opt wide';
       b.innerHTML=noTTS
-        ?'<span style="font-size:30px;font-weight:900">'+LETTERS[k].han+'</span><span class="ob">第'+(idx+1)+'个</span>'
-        :'<span style="font-size:34px">🔊</span><span class="ob">第'+(idx+1)+'个</span>';
+        ?'<span style="font-size:28px;font-weight:900">'+LETTERS[k].han+'</span><span class="ob">'+CIRC[idx]+'</span>'
+        :'<span style="font-size:34px">🔊</span><span class="ob">'+CIRC[idx]+'</span>';
       b.addEventListener('click',function(){armLook(idx,b);});
       ob.appendChild(b);
     });
-    el('subhint').textContent=noTTS?'语音不可用：看汉字提示，选出一样的那个':'先点喇叭听一听 ➜ 再点一次选定它';
+    el('subhint').innerHTML=noTTS
+      ?T('语{yǔ}音{yīn}不{bù}可{kě}用{yòng}：看{kàn}汉{hàn}字{zì}提{tí}示{shì}，选{xuǎn}出{chū}一{yí}样{yàng}的{de}那{nà}个{gè}')
+      :T('先{xiān}点{diǎn}喇{lǎ}叭{ba}听{tīng}一{yì}听{tīng} ➜ 再{zài}点{diǎn}一{yí}次{cì}选{xuǎn}定{dìng}');
   }else if(q.type==='ll'){
     var g2=document.createElement('div');g2.className='glyph';g2.textContent=q.A;gb.appendChild(g2);
     var rb2=document.createElement('button');rb2.className='replaybtn';rb2.textContent='🔊';rb2.type='button';
     rb2.addEventListener('click',function(){say(q.sound);});
     gb.appendChild(rb2);
-    if(noTTS)el('qextra').textContent='语音不可用 · 我读的是「'+LETTERS[q.sound].han+'」';
-    [['✅','一样'],['❌','不一样']].forEach(function(p,idx){
-      var b=mkOpt();b.className='opt tf '+(idx===0?'yes':'no');
-      b.innerHTML='<div class="og">'+p[0]+'</div><div class="ob">'+p[1]+'</div>';
-      b.addEventListener('click',function(){answer(idx);});
-      ob.appendChild(b);
-    });
+    if(noTTS)el('qextra').innerHTML=T('语{yǔ}音{yīn}不{bù}可{kě}用{yòng} · 我{wǒ}读{dú}的{de}是{shì}「'+LETTERS[q.sound].han+'」');
+    ob.appendChild(tfOpt('✅',T('一{yí}样{yàng}'),'yes',0));
+    ob.appendChild(tfOpt('❌',T('不{bù}一{yí}样{yàng}'),'no',1));
     setTimeout(function(){if(QZ.tk===tk&&QZ.q===q&&CUR==='v-quiz')say(q.sound);},400);
-  }else{
-    var rt=document.createElement('div');rt.className='ruletext';rt.textContent='「'+q.stmt+'」';gb.appendChild(rt);
-    [['👍','对'],['👎','错']].forEach(function(p,idx){
-      var b=mkOpt();b.className='opt tf '+(idx===0?'yes':'no');
-      b.innerHTML='<div class="og">'+p[0]+'</div><div class="ob">'+p[1]+'</div>';
+  }else if(q.type==='djudge'){
+    var gm=document.createElement('div');gm.className='glyph'+(q.flipped?' mirror':'');gm.textContent=q.X;gb.appendChild(gm);
+    ob.appendChild(tfOpt('✅',T('写{xiě}对{duì}了{le}'),'yes',0));
+    ob.appendChild(tfOpt('🔄',T('写{xiě}反{fǎn}了{le}'),'no',1));
+  }else if(q.type==='dfix'){
+    var bub=document.createElement('div');bub.className='qbubble';
+    bub.innerHTML='<span>🐣</span><span>'+T('我{wǒ}要{yào}写{xiě}「')+LETTERS[q.X].tts+'」</span><span class="bem">'+LETTERS[q.X].em+'</span>';
+    gb.appendChild(bub);
+    var gm2=document.createElement('div');gm2.className='glyph mirror';gm2.textContent=q.X;gb.appendChild(gm2);
+    q.opts.forEach(function(k,idx){
+      var b=mkOpt();
+      b.innerHTML='<span class="og small">'+k+'</span><span class="ob">'+CIRC[idx]+'</span>';
       b.addEventListener('click',function(){answer(idx);});
       ob.appendChild(b);
     });
+  }else{ /* rule */
+    var rt=document.createElement('div');rt.className='ruletext';rt.innerHTML='「'+T(q.stmt)+'」';gb.appendChild(rt);
+    ob.appendChild(tfOpt('👍',T('对{duì}'),'yes',0));
+    ob.appendChild(tfOpt('👎',T('错{cuò}'),'no',1));
   }
 }
 function armLook(idx,btn){
   if(QZ.armed===idx){answer(idx);return;}
   QZ.armed=idx;
   var bs=el('optbox').children;
-  for(var i=0;i<bs.length;i++){bs[i].classList.remove('armed');var ob=bs[i].querySelector('.ob');if(ob)ob.textContent='第'+(i+1)+'个';}
-  btn.classList.add('armed');btn.querySelector('.ob').textContent='再点一次确认';
+  for(var i=0;i<bs.length;i++){bs[i].classList.remove('armed');
+    var obx=bs[i].querySelector('.ob');if(obx){obx.classList.remove('confirm');obx.textContent=CIRC[i];}}
+  btn.classList.add('armed');
+  var ob=btn.querySelector('.ob');ob.classList.add('confirm');ob.innerHTML=T('再{zài}点{diǎn}一{yí}次{cì}确{què}认{rèn}');
   say(QZ.q.opts[idx]);
 }
 function answer(idx){
@@ -709,23 +849,31 @@ function answer(idx){
   if(bs[q.ans])bs[q.ans].classList.add('correct');
   if(!ok&&bs[idx])bs[idx].classList.add('wrong');
   if(!ok&&q.type==='look'&&QZ.armed>=0&&bs[QZ.armed])bs[QZ.armed].classList.add('wrong');
-  if(ok){QZ.score++;markResult(q.key,true);sndOk();}
-  else{markResult(q.key,false);sndNo();QZ.miss[q.key]=(QZ.miss[q.key]||0)+1;}
+  markResult(q.key,ok);
+  /* 镜像错误联动：小侦探里写反判错 → 对应易混对也加权（闯关会多练它） */
+  if(!ok&&(q.type==='djudge'||q.type==='dfix')){
+    var pp=partnerOf(q.X);
+    if(pp&&PMAP[q.X+'|'+pp]!==undefined)markResult(q.X+'|'+pp,false);
+  }
+  if(ok){QZ.score++;sndOk();}
+  else{sndNo();QZ.miss[q.key]=(QZ.miss[q.key]||0)+1;}
   showFeedback(ok,q);
 }
-var PRAISE=['太棒了！','真厉害！','答对啦！','你真棒！'];
-var CHEER=['再想想哦～','差一点点！','没关系，继续加油'];
+var PRAISE=['太{tài}棒{bàng}了{le}！','真{zhēn}厉{lì}害{hài}！','答{dá}对{duì}啦{la}！','你{nǐ}真{zhēn}棒{bàng}！'];
+var CHEER=['再{zài}想{xiǎng}想{xiǎng}哦{ó}～','差{chà}一{yì}点{diǎn}点{diǎn}！','没{méi}关{guān}系{xì}，继{jì}续{xù}加{jiā}油{yóu}'];
 function showFeedback(ok,q){
   var fb=el('fb');
-  fb.className=ok?'on good':'on bad';
-  el('fbicon').textContent=ok?'🎉':(q.type==='ll'?'👀':'💪');
-  el('fbtext').textContent=ok?PRAISE[Math.floor(Math.random()*PRAISE.length)]:CHEER[Math.floor(Math.random()*CHEER.length)];
+  fb.className='on '+(ok?'good':'bad');
+  el('fbicon').textContent=ok?'🎉':(q.type==='ll'||q.type==='djudge'?'👀':'💪');
+  el('fbtext').innerHTML=T(ok?PRAISE[Math.floor(Math.random()*PRAISE.length)]:CHEER[Math.floor(Math.random()*CHEER.length)]);
   var g=el('fbglyph'),d=el('fbdesc');
   el('fbdetail').style.display='flex';
-  if(q.type==='listen'){g.textContent=q.A;d.textContent='正确答案：'+q.A+'（'+LETTERS[q.A].em+LETTERS[q.A].word+'）';}
-  else if(q.type==='look'){g.textContent=q.A;d.textContent='第'+(q.ans+1)+'个才是它的读音「'+LETTERS[q.A].han+'」';}
-  else if(q.type==='ll'){g.textContent=q.sound;d.textContent='听到 '+q.sound+'，看到 '+q.A+(q.same?'，一样～':'，不一样哦');}
-  else{g.textContent=q.A;d.textContent='正确口诀：'+LETTERS[q.A].kj;}
+  if(q.type==='listen'){g.textContent=q.A;d.innerHTML=T('正{zhèng}确{què}答{dá}案{àn}：')+q.A+'（'+LETTERS[q.A].em+' '+T(LETTERS[q.A].word)+'）';}
+  else if(q.type==='look'){g.textContent=q.A;d.innerHTML=T('第{dì} ')+(q.ans+1)+T(' 个{gè}才{cái}是{shì}它{tā}的{de}读{dú}音{yīn}「'+LETTERS[q.A].han+'」');}
+  else if(q.type==='ll'){g.textContent=q.sound;d.innerHTML=T('听{tīng}到{dào} ')+q.sound+T('，看{kàn}到{dào} ')+q.A+'，'+(q.same?T('一{yí}样{yàng}～'):T('不{bù}一{yí}样{yàng}哦{ó}'));}
+  else if(q.type==='djudge'){g.textContent=q.X;d.innerHTML=q.flipped?T('它{tā}是{shì}写{xiě}反{fǎn}的{de}「'+q.X+'」！看{kàn}，正{zhèng}确{què}的{de}长{zhǎng}这{zhè}样{yàng}'):T('它{tā}写{xiě}对{duì}了{le}，就{jiù}是{shì}「'+q.X+'」');}
+  else if(q.type==='dfix'){g.textContent=q.X;d.innerHTML=T('写{xiě}对{duì}的{de}「'+q.X+'」长{zhǎng}这{zhè}样{yàng}');}
+  else{g.textContent=q.A;d.innerHTML=T('正{zhèng}确{què}口{kǒu}诀{jué}：')+T(LETTERS[q.A].kj);}
   if(ok){
     var fs=document.createElement('div');fs.className='floatstar';fs.textContent='⭐';
     fs.style.left=(25+Math.random()*50)+'%';fs.style.top='42%';
@@ -750,13 +898,13 @@ function endQuiz(){
   if(lvNo){
     if(stars>(S.stars[lvNo]||0)){S.stars[lvNo]=stars;}
     save();
-    if(stars>=1&&lvNo===8)unlockMsg='👑 毕业关「易混对大师」已解锁！';
-    else if(stars>=1&&lvNo===9)unlockMsg='🎓 恭喜毕业！你就是易混对大师！';
-    else if(stars>=1)unlockMsg='🎉 解锁下一关！';
+    if(stars>=1&&lvNo===8)unlockMsg=T('👑 毕{bì}业{yè}关{guān}「易{yì}混{hùn}对{duì}大{dà}师{shī}」已{yǐ}解{jiě}锁{suǒ}！');
+    else if(stars>=1&&lvNo===9)unlockMsg=T('🎓 恭{gōng}喜{xǐ}毕{bì}业{yè}！你{nǐ}就{jiù}是{shì}易{yì}混{hùn}对{duì}大{dà}师{shī}！');
+    else if(stars>=1)unlockMsg=T('🎉 解{jiě}锁{suǒ}下{xià}一{yí}关{guān}！');
   }
   var worst=null,wv=0,k;
   for(k in QZ.miss){if(QZ.miss[k]>0){var w=QZ.miss[k]*getW(k);if(w>wv){wv=w;worst=k;}}}
-  var wlabel=worst?worst.replace('|','↔').replace('L:',''):'';
+  var wlabel=worst?worst.replace('|','↔').replace(/^M:/,'M:').replace('L:',''):'';
   S.hist.unshift({d:stamp(),lv:QZ.cfg.name,sc:sc,st:lvNo?stars:-1,wp:wlabel});
   if(S.hist.length>30)S.hist.length=30;
   save();
@@ -765,16 +913,17 @@ function endQuiz(){
 function renderResult(sc,stars,unlockMsg,wlabel,lvNo){
   var rs=el('rstars').children,i;
   for(i=0;i<3;i++)rs[i].className='rstar'+(i<stars?' on':'');
-  el('rtitle').textContent=stars===3?'完美通关！':stars===2?'太棒了！':stars===1?'通关啦！':'再挑战一次吧！';
-  el('rscore').textContent='答对 '+sc+' / 10 题'+(lvNo?'':' · 练习模式不计星星');
+  el('rtitle').innerHTML=stars===3?T('完{wán}美{měi}通{tōng}关{guān}！'):stars===2?T('太{tài}棒{bàng}了{le}！'):stars===1?T('通{tōng}关{guān}啦{la}！'):T('再{zài}挑{tiǎo}战{zhàn}一{yí}次{cì}吧{ba}！');
+  el('rscore').innerHTML=T('答{dá}对{duì} '+sc+' / 10 题{tí}')+(lvNo?'':(QZ.cfg&&QZ.cfg.det?T(' · 侦{zhēn}探{tàn}模{mó}式{shì}不{bú}计{jì}星{xīng}星{xīng}'):T(' · 练{liàn}习{xí}模{mó}式{shì}不{bú}计{jì}星{xīng}星{xīng}')));
   el('rworst').style.display=wlabel?'inline-block':'none';
-  el('rworst').textContent=wlabel?'最容易混：'+wlabel+' —— 下次会多练它啦':'';
-  el('runlock').textContent=unlockMsg;
+  el('rworst').innerHTML=wlabel?(T('最{zuì}容{róng}易{yì}混{hùn}：')+wlabel+T('，下{xià}次{cì}会{huì}多{duō}练{liàn}它{tā}啦{la}')):'';
+  el('runlock').innerHTML=unlockMsg;
   el('rnext').style.display=(lvNo&&stars>=1&&lvNo<9)?'flex':'none';
   if(lvNo&&stars>=1&&lvNo<9)el('rnext').onclick=function(){startLevel(lvNo+1);};
   el('ragain').onclick=function(){
     var c=QZ.cfg;
-    if(c.levelNo)startLevel(c.levelNo);
+    if(c.det)startDet();
+    else if(c.levelNo)startLevel(c.levelNo);
     else newSession({name:c.name,level:c.level,pkind:c.pkind,qs:buildQuestions(c.level)});
   };
   show('v-result');
@@ -784,10 +933,10 @@ function renderResult(sc,stars,unlockMsg,wlabel,lvNo){
 /* ================= 自由练习 ================= */
 function keysOf(cat){var r=[];for(var k in LETTERS)if(LETTERS[k].cat===cat)r.push(k);return r;}
 var PRACTICE={
-  sm:{name:'练习 · 声母',pairs:['b|d','p|q','b|p','d|q','n|l','f|h','d|t','g|k','z|c','c|s']},
-  ym:{name:'练习 · 韵母',pairs:['an|ang','en|eng','in|ing','un|ün','ui|iu','ie|ei']},
-  zt:{name:'练习 · 整体认读',pairs:['zhi|chi','chi|shi','zi|ci','ci|si','shi|ri']},
-  all:{name:'练习 · 全部大混战',pairs:null}
+  sm:{name:'练{liàn}习{xí} · 声{shēng}母{mǔ}',pairs:['b|d','p|q','b|p','d|q','n|l','f|h','d|t','g|k','z|c','c|s']},
+  ym:{name:'练{liàn}习{xí} · 韵{yùn}母{mǔ}',pairs:['an|ang','en|eng','in|ing','un|ün','ui|iu','ie|ei']},
+  zt:{name:'练{liàn}习{xí} · 整{zhěng}体{tǐ}认{rèn}读{dú}',pairs:['zhi|chi','chi|shi','zi|ci','ci|si','shi|ri']},
+  all:{name:'练{liàn}习{xí} · 全{quán}部{bù}大{dà}混{hùn}战{zhàn}',pairs:null}
 };
 PRACTICE.sm.pool=keysOf('sm');PRACTICE.ym.pool=keysOf('ym');
 PRACTICE.zt.pool=keysOf('zt');PRACTICE.all.pool=keysOf('sm').concat(keysOf('ym'),keysOf('zt'));
@@ -795,15 +944,18 @@ PRACTICE.all.pairs=ALLPAIRS;
 function startPractice(kind){
   var c=PRACTICE[kind];
   var L={name:c.name,pool:c.pool,pairs:c.pairs};
-  newSession({name:c.name,level:L,pkind:kind,qs:buildQuestions(L)});
+  newSession({name:T(c.name),level:L,pkind:kind,qs:buildQuestions(L)});
 }
 function renderPractice(){
   var g=el('pgroups2');g.innerHTML='';
-  [['sm','🔤 声母练习','23个声母 · 含全部易混声母'],['ym','🎵 韵母练习','单韵母 复韵母 鼻韵母'],['zt','⭐ 整体认读','zhi chi shi ri zi ci si'],['all','🔥 全部大混战','所有拼音随机出题']].forEach(function(it){
+  [['sm','🔤 声{shēng}母{mǔ}练{liàn}习{xí}','23个{gè}声{shēng}母{mǔ} · 含{hán}全{quán}部{bù}易{yì}混{hùn}声{shēng}母{mǔ}'],
+   ['ym','🎵 韵{yùn}母{mǔ}练{liàn}习{xí}','单{dān}韵{yùn}母{mǔ} 复{fù}韵{yùn}母{mǔ} 鼻{bí}韵{yùn}母{mǔ}'],
+   ['zt','⭐ 整{zhěng}体{tǐ}认{rèn}读{dú}','zhi chi shi ri zi ci si'],
+   ['all','🔥 全{quán}部{bù}大{dà}混{hùn}战{zhàn}','所{suǒ}有{yǒu}拼{pīn}音{yīn}随{suí}机{jī}出{chū}题{tí}']].forEach(function(it){
     var b=document.createElement('button');
     b.className='btn '+(it[0]==='all'?'purple':'blue');
-    b.style.flexDirection='column';b.style.gap='2px';b.style.minHeight='72px';
-    b.innerHTML='<span>'+it[1]+'</span><span style="font-size:14px;font-weight:700;opacity:.9">'+it[2]+'</span>';
+    b.style.flexDirection='column';b.style.gap='1px';b.style.minHeight='78px';
+    b.innerHTML='<span>'+T(it[1])+'</span><span style="font-size:15px;font-weight:700;opacity:.92;line-height:1.8">'+T(it[2])+'</span>';
     b.addEventListener('click',function(){startPractice(it[0]);});
     g.appendChild(b);
   });
@@ -818,12 +970,12 @@ function renderPairs(){
     var box=document.createElement('div');box.className='pgroup';
     var chips='';
     ps.forEach(function(p){chips+='<button class="chip" data-pi="'+PAIRS.indexOf(p)+'" type="button">'+p.a+' ↔ '+p.b+'</button>';});
-    box.innerHTML='<h3>'+GRPNAME[grp]+'（'+ps.length+' 组）</h3>'
-      +'<div class="gdesc">点一对看「辨析卡」学口诀，或整组开练</div>'
+    box.innerHTML='<h3>'+T(GRPNAME[grp])+'（'+ps.length+T(' 组{zǔ}')+'）</h3>'
+      +'<div class="gdesc">'+T('点{diǎn}一{yí}对{duì}看{kàn}「辨{biàn}析{xī}卡{kǎ}」学{xué}口{kǒu}诀{jué}，或{huò}整{zhěng}组{zǔ}开{kāi}练{liàn}')+'</div>'
       +'<div class="chips">'+chips+'</div>';
     var btn=document.createElement('button');
     btn.className='btn small purple';btn.type='button';
-    btn.textContent='⚔️ 开始专练这 '+ps.length+' 组';
+    btn.innerHTML='⚔️ '+T('开{kāi}始{shǐ}专{zhuān}练{liàn}这{zhè} ')+ps.length+T(' 组{zǔ}');
     btn.addEventListener('click',function(){startPairGroup(grp);});
     box.appendChild(btn);
     g.appendChild(box);
@@ -836,19 +988,19 @@ function renderPairs(){
 function startPairGroup(grp){
   var ps=PAIRS.filter(function(p){return p.grp===grp;}).map(function(p){return p.a+'|'+p.b;});
   var L={name:GRPNAME[grp]+'专练',pool:null,pairs:ps};
-  newSession({name:GRPNAME[grp]+'专练',level:L,qs:buildQuestions(L)});
+  newSession({name:T(GRPNAME[grp])+T('专{zhuān}练{liàn}'),level:L,qs:buildQuestions(L)});
 }
 function showPair(pi){
   var p=PAIRS[pi],la=LETTERS[p.a],lb=LETTERS[p.b];
-  el('mtitle').textContent=p.a+' 和 '+p.b+' 辨一辨';
+  el('mtitle').innerHTML=p.a+' '+T('和{hé}')+' '+p.b+' '+T('辨{biàn}一{yí}辨{biàn}');
   el('mduo').innerHTML=
-    '<div class="mhalf"><div class="mg">'+p.a+'</div><div class="mkj">'+la.kj+'</div>'
-    +'<button class="msay" data-k="'+p.a+'" type="button">🔊 读一读</button>'
-    +'<div style="font-size:14px;font-weight:800;color:#B99A6B">'+la.em+' '+la.word+'</div></div>'
-    +'<div class="mhalf"><div class="mg">'+p.b+'</div><div class="mkj">'+lb.kj+'</div>'
-    +'<button class="msay" data-k="'+p.b+'" type="button">🔊 读一读</button>'
-    +'<div style="font-size:14px;font-weight:800;color:#B99A6B">'+lb.em+' '+lb.word+'</div></div>';
-  el('mtip').textContent='💡 '+p.tip;
+    '<div class="mhalf"><div class="mg">'+p.a+'</div><div class="mkj">'+T(la.kj)+'</div>'
+    +'<button class="msay" data-k="'+p.a+'" type="button">🔊 '+T('读{dú}一{yì}读{dú}')+'</button>'
+    +'<div class="mword">'+la.em+' '+T(la.word)+'</div></div>'
+    +'<div class="mhalf"><div class="mg">'+p.b+'</div><div class="mkj">'+T(lb.kj)+'</div>'
+    +'<button class="msay" data-k="'+p.b+'" type="button">🔊 '+T('读{dú}一{yì}读{dú}')+'</button>'
+    +'<div class="mword">'+lb.em+' '+T(lb.word)+'</div></div>';
+  el('mtip').innerHTML='💡 '+T(p.tip);
   el('pairModal').classList.add('on');
   var ms=el('mduo').querySelectorAll('.msay');
   for(var i=0;i<ms.length;i++){(function(b){
@@ -873,24 +1025,24 @@ function renderFlash(){
 }
 function renderCard(){
   var inner=el('fcinner'),box=el('fcbox');
-  el('fchint').textContent=FC.flipped?'再点一下翻回正面':'点卡片翻面 👆';
+  el('fchint').innerHTML=FC.flipped?T('再{zài}点{diǎn}一{yí}下{xià}翻{fān}回{huí}正{zhèng}面{miàn}'):T('点{diǎn}卡{kǎ}片{piàn}翻{fān}面{miàn} 👆');
   if(FC.idx>=FC.deck.length){
     box.style.display='none';
-    inner.innerHTML='<div style="font-size:64px">🎉</div><div style="font-size:22px;font-weight:900;color:#2FA95C">这一盒翻完啦！</div><div class="fchint">换分类继续，或明天再来</div>';
+    inner.innerHTML='<div style="font-size:60px">🎉</div><div style="font-size:22px;font-weight:900;color:#2FA95C">'+T('这{zhè}一{yí}盒{hé}翻{fān}完{wán}啦{la}！')+'</div><div class="fchint">'+T('换{huàn}分{fēn}类{lèi}继{jì}续{xù}，或{huò}明{míng}天{tiān}再{zài}来{lái}')+'</div>';
     return;
   }
   box.style.display='block';
   var k=FC.deck[FC.idx],L=LETTERS[k],rec=cardRec(k);
-  box.textContent='盒 '+rec.box;
+  box.innerHTML=T('盒{hé}')+' '+rec.box;
   if(!FC.flipped){
     inner.innerHTML='<div class="fcglyph">'+k+'</div>';
   }else{
     inner.innerHTML='<div class="fcback">'
       +'<div class="fcem">'+L.em+'</div>'
       +'<div class="fcread">'+L.tts+'</div>'
-      +'<div class="fckj">'+L.kj+'</div>'
-      +'<div class="fcword">'+L.word+' <span class="fcwp">'+L.wp+'</span></div>'
-      +(noTTS?'<div class="fcwp">读音像「'+L.han+'」</div>':'')
+      +'<div class="fckj">'+T(L.kj)+'</div>'
+      +'<div class="fcword">'+T(L.word)+' <span class="fcwp">'+L.wp+'</span></div>'
+      +(noTTS?'<div class="fcwp">'+T('读{dú}音{yīn}像{xiàng}「'+L.han+'」')+'</div>':'')
       +'</div>';
     say(k);
   }
@@ -899,9 +1051,9 @@ function updateDeckInfo(){
   var dueN=0;
   FC.deck.forEach(function(k){if(dueToday(cardRec(k)))dueN++;});
   if(FC.idx>=FC.deck.length){
-    el('deckinfo').textContent=dueN>0?'本轮翻完！还有 '+dueN+' 张待复习':'✅ 今天的复习完成啦！明天再来';
+    el('deckinfo').innerHTML=dueN>0?T('本{běn}轮{lún}翻{fān}完{wán}！还{hái}有{yǒu} '+dueN+' 张{zhāng}待{dài}复{fù}习{xí}'):T('✅ 今{jīn}天{tiān}的{de}复{fù}习{xí}完{wán}成{chéng}啦{la}！明{míng}天{tiān}再{zài}来{lái}');
   }else{
-    el('deckinfo').textContent=(dueN>0?'📥 今天待复习 '+dueN+' 张 · ':'自由翻看 · ')+'卡片 '+(FC.idx+1)+'/'+FC.deck.length;
+    el('deckinfo').innerHTML=(dueN>0?T('今{jīn}天{tiān}待{dài}复{fù}习{xí} '+dueN+' 张{zhāng} · '):T('自{zì}由{yóu}翻{fān}看{kàn} · '))+T('卡{kǎ}片{piàn} '+(FC.idx+1)+'/'+FC.deck.length);
   }
 }
 function rate(r){
@@ -917,10 +1069,10 @@ function rate(r){
   renderCard();updateDeckInfo();
 }
 
-/* ================= 历史 ================= */
+/* ================= 历史（家长向，行内不注音） ================= */
 function renderHistory(){
   var h=el('histlist');h.innerHTML='';
-  if(!S.hist.length){h.innerHTML='<div class="hempty">还没有记录，快去闯关吧！</div>';return;}
+  if(!S.hist.length){h.innerHTML='<div class="hempty">'+T('还{hái}没{méi}有{yǒu}记{jì}录{lù}，快{kuài}去{qù}闯{chuǎng}关{guān}吧{ba}！')+'</div>';return;}
   S.hist.forEach(function(r){
     var d=document.createElement('div');d.className='hitem';
     var st='';if(r.st>=0){for(var i=0;i<r.st;i++)st+='⭐';}
@@ -931,6 +1083,27 @@ function renderHistory(){
   });
 }
 
+/* ================= 解锁层（声音第一层入口） ================= */
+function unlockAudio(){
+  ac();                                   /* ① AudioContext 在手势内创建/恢复 */
+  if('speechSynthesis' in window){
+    try{
+      loadVoices();
+      var u=new SpeechSynthesisUtterance('叮咚！声音开始啦！');
+      u.lang='zh-CN';if(zhVoice)u.voice=zhVoice;u.rate=0.9;u.pitch=1.15;
+      window.speechSynthesis.speak(u);    /* ② 手势内 speak → iOS 解锁 TTS */
+    }catch(e){}
+  }
+  sndOk();                                /* ③ 手势内提示音，确认音效通 */
+  var un=el('unlock');un.style.transition='opacity .25s';un.style.opacity='0';
+  setTimeout(function(){un.classList.remove('on');un.style.opacity='';},250);
+  if(!('speechSynthesis' in window)||noTTS){
+    setTimeout(function(){toast('🔊 语音:不可用(已用文字提示兜底) · 音效:正常');},600);
+  }else if(!zhVoice){
+    setTimeout(function(){toast('🔊 语音:等待系统语音（首次可能需几秒，可点右上 🔊 再测）');},600);
+  }
+}
+
 /* ================= 事件绑定 ================= */
 function bindAll(){
   var i;
@@ -939,6 +1112,7 @@ function bindAll(){
     b.addEventListener('click',function(){
       var t=b.getAttribute('data-go');
       if(t==='levels'){renderLevels();show('v-levels');}
+      else if(t==='detect'){startDet();}
       else if(t==='flash'){renderFlash();show('v-flash');}
       else if(t==='pairs'){renderPairs();show('v-pairs');}
       else if(t==='practice'){renderPractice();show('v-practice');}
@@ -968,7 +1142,7 @@ function bindAll(){
     b.addEventListener('click',function(){rate(+b.getAttribute('data-rate'));});
   })(rates[i]);}
   el('flashcard').addEventListener('click',function(){
-    if(FC.idx>=FC.deck.length){toast('换分类继续，或明天再来复习吧！');return;}
+    if(FC.idx>=FC.deck.length){toast(T('换{huàn}分{fēn}类{lèi}继{jì}续{xù}，或{huò}明{míng}天{tiān}再{zài}来{lái}'));return;}
     FC.flipped=!FC.flipped;renderCard();
   });
   el('fbskip').addEventListener('click',function(){
@@ -981,10 +1155,16 @@ function bindAll(){
   el('hclear').addEventListener('click',function(){
     if(confirm('只清空历史成绩，保留闯关进度和星星，确定吗？')){S.hist=[];save();renderHistory();}
   });
+  el('diagbtn').addEventListener('click',soundDiag);
+  el('ulgo').addEventListener('click',unlockAudio);
+  /* 兜底：任意首触也尝试解锁音效（部分安卓浏览器） */
+  document.addEventListener('touchstart',function once(){ac();document.removeEventListener('touchstart',once);},{passive:true});
 }
 
 /* ================= 动态探针 =================
-   ?probe=1 自动模拟点击：进第1关 → 点击正确选项 → 验证反馈层弹出、得分 0→1、权重写入 */
+   ?probe=1   普通探针：进第1关 → 答对1题 → 验证反馈层/得分/权重
+   ?probe=full 全流程探针：第1关10题全对 → 自动打到结算页
+   ?probe=det 小侦探探针：进入小侦探 → 答对首题 → 验证 M: 权重写入 */
 function probeRun(){
   var banner=el('probe');
   banner.style.display='block';
@@ -996,7 +1176,8 @@ function probeRun(){
       setTimeout(function(){
         var q=QZ.q,opts=el('optbox').querySelectorAll('.opt');
         banner.textContent='PROBE: 点击正确选项#'+(q.ans+1)+'（题型 '+q.type+'）';
-        opts[q.ans].click();
+        if(q.type==='look'){opts[q.ans].click();setTimeout(function(){el('optbox').querySelectorAll('.opt')[q.ans].click();},350);}
+        else opts[q.ans].click();
         var fbOn=el('fb').classList.contains('on');
         setTimeout(function(){
           banner.textContent='PROBE-OK JS存活 ✓ 反馈层即时弹出='+fbOn
@@ -1006,27 +1187,88 @@ function probeRun(){
     },400);
   }catch(e){banner.textContent='PROBE-FAIL: '+(e&&e.message);}
 }
-
-/* ================= 启动 ================= */
-function init(){
-  loadS();
-  bindAll();
-  renderHome();
-  var s=location.search;
-  if(s.indexOf('probe')>=0&&s.indexOf('flash')>=0){setTimeout(probeFlash,500);}
-  else if(s.indexOf('probe')>=0){setTimeout(probeRun,500);}
-  else{
-    var mo=s.match(/open=(\w+)/);
-    if(mo){setTimeout(function(){openView(mo[1]);},400);}
+function probeFull(){
+  var banner=el('probe'),steps=0;
+  banner.style.display='block';banner.textContent='PROBE-FULL: 启动…';
+  try{
+    renderLevels();show('v-levels');
+    setTimeout(function(){el('lv-1').click();setTimeout(tick,600);},300);
+  }catch(e){banner.textContent='PROBE-FAIL: '+(e&&e.message);return;}
+  function tick(){
+    if(steps++>40){banner.textContent='PROBE-FAIL: 步数超限 CUR='+CUR;return;}
+    if(CUR==='v-result'){
+      banner.textContent='PROBE-FULL-OK ✓ 10题全对通关 得分='+QZ.score+'/10 权重对='+Object.keys(S.weights).length;
+      setTimeout(function(){banner.style.display='none';},4000);
+      return;
+    }
+    if(el('fb').classList.contains('on')){setTimeout(tick,300);return;}
+    if(CUR!=='v-quiz'){setTimeout(tick,300);return;}
+    var q=QZ.q,opts=el('optbox').querySelectorAll('.opt');
+    banner.textContent='PROBE-FULL: 第'+(QZ.i+1)+'题 '+q.type;
+    if(q.type==='look'){
+      opts[q.ans].click();
+      setTimeout(function(){var os=el('optbox').querySelectorAll('.opt');os[q.ans].click();setTimeout(tick,700);},350);
+    }else{
+      opts[q.ans].click();setTimeout(tick,700);
+    }
   }
 }
-/* 视觉验收辅助：?open=levels/pairs/practice/history/result 直接渲染对应界面 */
+function probeDet(){
+  var banner=el('probe');
+  banner.style.display='block';banner.textContent='PROBE-DET: 启动…';
+  try{
+    setTimeout(function(){
+      startDet();
+      setTimeout(function(){
+        var q=QZ.q,opts=el('optbox').querySelectorAll('.opt');
+        banner.textContent='PROBE-DET: 首题 '+q.type+' 字母 '+q.X+' flipped='+q.flipped;
+        opts[q.ans].click();
+        var mkey='M:'+q.X;
+        setTimeout(function(){
+          var rec=S.weights[mkey];
+          banner.textContent='PROBE-DET-OK ✓ 镜像权重['+mkey+']='+(rec?rec.w:'MISS')
+            +' 得分='+QZ.score+' 反馈层='+el('fb').classList.contains('on');
+        },1200);
+      },700);
+    },300);
+  }catch(e){banner.textContent='PROBE-DET-FAIL: '+(e&&e.message);}
+}
+
+/* ================= 启动 ================= */
+/* 视觉验收辅助：?open=levels/pairs/practice/history/result/quiz/detect 直接渲染对应界面 */
 function openView(v){
   if(v==='levels'){renderLevels();show('v-levels');}
   else if(v==='pairs'){renderPairs();show('v-pairs');}
   else if(v==='practice'){renderPractice();show('v-practice');}
   else if(v==='history'){renderHistory();show('v-history');}
-  else if(v==='result'){renderResult(8,2,'🎉 解锁下一关！','b↔d',2);}
+  else if(v==='result'){renderResult(8,2,T('🎉 解{jiě}锁{suǒ}下{xià}一{yí}关{guān}！'),'b↔d',2);}
+  else if(v==='quiz'){
+    var qs=buildQuestions(LEVELS[0]),tries=0;
+    while(qs[0].type!=='listen'&&tries++<60)qs=buildQuestions(LEVELS[0]);
+    newSession({name:T('第{dì}')+1+T('关{guān}')+' · '+T(LEVELS[0].name),level:LEVELS[0],levelNo:1,qs:qs});
+  }
+  else if(v==='detect'){newSession({name:DETNAME,det:true,qs:buildDetQs(true)});}
+  else if(v==='dfix'){var dq=makeDfix('b');newSession({name:DETNAME,det:true,qs:[dq].concat(buildDetQs(false).slice(1))});}
+}
+function init(){
+  loadS();
+  bindAll();
+  renderHome();
+  var s=location.search;
+  /* 验收自动化钩子：仅带 open=/probe 参数时暴露（正常使用不挂载） */
+  if(s.indexOf('open=')>=0||s.indexOf('probe')>=0){
+    window.__PJ={Q:function(){return QZ;},renderQ:renderQ,show:show,renderFlash:renderFlash,renderCard:renderCard,
+      renderLevels:renderLevels,renderPairs:renderPairs,showPair:showPair,FC:FC,S:S};
+  }
+  if(s.indexOf('probe')>=0&&s.indexOf('det')>=0){setTimeout(probeDet,500);}
+  else if(s.indexOf('probe')>=0&&s.indexOf('full')>=0){setTimeout(probeFull,500);}
+  else if(s.indexOf('probe')>=0){setTimeout(probeRun,500);}
+  else{
+    var mo=s.match(/open=(\w+)/);
+    if(mo){setTimeout(function(){openView(mo[1]);},400);
+      setTimeout(function(){if(el('unlock').classList.contains('on'))unlockAudio();},250);}
+    else{setTimeout(function(){try{loadVoices();}catch(e){}},800);}
+  }
 }
 /* 闪卡探针：进入闪卡 → 翻面 → 验证背面渲染 */
 function probeFlash(){
