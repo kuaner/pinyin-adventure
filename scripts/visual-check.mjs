@@ -65,7 +65,7 @@ const bolt = await page.evaluate(() => {
   return {
     ogFs: og ? getComputedStyle(og).fontSize : null,
     isTf,
-    hudN: document.querySelectorAll('.bolthud span').length,
+    hudN: document.querySelectorAll('.bolthud > span').length,
     rts: document.querySelectorAll('#v-bolt rt').length,
   }
 })

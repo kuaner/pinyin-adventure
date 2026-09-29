@@ -4,6 +4,7 @@
   import { say } from '../../lib/audio'
   import { PH } from '../../data'
   import { T } from '../../lib/ruby'
+  import Icon from '../Icon.svelte'
   import type { ListenQ as ListenQT } from '../../lib/types'
 
   let { q }: { q: ListenQT } = $props()
@@ -13,7 +14,7 @@
 
 <div class="glyphbox" id="glyphbox">
   <div style="position:relative">
-    <button class="bigsound" type="button" onclick={() => say(q.A)}>🔊<span class="bslabel">{@html T('再{zài}听{tīng}一{yí}遍{biàn}')}</span></button>
+    <button class="bigsound" type="button" onclick={() => say(q.A)}><Icon name="headphones" size={44} /><span class="bslabel">{@html T('再听一遍')}</span></button>
   </div>
 </div>
 <div class="qextra" id="qextra"></div>

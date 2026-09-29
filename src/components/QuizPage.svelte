@@ -4,6 +4,7 @@
   import { say, playAudio } from '../lib/audio'
   import { PH } from '../data'
   import { T } from '../lib/ruby'
+  import Icon from './Icon.svelte'
   import ListenQ from './quiz/ListenQ.svelte'
   import LookQ from './quiz/LookQ.svelte'
   import LlQ from './quiz/LlQ.svelte'
@@ -21,19 +22,19 @@
     if (cur.type === 'listen' || cur.type === 'll') {
       scheduleAutoSay(400, () => say(cur.type === 'listen' ? cur.A : cur.sound))
     } else if (cur.type === 'zi' || cur.type === 'zword') {
-      scheduleAutoSay(350, () => playAudio(cur.z.f, { hint: '🔊 字{zì}音{yīn}缺失：' + cur.z.f }))
+      scheduleAutoSay(350, () => playAudio(cur.z.f, { hint: '🔊 字音缺失：' + cur.z.f }))
     }
   })
 </script>
 
 <section id="v-quiz" class="view on">
   <div class="topbar">
-    <button class="backbtn" data-back="quit" onclick={quitQuiz}>✕</button>
+    <button class="backbtn" data-back="quit" onclick={quitQuiz}><Icon name="close" size={22} /></button>
     <h2 id="qtitle">{@html QZ.cfg?.name ?? ''}</h2>
-    <div class="scorechip" id="qscore">{@html T('得{dé}分{fēn} ')}{QZ.score}</div>
+    <div class="scorechip" id="qscore">{@html T('得分 ')}{QZ.score}</div>
   </div>
   <div class="progresswrap">
-    <div class="ptext"><span id="qprog">{@html T('第{dì} ')}{QZ.i + 1}/10 {@html T('题{tí}')}</span><span id="qkind">{@html T(kindName)}</span></div>
+    <div class="ptext"><span id="qprog">{@html T('第 ')}{QZ.i + 1}/10 {@html T('题')}</span><span id="qkind">{@html T(kindName)}</span></div>
     <div class="pbar"><div class="pfill" id="pfill" style="width:{QZ.i * 10}%"></div></div>
   </div>
   <div class="qcard">

@@ -101,7 +101,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
 export function say(k: string) {
   const L = LETTERS[k]
   if (!L) return
-  playAudio(letterAudio(k), { hint: T('语{yù}音{yīn}未{wèi}准{zhǔn}备{bèi}好{hǎo} · 读{dú}音{yīn}像{xiàng}「' + L.han + '」') })
+  playAudio(letterAudio(k), { hint: T('语音未准备好 · 读音像「' + L.han + '」') })
 }
 
 export function preloadAudios() {
@@ -119,7 +119,7 @@ export function preloadAudios() {
 
 /* ---------- 第三层：🔊 诊断按钮 = 音频自检（依次播 welcome/right 并显示结果） ---------- */
 export function soundDiag() {
-  toast('🔊 音{yīn}频{pín}自{zì}检{jiǎn}中{zhōng}…')
+  toast('🔊 音频自检中…')
   playAudio('welcome', {
     hint: '自检：welcome ✗ 缺失或无法播放（检查 audio/ 目录）',
     onerror() { toast('🔊 音频自检失败：welcome ✗') },

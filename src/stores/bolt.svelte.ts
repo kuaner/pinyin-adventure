@@ -111,10 +111,10 @@ export function endBolt() {
 export function boltTitle(): string {
   const acc = BT.n ? Math.round(BT.ok * 100 / BT.n) : 0
   return BT.n === 0
-    ? T('还{hái}没{méi}来{lái}得{dé}及{jí}答{dá}题{tí}～')
-    : acc >= 90 ? T('闪{shǎn}电{diàn}神{shén}速{sù}！')
-    : acc >= 75 ? T('又{yòu}快{kuài}又{yòu}准{zhǔn}！')
-    : T('完{wán}成{chéng}挑{tiáo}战{zhàn}！')
+    ? T('还没来得及答题～')
+    : acc >= 90 ? T('闪电神速！')
+    : acc >= 75 ? T('又快又准！')
+    : T('完成挑战！')
 }
 
 export function boltAcc(): number { return BT.n ? Math.round(BT.ok * 100 / BT.n) : 0 }

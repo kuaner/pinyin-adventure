@@ -58,7 +58,7 @@ export function startLevel(n: number) {
   const L = LEVELS[n - 1]
   playAudio(n === 9 ? 'levelup' : 'go')
   newSession({
-    name: T('第{dì}') + n + T('关{guān}') + ' · ' + T(L.name),
+    name: T('第') + n + T('关') + ' · ' + T(L.name),
     level: L,
     levelNo: n,
     qs: buildQuestions(L),
@@ -72,7 +72,7 @@ export function startDet() {
 
 export function startZi() {
   playAudio('go')
-  newSession({ name: '📖 ' + T('常{cháng}见{jiàn}字{zì}快{kuài}拼{pīn}'), zi: true, qs: ziQs() })
+  newSession({ name: '📖 ' + T('常见字快拼'), zi: true, qs: ziQs() })
 }
 
 export function startPractice(kind: string) {
@@ -83,7 +83,7 @@ export function startPractice(kind: string) {
 export function startPairGroup(grp: string) {
   const ps = PAIRS.filter((p) => p.grp === grp).map((p) => p.a + '|' + p.b)
   const L = { name: GRPNAME[grp] + '专练', pool: null as string[] | null, pairs: ps }
-  newSession({ name: T(GRPNAME[grp]) + T('专{zhuān}练{liàn}'), level: L, qs: buildQuestions(L) })
+  newSession({ name: T(GRPNAME[grp]) + T('专练'), level: L, qs: buildQuestions(L) })
 }
 
 /* ---------- 答题 ---------- */
@@ -127,37 +127,37 @@ function showFeedback(ok: boolean, q: any) {
   let glyph = ''
   if (q.type === 'listen') {
     glyph = q.A
-    desc = T('正{zhèng}确{què}答{dá}案{àn}：') + q.A + '（' + LETTERS[q.A].em + ' ' + T(LETTERS[q.A].word) + '）'
+    desc = T('正确答案：') + q.A + '（' + LETTERS[q.A].em + ' ' + T(LETTERS[q.A].word) + '）'
   } else if (q.type === 'look') {
     glyph = q.A
-    desc = T('第{dì}') + (q.ans + 1) + T(' 个{gè}才{cái}是{shì}它{tā}的{de}读{dú}音{yīn}「' + LETTERS[q.A].han + '」')
+    desc = T('第') + (q.ans + 1) + T(' 个才是它的读音「' + LETTERS[q.A].han + '」')
   } else if (q.type === 'll') {
     glyph = q.sound
-    desc = T('听{tīng}到{dào} ') + q.sound + T('，看{kàn}到{dào} ') + q.A + '，' + (q.same ? T('一{yí}样{yàng}～') : T('不{bù}一{yí}样{yàng}哦{ó}'))
+    desc = T('听到 ') + q.sound + T('，看到 ') + q.A + '，' + (q.same ? T('一样～') : T('不一样哦'))
   } else if (q.type === 'djudge') {
     glyph = q.X
     desc = (q.flipped
-      ? T('它{tā}是{shì}写{xiě}反{fǎn}的{de}「' + q.X + '」！看{kàn}，正{zhèng}确{què}的{de}长{zhǎng}这{zhè}样{yàng}')
-      : T('它{tā}写{xiě}对{duì}了{le}，就{jiù}是{shì}「' + q.X + '」'))
-      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的{de}') + ' ' + q.X) : '')
+      ? T('它是写反的「' + q.X + '」！看，正确的长这样')
+      : T('它写对了，就是「' + q.X + '」'))
+      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
   } else if (q.type === 'dfix') {
     glyph = q.X
-    desc = T('写{xiě}对{duì}的{de}「' + q.X + '」长{zhǎng}这{zhè}样{yàng}')
-      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的{de}') + ' ' + q.X) : '')
+    desc = T('写对的「' + q.X + '」长这样')
+      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
   } else if (q.type === 'zi') {
     glyph = q.z.h
-    desc = T('正{zhèng}确{què}拼{pīn}音{yīn}：') + '<b>' + q.z.p + '</b>'
+    desc = T('正确拼音：') + '<b>' + q.z.p + '</b>'
   } else if (q.type === 'zword') {
     glyph = q.z.w
-    desc = T('正{zhèng}确{què}拼{pīn}音{yīn}：') + '<b>' + q.z.p + '</b>'
+    desc = T('正确拼音：') + '<b>' + q.z.p + '</b>'
   } else {
     glyph = q.A
-    desc = T('正{zhèng}确{què}口{kǒu}诀{jué}：') + T(LETTERS[q.A].kj)
+    desc = T('正确口诀：') + T(LETTERS[q.A].kj)
   }
-  if (ok && (q.type === 'zi' || q.type === 'zword')) playAudio(q.z.f, { hint: '🔊 字{zì}音{yīn}缺失：' + q.z.f })
+  if (ok && (q.type === 'zi' || q.type === 'zword')) playAudio(q.z.f, { hint: '🔊 字音缺失：' + q.z.f })
   QZ.fb = {
     good: ok,
-    icon: ok ? '🎉' : (q.type === 'll' || q.type === 'djudge' ? '👀' : '💪'),
+    icon: ok ? 'celebrate' : (q.type === 'll' || q.type === 'djudge' ? 'detect' : 'cheer'),
     text: ok ? PRAISE[Math.floor(Math.random() * PRAISE.length)] : CHEER[Math.floor(Math.random() * CHEER.length)],
     glyph,
     desc,
@@ -200,9 +200,9 @@ function endQuiz() {
   if (lvNo) {
     if (stars > (S.stars[lvNo] || 0)) S.stars[lvNo] = stars
     save(S)
-    if (stars >= 1 && lvNo === 8) unlockMsg = T('👑 毕{bì}业{yè}关{guān}「易{yì}混{hùn}对{duì}大{dà}师{shī}」已{yǐ}解{jiě}锁{suǒ}！')
-    else if (stars >= 1 && lvNo === 9) unlockMsg = T('🎓 恭{gōng}喜{xǐ}毕{bì}业{yè}！你{nǐ}就{jiù}是{shì}易{yì}混{hùn}对{duì}大{dà}师{shī}！')
-    else if (stars >= 1) unlockMsg = T('🎉 解{jiě}锁{suǒ}下{xià}一{yí}关{guān}！')
+    if (stars >= 1 && lvNo === 8) unlockMsg = T('👑 毕业关「易混对大师」已解锁！')
+    else if (stars >= 1 && lvNo === 9) unlockMsg = T('🎓 恭喜毕业！你就是易混对大师！')
+    else if (stars >= 1) unlockMsg = T('解锁下一关！')
   }
   let worst: string | null = null
   let wv = 0

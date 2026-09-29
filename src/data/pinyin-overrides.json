@@ -1,0 +1,31 @@
+{
+  "_meta": {
+    "what": "pinyin-pro 多音字覆盖表（ruby.ts 与 scripts/check-pinyin.mjs 同源 import，单一数据源）",
+    "how": "node scripts/check-pinyin.mjs 对照 v1 DSL 人工核对注音跑差集，逐条人工裁决录入",
+    "notes": "接受 engine、判 v1 truth 为错的未入表：「一」变调 yì/yi（人教版标准变调，v1 有 yí 滥用）、语音 yǔ、挑战 tiǎo、袄 ǎo；拼音/音乐等词中 音 yīn 鹰 yīng 围 wéi 邮 yóu 耶 yē（gen-dict 曾把 ym/zt 条目 han+tts 坍缩成全局字音——那是音频数据不是文案注音）"
+  },
+  "words": {
+    "啦": ["la"],
+    "哦": ["ó"],
+    "喔": ["ō"],
+    "个": ["gè"],
+    "讷": ["né"],
+    "雌": ["cī"],
+    "说得": ["shuō", "de"],
+    "长得": ["zhǎng", "de"],
+    "来得及": ["lái", "dé", "jí"],
+    "肚子": ["dù", "zi"],
+    "蚊子": ["wén", "zi"],
+    "椰子": ["yē", "zi"],
+    "椅子": ["yǐ", "zi"],
+    "斧头": ["fǔ", "tou"],
+    "椰子树": ["yē", "zi", "shù"],
+    "切个": ["qiē", "gè"],
+    "关卡": ["guān", "kǎ"]
+  },
+  "inWordTone": {
+    "啦": "la",
+    "哦": "ó",
+    "喔": "ō"
+  }
+}

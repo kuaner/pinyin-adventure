@@ -4,92 +4,92 @@
    "a": "b",
    "b": "d",
    "grp": "mirror",
-   "tip": "圆{yuán}圈{quān}写{xiě}在{zài}右{yòu}边{biān}是{shì} b，写{xiě}在{zài}左{zuǒ}边{biān}是{shì} d —— 右{yòu} b 左{zuǒ} d"
+   "tip": "圆圈写在右边是 b，写在左边是 d —— 右 b 左 d"
   },
   {
    "a": "p",
    "b": "q",
    "grp": "mirror",
-   "tip": "圆{yuán}圈{quān}写{xiě}在{zài}右{yòu}边{biān}是{shì} p，写{xiě}在{zài}左{zuǒ}边{biān}是{shì} q —— 右{yòu} p 左{zuǒ} q"
+   "tip": "圆圈写在右边是 p，写在左边是 q —— 右 p 左 q"
   },
   {
    "a": "b",
    "b": "p",
    "grp": "mirror",
-   "tip": "肚{dù}子{zi}朝{cháo}上{shàng}抬{tái}是{shì} b，肚{dù}子{zi}朝{cháo}下{xià}垂{chuí}是{shì} p —— 上{shàng} b 下{xià} p"
+   "tip": "肚子朝上抬是 b，肚子朝下垂是 p —— 上 b 下 p"
   },
   {
    "a": "d",
    "b": "q",
    "grp": "mirror",
-   "tip": "肚{dù}子{zi}朝{cháo}上{shàng}抬{tái}是{shì} d，肚{dù}子{zi}朝{cháo}下{xià}垂{chuí}是{shì} q —— 上{shàng} d 下{xià} q"
+   "tip": "肚子朝上抬是 d，肚子朝下垂是 q —— 上 d 下 q"
   },
   {
    "a": "n",
    "b": "l",
    "grp": "near",
-   "tip": "一{yí}个{gè}门{mén}洞{dòng} n n n，一{yí}根{gēn}棍{gùn}子{zi} l l l"
+   "tip": "一个门洞 n n n，一根棍子 l l l"
   },
   {
    "a": "f",
    "b": "h",
    "grp": "near",
-   "tip": "拐{guǎi}杖{zhàng} f 弯{wān}朝{cháo}右{yòu}，椅{yǐ}子{zi} h 弯{wān}朝{cháo}左{zuǒ}"
+   "tip": "拐杖 f 弯朝右，椅子 h 弯朝左"
   },
   {
    "a": "d",
    "b": "t",
    "grp": "near",
-   "tip": "d 半{bàn}圆{yuán}在{zài}左{zuǒ}下{xià}，t 伞{sǎn}柄{bǐng}朝{cháo}下{xià}弯{wān}朝{cháo}右{yòu}"
+   "tip": "d 半圆在左下，t 伞柄朝下弯朝右"
   },
   {
    "a": "g",
    "b": "k",
    "grp": "near",
-   "tip": "g 像{xiàng}个{gè}9字{zì}加{jiā}尾{wěi}巴{ba}，k 竖{shù}着{zhe}踢{tī}出{chū}两{liǎng}条{tiáo}腿{tuǐ}"
+   "tip": "g 像个9字加尾巴，k 竖着踢出两条腿"
   },
   {
    "a": "an",
    "b": "ang",
    "grp": "nasal",
-   "tip": "前{qián}鼻{bí} an 舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}，后{hòu}鼻{bí} ang 嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}"
+   "tip": "前鼻 an 舌尖顶上牙，后鼻 ang 嘴巴张大响"
   },
   {
    "a": "en",
    "b": "eng",
    "grp": "nasal",
-   "tip": "en 前{qián}鼻{bí}轻{qīng}轻{qīng}收{shōu}，eng 后{hòu}鼻{bí}喉{hóu}咙{lóng}响{xiǎng}"
+   "tip": "en 前鼻轻轻收，eng 后鼻喉咙响"
   },
   {
    "a": "in",
    "b": "ing",
    "grp": "nasal",
-   "tip": "in 前{qián}鼻{bí}轻{qīng}轻{qīng}收{shōu}，ing 后{hòu}鼻{bí}喉{hóu}咙{lóng}响{xiǎng}"
+   "tip": "in 前鼻轻轻收，ing 后鼻喉咙响"
   },
   {
    "a": "ui",
    "b": "iu",
    "grp": "final",
-   "tip": "u 在{zài}前{qián}是{shì} ui 围{wéi}巾{jīn}，i 在{zài}前{qián}是{shì} iu 皮{pí}球{qiú}"
+   "tip": "u 在前是 ui 围巾，i 在前是 iu 皮球"
   },
   {
    "a": "ie",
    "b": "ei",
    "grp": "final",
-   "tip": "i 在{zài}前{qián}是{shì} ie 椰{yē}子{zi}树{shù}，e 在{zài}前{qián}是{shì} ei 砍{kǎn}树{shù}声{shēng}"
+   "tip": "i 在前是 ie 椰子树，e 在前是 ei 砍树声"
   },
   {
    "a": "un",
    "b": "ün",
    "grp": "final",
-   "tip": "u 加{jiā} n 是{shì} un 蚊{wén}子{zi}，ü 加{jiā} n 是{shì} ün 白{bái}云{yún}"
+   "tip": "u 加 n 是 un 蚊子，ü 加 n 是 ün 白云"
   }
  ],
  "groupNames": {
-  "mirror": "镜{jìng}像{xiàng}反{fǎn}写{xiě}组{zǔ}",
-  "near": "近{jìn}音{yīn}组{zǔ}",
-  "nasal": "前{qián}后{hòu}鼻{bí}音{yīn}组{zǔ}",
-  "final": "韵{yùn}母{mǔ}易{yì}混{hùn}组{zǔ}"
+  "mirror": "镜像反写组",
+  "near": "近音组",
+  "nasal": "前后鼻音组",
+  "final": "韵母易混组"
  },
  "groupOrder": [
   "mirror",

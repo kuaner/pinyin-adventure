@@ -3,6 +3,7 @@
   import { QZ, answer, armLook } from '../../stores/session.svelte'
   import { PH } from '../../data'
   import { T } from '../../lib/ruby'
+  import Icon from '../Icon.svelte'
   import AnchorBar from '../AnchorBar.svelte'
   import type { LookQ as LookQT } from '../../lib/types'
 
@@ -26,9 +27,9 @@
       class:wrong={reveal && reveal.wrong.includes(idx)}
       onclick={() => armLook(idx)}
     >
-      <span style="font-size:34px">🔊</span>
-      <span class="ob" class:confirm={armed === idx}>{armed === idx ? T('再{zài}点{diǎn}一{yí}次{cì}确{què}认{rèn}') : CIRC[idx]}</span>
+      <Icon name="headphones" size={34} />
+      <span class="ob" class:confirm={armed === idx}>{armed === idx ? T('再点一次确认') : CIRC[idx]}</span>
     </button>
   {/each}
 </div>
-<div class="subhint" id="subhint">{@html T('先{xiān}点{diǎn}喇{lǎ}叭{ba}听{tīng}一{yì}听{tīng} ➜ 再{zài}点{diǎn}一{yí}次{cì}选{xuǎn}定{dìng}')}</div>
+<div class="subhint" id="subhint">{@html T('先点喇叭听一听 ➜ 再点一次选定')}</div>

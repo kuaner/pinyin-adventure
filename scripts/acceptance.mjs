@@ -54,7 +54,7 @@ async function fresh() {
   await page.goto(BASE + '?open=detect')
   await page.waitForSelector('#v-quiz', { timeout: 5000 })
   await page.waitForTimeout(900)
-  const info = await page.evaluate(() => {
+  let info = await page.evaluate(() => {
     const q = window.__PJ.Q()
     return {
       type: q.q.type, X: q.q.X, flipped: q.q.flipped,
@@ -64,7 +64,21 @@ async function fresh() {
       tfOpts: document.querySelectorAll('#optbox .opt.tf').length,
     }
   })
-  ok('正反题首题=写反的核心字母(v1 行为:flipped 固定 true)', info.type === 'djudge' && info.flipped === true && 'bdpqtf'.includes(info.X), JSON.stringify(info))
+  /* 首题 X 按 70/30 先验随机（kuaner 第6步优化规格）——核心组断言允许重试 */
+  for (let retry = 0; retry < 5 && !(info.type === 'djudge' && info.flipped === true && 'bdpqtf'.includes(info.X)); retry++) {
+    await page.goto(BASE + '?open=detect')
+    await page.waitForTimeout(700)
+    info = await page.evaluate(() => {
+      const q = window.__PJ.Q().q
+      const g = document.querySelector('#v-quiz .glyph')
+      return {
+        type: q.type, X: q.X, flipped: q.flipped,
+        anchor: !!document.querySelector('.anchorbar'), anbtn: !!document.querySelector('.anchorbar .anbtn'),
+        mirror: getComputedStyle(g).transform.includes('-1'), tfOpts: document.querySelectorAll('#optbox .opt.tf').length,
+      }
+    })
+  }
+  ok('正反题首题=写反的核心字母(70/30 先验,5 次重试)', info.type === 'djudge' && info.flipped === true && 'bdpqtf'.includes(info.X), JSON.stringify(info))
   ok('锚点区+🔊按钮', info.anchor && info.anbtn)
   ok('镜像大字+✅/🔄两选项', info.mirror && info.tfOpts === 2)
   await page.screenshot({ path: SHOT_DIR + '3-detect.png' })

@@ -38,7 +38,7 @@ export function renderFlash() {
 
 export function flip() {
   if (FC.idx >= FC.deck.length) {
-    toast('换{huàn}分{fēn}类{lèi}继{jì}续{xù}，或{huò}明{míng}天{tiān}再{zài}来{lái}')
+    toast('换分类继续，或明天再来')
     return
   }
   FC.flipped = !FC.flipped
@@ -70,11 +70,11 @@ export function deckInfo(): string {
   FC.deck.forEach((k) => { if (dueToday(cardRec(k))) dueN++ })
   if (FC.idx >= FC.deck.length) {
     return dueN > 0
-      ? T('本{běn}轮{lún}翻{fān}完{wán}！还{hái}有{yǒu} ' + dueN + ' 张{zhāng}待{dài}复{fù}习{xí}')
-      : T('✅ 今{jīn}天{tiān}的{de}复{fù}习{xí}完{wán}成{chéng}啦{la}！明{míng}天{tiān}再{zài}来{lái}')
+      ? T('本轮翻完！还有 ' + dueN + ' 张待复习')
+      : T('✅ 今天的复习完成啦！明天再来')
   }
   return (dueN > 0
-    ? T('今{jīn}天{tiān}待{dài}复{fù}习{xí} ' + dueN + ' 张{zhāng} · ')
-    : T('自{zì}由{yóu}翻{fān}看{kàn} · '))
-    + T('卡{kǎ}片{piàn} ' + (FC.idx + 1) + '/' + FC.deck.length)
+    ? T('今天待复习 ' + dueN + ' 张 · ')
+    : T('自由翻看 · '))
+    + T('卡片 ' + (FC.idx + 1) + '/' + FC.deck.length)
 }

@@ -179,13 +179,13 @@ function openView(v: string) {
   else if (v === 'practice') show('practice')
   else if (v === 'history') show('history')
   else if (v === 'result') {
-    const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('🎉 解{jiě}锁{suǒ}下{xià}一{yí}关{guān}！'), wlabel: 'b↔d', lvNo: 2 }
+    const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('🎉 解锁下一关！'), wlabel: 'b↔d', lvNo: 2 }
     showResult(res)
   } else if (v === 'quiz') {
     let qs = buildQuestions(LEVELS[0])
     let tries = 0
     while ((qs[0] as any).type !== 'listen' && tries++ < 60) qs = buildQuestions(LEVELS[0])
-    newSession({ name: T('第{dì}') + 1 + T('关{guān}') + ' · ' + T(LEVELS[0].name), level: LEVELS[0], levelNo: 1, qs })
+    newSession({ name: T('第') + 1 + T('关') + ' · ' + T(LEVELS[0].name), level: LEVELS[0], levelNo: 1, qs })
   } else if (v === 'detect') {
     newSession({ name: T((PH as any).detName), det: true, qs: buildDetQs(true) })
   } else if (v === 'dfix') {
@@ -199,7 +199,7 @@ function openView(v: string) {
     const pool = shuffle(ZI)
     const qs: Question[] = [makeZiQ(ZWORDS[0], true)]
     for (let i = 0; i < 9; i++) qs.push(makeZiQ(pool[i], false))
-    newSession({ name: '📖 ' + T('常{cháng}见{jiàn}字{zì}快{kuài}拼{pīn}'), zi: true, qs })
+    newSession({ name: '📖 ' + T('常见字快拼'), zi: true, qs })
   }
 }
 

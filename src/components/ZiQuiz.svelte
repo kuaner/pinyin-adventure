@@ -3,6 +3,7 @@
   import { QZ, answer } from '../stores/session.svelte'
   import { playAudio } from '../lib/audio'
   import { PH } from '../data'
+  import Icon from './Icon.svelte'
   import type { ZiQ, ZwordQ } from '../lib/types'
 
   let { q }: { q: ZiQ | ZwordQ } = $props()
@@ -17,7 +18,7 @@
   {:else}
     <div class="glyph" style="font-size:clamp(96px,28vw,128px)">{(q as ZiQ).z.h}</div>
   {/if}
-  <button class="replaybtn" type="button" onclick={() => playAudio(q.z.f)}>🔊</button>
+  <button class="replaybtn" type="button" onclick={() => playAudio(q.z.f)}><Icon name="headphones" size={30} /></button>
 </div>
 <div class="qextra" id="qextra"></div>
 <div id="optbox">

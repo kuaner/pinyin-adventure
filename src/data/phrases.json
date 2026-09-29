@@ -1,40 +1,40 @@
 {
- "detName": "正{zhèng}反{fǎn}小{xiǎo}侦{zhēn}探{tàn}",
+ "detName": "正反小侦探",
  "hints": {
-  "listen": "<ruby>听<rt>tīng</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>听<rt>tīng</rt></ruby>，<ruby>选<rt>xuǎn</rt></ruby><ruby>出<rt>chū</rt></ruby><ruby>你<rt>nǐ</rt></ruby><ruby>听<rt>tīng</rt></ruby><ruby>到<rt>dào</rt></ruby><ruby>的<rt>de</rt></ruby><ruby>拼<rt>pīn</rt></ruby><ruby>音<rt>yīn</rt></ruby>",
-  "look": "<ruby>点<rt>diǎn</rt></ruby><ruby>小<rt>xiǎo</rt></ruby><ruby>喇<rt>lǎ</rt></ruby><ruby>叭<rt>ba</rt></ruby><ruby>听<rt>tīng</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>听<rt>tīng</rt></ruby>，<ruby>哪<rt>nǎ</rt></ruby><ruby>个<rt>gè</rt></ruby><ruby>读<rt>dú</rt></ruby><ruby>音<rt>yīn</rt></ruby><ruby>和<rt>hé</rt></ruby><ruby>它<rt>tā</rt></ruby><ruby>一<rt>yí</rt></ruby><ruby>样<rt>yàng</rt></ruby>？",
-  "ll": "<ruby>听<rt>tīng</rt></ruby><ruby>到<rt>dào</rt></ruby><ruby>的<rt>de</rt></ruby><ruby>和<rt>hé</rt></ruby><ruby>看<rt>kàn</rt></ruby><ruby>到<rt>dào</rt></ruby><ruby>的<rt>de</rt></ruby><ruby>一<rt>yí</rt></ruby><ruby>样<rt>yàng</rt></ruby><ruby>吗<rt>ma</rt></ruby>？",
-  "rule": "<ruby>判<rt>pàn</rt></ruby><ruby>断<rt>duàn</rt></ruby>：<ruby>这<rt>zhè</rt></ruby><ruby>句<rt>jù</rt></ruby><ruby>话<rt>huà</rt></ruby><ruby>说<rt>shuō</rt></ruby><ruby>得<rt>de</rt></ruby><ruby>对<rt>duì</rt></ruby><ruby>吗<rt>ma</rt></ruby>？",
-  "djudge": "<ruby>小<rt>xiǎo</rt></ruby><ruby>侦<rt>zhēn</rt></ruby><ruby>探<rt>tàn</rt></ruby><ruby>看<rt>kàn</rt></ruby><ruby>一<rt>yì</rt></ruby><ruby>看<rt>kàn</rt></ruby>：<ruby>这<rt>zhè</rt></ruby><ruby>个<rt>gè</rt></ruby><ruby>字<rt>zì</rt></ruby><ruby>母<rt>mǔ</rt></ruby><ruby>写<rt>xiě</rt></ruby><ruby>对<rt>duì</rt></ruby><ruby>了<rt>le</rt></ruby><ruby>吗<rt>ma</rt></ruby>？",
-  "dfix": "<ruby>它<rt>tā</rt></ruby><ruby>写<rt>xiě</rt></ruby><ruby>反<rt>fǎn</rt></ruby><ruby>啦<rt>la</rt></ruby>！<ruby>哪<rt>nǎ</rt></ruby><ruby>个<rt>gè</rt></ruby><ruby>才<rt>cái</rt></ruby><ruby>是<rt>shì</rt></ruby><ruby>写<rt>xiě</rt></ruby><ruby>对<rt>duì</rt></ruby><ruby>的<rt>de</rt></ruby><ruby>样<rt>yàng</rt></ruby><ruby>子<rt>zi</rt></ruby>？"
+  "listen": "听一听，选出你听到的拼音",
+  "look": "点小喇叭听一听，哪个读音和它一样？",
+  "ll": "听到的和看到的一样吗？",
+  "rule": "判断：这句话说得对吗？",
+  "djudge": "小侦探看一看：这个字母写对了吗？",
+  "dfix": "它写反啦！哪个才是写对的样子？"
  },
  "kindNames": {
-  "listen": "听{tīng}音{yīn}选{xuǎn}字{zì}",
-  "look": "看{kàn}字{zì}选{xuǎn}音{yīn}",
-  "ll": "听{tīng}看{kàn}一{yí}致{zhì}",
-  "rule": "口{kǒu}诀{jué}判{pàn}断{duàn}",
-  "djudge": "正{zhèng}反{fǎn}判{pàn}断{duàn}",
-  "dfix": "写{xiě}反{fǎn}修{xiū}复{fù}",
-  "zi": "看{kàn}字{zì}选{xuǎn}拼{pīn}音{yīn}",
-  "zword": "看{kàn}词{cí}选{xuǎn}拼{pīn}音{yīn}"
+  "listen": "听音选字",
+  "look": "看字选音",
+  "ll": "听看一致",
+  "rule": "口诀判断",
+  "djudge": "正反判断",
+  "dfix": "写反修复",
+  "zi": "看字选拼音",
+  "zword": "看词选拼音"
  },
  "praise": [
-  "太{tài}棒{bàng}了{le}！",
-  "真{zhēn}厉{lì}害{hài}！",
-  "答{dá}对{duì}啦{la}！",
-  "你{nǐ}真{zhēn}棒{bàng}！"
+  "太棒了！",
+  "真厉害！",
+  "答对啦！",
+  "你真棒！"
  ],
  "cheer": [
-  "再{zài}想{xiǎng}想{xiǎng}哦{ó}～",
-  "差{chà}一{yì}点{diǎn}点{diǎn}！",
-  "没{méi}关{guān}系{xì}，继{jì}续{xù}加{jiā}油{yóu}"
+  "再想想哦～",
+  "差一点点！",
+  "没关系，继续加油"
  ],
  "hintsV5": {
-  "zi": "看{kàn}字{zì}，选{xuǎn}出{chū}正{zhèng}确{què}的{de}拼{pīn}音{yīn}",
-  "zword": "看{kàn}词{cí}，选{xuǎn}出{chū}正{zhèng}确{què}的{de}拼{pīn}音{yīn}",
-  "bdjudge": "小{xiǎo}侦{zhēn}探{tàn}快{kuài}看{kàn}：这{zhè}个{gè}字{zì}母{mǔ}写{xiě}对{duì}了{le}吗{ma}？",
-  "blisten": "听{tīng}一{yì}听{tīng}，哪{nǎ}个{gè}是{shì}听{tīng}到{dào}的{de}拼{pīn}音{yīn}？",
-  "blook": "看{kàn}大{dà}字{zì}，选{xuǎn}出{chū}一{yí}样{yàng}的{de}拼{pīn}音{yīn}"
+  "zi": "看字，选出正确的拼音",
+  "zword": "看词，选出正确的拼音",
+  "bdjudge": "小侦探快看：这个字母写对了吗？",
+  "blisten": "听一听，哪个是听到的拼音？",
+  "blook": "看大字，选出一样的拼音"
  },
  "circ": [
   "①",
@@ -45,9 +45,9 @@
  "practice": [
   {
    "kind": "sm",
-   "name": "练{liàn}习{xí} · 声{shēng}母{mǔ}",
-   "btn": "🔤 声{shēng}母{mǔ}练{liàn}习{xí}",
-   "desc": "23个{gè}声{shēng}母{mǔ} · 含{hán}全{quán}部{bù}易{yì}混{hùn}声{shēng}母{mǔ}",
+   "name": "练习 · 声母",
+   "btn": "🔤 声母练习",
+   "desc": "23个声母 · 含全部易混声母",
    "cat": "sm",
    "pairs": [
     "b|d",
@@ -64,9 +64,9 @@
   },
   {
    "kind": "ym",
-   "name": "练{liàn}习{xí} · 韵{yùn}母{mǔ}",
-   "btn": "🎵 韵{yùn}母{mǔ}练{liàn}习{xí}",
-   "desc": "单{dān}韵{yùn}母{mǔ} 复{fù}韵{yùn}母{mǔ} 鼻{bí}韵{yùn}母{mǔ}",
+   "name": "练习 · 韵母",
+   "btn": "🎵 韵母练习",
+   "desc": "单韵母 复韵母 鼻韵母",
    "cat": "ym",
    "pairs": [
     "an|ang",
@@ -79,8 +79,8 @@
   },
   {
    "kind": "zt",
-   "name": "练{liàn}习{xí} · 整{zhěng}体{tǐ}认{rèn}读{dú}",
-   "btn": "⭐ 整{zhěng}体{tǐ}认{rèn}读{dú}",
+   "name": "练习 · 整体认读",
+   "btn": "⭐ 整体认读",
    "desc": "zhi chi shi ri zi ci si",
    "cat": "zt",
    "pairs": [
@@ -93,9 +93,9 @@
   },
   {
    "kind": "all",
-   "name": "练{liàn}习{xí} · 全{quán}部{bù}大{dà}混{hùn}战{zhàn}",
-   "btn": "🔥 全{quán}部{bù}大{dà}混{hùn}战{zhàn}",
-   "desc": "所{suǒ}有{yǒu}拼{pīn}音{yīn}随{suí}机{jī}出{chū}题{tí}",
+   "name": "练习 · 全部大混战",
+   "btn": "🔥 全部大混战",
+   "desc": "所有拼音随机出题",
    "cat": null,
    "pairs": null
   }

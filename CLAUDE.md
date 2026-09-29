@@ -36,7 +36,8 @@ src/
     flash.svelte.ts       # 闪卡三盒（到期优先排序/自评移动盒子）
   lib/
     audio.ts              # 声音三层：AudioContext 反馈音 / mp3 播放器 / 🔊自检
-    ruby.ts               # 注音 DSL：'听{tīng}' → <ruby>听<rt>tīng</rt></ruby>
+    ruby.ts               # v2.1 pinyin-pro 引擎：T('答对啦') 逐字自动注音（三层兜底+词组 nowrap）
+    icons.ts              # naive-icons 手绘 SVG 内联（MIT 48 枚，Icon.svelte 渲染）
     storage.ts            # localStorage pinyin_v2 读写
     quizEngine.ts         # 出题引擎（闯关混编/侦探/快拼干扰项/闪电抽样）
     probe.ts              # ?probe=/?open= 验收自动化钩子（正常使用零开销）
@@ -59,7 +60,7 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 
 ## 数据格式
 
-- **注音 DSL**：数据 JSON 里的文案统一带 `汉{pīn}` 标记，渲染时经 `T()`（`lib/ruby.ts`）转 ruby 标签；拉丁字母/emoji/标点原样通过。
+- **注音（v2.1 pinyin-pro 引擎）**：数据 JSON 存纯汉字文案，渲染时 `<Ruby text>` / `T()` 自动注音（`lib/ruby.ts`）；多音字兜底 = 全局覆盖表 `data/pinyin-overrides.json`（17 词条，与 `scripts/check-pinyin.mjs` 回归校验同源）+ 组件 `py` 参数逃生口；`data/pinyin-dict.json` words 键供词边界（nowrap 分组），不供读音。
 - **字母表**：`{cat: sm|ym|zt, tts: 呼读音, han: 直注汉字, kj/kjf: 正确/干扰口诀, word/wp/em: 例词}`。
 - **localStorage**：键 `pinyin_v2`，结构 `{weights, stars, cards, hist, mute, bolt}`；无历史迁移（v1 键 `pinyin_app_v1` 已废弃，kuaner 定：无兼容包袱）。
 - **权重键**：`b|d` 易混对 / `L:b` 单字母 / `M:b` 正反字母 / `Z:爸`、`W:山水` 常见字词。

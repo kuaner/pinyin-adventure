@@ -5,12 +5,14 @@
   import { startLevel } from '../stores/session.svelte'
   import { show, toast } from '../stores/ui.svelte'
   import { T } from '../lib/ruby'
+  import Ruby from './Ruby.svelte'
+  import Icon from './Icon.svelte'
 </script>
 
 <section id="v-levels" class="view on">
   <div class="topbar">
     <button class="backbtn" data-back="home" onclick={() => show('home')}>‹</button>
-    <h2><ruby>选<rt>xuǎn</rt></ruby><ruby>择<rt>zé</rt></ruby><ruby>关<rt>guān</rt></ruby><ruby>卡<rt>kǎ</rt></ruby></h2>
+    <h2><Ruby text="选择关卡" /></h2>
   </div>
   <div id="lvgrid">
     {#each LEVELS as L (L.n)}
@@ -19,14 +21,14 @@
       <button
         class={'lvlcard' + (un ? '' : ' locked') + (L.boss ? ' boss' : '')}
         id="lv-{L.n}"
-        onclick={() => un ? startLevel(L.n) : toast(T('先{xiān}通{tōng}过{guò}上{shàng}一{yí}关{guān}才{cái}能{néng}解{jiě}锁{suǒ}哦{ó}！'))}
+        onclick={() => un ? startLevel(L.n) : toast(T('先通过上一关才能解锁哦！'))}
       >
-        <div class="lvnum">{un ? L.em : '🔒'}</div>
+        <div class="lvnum">{#if un}{L.em}{:else}<Icon name="lock" size={30} />{/if}</div>
         <div class="lvinfo">
-          <div class="lvname">{@html T('第{dì}')}{L.n}{@html T('关{guān}')} · {@html T(L.name)}{L.boss ? ' <span class="bosstag">' + T('毕{bì}业{yè}') + '</span>' : ''}</div>
+          <div class="lvname">{@html T('第')}{L.n}{@html T('关')} · {@html T(L.name)}{L.boss ? ' <span class="bosstag">' + T('毕业') + '</span>' : ''}</div>
           <div class="lvsub">{@html T(L.sub)}</div>
         </div>
-        <div class="lvstars">{'⭐'.repeat(st)}{'☆'.repeat(3 - st)}</div>
+        <div class="lvstars">{#each Array(st) as _, i}<Icon name="star" size={19} />{/each}{#each Array(3 - st) as _, i}<span class="starempty">☆</span>{/each}</div>
       </button>
     {/each}
   </div>
