@@ -779,6 +779,9 @@ function buildQuestions(level){
 }
 
 /* ================= 正反小侦探引擎 ================= */
+
+function mkReplay(f){var b=document.createElement('button');b.className='replaybtn';b.innerHTML='🔊';b.title='再听一遍';b.addEventListener('click',function(){playAudio(f);});return b;}
+
 function pickDet(used){
   var items=[],i;
   for(i=0;i<DETSET.length;i++){var k=DETSET[i];var base=COREDET.indexOf(k)>=0?5:1;/*70/30先验，kuaner第6步优化*/items.push({k:k,w:Math.max(1,getW('M:'+k))*base});}
@@ -915,6 +918,7 @@ function renderQ(){
     });
   }else if(q.type==='zi'){
     var gz=document.createElement('div');gz.className='glyph';gz.textContent=q.z.h;gz.style.fontSize='clamp(96px,28vw,128px)';gb.appendChild(gz);
+    var rbz=mkReplay(q.z.f);gb.appendChild(rbz);setTimeout(function(){playAudio(q.z.f,{hint:'🔊 字{zì}音{yīn}缺失：'+q.z.f});},350);
     q.opts.forEach(function(py,idx){
       var b=mkOpt();b.className='opt wide';
       b.innerHTML='<span class="og" style="font-size:36px">'+py+'</span><span class="ob">'+CIRC[idx]+'</span>';
@@ -923,6 +927,7 @@ function renderQ(){
     });
   }else if(q.type==='zword'){
     var gw=document.createElement('div');gw.className='glyph';gw.textContent=q.z.w;gw.style.fontSize='clamp(64px,19vw,88px)';gw.style.minWidth='200px';gb.appendChild(gw);
+    var rbw=mkReplay(q.z.f);gb.appendChild(rbw);setTimeout(function(){playAudio(q.z.f,{hint:'🔊 词{cí}音{yīn}缺失：'+q.z.f});},350);
     q.opts.forEach(function(py,idx){
       var b=mkOpt();b.className='opt wide';
       b.innerHTML='<span class="og" style="font-size:30px">'+py+'</span><span class="ob">'+CIRC[idx]+'</span>';
