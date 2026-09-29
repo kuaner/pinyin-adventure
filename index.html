@@ -568,6 +568,8 @@ LEVELS[8].pairs=ALLPAIRS;
 /* ================= 数据：正反小侦探 =================
    覆盖字母集（轴对称 o/x/m/w/i 等已跳过） */
 var DETSET=['b','d','p','q','t','f','j','l','r','s','z','e','c','g','y','u','n','h','a'];
+/* 核心混淆组（70%权重反复考察）：镜像后构成/近似另一个真字母或实测高频反写 */
+var COREDET=['b','d','p','q','t','f'];
 var DETNAME=T('正{zhèng}反{fǎn}小{xiǎo}侦{zhēn}探{tàn}');
 var HINT={
 listen:T('听{tīng}一{yì}听{tīng}，选{xuǎn}出{chū}你{nǐ}听{tīng}到{dào}的{de}拼{pīn}音{yīn}'),
@@ -779,7 +781,7 @@ function buildQuestions(level){
 /* ================= 正反小侦探引擎 ================= */
 function pickDet(used){
   var items=[],i;
-  for(i=0;i<DETSET.length;i++){var k=DETSET[i];items.push({k:k,w:Math.max(1,getW('M:'+k))});}
+  for(i=0;i<DETSET.length;i++){var k=DETSET[i];var base=COREDET.indexOf(k)>=0?5:1;/*70/30先验，kuaner第6步优化*/items.push({k:k,w:Math.max(1,getW('M:'+k))*base});}
   var n=used.length,c=null;
   for(var t=0;t<12;t++){c=wpick(items).k;if(!(n>=1&&used[n-1]===c))return c;}
   return c;
