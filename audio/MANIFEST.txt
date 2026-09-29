@@ -63,3 +63,247 @@ mirror_right.mp3|对，这个字母是正着写的|2.240000
 mirror_wrong.mp3|呀，这个字母写反啦|1.760000
 go.mp3|准备，开始|1.600000
 next.mp3|下一题|1.120000
+
+# ---- v5c 新增（锚点题句24 + 常见字180 + 双字词30 + 整体认读6 + 短语2）----
+anchor_b.mp3|爸，bà 的 b|2.080000
+anchor_c.mp3|草，cǎo 的 c|2.080000
+anchor_ch.mp3|车，chē 的 ch|2.720000
+anchor_d.mp3|大，dà 的 d|2.720000
+anchor_e.mp3|鹅，é 的 e|2.720000
+anchor_f.mp3|飞，fēi 的 f|2.240000
+anchor_g.mp3|哥，gē 的 g|1.760000
+anchor_h.mp3|河，hé 的 h|4.480000
+anchor_j.mp3|家，jiā 的 j|2.080000
+anchor_k.mp3|口，kǒu 的 k|3.680000
+anchor_l.mp3|拉，lā 的 l|2.400000
+anchor_m.mp3|妈，mā 的 m|2.720000
+anchor_n.mp3|牛，niú 的 n|2.880000
+anchor_p.mp3|皮，pí 的 p|1.600000
+anchor_q.mp3|气，qì 的 q|2.560000
+anchor_r.mp3|日，rì 的 r|1.600000
+anchor_s.mp3|伞，sǎn 的 s|4.160000
+anchor_sh.mp3|水，shuǐ 的 sh|4.000000
+anchor_t.mp3|兔，tù 的 t|2.720000
+anchor_w.mp3|屋，wū 的 w|3.040000
+anchor_x.mp3|西，xī 的 x|1.760000
+anchor_y.mp3|衣，yī 的 y|2.720000
+anchor_z.mp3|字，zì 的 z|2.720000
+anchor_zh.mp3|蜘，zhī 的 zh|2.080000
+duila.mp3|写对啦|0.800000
+fanla.mp3|写反啦|0.960000
+word_bai_tian_9.mp3|白天|0.960000
+word_bai_yun_12.mp3|白云|0.960000
+word_chun_tian_7.mp3|春天|1.120000
+word_da_men_24.mp3|大门|0.640000
+word_da_xiao_5.mp3|大小|1.120000
+word_da_yu_13.mp3|大雨|0.960000
+word_feng_che_14.mp3|风车|1.120000
+word_gao_shan_10.mp3|高山|0.800000
+word_hong_hua_17.mp3|红花|1.120000
+word_hua_cao_16.mp3|花草|0.640000
+word_huang_gua_18.mp3|黄瓜|0.800000
+word_huo_che_22.mp3|火车|0.800000
+word_ma_che_21.mp3|马车|0.960000
+word_mao_jin_27.mp3|毛巾|1.120000
+word_niu_nai_20.mp3|牛奶|0.960000
+word_qi_che_23.mp3|汽车|0.960000
+word_qian_bi_26.mp3|铅笔|0.800000
+word_qing_cao_30.mp3|青草|1.280000
+word_qiu_tian_8.mp3|秋天|0.960000
+word_ri_yue_3.mp3|日月|1.280000
+word_shan_shui_1.mp3|山水|1.280000
+word_shang_xia_6.mp3|上下|1.120000
+word_shu_ben_25.mp3|书本|0.640000
+word_shu_mu_15.mp3|树木|0.960000
+word_shui_huo_4.mp3|水火|1.120000
+word_tai_yang_28.mp3|太阳|1.120000
+word_tian_di_2.mp3|天地|0.960000
+word_xi_gua_19.mp3|西瓜|0.960000
+word_xiao_niao_11.mp3|小鸟|0.960000
+word_xue_shan_29.mp3|雪山|1.120000
+ye.mp3|耶|0.960000
+yin.mp3|音|0.640000
+ying.mp3|鹰|0.960000
+yuan.mp3|圆|0.800000
+yue.mp3|月|0.640000
+yun.mp3|云|0.800000
+zi_ba_44.mp3|爸|0.640000
+zi_ba_8.mp3|八|0.640000
+zi_bai_109.mp3|白|0.960000
+zi_bao_159.mp3|饱|0.800000
+zi_bao_177.mp3|包|0.640000
+zi_bei_122.mp3|贝|0.960000
+zi_bei_78.mp3|北|0.960000
+zi_bi_178.mp3|笔|1.120000
+zi_bing_133.mp3|冰|0.960000
+zi_cao_40.mp3|草|1.120000
+zi_cha_66.mp3|茶|0.960000
+zi_che_67.mp3|车|0.960000
+zi_chi_124.mp3|尺|0.480000
+zi_chi_98.mp3|吃|0.960000
+zi_chong_34.mp3|虫|0.960000
+zi_chu_95.mp3|出|0.960000
+zi_chuan_68.mp3|船|0.960000
+zi_chuang_70.mp3|窗|0.800000
+zi_chun_71.mp3|春|0.960000
+zi_cuo_136.mp3|错|0.960000
+zi_da_17.mp3|大|0.960000
+zi_dao_123.mp3|刀|0.480000
+zi_deng_172.mp3|灯|0.800000
+zi_di_12.mp3|地|1.120000
+zi_di_48.mp3|弟|0.960000
+zi_di_90.mp3|低|0.800000
+zi_dian_38.mp3|电|0.960000
+zi_dong_74.mp3|冬|1.120000
+zi_dong_75.mp3|东|0.800000
+zi_du_101.mp3|读|0.640000
+zi_dui_135.mp3|对|0.640000
+zi_duo_137.mp3|多|0.960000
+zi_e_160.mp3|饿|0.800000
+zi_e_167.mp3|鹅|0.640000
+zi_er_2.mp3|二|0.800000
+zi_er_53.mp3|耳|0.640000
+zi_fan_65.mp3|饭|0.800000
+zi_fang_145.mp3|方|0.800000
+zi_fei_60.mp3|飞|0.960000
+zi_feng_37.mp3|风|0.800000
+zi_gao_89.mp3|高|0.640000
+zi_ge_174.mp3|歌|0.800000
+zi_ge_46.mp3|哥|0.960000
+zi_gong_164.mp3|公|0.960000
+zi_gou_112.mp3|狗|0.640000
+zi_gua_62.mp3|瓜|0.800000
+zi_guan_92.mp3|关|0.800000
+zi_guang_130.mp3|光|0.640000
+zi_guo_63.mp3|果|0.480000
+zi_hai_119.mp3|海|0.640000
+zi_he_117.mp3|河|0.800000
+zi_he_99.mp3|喝|0.960000
+zi_hei_110.mp3|黑|0.960000
+zi_hong_107.mp3|红|0.960000
+zi_hou_86.mp3|后|1.120000
+zi_hu_118.mp3|湖|0.480000
+zi_hua_102.mp3|画|1.280000
+zi_hua_39.mp3|花|0.800000
+zi_huang_108.mp3|黄|0.960000
+zi_hui_97.mp3|回|0.960000
+zi_huo_24.mp3|火|0.800000
+zi_ji_113.mp3|鸡|0.800000
+zi_jia_180.mp3|家|0.960000
+zi_jian_147.mp3|尖|0.800000
+zi_jie_47.mp3|姐|0.640000
+zi_jin_120.mp3|金|0.800000
+zi_jin_144.mp3|近|0.960000
+zi_jin_96.mp3|进|0.800000
+zi_jiu_9.mp3|九|0.960000
+zi_kai_91.mp3|开|0.480000
+zi_kou_52.mp3|口|0.960000
+zi_ku_105.mp3|哭|0.960000
+zi_kuai_138.mp3|快|0.960000
+zi_kuan_157.mp3|宽|0.960000
+zi_la_125.mp3|拉|0.960000
+zi_lai_93.mp3|来|0.800000
+zi_lao_161.mp3|老|0.960000
+zi_lei_134.mp3|雷|0.960000
+zi_leng_152.mp3|冷|0.800000
+zi_li_58.mp3|立|0.960000
+zi_li_87.mp3|里|0.800000
+zi_liang_131.mp3|亮|1.920000
+zi_liu_6.mp3|六|0.960000
+zi_lu_171.mp3|路|0.960000
+zi_ma_29.mp3|马|0.800000
+zi_ma_45.mp3|妈|0.960000
+zi_man_139.mp3|慢|0.640000
+zi_mao_111.mp3|猫|0.800000
+zi_mao_127.mp3|帽|0.960000
+zi_mei_142.mp3|美|0.960000
+zi_mei_49.mp3|妹|1.280000
+zi_men_69.mp3|门|0.800000
+zi_mi_61.mp3|米|0.960000
+zi_mu_165.mp3|母|0.960000
+zi_mu_42.mp3|木|0.800000
+zi_mu_54.mp3|目|0.960000
+zi_nai_51.mp3|奶|0.800000
+zi_nan_77.mp3|南|0.960000
+zi_ni_14.mp3|你|0.960000
+zi_niao_32.mp3|鸟|0.960000
+zi_niu_30.mp3|牛|0.960000
+zi_pi_154.mp3|皮|0.800000
+zi_qi_169.mp3|气|0.960000
+zi_qi_170.mp3|汽|0.960000
+zi_qi_7.mp3|七|0.800000
+zi_qian_156.mp3|浅|0.480000
+zi_qian_85.mp3|前|0.960000
+zi_qiao_173.mp3|桥|0.640000
+zi_qiu_175.mp3|球|0.640000
+zi_qiu_73.mp3|秋|0.800000
+zi_qu_94.mp3|去|0.800000
+zi_re_153.mp3|热|0.800000
+zi_ren_13.mp3|人|0.960000
+zi_ri_21.mp3|日|0.800000
+zi_ruan_150.mp3|软|0.640000
+zi_san_126.mp3|伞|0.800000
+zi_san_3.mp3|三|0.960000
+zi_shan_25.mp3|山|0.800000
+zi_shang_19.mp3|上|0.480000
+zi_shen_155.mp3|深|0.800000
+zi_sheng_163.mp3|生|0.800000
+zi_shi_10.mp3|十|0.800000
+zi_shi_162.mp3|师|0.960000
+zi_shi_26.mp3|石|0.640000
+zi_shou_55.mp3|手|0.640000
+zi_shu_41.mp3|树|0.800000
+zi_shui_23.mp3|水|0.800000
+zi_shuo_104.mp3|说|0.960000
+zi_si_4.mp3|四|0.800000
+zi_ta_16.mp3|他|0.800000
+zi_tao_166.mp3|桃|0.640000
+zi_tian_11.mp3|天|0.960000
+zi_tian_27.mp3|田|0.960000
+zi_ting_103.mp3|听|0.640000
+zi_tu_115.mp3|兔|1.120000
+zi_tu_28.mp3|土|0.800000
+zi_wai_88.mp3|外|0.800000
+zi_wan_148.mp3|弯|1.120000
+zi_wan_80.mp3|晚|0.800000
+zi_wo_15.mp3|我|0.960000
+zi_wu_158.mp3|屋|1.120000
+zi_wu_5.mp3|五|0.640000
+zi_wu_81.mp3|午|0.960000
+zi_xi_76.mp3|西|0.960000
+zi_xia_20.mp3|下|0.960000
+zi_xia_72.mp3|夏|0.800000
+zi_xiang_116.mp3|象|0.800000
+zi_xiao_106.mp3|笑|0.960000
+zi_xiao_18.mp3|小|0.960000
+zi_xie_100.mp3|写|0.960000
+zi_xie_128.mp3|鞋|1.120000
+zi_xin_140.mp3|新|0.800000
+zi_xing_129.mp3|星|0.960000
+zi_xue_132.mp3|雪|0.960000
+zi_ya_114.mp3|鸭|0.960000
+zi_yang_31.mp3|羊|0.960000
+zi_ye_168.mp3|叶|0.960000
+zi_ye_50.mp3|爷|0.800000
+zi_ye_82.mp3|夜|0.960000
+zi_yi_1.mp3|一|0.960000
+zi_yi_64.mp3|衣|0.800000
+zi_ying_151.mp3|硬|0.960000
+zi_you_84.mp3|右|0.800000
+zi_yu_121.mp3|玉|0.800000
+zi_yu_33.mp3|鱼|0.800000
+zi_yu_36.mp3|雨|1.120000
+zi_yuan_143.mp3|远|0.640000
+zi_yuan_146.mp3|圆|0.800000
+zi_yue_22.mp3|月|0.960000
+zi_yun_35.mp3|云|0.960000
+zi_zao_79.mp3|早|0.960000
+zi_zhi_149.mp3|直|0.960000
+zi_zhi_176.mp3|蜘|2.560000
+zi_zhi_179.mp3|纸|0.960000
+zi_zhu_43.mp3|竹|0.800000
+zi_zi_141.mp3|字|0.960000
+zi_zou_59.mp3|走|0.960000
+zi_zu_56.mp3|足|0.960000
+zi_zuo_57.mp3|坐|0.480000
+zi_zuo_83.mp3|左|0.800000
