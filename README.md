@@ -15,5 +15,6 @@
 
 ## 技术
 单文件 HTML、零依赖、零外链、全 localStorage 本地保存。语音为预生成音频（mimo-v2.5-tts）+ 设备 TTS 双通道。
+- 语音：mimo-v2.5-tts 预生成（audio/ 目录，63 条 = 拼音 51 + 反馈短语 12，音色 冰糖，清单见 audio/MANIFEST.txt；v.mp3=ü、vn.mp3=ün）
 
 由 [Duoduo](https://openduo.ai) 与 kuaner 共同维护。
