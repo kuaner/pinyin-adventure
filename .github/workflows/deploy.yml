@@ -40,9 +40,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+    # 不声明 environment: github-pages —— 本仓库该环境的保护规则只放行分支(main)，
+    # tag 部署会被拒（REST 无法配置 tag 策略）；deploy-pages 不要求该声明
     steps:
       - name: Deploy to Pages
         id: deploy
