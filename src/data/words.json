@@ -1,0 +1,152 @@
+[
+ {
+  "w": "山水",
+  "p": "shān shuǐ",
+  "f": "word_shan_shui_1"
+ },
+ {
+  "w": "天地",
+  "p": "tiān dì",
+  "f": "word_tian_di_2"
+ },
+ {
+  "w": "日月",
+  "p": "rì yuè",
+  "f": "word_ri_yue_3"
+ },
+ {
+  "w": "水火",
+  "p": "shuǐ huǒ",
+  "f": "word_shui_huo_4"
+ },
+ {
+  "w": "大小",
+  "p": "dà xiǎo",
+  "f": "word_da_xiao_5"
+ },
+ {
+  "w": "上下",
+  "p": "shàng xià",
+  "f": "word_shang_xia_6"
+ },
+ {
+  "w": "春天",
+  "p": "chūn tiān",
+  "f": "word_chun_tian_7"
+ },
+ {
+  "w": "秋天",
+  "p": "qiū tiān",
+  "f": "word_qiu_tian_8"
+ },
+ {
+  "w": "白天",
+  "p": "bái tiān",
+  "f": "word_bai_tian_9"
+ },
+ {
+  "w": "高山",
+  "p": "gāo shān",
+  "f": "word_gao_shan_10"
+ },
+ {
+  "w": "小鸟",
+  "p": "xiǎo niǎo",
+  "f": "word_xiao_niao_11"
+ },
+ {
+  "w": "白云",
+  "p": "bái yún",
+  "f": "word_bai_yun_12"
+ },
+ {
+  "w": "大雨",
+  "p": "dà yǔ",
+  "f": "word_da_yu_13"
+ },
+ {
+  "w": "风车",
+  "p": "fēng chē",
+  "f": "word_feng_che_14"
+ },
+ {
+  "w": "树木",
+  "p": "shù mù",
+  "f": "word_shu_mu_15"
+ },
+ {
+  "w": "花草",
+  "p": "huā cǎo",
+  "f": "word_hua_cao_16"
+ },
+ {
+  "w": "红花",
+  "p": "hóng huā",
+  "f": "word_hong_hua_17"
+ },
+ {
+  "w": "黄瓜",
+  "p": "huáng guā",
+  "f": "word_huang_gua_18"
+ },
+ {
+  "w": "西瓜",
+  "p": "xī guā",
+  "f": "word_xi_gua_19"
+ },
+ {
+  "w": "牛奶",
+  "p": "niú nǎi",
+  "f": "word_niu_nai_20"
+ },
+ {
+  "w": "马车",
+  "p": "mǎ chē",
+  "f": "word_ma_che_21"
+ },
+ {
+  "w": "火车",
+  "p": "huǒ chē",
+  "f": "word_huo_che_22"
+ },
+ {
+  "w": "汽车",
+  "p": "qì chē",
+  "f": "word_qi_che_23"
+ },
+ {
+  "w": "大门",
+  "p": "dà mén",
+  "f": "word_da_men_24"
+ },
+ {
+  "w": "书本",
+  "p": "shū běn",
+  "f": "word_shu_ben_25"
+ },
+ {
+  "w": "铅笔",
+  "p": "qiān bǐ",
+  "f": "word_qian_bi_26"
+ },
+ {
+  "w": "毛巾",
+  "p": "máo jīn",
+  "f": "word_mao_jin_27"
+ },
+ {
+  "w": "太阳",
+  "p": "tài yáng",
+  "f": "word_tai_yang_28"
+ },
+ {
+  "w": "雪山",
+  "p": "xuě shān",
+  "f": "word_xue_shan_29"
+ },
+ {
+  "w": "青草",
+  "p": "qīng cǎo",
+  "f": "word_qing_cao_30"
+ }
+]

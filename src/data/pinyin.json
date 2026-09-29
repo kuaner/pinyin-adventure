@@ -1,0 +1,900 @@
+{
+ "letters": {
+  "b": {
+   "cat": "sm",
+   "tts": "bō",
+   "han": "玻",
+   "kj": "右{yòu}下{xià}半{bàn}圆{yuán} b b b",
+   "kjf": "左{zuǒ}下{xià}半{bàn}圆{yuán} b b b",
+   "word": "菠{bō}萝{luó}",
+   "wp": "bō luó",
+   "em": "🍍"
+  },
+  "p": {
+   "cat": "sm",
+   "tts": "pō",
+   "han": "坡",
+   "kj": "右{yòu}上{shàng}半{bàn}圆{yuán} p p p",
+   "kjf": "左{zuǒ}上{shàng}半{bàn}圆{yuán} p p p",
+   "word": "苹{píng}果{guǒ}",
+   "wp": "píng guǒ",
+   "em": "🍎"
+  },
+  "m": {
+   "cat": "sm",
+   "tts": "mō",
+   "han": "摸",
+   "kj": "两{liǎng}个{gè}门{mén}洞{dòng} m m m",
+   "kjf": "一{yí}个{gè}门{mén}洞{dòng} m m m",
+   "word": "马{mǎ}",
+   "wp": "mǎ",
+   "em": "🐴"
+  },
+  "f": {
+   "cat": "sm",
+   "tts": "fó",
+   "han": "佛",
+   "kj": "一{yí}根{gēn}拐{guǎi}杖{zhàng} f f f",
+   "kjf": "一{yí}把{bǎ}椅{yǐ}子{zi} f f f",
+   "word": "斧{fǔ}头{tou}",
+   "wp": "fǔ tou",
+   "em": "🪓"
+  },
+  "d": {
+   "cat": "sm",
+   "tts": "dé",
+   "han": "得",
+   "kj": "左{zuǒ}下{xià}半{bàn}圆{yuán} d d d",
+   "kjf": "右{yòu}下{xià}半{bàn}圆{yuán} d d d",
+   "word": "大{dà}鼓{gǔ}",
+   "wp": "dà gǔ",
+   "em": "🥁"
+  },
+  "t": {
+   "cat": "sm",
+   "tts": "tè",
+   "han": "特",
+   "kj": "伞{sǎn}柄{bǐng}朝{cháo}下{xià} t t t",
+   "kjf": "一{yí}根{gēn}棍{gùn}子{zi} t t t",
+   "word": "兔{tù}子{zi}",
+   "wp": "tù zi",
+   "em": "🐰"
+  },
+  "n": {
+   "cat": "sm",
+   "tts": "né",
+   "han": "讷",
+   "kj": "一{yí}个{gè}门{mén}洞{dòng} n n n",
+   "kjf": "两{liǎng}个{gè}门{mén}洞{dòng} n n n",
+   "word": "牛{niú}",
+   "wp": "niú",
+   "em": "🐮"
+  },
+  "l": {
+   "cat": "sm",
+   "tts": "lè",
+   "han": "乐",
+   "kj": "一{yí}根{gēn}棍{gùn}子{zi} l l l",
+   "kjf": "一{yí}个{gè}门{mén}洞{dòng} l l l",
+   "word": "老{lǎo}虎{hǔ}",
+   "wp": "lǎo hǔ",
+   "em": "🐯"
+  },
+  "g": {
+   "cat": "sm",
+   "tts": "gē",
+   "han": "哥",
+   "kj": "像{xiàng}个{gè}9字{zì}加{jiā}弯{wān} g g g",
+   "kjf": "蝌{kē}蚪{dǒu}水{shuǐ}草{cǎo} g g g",
+   "word": "鸽{gē}子{zi}",
+   "wp": "gē zi",
+   "em": "🕊️"
+  },
+  "k": {
+   "cat": "sm",
+   "tts": "kē",
+   "han": "科",
+   "kj": "蝌{kē}蚪{dǒu}水{shuǐ}草{cǎo} k k k",
+   "kjf": "像{xiàng}个{gè}9字{zì}加{jiā}弯{wān} k k k",
+   "word": "蝌{kē}蚪{dǒu}",
+   "wp": "kē dǒu",
+   "em": "🐸"
+  },
+  "h": {
+   "cat": "sm",
+   "tts": "hē",
+   "han": "喝",
+   "kj": "一{yí}把{bǎ}椅{yǐ}子{zi} h h h",
+   "kjf": "一{yí}根{gēn}拐{guǎi}杖{zhàng} h h h",
+   "word": "河{hé}马{mǎ}",
+   "wp": "hé mǎ",
+   "em": "🦛"
+  },
+  "j": {
+   "cat": "sm",
+   "tts": "jī",
+   "han": "鸡",
+   "kj": "小{xiǎo}鸡{jī}啄{zhuó}米{mǐ} j j j",
+   "kjf": "竖{shù}弯{wān}没{méi}有{yǒu}点{diǎn} j j j",
+   "word": "小{xiǎo}鸡{jī}",
+   "wp": "xiǎo jī",
+   "em": "🐔"
+  },
+  "q": {
+   "cat": "sm",
+   "tts": "qī",
+   "han": "七",
+   "kj": "左{zuǒ}上{shàng}半{bàn}圆{yuán} q q q",
+   "kjf": "右{yòu}上{shàng}半{bàn}圆{yuán} q q q",
+   "word": "气{qì}球{qiú}",
+   "wp": "qì qiú",
+   "em": "🎈"
+  },
+  "x": {
+   "cat": "sm",
+   "tts": "xī",
+   "han": "西",
+   "kj": "切{qiē}个{gè}西{xī}瓜{guā} x x x",
+   "kjf": "圆{yuán}圈{quān}滚{gǔn}滚{gǔn} x x x",
+   "word": "西{xī}瓜{guā}",
+   "wp": "xī guā",
+   "em": "🍉"
+  },
+  "zh": {
+   "cat": "sm",
+   "tts": "zhī",
+   "han": "知",
+   "kj": "舌{shé}尖{jiān}翘{qiào}起{qǐ} zh zh zh",
+   "kjf": "舌{shé}头{tou}放{fàng}平{píng} zh zh zh",
+   "word": "竹{zhú}子{zi}",
+   "wp": "zhú zi",
+   "em": "🎋"
+  },
+  "ch": {
+   "cat": "sm",
+   "tts": "chī",
+   "han": "吃",
+   "kj": "翘{qiào}舌{shé}发{fā}音{yīn} ch ch ch",
+   "kjf": "舌{shé}头{tou}放{fàng}平{píng} ch ch ch",
+   "word": "茶{chá}",
+   "wp": "chá",
+   "em": "🍵"
+  },
+  "sh": {
+   "cat": "sm",
+   "tts": "shī",
+   "han": "诗",
+   "kj": "翘{qiào}舌{shé}发{fā}音{yīn} sh sh sh",
+   "kjf": "舌{shé}头{tou}放{fàng}平{píng} sh sh sh",
+   "word": "狮{shī}子{zi}",
+   "wp": "shī zi",
+   "em": "🦁"
+  },
+  "r": {
+   "cat": "sm",
+   "tts": "rì",
+   "han": "日",
+   "kj": "苗{miáo}芽{yá}出{chū}土{tǔ} r r r",
+   "kjf": "苗{miáo}芽{yá}朝{cháo}下{xià} r r r",
+   "word": "肉{ròu}",
+   "wp": "ròu",
+   "em": "🍖"
+  },
+  "z": {
+   "cat": "sm",
+   "tts": "zī",
+   "han": "资",
+   "kj": "像{xiàng}个{gè}2字{zì} z z z",
+   "kjf": "像{xiàng}个{gè}5字{zì} z z z",
+   "word": "写{xiě}字{zì}",
+   "wp": "xiě zì",
+   "em": "📝"
+  },
+  "c": {
+   "cat": "sm",
+   "tts": "cī",
+   "han": "雌",
+   "kj": "半{bàn}圆{yuán}带{dài}钩{gōu} c c c",
+   "kjf": "直{zhí}钩{gōu}朝{cháo}下{xià} c c c",
+   "word": "刺{cì}猬{wei}",
+   "wp": "cì wei",
+   "em": "🦔"
+  },
+  "s": {
+   "cat": "sm",
+   "tts": "sī",
+   "han": "丝",
+   "kj": "蚕{cán}儿{ér}吐{tǔ}丝{sī} s s s",
+   "kjf": "直{zhí}直{zhí}一{yì}条{tiáo} s s s",
+   "word": "蚕{cán}宝{bǎo}宝{bao}",
+   "wp": "cán bǎo bao",
+   "em": "🐛"
+  },
+  "y": {
+   "cat": "sm",
+   "tts": "yī",
+   "han": "一",
+   "kj": "树{shù}杈{chà}树{shù}杈{chà} y y y",
+   "kjf": "伞{sǎn}柄{bǐng}朝{cháo}下{xià} y y y",
+   "word": "鸭{yā}子{zi}",
+   "wp": "yā zi",
+   "em": "🦆"
+  },
+  "w": {
+   "cat": "sm",
+   "tts": "wū",
+   "han": "乌",
+   "kj": "屋{wū}顶{dǐng}相{xiāng}连{lián} w w w",
+   "kjf": "一{yí}个{gè}门{mén}洞{dòng} w w w",
+   "word": "乌{wū}龟{guī}",
+   "wp": "wū guī",
+   "em": "🐢"
+  },
+  "a": {
+   "cat": "ym",
+   "tts": "a",
+   "han": "阿",
+   "kj": "张{zhāng}大{dà}嘴{zuǐ}巴{ba} a a a",
+   "kjf": "闭{bì}上{shàng}嘴{zuǐ}巴{ba} a a a",
+   "word": "阿{ā}姨{yí}",
+   "wp": "ā yí",
+   "em": "👩"
+  },
+  "o": {
+   "cat": "ym",
+   "tts": "o",
+   "han": "喔",
+   "kj": "圆{yuán}圆{yuán}嘴{zuǐ}巴{ba} o o o",
+   "kjf": "扁{biǎn}扁{biǎn}嘴{zuǐ}巴{ba} o o o",
+   "word": "公{gōng}鸡{jī}喔{ō}喔{ō}叫{jiào}",
+   "wp": "gōng jī ō",
+   "em": "🐓"
+  },
+  "e": {
+   "cat": "ym",
+   "tts": "e",
+   "han": "鹅",
+   "kj": "扁{biǎn}扁{biǎn}嘴{zuǐ}巴{ba} e e e",
+   "kjf": "圆{yuán}圆{yuán}嘴{zuǐ}巴{ba} e e e",
+   "word": "大{dà}白{bái}鹅{é}",
+   "wp": "dà bái é",
+   "em": "🦢"
+  },
+  "i": {
+   "cat": "ym",
+   "tts": "i",
+   "han": "衣",
+   "kj": "牙{yá}齿{chǐ}对{duì}齐{qí} i i i",
+   "kjf": "嘴{zuǐ}巴{ba}突{tū}出{chū} i i i",
+   "word": "衣{yī}服{fu}",
+   "wp": "yī fu",
+   "em": "👕"
+  },
+  "u": {
+   "cat": "ym",
+   "tts": "u",
+   "han": "屋",
+   "kj": "嘴{zuǐ}巴{ba}突{tū}出{chū} u u u",
+   "kjf": "牙{yá}齿{chǐ}对{duì}齐{qí} u u u",
+   "word": "小{xiǎo}屋{wū}子{zi}",
+   "wp": "xiǎo wū zi",
+   "em": "🏠"
+  },
+  "ü": {
+   "cat": "ym",
+   "tts": "yú",
+   "han": "鱼",
+   "kj": "小{xiǎo}鱼{yú}吐{tǔ}泡{pào} ü ü ü",
+   "kjf": "嘴{zuǐ}巴{ba}突{tū}出{chū} ü ü ü",
+   "word": "小{xiǎo}鱼{yú}",
+   "wp": "xiǎo yú",
+   "em": "🐟"
+  },
+  "ai": {
+   "cat": "ym",
+   "tts": "āi",
+   "han": "挨",
+   "kj": "a 和{hé} i 挨{āi}在{zài}一{yì}起{qǐ} ai",
+   "kjf": "a 和{hé} u 在{zài}一{yì}起{qǐ} ai",
+   "word": "白{bái}菜{cài}",
+   "wp": "bái cài",
+   "em": "🥬"
+  },
+  "ei": {
+   "cat": "ym",
+   "tts": "ēi",
+   "han": "欸",
+   "kj": "用{yòng}力{lì}砍{kǎn}树{shù} ei ei ei",
+   "kjf": "i 在{zài}前{qián}面{miàn} ei ei ei",
+   "word": "杯{bēi}子{zi}",
+   "wp": "bēi zi",
+   "em": "🥤"
+  },
+  "ui": {
+   "cat": "ym",
+   "tts": "uēi",
+   "han": "围",
+   "kj": "u 在{zài}前{qián}是{shì} ui（围{wéi}巾{jīn}）",
+   "kjf": "i 在{zài}前{qián}是{shì} ui（皮{pí}球{qiú}）",
+   "word": "水{shuǐ}花{huā}",
+   "wp": "shuǐ huā",
+   "em": "💧"
+  },
+  "ao": {
+   "cat": "ym",
+   "tts": "áo",
+   "han": "袄",
+   "kj": "棉{mián}袄{ǎo}棉{mián}袄{ǎo} ao ao ao",
+   "kjf": "海{hǎi}鸥{ōu}海{hǎi}鸥{ōu} ao ao ao",
+   "word": "小{xiǎo}猫{māo}",
+   "wp": "xiǎo māo",
+   "em": "🐱"
+  },
+  "ou": {
+   "cat": "ym",
+   "tts": "ōu",
+   "han": "鸥",
+   "kj": "海{hǎi}鸥{ōu}海{hǎi}鸥{ōu} ou ou ou",
+   "kjf": "棉{mián}袄{ǎo}棉{mián}袄{ǎo} ou ou ou",
+   "word": "猴{hóu}子{zi}",
+   "wp": "hóu zi",
+   "em": "🐵"
+  },
+  "iu": {
+   "cat": "ym",
+   "tts": "iōu",
+   "han": "邮",
+   "kj": "i 在{zài}前{qián}是{shì} iu（皮{pí}球{qiú}）",
+   "kjf": "u 在{zài}前{qián}是{shì} iu（围{wéi}巾{jīn}）",
+   "word": "牛{niú}奶{nǎi}",
+   "wp": "niú nǎi",
+   "em": "🥛"
+  },
+  "ie": {
+   "cat": "ym",
+   "tts": "iē",
+   "han": "耶",
+   "kj": "i 在{zài}前{qián}是{shì} ie（椰{yē}子{zi}树{shù}）",
+   "kjf": "e 在{zài}前{qián}是{shì} ie（砍{kǎn}树{shù}声{shēng}）",
+   "word": "椰{yē}子{zi}",
+   "wp": "yē zi",
+   "em": "🌴"
+  },
+  "an": {
+   "cat": "ym",
+   "tts": "ān",
+   "han": "安",
+   "kj": "an 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "kjf": "an 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "word": "大{dà}山{shān}",
+   "wp": "dà shān",
+   "em": "⛰️"
+  },
+  "ang": {
+   "cat": "ym",
+   "tts": "áng",
+   "han": "昂",
+   "kj": "ang 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "kjf": "ang 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "word": "山{shān}羊{yáng}",
+   "wp": "shān yáng",
+   "em": "🐐"
+  },
+  "en": {
+   "cat": "ym",
+   "tts": "ēn",
+   "han": "恩",
+   "kj": "en 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "kjf": "en 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "word": "大{dà}门{mén}",
+   "wp": "dà mén",
+   "em": "🚪"
+  },
+  "eng": {
+   "cat": "ym",
+   "tts": "ēng",
+   "han": "鞥",
+   "kj": "eng 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "kjf": "eng 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "word": "台{tái}灯{dēng}",
+   "wp": "tái dēng",
+   "em": "💡"
+  },
+  "in": {
+   "cat": "ym",
+   "tts": "īn",
+   "han": "音",
+   "kj": "in 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "kjf": "in 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "word": "音{yīn}乐{yuè}",
+   "wp": "yīn yuè",
+   "em": "🎵"
+  },
+  "ing": {
+   "cat": "ym",
+   "tts": "īng",
+   "han": "鹰",
+   "kj": "ing 是{shì}后{hòu}鼻{bí}音{yīn}，嘴{zuǐ}巴{ba}张{zhāng}大{dà}响{xiǎng}",
+   "kjf": "ing 是{shì}前{qián}鼻{bí}音{yīn}，舌{shé}尖{jiān}顶{dǐng}上{shàng}牙{yá}",
+   "word": "老{lǎo}鹰{yīng}",
+   "wp": "lǎo yīng",
+   "em": "🦅"
+  },
+  "un": {
+   "cat": "ym",
+   "tts": "wēn",
+   "han": "温",
+   "kj": "u 加{jiā} n 组{zǔ}成{chéng} un",
+   "kjf": "ü 加{jiā} n 组{zǔ}成{chéng} un",
+   "word": "蚊{wén}子{zi}",
+   "wp": "wén zi",
+   "em": "🦟"
+  },
+  "ün": {
+   "cat": "ym",
+   "tts": "yūn",
+   "han": "晕",
+   "kj": "ü 加{jiā} n 组{zǔ}成{chéng} ün",
+   "kjf": "u 加{jiā} n 组{zǔ}成{chéng} ün",
+   "word": "白{bái}云{yún}",
+   "wp": "bái yún",
+   "em": "☁️"
+  },
+  "zhi": {
+   "cat": "zt",
+   "tts": "zhī",
+   "han": "之",
+   "kj": "zhi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "zhi 要{yào}拆{chāi}开{kāi} z 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "蜘{zhī}蛛{zhū}",
+   "wp": "zhī zhū",
+   "em": "🕷️"
+  },
+  "chi": {
+   "cat": "zt",
+   "tts": "chī",
+   "han": "吃",
+   "kj": "chi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "chi 要{yào}拆{chāi}开{kāi} c 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "尺{chǐ}子{zi}",
+   "wp": "chǐ zi",
+   "em": "📏"
+  },
+  "shi": {
+   "cat": "zt",
+   "tts": "shī",
+   "han": "是",
+   "kj": "shi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "shi 要{yào}拆{chāi}开{kāi} s 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "一{yí}个{gè}十{shí}",
+   "wp": "yí gè shí",
+   "em": "🔟"
+  },
+  "ri": {
+   "cat": "zt",
+   "tts": "rì",
+   "han": "日",
+   "kj": "ri 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "ri 要{yào}拆{chāi}开{kāi} r 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "日{rì}出{chū}",
+   "wp": "rì chū",
+   "em": "🌅"
+  },
+  "zi": {
+   "cat": "zt",
+   "tts": "zī",
+   "han": "字",
+   "kj": "zi 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "zi 要{yào}拆{chāi}开{kāi} z 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "字{zì}典{diǎn}",
+   "wp": "zì diǎn",
+   "em": "📚"
+  },
+  "ci": {
+   "cat": "zt",
+   "tts": "cí",
+   "han": "词",
+   "kj": "ci 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "ci 要{yào}拆{chāi}开{kāi} c 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "词{cí}卡{kǎ}",
+   "wp": "cí kǎ",
+   "em": "🃏"
+  },
+  "si": {
+   "cat": "zt",
+   "tts": "sī",
+   "han": "丝",
+   "kj": "si 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "si 要{yào}拆{chāi}开{kāi} s 和{hé} i 拼{pīn}着{zhe}读{dú}",
+   "word": "丝{sī}瓜{guā}",
+   "wp": "sī guā",
+   "em": "🥒"
+  },
+  "ye": {
+   "cat": "zt",
+   "tts": "yē",
+   "han": "耶",
+   "kj": "ye 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "ye 要{yào}拆{chāi}开{kāi} y 和{hé} e 拼{pīn}着{zhe}读{dú}",
+   "word": "夜{yè}空{kōng}",
+   "wp": "yè kōng",
+   "em": "🌙"
+  },
+  "yue": {
+   "cat": "zt",
+   "tts": "yuè",
+   "han": "月",
+   "kj": "yue 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "yue 要{yào}拆{chāi}开{kāi} y 和{hé} u e 拼{pīn}着{zhe}读{dú}",
+   "word": "月{yuè}亮{liàng}",
+   "wp": "yuè liàng",
+   "em": "🌕"
+  },
+  "yuan": {
+   "cat": "zt",
+   "tts": "yuán",
+   "han": "圆",
+   "kj": "yuan 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "yuan 要{yào}拆{chāi}开{kāi} y 和{hé} u a n 拼{pīn}着{zhe}读{dú}",
+   "word": "圆{yuán}圈{quān}",
+   "wp": "yuán quān",
+   "em": "⭕"
+  },
+  "yin": {
+   "cat": "zt",
+   "tts": "yīn",
+   "han": "音",
+   "kj": "yin 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "yin 要{yào}拆{chāi}开{kāi} y 和{hé} i n 拼{pīn}着{zhe}读{dú}",
+   "word": "音{yīn}响{xiǎng}",
+   "wp": "yīn xiǎng",
+   "em": "🔊"
+  },
+  "yun": {
+   "cat": "zt",
+   "tts": "yún",
+   "han": "云",
+   "kj": "yun 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "yun 要{yào}拆{chāi}开{kāi} y 和{hé} u n 拼{pīn}着{zhe}读{dú}",
+   "word": "云{yún}朵{duǒ}",
+   "wp": "yún duǒ",
+   "em": "☁️"
+  },
+  "ying": {
+   "cat": "zt",
+   "tts": "yīng",
+   "han": "鹰",
+   "kj": "ying 是{shì}整{zhěng}体{tǐ}认{rèn}读{dú}音{yīn}节{jié}，直{zhí}接{jiē}读{dú}",
+   "kjf": "ying 要{yào}拆{chāi}开{kāi} y 和{hé} i n g 拼{pīn}着{zhe}读{dú}",
+   "word": "萤{yíng}火{huǒ}虫{chóng}",
+   "wp": "yíng huǒ chóng",
+   "em": "✨"
+  }
+ },
+ "anchors": {
+  "b": {
+   "h": "爸",
+   "p": "bà",
+   "em": "👨"
+  },
+  "p": {
+   "h": "皮",
+   "p": "pí",
+   "em": "🏀"
+  },
+  "m": {
+   "h": "妈",
+   "p": "mā",
+   "em": "👩"
+  },
+  "f": {
+   "h": "飞",
+   "p": "fēi",
+   "em": "✈️"
+  },
+  "d": {
+   "h": "大",
+   "p": "dà",
+   "em": "🐘"
+  },
+  "t": {
+   "h": "兔",
+   "p": "tù",
+   "em": "🐰"
+  },
+  "n": {
+   "h": "牛",
+   "p": "niú",
+   "em": "🐮"
+  },
+  "l": {
+   "h": "拉",
+   "p": "lā",
+   "em": "🤝"
+  },
+  "g": {
+   "h": "哥",
+   "p": "gē",
+   "em": "👦"
+  },
+  "k": {
+   "h": "口",
+   "p": "kǒu",
+   "em": "👄"
+  },
+  "h": {
+   "h": "河",
+   "p": "hé",
+   "em": "🏞️"
+  },
+  "j": {
+   "h": "家",
+   "p": "jiā",
+   "em": "🏡"
+  },
+  "q": {
+   "h": "气",
+   "p": "qì",
+   "em": "🎈"
+  },
+  "x": {
+   "h": "西",
+   "p": "xī",
+   "em": "🍉"
+  },
+  "zh": {
+   "h": "蜘",
+   "p": "zhī",
+   "em": "🕷️"
+  },
+  "ch": {
+   "h": "车",
+   "p": "chē",
+   "em": "🚗"
+  },
+  "sh": {
+   "h": "水",
+   "p": "shuǐ",
+   "em": "💧"
+  },
+  "r": {
+   "h": "日",
+   "p": "rì",
+   "em": "☀️"
+  },
+  "z": {
+   "h": "字",
+   "p": "zì",
+   "em": "✍️"
+  },
+  "c": {
+   "h": "草",
+   "p": "cǎo",
+   "em": "🌿"
+  },
+  "s": {
+   "h": "伞",
+   "p": "sǎn",
+   "em": "☂️"
+  },
+  "y": {
+   "h": "衣",
+   "p": "yī",
+   "em": "👕"
+  },
+  "w": {
+   "h": "屋",
+   "p": "wū",
+   "em": "🏠"
+  },
+  "e": {
+   "h": "鹅",
+   "p": "é",
+   "em": "🦢"
+  }
+ },
+ "levels": [
+  {
+   "n": 1,
+   "em": "🌈",
+   "name": "单{dān}韵{yùn}母{mǔ}乐{lè}园{yuán}",
+   "sub": "a o e i u ü",
+   "pool": [
+    "a",
+    "o",
+    "e",
+    "i",
+    "u",
+    "ü"
+   ],
+   "pairs": []
+  },
+  {
+   "n": 2,
+   "em": "🚂",
+   "name": "声{shēng}母{mǔ} b p m f",
+   "sub": "b p m f + d 预{yù}埋{mái}",
+   "pool": [
+    "b",
+    "p",
+    "m",
+    "f",
+    "d"
+   ],
+   "pairs": [
+    "b|d",
+    "b|p"
+   ]
+  },
+  {
+   "n": 3,
+   "em": "🐯",
+   "name": "声{shēng}母{mǔ} d t n l",
+   "sub": "n / l 最{zuì}容{róng}易{yì}混{hùn}",
+   "pool": [
+    "d",
+    "t",
+    "n",
+    "l"
+   ],
+   "pairs": [
+    "d|t",
+    "n|l"
+   ],
+   "hot": [
+    "n|l"
+   ]
+  },
+  {
+   "n": 4,
+   "em": "🎈",
+   "name": "声{shēng}母{mǔ} g k h j q x",
+   "sub": "q 混{hùn}入{rù} p / q",
+   "pool": [
+    "g",
+    "k",
+    "h",
+    "j",
+    "q",
+    "x"
+   ],
+   "pairs": [
+    "g|k",
+    "p|q",
+    "d|q"
+   ]
+  },
+  {
+   "n": 5,
+   "em": "🐝",
+   "name": "声{shēng}母{mǔ} z c s y w",
+   "sub": "平{píng}舌{shé}三{sān}兄{xiōng}弟{dì}",
+   "pool": [
+    "z",
+    "c",
+    "s",
+    "y",
+    "w"
+   ],
+   "pairs": [
+    "z|c",
+    "c|s"
+   ]
+  },
+  {
+   "n": 6,
+   "em": "🌊",
+   "name": "复{fù}韵{yùn}母{mǔ}",
+   "sub": "ai ei ui ao ou iu ie",
+   "pool": [
+    "ai",
+    "ei",
+    "ui",
+    "ao",
+    "ou",
+    "iu",
+    "ie"
+   ],
+   "pairs": [
+    "ui|iu",
+    "ie|ei"
+   ]
+  },
+  {
+   "n": 7,
+   "em": "🏔️",
+   "name": "前{qián}后{hòu}鼻{bí}音{yīn}家{jiā}族{zú}",
+   "sub": "an ang en eng in ing un ün",
+   "pool": [
+    "an",
+    "ang",
+    "en",
+    "eng",
+    "in",
+    "ing",
+    "un",
+    "ün"
+   ],
+   "pairs": [
+    "an|ang",
+    "en|eng",
+    "in|ing",
+    "un|ün"
+   ]
+  },
+  {
+   "n": 8,
+   "em": "⭐",
+   "name": "整{zhěng}体{tǐ}认{rèn}读{dú}",
+   "sub": "zhi chi shi ri zi ci si",
+   "pool": [
+    "zhi",
+    "chi",
+    "shi",
+    "ri",
+    "zi",
+    "ci",
+    "si"
+   ],
+   "pairs": [
+    "zhi|chi",
+    "chi|shi",
+    "zi|ci",
+    "ci|si",
+    "shi|ri"
+   ]
+  },
+  {
+   "n": 9,
+   "em": "👑",
+   "name": "易{yì}混{hùn}对{duì}大{dà}师{shī}",
+   "sub": "全{quán}部{bù} 14 组{zǔ}易{yì}混{hùn}对{duì}高{gāo}压{yā}混{hùn}战{zhàn}",
+   "boss": true,
+   "pairs": [
+    "b|d",
+    "p|q",
+    "b|p",
+    "d|q",
+    "n|l",
+    "f|h",
+    "d|t",
+    "g|k",
+    "an|ang",
+    "en|eng",
+    "in|ing",
+    "ui|iu",
+    "ie|ei",
+    "un|ün"
+   ]
+  }
+ ],
+ "detSet": [
+  "b",
+  "d",
+  "p",
+  "q",
+  "t",
+  "f",
+  "j",
+  "l",
+  "r",
+  "s",
+  "z",
+  "e",
+  "c",
+  "g",
+  "y",
+  "u",
+  "n",
+  "h",
+  "a"
+ ],
+ "coreDet": [
+  "b",
+  "d",
+  "p",
+  "q",
+  "t",
+  "f"
+ ]
+}
