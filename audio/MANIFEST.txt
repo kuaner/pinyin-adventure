@@ -65,30 +65,30 @@ go.mp3|准备，开始|1.600000
 next.mp3|下一题|1.120000
 
 # ---- v5c 新增（锚点题句24 + 常见字180 + 双字词30 + 整体认读6 + 短语2）----
-anchor_b.mp3|爸，bà 的 b|2.080000
-anchor_c.mp3|草，cǎo 的 c|2.080000
-anchor_ch.mp3|车，chē 的 ch|2.720000
-anchor_d.mp3|大，dà 的 d|2.720000
-anchor_e.mp3|鹅，é 的 e|2.720000
-anchor_f.mp3|飞，fēi 的 f|2.240000
-anchor_g.mp3|哥，gē 的 g|1.760000
-anchor_h.mp3|河，hé 的 h|4.480000
-anchor_j.mp3|家，jiā 的 j|2.080000
-anchor_k.mp3|口，kǒu 的 k|3.680000
-anchor_l.mp3|拉，lā 的 l|2.400000
-anchor_m.mp3|妈，mā 的 m|2.720000
-anchor_n.mp3|牛，niú 的 n|2.880000
-anchor_p.mp3|皮，pí 的 p|1.600000
-anchor_q.mp3|气，qì 的 q|2.560000
-anchor_r.mp3|日，rì 的 r|1.600000
-anchor_s.mp3|伞，sǎn 的 s|4.160000
-anchor_sh.mp3|水，shuǐ 的 sh|4.000000
-anchor_t.mp3|兔，tù 的 t|2.720000
-anchor_w.mp3|屋，wū 的 w|3.040000
-anchor_x.mp3|西，xī 的 x|1.760000
-anchor_y.mp3|衣，yī 的 y|2.720000
-anchor_z.mp3|字，zì 的 z|2.720000
-anchor_zh.mp3|蜘，zhī 的 zh|2.080000
+anchor_b.mp3|爸爸|2.080000
+anchor_c.mp3|小草|2.080000
+anchor_ch.mp3|汽车|2.720000
+anchor_d.mp3|大象|2.720000
+anchor_e.mp3|天鹅|2.720000
+anchor_f.mp3|飞机|2.240000
+anchor_g.mp3|哥哥|1.760000
+anchor_h.mp3|河水|4.480000
+anchor_j.mp3|家里|2.080000
+anchor_k.mp3|口哨|3.680000
+anchor_l.mp3|拉手|2.400000
+anchor_m.mp3|妈妈|2.720000
+anchor_n.mp3|小牛|2.880000
+anchor_p.mp3|皮球|1.600000
+anchor_q.mp3|气球|2.560000
+anchor_r.mp3|日出|1.600000
+anchor_s.mp3|雨伞|4.160000
+anchor_sh.mp3|水果|4.000000
+anchor_t.mp3|兔子|2.720000
+anchor_w.mp3|屋子|3.040000
+anchor_x.mp3|西瓜|1.760000
+anchor_y.mp3|衣服|2.720000
+anchor_z.mp3|写字|2.720000
+anchor_zh.mp3|蜘蛛|2.080000
 duila.mp3|写对啦|0.800000
 fanla.mp3|写反啦|0.960000
 word_bai_tian_9.mp3|白天|0.960000
