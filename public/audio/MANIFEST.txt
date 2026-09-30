@@ -968,3 +968,16 @@ lessons/write_z.mp3|一笔写成，占中格|mimo 冰糖
 lessons/write_zh.mp3|从左到右，先写 资，再写 喝，共 2 个字母|mimo 冰糖
 lessons/write_zhi.mp3|从左到右，先写 资，再写 喝，再写 衣，共 3 个字母|mimo 冰糖
 lessons/write_zi.mp3|从左到右，先写 资，再写 衣，共 2 个字母|mimo 冰糖
+
+# ===== 拼音读音统一换血（2026-09-30，kuaner 铁律："拼音不要自己生成"）=====
+# 上文 lessons/ 含拼音读音的 100 条与根区字母 57 条已按下述方式重制；原行文本/时长仅作历史记录。
+# 逐文件解构序列与来源清单（硬要求：可追溯）见同目录《来源审计表.md》
+# - lessons 口诀 kj_*（63）+ 多字母写法旁白 write_*（37）：ffmpeg 拼接 = mimo 冰糖纯中文段
+#   + hyp 真人拼音段（段间 150ms 静音，统一 24kHz mono mp3 64k；带调 token 取 tone 变体 zhī→zhi1、yú→yu2）
+#   例 kj_e「扁扁嘴巴 e e e」= mimo(扁扁嘴巴) + hyp/e.mp3×3；kj_ong「ong ong ong」= 纯 hyp 直拼零合成
+# - 根区字母兜底位 57 条（b.mp3|玻 等 51 + v5c 整体认读 ye/yin/ying/yuan/yue/yun 6）：
+#   hyp/同名 字节级直拷（运行时本就优先 hyp，此处消灭合成回落层）
+# - 不动：lessons 纯中文 26 条（单字母写法旁白）+ 20 条（open/step/cheer）+ 根区纯中文词句 248 条
+#   （UI 短语/常见字/双字词/锚点词=词汇读音非字母教学音；常见字/锚点运行时优先 hyp）
+# - 换血佐证：docs/audio-swap/（kj_e / kj_ong / write_ying 重制前后频谱，零滞后互相关≈0）
+# 管线：scripts/build_audio.py（可重复执行；mimo 段缓存 /tmp/pinyin_mimo_cache，原文件备份 /tmp/pinyin_before）
