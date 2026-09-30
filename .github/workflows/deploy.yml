@@ -40,14 +40,21 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # v2.9.4 修复：必须声明 environment: github-pages —— 缺了它 deploy-pages "成功"但
-    # 不创建/激活任何 deployment（线上冻结在旧快照、tag 资产 404 的病根）。
-    # 环境保护规则（custom_branch_policies）已含 main / gh-pages / v* 白名单。
-    environment: github-pages
+    # v2.9.4 终版：Pages 已切 legacy 模式（source=gh-pages）——workflow deployment 管线
+    # 对本仓库失效（v2.1~v2.9.3 部署空转、线上冻结一天，v2.9.4 用 legacy 回退解卡）。
+    # deploy=把 dist 强推 gh-pages 分支，legacy Pages 在分支推送后自动构建上线。
     steps:
-      - name: Deploy to Pages
-        id: deploy
-        uses: actions/deploy-pages@v5
+      - name: Deploy to gh-pages (legacy Pages source)
+        run: |
+          cd dist
+          git init -b gh-pages .
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "deploy: ${GITHUB_SHA::8}"
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release:
     needs: deploy
