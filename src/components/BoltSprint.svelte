@@ -29,11 +29,11 @@
 
 </script>
 
-<section id="v-bolt" class="view on">
-  <div class="topbar">
-    <button class="backbtn" data-back="boltquit" onclick={boltQuit}><Icon name="close" size={22} /></button>
-    <h2><Icon name="rocket" size={26} /> <Ruby text="闪电刷题" /></h2>
-    <div class="scorechip" id="bolttime" class:low={BT.left <= 10}>{timeText}</div>
+<section id="v-bolt" class="view on" data-screen="bolt">
+  <div class="ltop">
+    <button class="cbtn" data-back="boltquit" onclick={boltQuit} aria-label="退出"><Icon name="close" size={20} /></button>
+    <div class="ltt"><ruby>闪电刷题<rt>shǎn diàn shuā tí</rt></ruby></div>
+    <div class="lprog" id="bolttime" class:low={BT.left <= 10}>{timeText}</div>
   </div>
   <div class="bolthud">
     <span id="boltans">{@html T('已答 ')}{BT.n}</span>
@@ -80,7 +80,18 @@
     </div>
     <div class="rbtns">
       <button class="btn red" id="bagain" onclick={() => startBolt(false)}><Icon name="rocket" size={24} /> {@html T('再来一轮')}</button>
-      <button class="btn ghost" id="bhome" onclick={() => show('home')}>{@html T('回主页')}</button>
+      <button class="btn ghost" id="bhome" onclick={() => show('practice')}>{@html T('回练习场')}</button>
     </div>
   </div>
 </section>
+
+<style>
+  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; }
+  .lprog { font-size: 14px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  #bolttime.low { color: var(--animal-error); animation: blinkT 1s steps(2) infinite; }
+  @keyframes blinkT { 50% { opacity: .45; } }
+</style>

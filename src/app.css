@@ -49,9 +49,18 @@ rt{font-size:clamp(10px,.5em,13px);font-weight:700;color:#8a7a68;line-height:1.2
 .btn rt,.ftab rt,.ratebtn rt{color:inherit;opacity:.9}
 .mirror{display:inline-block;transform:scaleX(-1)}
 
-#wrap{max-width:430px;margin:0 auto;min-height:100vh;min-height:100dvh;position:relative}
-.view{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 24px);
-  overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* ---------- v2.4 通用卡（打样 .card：白底大圆角 + 软阴影） ---------- */
+.card{background:#fff;border-radius:26px;box-shadow:var(--animal-shadow)}
+.pressable{cursor:pointer;transition:transform .08s}
+.pressable:active{transform:scale(.97)}
+
+/* ---------- v2.4 App 壳：固定视口，零纵向滚动（每屏内容预算制） ---------- */
+html,body{overflow:hidden}
+#wrap{max-width:430px;margin:0 auto;height:100vh;height:100dvh;position:relative;overflow:hidden}
+#shell{position:absolute;left:0;right:0;top:0;bottom:84px}          /* tab 常驻区上方 */
+#wrap.focus #shell{bottom:0}                                        /* 全屏专注态：tab 隐藏 */
+.view{display:flex;flex-direction:column;height:100%;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+  overflow:hidden;min-height:0}
 .view.on{display:flex}
 
 /* ---------- 各模式粉彩波点分区（底色=animal-island dots-*） ---------- */

@@ -27,7 +27,14 @@ export function levelUnlocked(n: number): boolean {
 export function addHist(e: HistEntry) {
   S.hist.unshift(e)
   if (S.hist.length > 30) S.hist.length = 30
+  markDay()
   save(S)
+}
+
+/* 活动日记账（周历条数据源）：练习记录与学习岛小测共用 */
+export function markDay() {
+  const d = todayStr()
+  if (!S.days[d]) { S.days[d] = 1; save(S) }
 }
 
 export function cardRec(k: string): CardRec {

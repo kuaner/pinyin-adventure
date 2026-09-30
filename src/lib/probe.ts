@@ -174,9 +174,15 @@ function probeFlash() {
 
 /* ---------- 视觉验收辅助：?open=xxx 直接渲染对应界面 ---------- */
 function openView(v: string) {
-  if (v === 'levels') show('levels')
+  if (v === 'learn' || v === 'practice' || v === 'mine' || v === 'radio' || v === 'sound' || v === 'settings') show(v as any)
+  else if (v === 'lesson') {
+    const ln = parseInt(new URLSearchParams(location.search).get('learn') || '1', 10)
+    show('lesson'); ui.lessonN = Math.min(12, Math.max(1, ln))
+  }
+  else if (v === 'levels') show('levels')
   else if (v === 'pairs') show('pairs')
-  else if (v === 'practice') show('practice')
+  else if (v === 'flash') { renderFlash(); show('flash') }
+  else if (v === 'free' || v === 'practice') show('free') /* 旧参 practice = 自由练习配置页 */
   else if (v === 'history') show('history')
   else if (v === 'result') {
     const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('解锁下一关！'), wlabel: 'b↔d', lvNo: 2 }

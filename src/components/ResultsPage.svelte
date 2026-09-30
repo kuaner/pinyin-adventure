@@ -28,6 +28,6 @@
   <div class="rbtns">
     <button class="btn" id="rnext" style="display:{r && r.lvNo && r.stars >= 1 && r.lvNo < 9 ? 'flex' : 'none'}" onclick={() => r?.lvNo && startLevel(r.lvNo + 1)}>{@html T('下一关')} <Icon name="arrow-right" size={20} /></button>
     <button class="btn blue" id="ragain" onclick={again}><Icon name="refresh" size={20} /> {@html T('再玩一次')}</button>
-    <button class="btn ghost" id="rhome" onclick={() => show('home')}>{@html T('回主页')}</button>
+    <button class="btn ghost" id="rhome" onclick={() => show('practice')}>{@html T('回练习场')}</button>
   </div>
 </section>

@@ -53,10 +53,9 @@ export function newSession(cfg: SessionCfg) {
   show('quiz')
 }
 
-/* ---------- 各模式入口 ---------- */
+/* ---------- 各模式入口（v2.4 声音礼仪 R1：安静进入 —— 零入口过场音） ---------- */
 export function startLevel(n: number) {
   const L = LEVELS[n - 1]
-  playAudio(n === 9 ? 'levelup' : 'go')
   newSession({
     name: T('第') + n + T('关') + ' · ' + T(L.name),
     level: L,
@@ -66,12 +65,10 @@ export function startLevel(n: number) {
 }
 
 export function startDet() {
-  playAudio('go')
   newSession({ name: DETNAME, det: true, qs: buildDetQs(false) })
 }
 
 export function startZi() {
-  playAudio('go')
   newSession({ name: T('常见字快拼'), zi: true, qs: ziQs() })
 }
 
@@ -188,7 +185,7 @@ export function quitQuiz() {
   QZ.tk++
   QZ.seq++
   hideFeedback()
-  show('home')
+  show('practice')  /* v2.4：闯关从练习 tab 进入，退回练习 tab */
 }
 
 function endQuiz() {

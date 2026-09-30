@@ -1,6 +1,6 @@
 # 拼音闯关大冒险（pinyin-adventure）
 
-儿童拼音闯关 PWA：8 关冒险 + 易混对大师毕业关、正反小侦探（镜像反写专治）、⚡闪电刷题 5 分钟冲刺、📖常见字快拼（一年级 180 字）、闪卡三盒复习、全量 ruby 拼音注音、纯预生成 mp3 音频。
+儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课五步、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3。
 
 ## 技术栈
 
@@ -26,7 +26,12 @@ node scripts/visual-check.mjs # 视觉度量校验
 src/
   main.ts                 # 入口：mount App
   app.css                 # 全局样式（v1 单文件 CSS 逐字移植，类名/id 不变）
-  App.svelte              # 视图路由 + 解锁层/弹窗/反馈/探针横幅/toast
+  App.svelte              # v2.4 壳路由：tab×3（LearnTab/PracticeTab/MineTab）+ 专注态视图 + TabBar
+  components/
+    TabBar / HSteps（横向翻页容器：拖拽+阈值吸附+页点）   # v2.4 壳件
+    home/LearnTab（大卡+12课胶囊条+广播入口） PracticeTab（6模式卡阵） MineTab（小鸡+周历+家长区）
+    RadioPage（口诀小广播） parents/SoundEtiquette + SettingsPage   # v2.4 新页
+    HomePage.svelte / learn/LearnIsland.svelte             # v2.4 删除（模块入口页作废）
   stores/                 # runes 模块 store
     ui.svelte.ts          # 视图路由 show()/toast()/探针横幅/辨析卡弹窗/解锁层
     progress.svelte.ts    # 星星/历史/闪卡盒/闪电纪录（S 单例）
@@ -78,6 +83,8 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 6. **零错误信息铁律**（v2.3）：面向孩子的题目不得以任何形式展示错误配对/错误形态/错误口诀——ll 听看一致、rule 错句判断、"看大字选一样"已全面删除；闯关=listen/look/kj（口诀正向回忆），闪电=blisten(70%)/bkj(30%)；答错只展示正确答案+读音。
 7. **注音收口**（Bug#2）：数据层纯文本，渲染层中文一律 T()/Ruby；`node scripts/check-ruby.mjs` 是 lint 门槛（裸中文插值=warning）。
 8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
+9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
+10. **零纵向滚动**（v2.4）：`.view` height:100% overflow:hidden，每屏内容预算制；序列内容一律横向翻页（HSteps，55px 阈值）；横向滚动仅限胶囊条/卡单等带状物。验收逐屏 scrollHeight<=clientHeight 断言。
 
 ## 发布流程
 
@@ -91,4 +98,4 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 - `?probe=` / `full` / `det` / `bolt` / `zi` / `flash`：动态探针（进题→作答→验证权重/计数/反馈层）
 - `?open=levels|pairs|practice|history|result|quiz|detect|dfix|bolt|zi|ziword`：直接渲染对应界面（截图用；bolt 冻结计时）
 - `window.__PJ`：会话/权重/音频缓存钩子（仅带参访问时挂载）
-- 笔顺自检 `node scripts/stroke-verify.mjs`（47 单元×2 帧截图+几何断言）；注音 lint `node scripts/check-ruby.mjs`；全量验收 `node scripts/acceptance-v23.mjs`
+- 笔顺自检 `node scripts/stroke-verify.mjs`（47 单元×2 帧截图+几何断言）；注音 lint `node scripts/check-ruby.mjs`；全量验收 `node scripts/acceptance-v24.mjs`

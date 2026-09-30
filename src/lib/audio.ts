@@ -1,5 +1,6 @@
 /* 声音两层架构（v5c 终局：纯预生成 mp3，无设备 TTS 层；v2.3 删解锁层与自检：
-   AudioContext 在 playAudio/tone 内部 lazy unlock，进 app 直达首页） */
+   AudioContext 在 playAudio/tone 内部 lazy unlock，进 app 直达首页。
+   v2.4 声音礼仪：R3 一次一路 —— 单通道锁，新声音触发旧声音立即 stop） */
 import { LETTERS, HYP } from '../data'
 import { S } from '../stores/progress.svelte'
 import { toast } from '../stores/ui.svelte'
@@ -16,8 +17,21 @@ export function ac(): AudioContext | null {
   return AC
 }
 
+/* ---------- R3 单通道：同一时刻只有一路声音 ---------- */
+let CUR: HTMLAudioElement | null = null
+let OnStop: (() => void) | null = null   /* 当前路的停止回调（口诀连播链等） */
+
+export function stopAll() {
+  OnStop = null
+  if (CUR) {
+    try { CUR.pause() } catch { /* ignore */ }
+    CUR = null
+  }
+}
+
 export function tone(freq: number, delay: number, dur: number, type?: OscillatorType, vol?: number) {
   if (S.mute) return
+  if (delay <= 0) stopAll() /* 反馈音也走单通道：叮/嘟打断在播读音 */
   const c = ac()
   if (!c) return
   try {
@@ -52,7 +66,7 @@ export function audioURL(name: string): string {
   return import.meta.env.BASE_URL + 'audio/' + (h ? 'hyp/' + h : name) + '.mp3'
 }
 
-export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => void }
+export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => void; nobreak?: boolean }
 
 function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
   /* hyp 播放失败 → 回落现有 mimo 同名文件（audio/{name}.mp3，只回落一次） */
@@ -75,6 +89,7 @@ function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
 
 export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement | null {
   if (S.mute) { if (opts.onerror) opts.onerror(); return null }
+  if (!opts.nobreak) { stopAll(); OnStop = opts.onend || null }
   ac() /* 首次任意播放即静默解锁 WebAudio（v2.3：解锁层删除后的替代路径） */
   try {
     let a = AUDIO_CACHE[name]
@@ -90,7 +105,11 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
         if (opts.onerror) opts.onerror()
       }
     })
-    if (opts.onend) a.onended = () => { if (opts.onend) opts.onend() }
+    if (opts.onend) a.onended = () => {
+      if (CUR === a) { CUR = null; OnStop = null }
+      opts.onend!()
+    }
+    CUR = a
     return a
   } catch {
     if (opts.hint) toast(opts.hint)
@@ -99,6 +118,9 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
   }
 }
 
+/* 当前是否在播（口诀连播 UI 态用） */
+export function isPlaying(): boolean { return !!CUR }
+
 export function say(k: string) {
   const L = LETTERS[k]
   if (!L) return
@@ -106,7 +128,7 @@ export function say(k: string) {
 }
 
 export function preloadAudios() {
-  for (const n of ['right', 'wrong', 'go', 'star', 'levelup', 'next', 'timeout', 'byebye']) {
+  for (const n of ['star', 'duila', 'fanla']) {
     if (!AUDIO_CACHE[n]) {
       try {
         const a = new Audio(audioURL(n))

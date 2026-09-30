@@ -1,0 +1,193 @@
+<script lang="ts">
+  /* 🎧 口诀小广播（v2.4 学习 tab 子模块，kuaner 2026-09-30 07:45）：全部课本口诀
+     逐条点播 + 连播 + 循环；音频 = audio/lessons/kj_*.mp3 真人拼接版。
+     声音礼仪 R5：连播是全 app 唯一例外声源 —— 显式手动开启，开启后即当前唯一一路。
+     交互 = 横向翻页（一屏一口诀，主角 = 字模），零纵向滚动 */
+  import lessonsData from '../data/lessons.json'
+  import { playAudio, stopAll } from '../lib/audio'
+  import { show } from '../stores/ui.svelte'
+  import { T } from '../lib/ruby'
+  import Ruby from './Ruby.svelte'
+  import Icon from './Icon.svelte'
+  import HSteps from './HSteps.svelte'
+
+  interface KJEntry { k: string; kj: string; audio: string }
+  const ALL: KJEntry[] = ((lessonsData as any).lessons as any[])
+    .flatMap((l) => l.letters as any[])
+    .filter((e) => e.kjAudio || e.kj)
+    .map((e) => ({ k: e.k, kj: e.kj, audio: e.kjAudio || ('lessons/kj_' + (e.k === 'ü' ? 'v' : e.k)) }))
+
+  let cur = $state(0)
+  let chainOn = $state(false)
+  let loopOn = $state(false)
+  let playingK = $state('')       // 正在播的字母（按钮动画态）
+  let capsEl: HTMLDivElement
+
+  const entry = $derived(ALL[cur])
+  /* 口诀拆 汉字 + 字母段 */
+  const kjParts = $derived.by(() => {
+    const kj = entry?.kj || ''
+    const m = kj.match(/^([一-鿿，、！？]+)\s*(.*)$/)
+    return m ? [m[1], m[2]] : [kj, '']
+  })
+
+  function glyphSize(k: string): number { return k.length >= 3 ? 58 : k.length === 2 ? 92 : 148 }
+
+  function play(i: number) {
+    const e = ALL[i]
+    if (!e) { chainOn = false; return }
+    cur = i
+    playingK = e.k
+    playAudio(e.audio, {
+      hint: T('语音未准备好'),
+      onend: () => {
+        playingK = ''
+        if (chainOn) {
+          if (i + 1 < ALL.length) play(i + 1)
+          else if (loopOn) play(0)
+          else chainOn = false
+        }
+      },
+    })
+  }
+
+  function tapPlay() { play(cur) }                     // 逐条点播
+  function toggleChain() {
+    if (chainOn) { chainOn = false; stopAll(); playingK = '' }
+    else { loopOn = false; chainOn = true; play(cur) }
+  }
+  function toggleLoop() {
+    loopOn = !loopOn
+    if (loopOn && !chainOn) { chainOn = true; play(cur) }
+  }
+  function jump(i: number) { play(i) }                 // 点播该条
+  function onSwipe(i: number) {
+    /* 滑动浏览 = 静默换页（R1 翻页零音效）；连播中翻页则接播新条 */
+    cur = i
+    if (chainOn) play(i)
+  }
+
+  function exit() { chainOn = false; loopOn = false; stopAll(); playingK = ''; show('learn') }
+
+  $effect(() => {
+    requestAnimationFrame(() => capsEl?.querySelector('.cap.on')?.scrollIntoView({ inline: 'center', block: 'nearest' }))
+  })
+</script>
+
+<section id="v-radio" class="view on" data-screen="radio">
+  <div class="ltop">
+    <button class="cbtn" data-back="learn" onclick={exit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt"><ruby>口诀小广播<rt>kǒu jué xiǎo guǎng bō</rt></ruby></div>
+    <div class="lprog">{cur + 1}/{ALL.length}</div>
+  </div>
+
+  <HSteps n={ALL.length} bind:cur onchange={onSwipe}>
+    {#each ALL as e, i (e.k + i)}
+      <div class="hspage">
+        <div class="pcard">
+          <div class="ptag"><ruby>第 {i + 1} 条<rt>dì {i + 1} tiáo</rt></ruby></div>
+          <div class="bigwrap grid4">
+            <button class="bigbtn" data-kj={e.k} onclick={() => play(i)} aria-label={e.k}>
+              <span class="big" style="font-size:{glyphSize(e.k)}px" class:spin={playingK === e.k}>{e.k}</span>
+            </button>
+          </div>
+          <div class="kjline">
+            {#if kjParts[0]}<Ruby text={kjParts[0]} />{/if}
+            {#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}
+          </div>
+          <button class="playone" onclick={tapPlay} aria-label="播放">
+            <svg viewBox="0 0 24 24" fill="#19c8b9"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" /><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" fill="none" stroke="#19c8b9" stroke-width="2.2" stroke-linecap="round" /></svg>
+            <span><ruby>点一点，听这句<rt>diǎn yī diǎn tīng zhè jù</rt></ruby></span>
+          </button>
+        </div>
+      </div>
+    {/each}
+  </HSteps>
+
+  <div id="rctrl">
+    <button class="rbtn main" class:live={chainOn} id="chainbtn" onclick={toggleChain}>
+      {#if chainOn}
+        <svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1.5" /><rect x="14" y="5" width="4" height="14" rx="1.5" /></svg>
+        <span><ruby>停止连播<rt>tíng zhǐ lián bō</rt></ruby></span>
+      {:else}
+        <svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l11-6.5z" /></svg>
+        <span><ruby>连播<rt>lián bō</rt></ruby></span>
+      {/if}
+    </button>
+    <button class="rbtn" class:live2={loopOn} id="loopbtn" onclick={toggleLoop}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4" /><path d="M21 4v5h-5" /></svg>
+      <span><ruby>循环<rt>xún huán</rt></ruby></span>
+    </button>
+  </div>
+
+  <div id="rlistbar">
+    <div class="sec-label"><b><ruby>口诀单<rt>kǒu jué dān</rt></ruby> · {ALL.length} 条</b><span><ruby>横向滑动<rt>héng xiàng huá dòng</rt></ruby></span></div>
+    <div id="rcaps" bind:this={capsEl}>
+      {#each ALL as e, i (e.k + i)}
+        <button class="cap" class:on={i === cur} data-idx={i} onclick={() => jump(i)}>{e.k}</button>
+      {/each}
+    </div>
+  </div>
+
+  <div id="pager">
+    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一句<rt>zuǒ huá xià yī jù</rt></ruby></div>
+  </div>
+</section>
+
+<style>
+  #v-radio { padding: 10px 16px 10px; gap: 0; }
+  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+  .cbtn svg { width: 18px; height: 18px; }
+  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; line-height: 1.8; }
+  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: 6px 11px; border-radius: 999px; }
+
+  .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 18px 16px; overflow: hidden; position: relative; }
+  .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size: 11px; font-weight: 900; color: var(--animal-text-dis);
+    background: #f4f0e4; padding: 4px 10px; border-radius: 999px; }
+  .grid4 { position: relative; }
+  .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
+    background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
+    background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
+  .bigwrap { width: 76%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .bigbtn { border: none; background: none; font-family: inherit; padding: 0; }
+  .big { font-weight: 900; line-height: 1; color: var(--animal-primary); text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; }
+  .big.spin { animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { transform: scale(1.05); } }
+  .kjline { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 18px; font-weight: 800;
+    line-height: 2.1; flex: none; margin-top: 8px; }
+  .kjline .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size: 20px; letter-spacing: 2px; }
+  .playone { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 13px; font-weight: 800;
+    color: var(--animal-text-2); border: none; background: none; font-family: inherit; flex: none; }
+  .playone svg { width: 20px; height: 20px; }
+
+  #rctrl { display: flex; gap: 10px; margin: 12px 0 0; flex: none; }
+  .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size: 16px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer;
+    background: #fff; color: var(--animal-text-2); box-shadow: 0 3px 0 var(--animal-border-light), var(--animal-shadow); }
+  .rbtn svg { width: 19px; height: 19px; }
+  .rbtn.main { background: var(--animal-primary); color: #fff; box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
+  .rbtn.main.live { background: #f29cb6; box-shadow: 0 4px 0 var(--press-pink), var(--animal-shadow-lg); }
+  .rbtn.live2 { color: var(--animal-primary-active); background: var(--animal-primary-bg); }
+
+  #rlistbar { margin-top: 12px; flex: none; }
+  .sec-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .sec-label b { font-size: 13px; font-weight: 900; }
+  .sec-label span { font-size: 11px; font-weight: 700; color: var(--animal-text-dis); }
+  #rcaps { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  #rcaps::-webkit-scrollbar { display: none; }
+  .cap { flex: 0 0 auto; min-width: 46px; height: 44px; border-radius: 14px; background: #fff; box-shadow: var(--animal-shadow);
+    display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: var(--animal-text-dis);
+    border: none; font-family: inherit; padding: 0 8px; }
+  .cap.on { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
+
+  #pager { height: 58px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  #dots { display: flex; gap: 6px; max-width: 100%; overflow: hidden; }
+  #dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; flex: none; }
+  #dots i.on { width: 20px; border-radius: 6px; background: var(--animal-primary); }
+  #swipehint { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--animal-text-2); }
+  #swipehint svg { width: 15px; height: 15px; }
+</style>

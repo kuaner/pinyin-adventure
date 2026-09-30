@@ -10,7 +10,7 @@
 
 <section id="v-practice" class="view on">
   <div class="topbar">
-    <button class="backbtn" data-back="home" onclick={() => show('home')}>‹</button>
+    <button class="backbtn" data-back="home" onclick={() => show('practice')}>‹</button>
     <h2><Icon name="dumbbell" size={26} /> <Ruby text="自由练习" /></h2>
   </div>
   <div id="pgroups2" style="display:flex;flex-direction:column;gap:11px">

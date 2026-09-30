@@ -1,15 +1,16 @@
 <script lang="ts">
-  /* 第 n 课五步流程：①认识 ②写法（笔顺动画+旁白）③声调 ④拼读 ⑤小测（4/5 解锁下一课） */
+  /* 第 n 课五步流程 · v2.4 横向翻页版（打样屏4/5）：五步五页一线（认识/写法/声调/拼读/小测），
+     步骤条-页点-进度 chip 三方同步；拖拽跟手 + 阈值吸附；零纵向滚动；R1 零过场音（open_N/step_N 已删） */
   import lessonsData from '../../data/lessons.json'
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, say, sndOk, sndNo, sndStar } from '../../lib/audio'
-  import { submitQuiz } from '../../stores/learn.svelte'
-  import { toast } from '../../stores/ui.svelte'
+  import { submitQuiz, setStep, lessonShort } from '../../stores/learn.svelte'
   import Ruby from '../Ruby.svelte'
   import Icon from '../Icon.svelte'
   import StrokeAnim from './StrokeAnim.svelte'
   import ToneDrill from './ToneDrill.svelte'
   import BlendDrill from './BlendDrill.svelte'
+  import HSteps from '../HSteps.svelte'
 
   let { n, onexit }: { n: number; onexit: () => void } = $props()
 
@@ -25,21 +26,22 @@
   })
 
   const STEPS = [
-    { id: 1, name: '认识', icon: 'eye' },
-    { id: 2, name: '写法', icon: 'pencil' },
-    { id: 3, name: '声调', icon: 'music' },
-    { id: 4, name: '拼读', icon: 'rainbow' },
-    { id: 5, name: '小测', icon: 'trophy' },
+    { id: 1, name: '认识', py: 'rèn shi' },
+    { id: 2, name: '写法', py: 'xiě fǎ' },
+    { id: 3, name: '声调', py: 'shēng diào' },
+    { id: 4, name: '拼读', py: 'pīn dú' },
+    { id: 5, name: '小测', py: 'xiǎo cè' },
   ] as const
 
-  let step = $state(1)
+  let step = $state(1)                // 1..5（= HSteps 页号 + 1）
   let li = $state(0)                 // 当前字母下标
-  let sa: StrokeAnim                 // 笔顺动画引用
+  let sa: StrokeAnim
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', done: false, passed: false,
   })
 
   const lesson = $derived(LESSONS.find((x) => x.n === n) || LESSONS[0])
+  const short = $derived(lessonShort(n, lesson.title))
   const letters = $derived(lesson.letters as { k: string; kj: string; kjAudio?: string; xie: string; strokes: string[]; say: string; sayAudio?: string }[])
   const letter = $derived(letters[li] || letters[0])
 
@@ -77,7 +79,7 @@
       }
     }
     quiz = { q: qs, i: 0, score: 0, pick: '', lastPick: '', done: false, passed: false }
-    setTimeout(() => playQuestionAudio(qs[0]), 350)
+    setTimeout(() => playQuestionAudio(qs[0]), 400)
   }
 
   function playQuestionAudio(q: any) {
@@ -113,20 +115,14 @@
     return [parts.slice(0, -1).join('，'), parts[parts.length - 1]]
   }
 
+  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记五步断点（学习 tab 断点续学 CTA） */
   function goto(s: number) {
-    step = s
-    if (s === 5) buildQuiz()
-    else playAudio('lessons/step_' + s)
-    window.scrollTo(0, 0)
+    step = Math.max(1, Math.min(5, s))
+    setStep(n, step)
+    if (s === 5 && !quiz.q.length) buildQuiz()
+    else if (s === 5 && quiz.done) buildQuiz()
   }
-  function restudy() { quiz.done = false; goto(1) }
-
-  /* 进课开场音 */
-  $effect(() => {
-    n
-    const t = setTimeout(() => playAudio('lessons/open_' + n), 400)
-    return () => clearTimeout(t)
-  })
+  function restudy() { quiz.done = false; buildQuiz() }
 
   /* ?step=S&li=I&static=K 深链（验收截图/笔顺自检用；static=前 K 笔静态帧） */
   let staticN = $state(-1)
@@ -144,199 +140,261 @@
   })
 </script>
 
-<section id="v-lesson" class="view on">
-  <div class="topbar">
-    <button class="backbtn" data-back="island" onclick={onexit}>‹</button>
-    <h2><Ruby text="第{cn(n)}课 {lesson.title}" /></h2>
-    <div class="scorechip">{cn(step)}/五</div>
+<section id="v-lesson" class="view on" data-screen="lesson">
+  <div class="ltop">
+    <button class="cbtn" data-back="learn" onclick={onexit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt">
+      <ruby>第 {cn(n)} 课<rt>dì {n} kè</rt></ruby>
+      {#if short.zh}&nbsp;·&nbsp;<ruby>{short.zh}<rt>{short.py}</rt></ruby>{:else}&nbsp;·&nbsp;{short.raw}{/if}
+    </div>
+    <div class="lprog" id="lprog">{step}/5</div>
   </div>
 
-  <!-- 五步进度条 -->
-  <div class="stepbar">
-    {#each STEPS as s (s.id)}
-      <button class="stepdot" class:on={step === s.id} class:passed={step > s.id} onclick={() => goto(s.id)}>
-        <Icon name={s.icon} size={18} />
-        <span><Ruby text={s.name} /></span>
+  <!-- 步骤条（点选可跳） -->
+  <div id="rail">
+    {#each STEPS as s, i (s.id)}
+      <button class="rstep" class:done={step > s.id || (s.id === 5 && quiz.done && quiz.passed)} class:cur={step === s.id} data-step={s.id} onclick={() => goto(s.id)}>
+        <span class="rd">
+          {#if step > s.id && s.id !== 5}
+            <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>
+          {:else}{s.id}{/if}
+        </span>
+        <span class="rname"><ruby>{s.name}<rt>{s.py}</rt></ruby></span>
       </button>
     {/each}
   </div>
 
-  {#if step === 1}
-    <!-- ① 认识：大字模 + 点读 + 口诀 + 例词 -->
-    <div class="stepwrap">
-      {#each letters as l (l.k)}
-        <div class="recog">
-          <button class="glyphbtn" data-say={l.k} onclick={() => say(l.k)}>
-            <span class="glyph">{l.k}</span>
-          </button>
-          <div class="kj" data-kj={l.k}>{#if l.kjAudio}<button class="kjplay" onclick={() => playAudio(l.kjAudio!, { hint: '语音未准备好' })}><Icon name="play" size={16} /></button>{/if}<Ruby text={l.kj} /></div>
-          {#if LETTERS[l.k]?.word}
-            <div class="wrow">
-              <span class="wem">{LETTERS[l.k].em}</span>
-              <span class="word">{LETTERS[l.k].word} <span class="wp">{LETTERS[l.k].wp}</span></span>
-            </div>
-          {/if}
-        </div>
-      {/each}
-      <button class="btn green gonext" data-gonext="2" onclick={() => goto(2)}><Ruby text="学会啦，看写法" /> <Icon name="arrow-right" size={20} /></button>
-    </div>
-
-  {:else if step === 2}
-    <!-- ② 写法：笔顺动画 + 分笔旁白 -->
-    <div class="stepwrap">
-      <div class="lchips">
-        {#each letters as l, i (l.k)}
-          <button class="lchip" class:on={i === li} onclick={() => (li = i)}>{l.k}</button>
-        {/each}
-      </div>
-      <div class="animbox">
-        <StrokeAnim unit={letter.k} static={staticN} bind:this={sa} />
-      </div>
-      <div class="strokeinfo">
-        <div class="say">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Ruby text={seg} />{/each}</div>
-        <div class="xie"><Ruby text={letter.xie} /></div>
-        <div class="stroketags">
-          {#each letter.strokes as sn, i (letter.k + i)}<span class="stag"><b>{i + 1}</b> <Ruby text={sn} /></span>{/each}
-        </div>
-      </div>
-      <div class="xrow">
-        <button class="btn blue small" onclick={() => { sa?.replay(); if (letter.sayAudio) playAudio(letter.sayAudio, { hint: '' }) }}>
-          <Icon name="refresh" size={20} /> <Ruby text="再看一遍" />
-        </button>
-        <button class="navbtn" disabled={li === 0} onclick={() => (li = Math.max(0, li - 1))} aria-label="上一个">‹</button>
-        <button class="navbtn" disabled={li >= letters.length - 1} onclick={() => (li = Math.min(letters.length - 1, li + 1))} aria-label="下一个">›</button>
-      </div>
-      <button class="btn green gonext" data-gonext="3" onclick={() => goto(3)}><Ruby text="会写了，练声调" /> <Icon name="arrow-right" size={20} /></button>
-    </div>
-
-  {:else if step === 3}
-    <!-- ③ 声调 -->
-    <div class="stepwrap">
-      <ToneDrill rows={lesson.tones} />
-      <button class="btn green gonext" data-gonext="4" onclick={() => goto(4)}><Ruby text="练好了，去拼读" /> <Icon name="arrow-right" size={20} /></button>
-    </div>
-
-  {:else if step === 4}
-    <!-- ④ 拼读 / 整体认读 -->
-    <div class="stepwrap">
-      <BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} note={lesson.note || ''} />
-      <button class="btn green gonext" data-gonext="5" onclick={() => goto(5)}><Ruby text="拼完了，去小测" /> <Icon name="arrow-right" size={20} /></button>
-    </div>
-
-  {:else if !quiz.done}
-    <!-- ⑤ 小测 -->
-    <div class="stepwrap quizwrap">
-      {#if quiz.q[quiz.i]}
-        {@const q = quiz.q[quiz.i]}
-        <div class="qmeta"><Ruby text="第{cn(quiz.i + 1)}题" /> · <Ruby text={q.type === 'listen' ? '听一听，选出来' : '看一看，它怎么读'} /></div>
-        <div class="qprog">{#each Array(5) as _, i (i)}<span class="qdot" class:ok={i < quiz.i}></span>{/each}</div>
-        {#if q.type === 'listen'}
-          <button class="qplay" onclick={() => playQuestionAudio(q)}><Icon name="play" size={44} /></button>
-          <div class="qhint"><Ruby text="点我听一听" /></div>
-        {:else}
-          <div class="qglyph">{q.k}</div>
-        {/if}
-        <div class="opts">
-          {#each q.opts as o (o)}
-            <button
-              class="opt" class:wide={q.type === 'look'}
-              class:right={quiz.pick && o === q.k}
-              class:wrong={quiz.pick === '✗' && o !== q.k && o === quiz.lastPick}
-              onclick={() => { quiz.lastPick = o; answer(o) }}
-            >
-              {q.type === 'look' ? (LETTERS[o] as any)?.han || o : o}
-            </button>
+  <!-- 横向翻页舞台 -->
+  <div id="stagewrap">
+    <HSteps n={5} cur={step - 1} onchange={(i) => goto(i + 1)}>
+      <!-- 页1 · 认识：大字模 + 点读 + 口诀 + 例词 -->
+      <div class="hspage"><div class="pcard">
+        <div class="ptag"><ruby>认识<rt>rèn shi</rt></ruby> · {letter.k}</div>
+        <div class="lchips">
+          {#each letters as l, i (l.k)}
+            <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => (li = i)}>{l.k}</button>
           {/each}
         </div>
-      {/if}
-    </div>
+        <div class="bigwrap grid4">
+          <button class="bigbtn" data-say={letter.k} onclick={() => say(letter.k)}>
+            <span class="big" data-big>{letter.k}</span>
+          </button>
+        </div>
+        <div class="kjline" data-kj={letter.k}>
+          {#if letter.kjAudio}<button class="kjplay" onclick={() => playAudio(letter.kjAudio!, { hint: '语音未准备好' })}><Icon name="play" size={15} /></button>{/if}
+          <Ruby text={letter.kj} />
+        </div>
+        {#if LETTERS[letter.k]?.word}
+          <div class="wrow">
+            <span class="cip"><span class="wem">{LETTERS[letter.k].em}</span><Ruby text={LETTERS[letter.k].word} />&nbsp;<span class="wp">{LETTERS[letter.k].wp}</span></span>
+          </div>
+        {/if}
+        <div class="taptip"><svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" /><path d="M16.5 8.5a5 5 0 010 7" /></svg><ruby>点一点，听读音<rt>diǎn yī diǎn tīng dú yīn</rt></ruby></div>
+      </div></div>
 
-  {:else}
-    <!-- 小测结算 -->
-    <div class="stepwrap resultwrap">
-      <div class="resEmoji">{#if quiz.passed}<Icon name="rainbow" size={54} /><Icon name="star" size={54} />{:else}<Icon name="sprout" size={54} /><Icon name="dumbbell" size={54} />{/if}</div>
-      {#if quiz.passed}
-        <div class="resScore"><Ruby text="对了{cn(quiz.score)}题，太棒了！" /></div>
-        <div class="resStars">{#each Array(quiz.score >= 5 ? 3 : 2)}<Icon name="star" size={34} />{/each}</div>
-        <div class="resMsg"><Ruby text={quiz.score >= 5 ? '全部答对，你是拼音小天才！' : '通过啦，下一课已经解锁！'} /></div>
-        <button class="btn green" onclick={onexit}><Icon name="map" size={22} /> <Ruby text="回学习岛" /></button>
-      {:else}
-        <div class="resScore"><Ruby text="对了{cn(quiz.score)}题" /></div>
-        <div class="resMsg"><Ruby text="差一点点！我们再学一遍，你一定可以的" /></div>
-        <button class="btn teal" onclick={restudy}><Icon name="refresh" size={22} /> <Ruby text="再学一遍" /></button>
-      {/if}
+      <!-- 页2 · 写法：笔顺动画 + 旁白 -->
+      <div class="hspage"><div class="pcard">
+        <div class="ptag hot"><ruby>写法<rt>xiě fǎ</rt></ruby> · {letter.k}</div>
+        <div class="animfit"><StrokeAnim unit={letter.k} static={staticN} bind:this={sa} /></div>
+        <div class="sayline">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Ruby text={seg} />{/each}</div>
+        <div class="xrow">
+          <button class="rebtn" onclick={() => { sa?.replay(); if (letter.sayAudio) playAudio(letter.sayAudio, { hint: '' }) }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4" /><path d="M21 4v5h-5" /></svg>
+            <ruby>再看一遍<rt>zài kàn yī biàn</rt></ruby>
+          </button>
+        </div>
+        <div class="taptip"><ruby>看一遍，再写一遍<rt>kàn yī biàn zài xiě yī biàn</rt></ruby></div>
+      </div></div>
+
+      <!-- 页3 · 声调 -->
+      <div class="hspage"><div class="pcard">
+        <div class="ptag hot"><ruby>声调<rt>shēng diào</rt></ruby></div>
+        <div class="drillfit"><ToneDrill rows={lesson.tones} /></div>
+      </div></div>
+
+      <!-- 页4 · 拼读 / 整体认读 -->
+      <div class="hspage"><div class="pcard">
+        <div class="ptag hot"><ruby>拼读<rt>pīn dú</rt></ruby></div>
+        <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} note={lesson.note || ''} /></div>
+      </div></div>
+
+      <!-- 页5 · 小测 -->
+      <div class="hspage"><div class="pcard">
+        {#if !quiz.q.length && !quiz.done}
+          <div class="quizboot"><ruby>准备好了吗<rt>zhǔn bèi hǎo le ma</rt></ruby></div>
+          <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><ruby>开始小测<rt>kāi shǐ xiǎo cè</rt></ruby></button>
+        {:else if !quiz.done}
+          {@const q = quiz.q[quiz.i]}
+          <div class="ptag hot"><ruby>小测<rt>xiǎo cè</rt></ruby> · <ruby>第{cn(quiz.i + 1)}题<rt>dì {cn(quiz.i + 1)} tí</rt></ruby></div>
+          <div class="qprog">{#each Array(5) as _, i (i)}<span class="qdot" class:ok={i < quiz.i}></span>{/each}</div>
+          {#if q.type === 'listen'}
+            <button class="qplay" onclick={() => playQuestionAudio(q)}><Icon name="play" size={40} /></button>
+            <div class="qhint"><ruby>听一听，选出来<rt>tīng yī tīng xuǎn chū lái</rt></ruby></div>
+          {:else}
+            <div class="qglyph">{q.k}</div>
+            <div class="qhint"><ruby>看一看，它怎么读<rt>kàn yī kàn tā zěn me dú</rt></ruby></div>
+          {/if}
+          <div class="opts">
+            {#each q.opts as o (o)}
+              <button
+                class="opt" class:right={quiz.pick && o === q.k}
+                class:wrong={quiz.pick === '✗' && o !== q.k && o === quiz.lastPick}
+                onclick={() => { quiz.lastPick = o; answer(o) }}
+              >{q.type === 'look' ? (LETTERS[o] as any)?.han || o : o}</button>
+            {/each}
+          </div>
+        {:else if quiz.passed}
+          <div class="res">
+            <div class="resemoji"><Icon name="rainbow" size={46} /><Icon name="star" size={46} /></div>
+            <div class="resscore"><ruby>对了{cn(quiz.score)}题，太棒了！<rt>duì le {quiz.score} tí tài bàng le</rt></ruby></div>
+            <div class="resstars">{#each Array(quiz.score >= 5 ? 3 : 2) as _, i (i)}<Icon name="star" size={30} />{/each}</div>
+            <button class="bootbtn" data-backlearn onclick={onexit}><ruby>回课程地图<rt>huí kè chéng dì tú</rt></ruby></button>
+          </div>
+        {:else}
+          <div class="res">
+            <div class="resemoji"><Icon name="sprout" size={46} /><Icon name="dumbbell" size={46} /></div>
+            <div class="resscore"><ruby>对了{cn(quiz.score)}题<rt>duì le {quiz.score} tí</rt></ruby></div>
+            <div class="resmsg"><ruby>差一点点！再学一遍，你一定可以的<rt>chà yī diǎn diǎn zài xué yī biàn</rt></ruby></div>
+            <button class="bootbtn" onclick={restudy}><ruby>再学一遍<rt>zài xué yī biàn</rt></ruby></button>
+          </div>
+        {/if}
+      </div></div>
+    </HSteps>
+  </div>
+
+  <!-- 页点 + 滑动提示 -->
+  <div id="pager">
+    <div id="dots">
+      {#each STEPS as s, i (s.id)}
+        <i class:on={step === i + 1} data-dot={s.id}></i>
+      {/each}
     </div>
-  {/if}
+    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一步<rt>zuǒ huá xià yī bù</rt></ruby></div>
+  </div>
 </section>
 
 <style>
-  #v-lesson { gap: 12px; }
-  .stepbar { display: flex; gap: 6px; }
-  .stepdot { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 2px;
-    background: #fff; border: 2px solid #eee4d3; border-radius: 13px; color: #b7ab97;
-    font-size: 13.5px; font-weight: 800; font-family: inherit; }
-  .stepdot.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
-  .stepdot.passed { color: #1f7a68; border-color: #bfe8df; }
-  .stepwrap { display: flex; flex-direction: column; gap: 12px; padding-bottom: 86px; }
-  /* .view 是 min-height+overflow 布局（body 滚动），sticky 失效 → 用 fixed 底栏 */
-  .stepwrap > .gonext {
-    position: fixed; bottom: calc(env(safe-area-inset-bottom) + 10px); left: 50%;
-    transform: translateX(-50%); width: min(calc(100vw - 36px), 396px); z-index: 5; min-height: 62px;
-  }
-  .quizwrap { justify-content: center; flex: 1; }
-  .qprog { display: flex; gap: 8px; justify-content: center; }
-  .qdot { width: 13px; height: 13px; border-radius: 50%; background: #eee4d3; }
-  .qdot.ok { background: #2A9D8F; }
-  .qhint { text-align: center; font-size: 19px; font-weight: 700; color: #2A9D8F; }
+  #v-lesson { padding: 10px 16px 8px; gap: 0; }
+  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+  .cbtn svg { width: 18px; height: 18px; }
+  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; line-height: 1.8; }
+  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: 6px 11px; border-radius: 999px; }
+
+  #rail { display: flex; align-items: flex-start; justify-content: space-between; margin: 8px 6px 0; position: relative; flex: none; }
+  #rail::before { content: ''; position: absolute; top: 15px; left: 36px; right: 36px; height: 3px; background: var(--animal-border-light); border-radius: 3px; }
+  .rstep { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+    font-family: inherit; background: none; border: none; color: var(--animal-text-2); }
+  .rstep .rd { width: 32px; height: 32px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; font-style: normal; }
+  .rstep .rd svg { width: 14px; height: 14px; }
+  .rstep .rname { font-size: 11px; font-weight: 800; }
+  .rstep .rname :global(rt) { font-size: 8px; }
+  .rstep.done .rd { background: var(--animal-primary-bg); color: var(--animal-primary-active); }
+  .rstep.cur .rd { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
+  .rstep.cur .rname { color: var(--animal-primary-active); }
+
+  #stagewrap { flex: 1; min-height: 0; margin: 12px 0 4px; position: relative; }
+  :global(.hswrap) { flex: 1; }
+  .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 18px 14px; overflow: hidden; position: relative; gap: 6px; }
+  .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size: 11px; font-weight: 900; color: var(--animal-text-dis);
+    background: #f4f0e4; padding: 4px 10px; border-radius: 999px; max-width: calc(100% - 28px); }
+  .pcard .ptag.hot { background: #fff8e0; color: var(--animal-warning-active); }
+
+  .grid4 { position: relative; }
+  .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
+    background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
+    background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
 
   /* 认识 */
-  .recog { background: #fff; border: 2.5px solid #eee4d3; border-radius: 22px; padding: 14px;
-    display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  .glyphbtn { border: none; background: none; font-family: inherit; }
-  .glyph { font-size: 96px; font-weight: 900; color: #264653; line-height: 1.25; }
-  .glyph:active { color: #E76F51; }
-  .kj { font-size: 22px; font-weight: 800; color: #E76F51; display: flex; align-items: center; gap: 8px; line-height: 1.9; }
-  .kjplay { width: 40px; height: 40px; border-radius: 50%; border: none; background: #fdeee7; color: #E76F51;
-    display: inline-flex; align-items: center; justify-content: center; }
-  .wrow { display: flex; align-items: center; gap: 8px; font-size: 21px; font-weight: 800; color: #6f6353; }
-  .wem { font-size: 30px; }
-  .wp { font-size: 17px; color: #8a7a68; }
+  .lchips { display: flex; gap: 7px; margin-top: 22px; }
+  .lchip { min-width: 44px; height: 40px; border-radius: 13px; border: 2px solid #e3d9c8; background: #fff;
+    font-size: 20px; font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 8px; }
+  .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
+  .bigwrap { width: 82%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .bigbtn { border: none; background: none; font-family: inherit; padding: 0; }
+  .big { font-weight: 900; font-size: clamp(120px, 40vw, 176px); line-height: 1; color: var(--animal-primary);
+    text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; }
+  .kjline { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: var(--animal-text); line-height: 2; flex: none; }
+  .kjplay { width: 30px; height: 30px; border-radius: 50%; border: none; background: #fdeee7; color: #e76f51;
+    display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .wrow { display: flex; align-items: center; justify-content: center; flex: none; }
+  .cip { display: flex; align-items: center; gap: 6px; background: #fff8e0; border-radius: 999px;
+    padding: 6px 13px; font-size: 13.5px; font-weight: 800; color: var(--animal-text); }
+  .wem { font-size: 20px; }
+  .wp { font-size: 12px; color: #dba90e; font-weight: 900; }
+  .taptip { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: var(--animal-text-2); flex: none; margin-bottom: 14px; }
+  .taptip svg { width: 16px; height: 16px; }
 
   /* 写法 */
-  .lchips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-  .lchip { min-width: 58px; min-height: 52px; border-radius: 15px; border: 2.5px solid #e3d9c8; background: #fff;
-    font-size: 27px; font-weight: 900; color: #6f6353; font-family: inherit; }
-  .lchip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
-  .animbox { background: #fff; border-radius: 22px; border: 2.5px solid #eee4d3; padding: 12px 8px; }
-  .say { font-size: 21px; font-weight: 800; color: #264653; line-height: 1.9; }
-  .xie { font-size: 17px; font-weight: 700; color: #8a7a68; }
-  .stroketags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-  .stag { background: #f4efe4; border-radius: 11px; padding: 4px 10px; font-size: 17px; font-weight: 700; color: #6f6353; }
-  .stag b { color: #E76F51; }
-  .xrow { display: flex; gap: 10px; align-items: stretch; }
-  .xrow .btn { flex: 1; }
-  .navbtn { width: 58px; border-radius: 16px; border: 2px solid #e3d9c8; background: #fff;
-    font-size: 30px; font-weight: 900; color: #6f6353; font-family: inherit; }
-  .navbtn:disabled { opacity: .35; }
+  .animfit { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
+  .animfit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
+  .sayline { font-size: 14px; font-weight: 800; color: var(--animal-text-2); line-height: 2; text-align: center; flex: none; }
+  .xrow { display: flex; gap: 10px; flex: none; }
+  .rebtn { display: flex; align-items: center; gap: 7px; border: none; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+    font-family: inherit; font-size: 14px; font-weight: 900; padding: 9px 16px; border-radius: 999px; cursor: pointer; }
+  .rebtn svg { width: 15px; height: 15px; }
+
+  /* 声调 / 拼读 drill 卡内适配 */
+  .drillfit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .drillfit :global(.tonedrill), .drillfit :global(.blenddrill) { width: 100%; gap: 8px; }
+  .drillfit :global(.tonerow) { min-height: 52px; padding: 6px 12px; }
+  .drillfit :global(.tsyl) { font-size: 30px; min-width: 56px; }
+  .drillfit :global(.tname) { font-size: 14px; }
+  .drillfit :global(.bigbase) { font-size: 44px; min-height: 58px; line-height: 1.3; }
+  .drillfit :global(.basechip) { min-width: 56px; min-height: 42px; font-size: 22px; border-radius: 14px; }
+  .drillfit :global(.stage) { height: 128px; }
+  .drillfit :global(.card) { width: 82px; height: 102px; font-size: 46px; }
+  .drillfit :global(.rsyl) { font-size: 54px; }
+  .drillfit :global(.rchar) { font-size: 30px; }
+  .drillfit :global(.bchip) { font-size: 14px; padding: 6px 10px; }
+  .drillfit :global(.magicnote) { font-size: 13px; padding: 6px 10px; }
+  .drillfit :global(.ztgrid) { gap: 7px; }
+  .drillfit :global(.ztcard) { padding: 7px 6px; }
+  .drillfit :global(.ztu) { font-size: 26px; }
+  .drillfit :global(.zkj) { font-size: 12px; }
+  .drillfit :global(.qhint) { font-size: 19px; margin-top: 0; }
+  .drillfit :global(.topt) { min-height: 64px; }
+  .drillfit :global(.topt svg) { width: 40px; height: 22px; }
+  .drillfit :global(.topt span) { font-size: 15px; }
+  .drillfit :global(.replay) { width: 76px; height: 76px; }
+  .drillfit :global(.steps .btn), .drillfit :global(.trow .btn) { min-height: 44px; font-size: 15px; }
+  .drillfit :global(.navbtn) { width: 44px; height: 44px; font-size: 22px; }
 
   /* 小测 */
-  .qmeta { text-align: center; font-size: 20px; font-weight: 800; color: #264653; line-height: 1.9; }
-  .qplay { align-self: center; width: 118px; height: 118px; border-radius: 50%; border: none; background: #fff;
-    box-shadow: 0 6px 0 #e3d9c8; color: #2A9D8F; display: flex; align-items: center; justify-content: center; margin: 8px 0; }
-  .qplay:active { transform: translateY(3px); box-shadow: 0 2px 0 #e3d9c8; }
-  .qglyph { text-align: center; font-size: 110px; font-weight: 900; color: #264653; line-height: 1.3; margin: 4px 0; }
-  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .opt { min-height: 84px; border-radius: 19px; border: 2.5px solid #eee4d3; background: #fff;
-    font-size: 44px; font-weight: 900; color: #264653; font-family: inherit; }
-  .opt.wide { font-size: 34px; min-height: 74px; color: #6f6353; }
-  .opt.right { border-color: #2A9D8F; background: #e6f7f2; }
-  .opt.wrong { border-color: #E76F51; background: #fdeee7; animation: shake .3s; }
+  .quizboot { font-size: 19px; font-weight: 900; color: var(--animal-text); line-height: 2; }
+  .bootbtn { border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
+    font-size: 17px; font-weight: 900; padding: 14px 34px; box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
+  .bootbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
+  .qprog { display: flex; gap: 7px; margin-top: 24px; }
+  .qdot { width: 11px; height: 11px; border-radius: 50%; background: var(--animal-border-light); }
+  .qdot.ok { background: var(--animal-primary); }
+  .qplay { width: 84px; height: 84px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 0 #e3d9c8;
+    color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: none; }
+  .qplay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
+  .qglyph { font-size: 84px; font-weight: 900; color: var(--animal-text); line-height: 1.2; }
+  .qhint { font-size: 15px; font-weight: 800; color: var(--animal-text-2); flex: none; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; flex: 1; min-height: 0; max-height: 260px; margin-bottom: 14px; }
+  .opt { min-height: 96px; border-radius: 18px; border: 3px solid var(--animal-border-light); background: #fbf8ee;
+    font-size: 44px; font-weight: 900; color: var(--animal-text); font-family: inherit; cursor: pointer; }
+  .opt.right { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
+  .opt.wrong { border-color: #e76f51; background: #fdeee7; animation: shake .3s; }
   @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
 
-  /* 结算 */
-  .resultwrap { align-items: center; gap: 14px; padding: 26px 0; }
-  .resEmoji { font-size: 62px; }
-  .resScore { font-size: 27px; font-weight: 900; color: #264653; }
-  .resStars { color: #E9C46A; display: flex; gap: 4px; }
-  .resMsg { font-size: 21px; font-weight: 800; color: #2A9D8F; text-align: center; line-height: 1.9; }
+  /* 小测结算 */
+  .res { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .resemoji { display: flex; gap: 10px; }
+  .resscore { font-size: 20px; font-weight: 900; color: var(--animal-text); line-height: 2; }
+  .resstars { color: #e9c46a; display: flex; gap: 4px; }
+  .resmsg { font-size: 14.5px; font-weight: 800; color: var(--animal-primary-active); text-align: center; line-height: 1.9; max-width: 260px; }
+
+  #pager { height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  #dots { display: flex; gap: 7px; }
+  #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; }
+  #dots i.on { width: 22px; background: var(--animal-primary); }
+  #swipehint { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--animal-text-2); }
+  #swipehint svg { width: 16px; height: 16px; }
 </style>

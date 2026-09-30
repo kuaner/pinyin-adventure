@@ -14,6 +14,7 @@ export interface AppData {
   hist: HistEntry[]
   mute: boolean
   bolt: BoltRec
+  days: Record<string, 1>   /* 活动日（YYYY-MM-DD → 1）：我的 tab 周历条 */
 }
 
 export function loadS(): AppData {
@@ -29,11 +30,12 @@ export function loadS(): AppData {
           hist: o.hist || [],
           mute: !!o.mute,
           bolt: o.bolt || { acc: 0, d: '', tacc: 0, td: '' },
+          days: o.days || {},
         }
       }
     }
   } catch { /* 损坏数据回退默认 */ }
-  return { weights: {}, stars: {}, cards: {}, hist: [], mute: false, bolt: { acc: 0, d: '', tacc: 0, td: '' } }
+  return { weights: {}, stars: {}, cards: {}, hist: [], mute: false, bolt: { acc: 0, d: '', tacc: 0, td: '' }, days: {} }
 }
 
 export function save(d: AppData) {

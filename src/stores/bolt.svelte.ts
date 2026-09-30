@@ -47,7 +47,7 @@ export function startBolt(freeze: boolean) {
   show('bolt')
   BT.q = makeBoltQ()
   BT.q0 = Date.now()
-  playAudio('go')
+  /* v2.4 声音礼仪 R1：安静进入，无过场音 */
   if (!freeze) BT.tid = setInterval(boltTick, 1000)
 }
 
@@ -87,7 +87,6 @@ export function endBolt() {
   if (BT.done && !BT.n) return
   BT.done = true
   if (BT.tid) { clearInterval(BT.tid); BT.tid = null }
-  playAudio('timeout')
   const acc = BT.n ? Math.round(BT.ok * 100 / BT.n) : 0
   const sum = BT.durs.reduce((a, b) => a + b, 0)
   const avg = BT.n ? (sum / BT.n / 1000) : 0
@@ -128,5 +127,5 @@ export function boltAvg(): number {
 /* 闪电页 ✕：进行中=提前结束看结算；结算页上=回主页 */
 export function boltQuit() {
   if (!BT.done) { endBolt(); return }
-  show('home')
+  show('practice')
 }
