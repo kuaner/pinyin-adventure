@@ -1,0 +1,110 @@
+[
+ {
+  "name": "解锁层已删除：进 app 直达首页",
+  "pass": true
+ },
+ {
+  "name": "桌面网格 9 应用 4 分区",
+  "pass": true
+ },
+ {
+  "name": "九个入口 data-go 齐全",
+  "pass": true
+ },
+ {
+  "name": "音频自检按钮已删",
+  "pass": true
+ },
+ {
+  "name": "桌面应用名带注音",
+  "pass": true
+ },
+ {
+  "name": "学习岛自由导航：第1步直接跳第4步",
+  "pass": true
+ },
+ {
+  "name": "写法步渲染（b 两笔+笔名标签带注音）",
+  "pass": true
+ },
+ {
+  "name": "星图 12 课、已解锁 3 课可自由回看",
+  "pass": true
+ },
+ {
+  "name": "学习岛 UI emoji 清零",
+  "pass": true
+ },
+ {
+  "name": "PROBE-FULL 10 题全对通关",
+  "pass": true
+ },
+ {
+  "name": "闯关题型只含 listen/look/kj（ll·rule 已删）",
+  "pass": true
+ },
+ {
+  "name": "口诀正向回忆题型出现",
+  "pass": true
+ },
+ {
+  "name": "闯关题面指令带注音（Bug#2）",
+  "pass": true
+ },
+ {
+  "name": "反馈层 desc 渲染为注音（不暴露 ruby 源码，Bug#1 同类）",
+  "pass": true
+ },
+ {
+  "name": "闪电题型只含 blisten/bkj（blook·bdjudge 已删）",
+  "pass": true
+ },
+ {
+  "name": "听写占比 ~70%",
+  "pass": true
+ },
+ {
+  "name": "闪电页 emoji 清零",
+  "pass": true
+ },
+ {
+  "name": "闪卡背面注音齐全（口诀+例词 rt）",
+  "pass": true
+ },
+ {
+  "name": "闪卡无注音裁切（scrollHeight 溢出检查）",
+  "pass": true
+ },
+ {
+  "name": "关卡 9 张全图标（em emoji 已换 naive-icons）",
+  "pass": true
+ },
+ {
+  "name": "历史页 emoji 清零",
+  "pass": true
+ },
+ {
+  "name": "首次访问 SW 注册",
+  "pass": true
+ },
+ {
+  "name": "二次访问出现更新提示条（onNeedRefresh 链路）",
+  "pass": true
+ },
+ {
+  "name": "点击更新 → SW 接管（skipWaiting+reload）",
+  "pass": true
+ },
+ {
+  "name": "PROBE-DET",
+  "pass": true
+ },
+ {
+  "name": "PROBE-BOLT",
+  "pass": true
+ },
+ {
+  "name": "PROBE-ZI",
+  "pass": true
+ }
+]
