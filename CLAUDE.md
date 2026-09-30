@@ -97,9 +97,9 @@ scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清
 
 1. 更新 `package.json` 的 `version`
 2. `git add -A && git commit && git push origin main`
-3. `git tag vX.Y.Z && git push origin vX.Y.Z` → Actions（`.github/workflows/deploy.yml`）：`npm ci` → `vite build`（GITHUB_PAGES=1）→ 部署 Pages → 自动建 Release
-4. Pages 为 **workflow 部署模式**（`build_type=workflow`）；若需回退：`gh api -X PUT repos/kuaner/pinyin-adventure/pages -f build_type=legacy`
-5. **v2.9.4 立硬门槛**：deploy job **必须声明 `environment: github-pages`**——缺了它 deploy-pages 照样报 success 但零 deployment 记录、零内容落地（v2.1~v2.9.3 全部空转、线上冻结一天的病根，见 deploy.yml 注释）。环境保护白名单=main/gh-pages/v*（v* 为 tag 型策略，REST 已可配）。**发版后必须验真落地**：`gh api repos/:owner/:repo/deployments?per_page=1` 看新记录 + curl 线上 index 的 CSS/JS 哈希与本地 `dist/` 一致（哈希不同=没生效，max-age=600 需等 CDN），只看 run 绿灯不算数
+3. `git tag vX.Y.Z && git push origin vX.Y.Z` → Actions（`.github/workflows/deploy.yml`）：`npm ci` → `vite build`（GITHUB_PAGES=1）→ **强推 dist→gh-pages 分支** → 自动建 Release
+4. **Pages 为 legacy 模式（v2.9.4 起）**：source=gh-pages 分支，分支推送后自动构建上线。历史背景：workflow deployment 管线对本仓库失效（deploy-pages 报 success 但零内容落地，v2.1~v2.9.3 全部空转、线上冻结一天），v2.9.4 用 `build_type=legacy`+gh-pages 回退解卡；若需切回 workflow 模式：`gh api -X PUT repos/kuaner/pinyin-adventure/pages -f build_type=workflow` 并恢复 deploy-pages（须带 `environment: github-pages`）
+5. **发版验真硬门槛（BUGS#28 教训）**：run 绿灯≠上线。发版后必须 curl 线上 `index.html` 提取 CSS/JS 哈希与本地 `dist/` 一致（哈希不同=没生效，legacy 构建一般 1-3 分钟）；`gh api repos/:owner/:repo/pages/builds/latest` 看 status=built 且 commit=gh-pages HEAD
 
 ## 验收探针
 
