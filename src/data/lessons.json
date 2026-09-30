@@ -1,0 +1,3560 @@
+{
+ "lessons": [
+  {
+   "n": 1,
+   "title": "单韵母 a o e",
+   "label": "a o e",
+   "kind": "ym",
+   "letters": [
+    {
+     "k": "a",
+     "kj": "张大嘴巴 a a a",
+     "han": "阿",
+     "strokes": [
+      "左半圆",
+      "竖右弯"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写左半圆，再写竖右弯，两笔写成",
+     "kjAudio": "lessons/kj_a",
+     "sayAudio": "lessons/write_a",
+     "word": "阿姨",
+     "wp": "ā yí",
+     "em": "👩"
+    },
+    {
+     "k": "o",
+     "kj": "圆圆嘴巴 o o o",
+     "han": "喔",
+     "strokes": [
+      "圆"
+     ],
+     "xie": "中格，一笔写成",
+     "say": "一笔写成，占中格",
+     "kjAudio": "lessons/kj_o",
+     "sayAudio": "lessons/write_o",
+     "word": "公鸡喔喔叫",
+     "wp": "gōng jī ō",
+     "em": "🐓"
+    },
+    {
+     "k": "e",
+     "kj": "扁扁嘴巴 e e e",
+     "han": "鹅",
+     "strokes": [
+      "横加左半圆"
+     ],
+     "xie": "中格，一笔写成",
+     "say": "一笔写成，占中格",
+     "kjAudio": "lessons/kj_e",
+     "sayAudio": "lessons/write_e",
+     "word": "大白鹅",
+     "wp": "dà bái é",
+     "em": "🦢"
+    }
+   ],
+   "tones": [
+    {
+     "base": "a",
+     "display": "a",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ā",
+       "file": "a1"
+      },
+      {
+       "t": 2,
+       "display": "á",
+       "file": "a2"
+      },
+      {
+       "t": 3,
+       "display": "ǎ",
+       "file": "a3"
+      },
+      {
+       "t": 4,
+       "display": "à",
+       "file": "a4"
+      }
+     ]
+    },
+    {
+     "base": "o",
+     "display": "o",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ō",
+       "file": "o1"
+      },
+      {
+       "t": 2,
+       "display": "ó",
+       "file": "o2"
+      },
+      {
+       "t": 3,
+       "display": "ǒ",
+       "file": "o3"
+      },
+      {
+       "t": 4,
+       "display": "ò",
+       "file": "o4"
+      }
+     ]
+    },
+    {
+     "base": "e",
+     "display": "e",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ē",
+       "file": "e1"
+      },
+      {
+       "t": 2,
+       "display": "é",
+       "file": "e2"
+      },
+      {
+       "t": 3,
+       "display": "ě",
+       "file": "e3"
+      },
+      {
+       "t": 4,
+       "display": "è",
+       "file": "e4"
+      }
+     ]
+    }
+   ],
+   "blends": []
+  },
+  {
+   "n": 2,
+   "title": "单韵母 i u ü",
+   "label": "i u ü",
+   "kind": "ym",
+   "letters": [
+    {
+     "k": "i",
+     "kj": "牙齿对齐 i i i",
+     "han": "衣",
+     "strokes": [
+      "竖",
+      "点"
+     ],
+     "xie": "上格和中格，点靠近第二线，两笔写成",
+     "say": "先写竖，再写点，两笔写成",
+     "kjAudio": "lessons/kj_i",
+     "sayAudio": "lessons/write_i",
+     "word": "衣服",
+     "wp": "yī fu",
+     "em": "👕"
+    },
+    {
+     "k": "u",
+     "kj": "嘴巴突出 u u u",
+     "han": "屋",
+     "strokes": [
+      "竖右弯",
+      "竖"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写竖右弯，再写竖，两笔写成",
+     "kjAudio": "lessons/kj_u",
+     "sayAudio": "lessons/write_u",
+     "word": "小屋子",
+     "wp": "xiǎo wū zi",
+     "em": "🏠"
+    },
+    {
+     "k": "ü",
+     "kj": "小鱼吐泡 ü ü ü",
+     "han": "鱼",
+     "strokes": [
+      "竖右弯",
+      "竖",
+      "点",
+      "点"
+     ],
+     "xie": "上格和中格，两点靠近第二线，四笔写成",
+     "say": "先写竖右弯，再写竖，再写点，最后写点，四笔写成",
+     "kjAudio": "lessons/kj_v",
+     "sayAudio": "lessons/write_v",
+     "word": "小鱼",
+     "wp": "xiǎo yú",
+     "em": "🐟"
+    }
+   ],
+   "tones": [
+    {
+     "base": "yi",
+     "display": "i",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ī",
+       "file": "yi1"
+      },
+      {
+       "t": 2,
+       "display": "í",
+       "file": "yi2"
+      },
+      {
+       "t": 3,
+       "display": "ǐ",
+       "file": "yi3"
+      },
+      {
+       "t": 4,
+       "display": "ì",
+       "file": "yi4"
+      }
+     ]
+    },
+    {
+     "base": "wu",
+     "display": "u",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ū",
+       "file": "wu1"
+      },
+      {
+       "t": 2,
+       "display": "ú",
+       "file": "wu2"
+      },
+      {
+       "t": 3,
+       "display": "ǔ",
+       "file": "wu3"
+      },
+      {
+       "t": 4,
+       "display": "ù",
+       "file": "wu4"
+      }
+     ]
+    },
+    {
+     "base": "yu",
+     "display": "ü",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ǖ",
+       "file": "yu1"
+      },
+      {
+       "t": 2,
+       "display": "ǘ",
+       "file": "yu2"
+      },
+      {
+       "t": 3,
+       "display": "ǚ",
+       "file": "yu3"
+      },
+      {
+       "t": 4,
+       "display": "ǜ",
+       "file": "yu4"
+      }
+     ]
+    }
+   ],
+   "blends": []
+  },
+  {
+   "n": 3,
+   "title": "声母 b p m f",
+   "label": "b p m f",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "b",
+     "kj": "右下半圆 b b b",
+     "han": "玻",
+     "strokes": [
+      "竖",
+      "右半圆"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写竖，再写右半圆，两笔写成",
+     "kjAudio": "lessons/kj_b",
+     "sayAudio": "lessons/write_b",
+     "word": "菠萝",
+     "wp": "bō luó",
+     "em": "🍍"
+    },
+    {
+     "k": "p",
+     "kj": "右上半圆 p p p",
+     "han": "坡",
+     "strokes": [
+      "竖",
+      "右半圆"
+     ],
+     "xie": "中格和下格，两笔写成",
+     "say": "先写竖，再写右半圆，两笔写成",
+     "kjAudio": "lessons/kj_p",
+     "sayAudio": "lessons/write_p",
+     "word": "苹果",
+     "wp": "píng guǒ",
+     "em": "🍎"
+    },
+    {
+     "k": "m",
+     "kj": "两个门洞 m m m",
+     "han": "摸",
+     "strokes": [
+      "竖",
+      "左弯竖",
+      "左弯竖"
+     ],
+     "xie": "中格，三笔写成",
+     "say": "先写竖，再写左弯竖，最后写左弯竖，三笔写成",
+     "kjAudio": "lessons/kj_m",
+     "sayAudio": "lessons/write_m",
+     "word": "马",
+     "wp": "mǎ",
+     "em": "🐴"
+    },
+    {
+     "k": "f",
+     "kj": "一根拐杖 f f f",
+     "han": "佛",
+     "strokes": [
+      "右弯竖",
+      "横"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写右弯竖，再写横，两笔写成",
+     "kjAudio": "lessons/kj_f",
+     "sayAudio": "lessons/write_f",
+     "word": "斧头",
+     "wp": "fǔ tou",
+     "em": "🪓"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ba",
+     "display": "ba",
+     "tones": [
+      {
+       "t": 1,
+       "display": "bā",
+       "file": "ba1"
+      },
+      {
+       "t": 2,
+       "display": "bá",
+       "file": "ba2"
+      },
+      {
+       "t": 3,
+       "display": "bǎ",
+       "file": "ba3"
+      },
+      {
+       "t": 4,
+       "display": "bà",
+       "file": "ba4"
+      }
+     ]
+    },
+    {
+     "base": "pa",
+     "display": "pa",
+     "tones": [
+      {
+       "t": 1,
+       "display": "pā",
+       "file": "pa1"
+      },
+      {
+       "t": 2,
+       "display": "pá",
+       "file": "pa2"
+      },
+      {
+       "t": 3,
+       "display": "pǎ",
+       "file": "pa3"
+      },
+      {
+       "t": 4,
+       "display": "pà",
+       "file": "pa4"
+      }
+     ]
+    },
+    {
+     "base": "ma",
+     "display": "ma",
+     "tones": [
+      {
+       "t": 1,
+       "display": "mā",
+       "file": "ma1"
+      },
+      {
+       "t": 2,
+       "display": "má",
+       "file": "ma2"
+      },
+      {
+       "t": 3,
+       "display": "mǎ",
+       "file": "ma3"
+      },
+      {
+       "t": 4,
+       "display": "mà",
+       "file": "ma4"
+      }
+     ]
+    },
+    {
+     "base": "fa",
+     "display": "fa",
+     "tones": [
+      {
+       "t": 1,
+       "display": "fā",
+       "file": "fa1"
+      },
+      {
+       "t": 2,
+       "display": "fá",
+       "file": "fa2"
+      },
+      {
+       "t": 3,
+       "display": "fǎ",
+       "file": "fa3"
+      },
+      {
+       "t": 4,
+       "display": "fà",
+       "file": "fa4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "b",
+     "fin": "a",
+     "syl": "ba",
+     "tone": 1,
+     "display": "bā",
+     "char": "八",
+     "file": "ba1"
+    },
+    {
+     "ini": "b",
+     "fin": "o",
+     "syl": "bo",
+     "tone": 1,
+     "display": "bō",
+     "char": "",
+     "file": "bo1"
+    },
+    {
+     "ini": "b",
+     "fin": "i",
+     "syl": "bi",
+     "tone": 3,
+     "display": "bǐ",
+     "char": "笔",
+     "file": "bi3"
+    },
+    {
+     "ini": "b",
+     "fin": "u",
+     "syl": "bu",
+     "tone": 1,
+     "display": "bū",
+     "char": "",
+     "file": "bu1"
+    },
+    {
+     "ini": "p",
+     "fin": "a",
+     "syl": "pa",
+     "tone": 1,
+     "display": "pā",
+     "char": "",
+     "file": "pa1"
+    },
+    {
+     "ini": "p",
+     "fin": "o",
+     "syl": "po",
+     "tone": 1,
+     "display": "pō",
+     "char": "",
+     "file": "po1"
+    },
+    {
+     "ini": "p",
+     "fin": "i",
+     "syl": "pi",
+     "tone": 2,
+     "display": "pí",
+     "char": "皮",
+     "file": "pi2"
+    },
+    {
+     "ini": "p",
+     "fin": "u",
+     "syl": "pu",
+     "tone": 1,
+     "display": "pū",
+     "char": "",
+     "file": "pu1"
+    },
+    {
+     "ini": "m",
+     "fin": "a",
+     "syl": "ma",
+     "tone": 1,
+     "display": "mā",
+     "char": "妈",
+     "file": "ma1"
+    },
+    {
+     "ini": "m",
+     "fin": "o",
+     "syl": "mo",
+     "tone": 1,
+     "display": "mō",
+     "char": "",
+     "file": "mo1"
+    },
+    {
+     "ini": "m",
+     "fin": "i",
+     "syl": "mi",
+     "tone": 3,
+     "display": "mǐ",
+     "char": "米",
+     "file": "mi3"
+    },
+    {
+     "ini": "m",
+     "fin": "u",
+     "syl": "mu",
+     "tone": 3,
+     "display": "mǔ",
+     "char": "母",
+     "file": "mu3"
+    },
+    {
+     "ini": "f",
+     "fin": "a",
+     "syl": "fa",
+     "tone": 1,
+     "display": "fā",
+     "char": "",
+     "file": "fa1"
+    },
+    {
+     "ini": "f",
+     "fin": "u",
+     "syl": "fu",
+     "tone": 1,
+     "display": "fū",
+     "char": "",
+     "file": "fu1"
+    }
+   ]
+  },
+  {
+   "n": 4,
+   "title": "声母 d t n l",
+   "label": "d t n l",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "d",
+     "kj": "左下半圆 d d d",
+     "han": "得",
+     "strokes": [
+      "左半圆",
+      "竖"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写左半圆，再写竖，两笔写成",
+     "kjAudio": "lessons/kj_d",
+     "sayAudio": "lessons/write_d",
+     "word": "大鼓",
+     "wp": "dà gǔ",
+     "em": "🥁"
+    },
+    {
+     "k": "t",
+     "kj": "伞柄朝下 t t t",
+     "han": "特",
+     "strokes": [
+      "竖右弯",
+      "横"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写竖右弯，再写横，两笔写成",
+     "kjAudio": "lessons/kj_t",
+     "sayAudio": "lessons/write_t",
+     "word": "兔子",
+     "wp": "tù zi",
+     "em": "🐰"
+    },
+    {
+     "k": "n",
+     "kj": "一个门洞 n n n",
+     "han": "讷",
+     "strokes": [
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写竖，再写左弯竖，两笔写成",
+     "kjAudio": "lessons/kj_n",
+     "sayAudio": "lessons/write_n",
+     "word": "牛",
+     "wp": "niú",
+     "em": "🐮"
+    },
+    {
+     "k": "l",
+     "kj": "一根棍子 l l l",
+     "han": "乐",
+     "strokes": [
+      "竖"
+     ],
+     "xie": "上格和中格，一笔写成",
+     "say": "一笔写成，占上格和中格",
+     "kjAudio": "lessons/kj_l",
+     "sayAudio": "lessons/write_l",
+     "word": "老虎",
+     "wp": "lǎo hǔ",
+     "em": "🐯"
+    }
+   ],
+   "tones": [
+    {
+     "base": "da",
+     "display": "da",
+     "tones": [
+      {
+       "t": 1,
+       "display": "dā",
+       "file": "da1"
+      },
+      {
+       "t": 2,
+       "display": "dá",
+       "file": "da2"
+      },
+      {
+       "t": 3,
+       "display": "dǎ",
+       "file": "da3"
+      },
+      {
+       "t": 4,
+       "display": "dà",
+       "file": "da4"
+      }
+     ]
+    },
+    {
+     "base": "ta",
+     "display": "ta",
+     "tones": [
+      {
+       "t": 1,
+       "display": "tā",
+       "file": "ta1"
+      },
+      {
+       "t": 2,
+       "display": "tá",
+       "file": "ta2"
+      },
+      {
+       "t": 3,
+       "display": "tǎ",
+       "file": "ta3"
+      },
+      {
+       "t": 4,
+       "display": "tà",
+       "file": "ta4"
+      }
+     ]
+    },
+    {
+     "base": "na",
+     "display": "na",
+     "tones": [
+      {
+       "t": 1,
+       "display": "nā",
+       "file": "na1"
+      },
+      {
+       "t": 2,
+       "display": "ná",
+       "file": "na2"
+      },
+      {
+       "t": 3,
+       "display": "nǎ",
+       "file": "na3"
+      },
+      {
+       "t": 4,
+       "display": "nà",
+       "file": "na4"
+      }
+     ]
+    },
+    {
+     "base": "la",
+     "display": "la",
+     "tones": [
+      {
+       "t": 1,
+       "display": "lā",
+       "file": "la1"
+      },
+      {
+       "t": 2,
+       "display": "lá",
+       "file": "la2"
+      },
+      {
+       "t": 3,
+       "display": "lǎ",
+       "file": "la3"
+      },
+      {
+       "t": 4,
+       "display": "là",
+       "file": "la4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "d",
+     "fin": "a",
+     "syl": "da",
+     "tone": 4,
+     "display": "dà",
+     "char": "大",
+     "file": "da4"
+    },
+    {
+     "ini": "d",
+     "fin": "e",
+     "syl": "de",
+     "tone": 1,
+     "display": "dē",
+     "char": "",
+     "file": "de1"
+    },
+    {
+     "ini": "d",
+     "fin": "i",
+     "syl": "di",
+     "tone": 1,
+     "display": "dī",
+     "char": "低",
+     "file": "di1"
+    },
+    {
+     "ini": "d",
+     "fin": "u",
+     "syl": "du",
+     "tone": 2,
+     "display": "dú",
+     "char": "读",
+     "file": "du2"
+    },
+    {
+     "ini": "t",
+     "fin": "a",
+     "syl": "ta",
+     "tone": 1,
+     "display": "tā",
+     "char": "他",
+     "file": "ta1"
+    },
+    {
+     "ini": "t",
+     "fin": "e",
+     "syl": "te",
+     "tone": 1,
+     "display": "tē",
+     "char": "",
+     "file": "te1"
+    },
+    {
+     "ini": "t",
+     "fin": "i",
+     "syl": "ti",
+     "tone": 1,
+     "display": "tī",
+     "char": "",
+     "file": "ti1"
+    },
+    {
+     "ini": "t",
+     "fin": "u",
+     "syl": "tu",
+     "tone": 3,
+     "display": "tǔ",
+     "char": "土",
+     "file": "tu3"
+    },
+    {
+     "ini": "n",
+     "fin": "a",
+     "syl": "na",
+     "tone": 1,
+     "display": "nā",
+     "char": "",
+     "file": "na1"
+    },
+    {
+     "ini": "n",
+     "fin": "e",
+     "syl": "ne",
+     "tone": 1,
+     "display": "nē",
+     "char": "",
+     "file": "ne1"
+    },
+    {
+     "ini": "n",
+     "fin": "i",
+     "syl": "ni",
+     "tone": 3,
+     "display": "nǐ",
+     "char": "你",
+     "file": "ni3"
+    },
+    {
+     "ini": "n",
+     "fin": "u",
+     "syl": "nu",
+     "tone": 1,
+     "display": "nū",
+     "char": "",
+     "file": "nu1"
+    },
+    {
+     "ini": "l",
+     "fin": "a",
+     "syl": "la",
+     "tone": 1,
+     "display": "lā",
+     "char": "拉",
+     "file": "la1"
+    },
+    {
+     "ini": "l",
+     "fin": "e",
+     "syl": "le",
+     "tone": 1,
+     "display": "lē",
+     "char": "",
+     "file": "le1"
+    },
+    {
+     "ini": "l",
+     "fin": "i",
+     "syl": "li",
+     "tone": 3,
+     "display": "lǐ",
+     "char": "里",
+     "file": "li3"
+    },
+    {
+     "ini": "l",
+     "fin": "u",
+     "syl": "lu",
+     "tone": 4,
+     "display": "lù",
+     "char": "路",
+     "file": "lu4"
+    }
+   ]
+  },
+  {
+   "n": 5,
+   "title": "声母 g k h",
+   "label": "g k h",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "g",
+     "kj": "像个9字加弯 g g g",
+     "han": "哥",
+     "strokes": [
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "中格和下格，两笔写成",
+     "say": "先写左半圆，再写竖左弯，两笔写成",
+     "kjAudio": "lessons/kj_g",
+     "sayAudio": "lessons/write_g",
+     "word": "鸽子",
+     "wp": "gē zi",
+     "em": "🕊️"
+    },
+    {
+     "k": "k",
+     "kj": "蝌蚪水草 k k k",
+     "han": "科",
+     "strokes": [
+      "竖",
+      "左斜右斜"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写竖，再写左斜右斜，两笔写成",
+     "kjAudio": "lessons/kj_k",
+     "sayAudio": "lessons/write_k",
+     "word": "蝌蚪",
+     "wp": "kē dǒu",
+     "em": "🐸"
+    },
+    {
+     "k": "h",
+     "kj": "一把椅子 h h h",
+     "han": "喝",
+     "strokes": [
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "上格和中格，两笔写成",
+     "say": "先写竖，再写左弯竖，两笔写成",
+     "kjAudio": "lessons/kj_h",
+     "sayAudio": "lessons/write_h",
+     "word": "河马",
+     "wp": "hé mǎ",
+     "em": "🦛"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ga",
+     "display": "ga",
+     "tones": [
+      {
+       "t": 1,
+       "display": "gā",
+       "file": "ga1"
+      },
+      {
+       "t": 2,
+       "display": "gá",
+       "file": "ga2"
+      },
+      {
+       "t": 3,
+       "display": "gǎ",
+       "file": "ga3"
+      },
+      {
+       "t": 4,
+       "display": "gà",
+       "file": "ga4"
+      }
+     ]
+    },
+    {
+     "base": "ka",
+     "display": "ka",
+     "tones": [
+      {
+       "t": 1,
+       "display": "kā",
+       "file": "ka1"
+      },
+      {
+       "t": 2,
+       "display": "ká",
+       "file": "ka2"
+      },
+      {
+       "t": 3,
+       "display": "kǎ",
+       "file": "ka3"
+      },
+      {
+       "t": 4,
+       "display": "kà",
+       "file": "ka4"
+      }
+     ]
+    },
+    {
+     "base": "ha",
+     "display": "ha",
+     "tones": [
+      {
+       "t": 1,
+       "display": "hā",
+       "file": "ha1"
+      },
+      {
+       "t": 2,
+       "display": "há",
+       "file": "ha2"
+      },
+      {
+       "t": 3,
+       "display": "hǎ",
+       "file": "ha3"
+      },
+      {
+       "t": 4,
+       "display": "hà",
+       "file": "ha4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "g",
+     "fin": "a",
+     "syl": "ga",
+     "tone": 1,
+     "display": "gā",
+     "char": "",
+     "file": "ga1"
+    },
+    {
+     "ini": "g",
+     "fin": "e",
+     "syl": "ge",
+     "tone": 1,
+     "display": "gē",
+     "char": "歌",
+     "file": "ge1"
+    },
+    {
+     "ini": "g",
+     "fin": "u",
+     "syl": "gu",
+     "tone": 1,
+     "display": "gū",
+     "char": "",
+     "file": "gu1"
+    },
+    {
+     "ini": "k",
+     "fin": "a",
+     "syl": "ka",
+     "tone": 1,
+     "display": "kā",
+     "char": "",
+     "file": "ka1"
+    },
+    {
+     "ini": "k",
+     "fin": "e",
+     "syl": "ke",
+     "tone": 1,
+     "display": "kē",
+     "char": "",
+     "file": "ke1"
+    },
+    {
+     "ini": "k",
+     "fin": "u",
+     "syl": "ku",
+     "tone": 1,
+     "display": "kū",
+     "char": "哭",
+     "file": "ku1"
+    },
+    {
+     "ini": "h",
+     "fin": "a",
+     "syl": "ha",
+     "tone": 1,
+     "display": "hā",
+     "char": "",
+     "file": "ha1"
+    },
+    {
+     "ini": "h",
+     "fin": "e",
+     "syl": "he",
+     "tone": 1,
+     "display": "hē",
+     "char": "喝",
+     "file": "he1"
+    },
+    {
+     "ini": "h",
+     "fin": "u",
+     "syl": "hu",
+     "tone": 2,
+     "display": "hú",
+     "char": "湖",
+     "file": "hu2"
+    }
+   ]
+  },
+  {
+   "n": 6,
+   "title": "声母 j q x",
+   "label": "j q x",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "j",
+     "kj": "小鸡啄米 j j j",
+     "han": "鸡",
+     "strokes": [
+      "竖左弯",
+      "点"
+     ],
+     "xie": "上中下三格，两笔写成",
+     "say": "先写竖左弯，再写点，两笔写成",
+     "kjAudio": "lessons/kj_j",
+     "sayAudio": "lessons/write_j",
+     "word": "小鸡",
+     "wp": "xiǎo jī",
+     "em": "🐔"
+    },
+    {
+     "k": "q",
+     "kj": "左上半圆 q q q",
+     "han": "七",
+     "strokes": [
+      "左半圆",
+      "竖"
+     ],
+     "xie": "中格和下格，两笔写成",
+     "say": "先写左半圆，再写竖，两笔写成",
+     "kjAudio": "lessons/kj_q",
+     "sayAudio": "lessons/write_q",
+     "word": "气球",
+     "wp": "qì qiú",
+     "em": "🎈"
+    },
+    {
+     "k": "x",
+     "kj": "切个西瓜 x x x",
+     "han": "西",
+     "strokes": [
+      "右斜",
+      "左斜"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写右斜，再写左斜，两笔写成",
+     "kjAudio": "lessons/kj_x",
+     "sayAudio": "lessons/write_x",
+     "word": "西瓜",
+     "wp": "xī guā",
+     "em": "🍉"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ji",
+     "display": "ji",
+     "tones": [
+      {
+       "t": 1,
+       "display": "jī",
+       "file": "ji1"
+      },
+      {
+       "t": 2,
+       "display": "jí",
+       "file": "ji2"
+      },
+      {
+       "t": 3,
+       "display": "jǐ",
+       "file": "ji3"
+      },
+      {
+       "t": 4,
+       "display": "jì",
+       "file": "ji4"
+      }
+     ]
+    },
+    {
+     "base": "qi",
+     "display": "qi",
+     "tones": [
+      {
+       "t": 1,
+       "display": "qī",
+       "file": "qi1"
+      },
+      {
+       "t": 2,
+       "display": "qí",
+       "file": "qi2"
+      },
+      {
+       "t": 3,
+       "display": "qǐ",
+       "file": "qi3"
+      },
+      {
+       "t": 4,
+       "display": "qì",
+       "file": "qi4"
+      }
+     ]
+    },
+    {
+     "base": "xi",
+     "display": "xi",
+     "tones": [
+      {
+       "t": 1,
+       "display": "xī",
+       "file": "xi1"
+      },
+      {
+       "t": 2,
+       "display": "xí",
+       "file": "xi2"
+      },
+      {
+       "t": 3,
+       "display": "xǐ",
+       "file": "xi3"
+      },
+      {
+       "t": 4,
+       "display": "xì",
+       "file": "xi4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "j",
+     "fin": "i",
+     "syl": "ji",
+     "tone": 1,
+     "display": "jī",
+     "char": "鸡",
+     "file": "ji1"
+    },
+    {
+     "ini": "j",
+     "fin": "ü",
+     "syl": "ju",
+     "tone": 1,
+     "display": "jū",
+     "char": "",
+     "file": "ju1"
+    },
+    {
+     "ini": "q",
+     "fin": "i",
+     "syl": "qi",
+     "tone": 1,
+     "display": "qī",
+     "char": "七",
+     "file": "qi1"
+    },
+    {
+     "ini": "q",
+     "fin": "ü",
+     "syl": "qu",
+     "tone": 4,
+     "display": "qù",
+     "char": "去",
+     "file": "qu4"
+    },
+    {
+     "ini": "x",
+     "fin": "i",
+     "syl": "xi",
+     "tone": 1,
+     "display": "xī",
+     "char": "西",
+     "file": "xi1"
+    },
+    {
+     "ini": "x",
+     "fin": "ü",
+     "syl": "xu",
+     "tone": 1,
+     "display": "xū",
+     "char": "",
+     "file": "xu1"
+    }
+   ],
+   "note": "小魔法：ü 见了 j q x，两点要摘掉，还念 ü。ju qu xu 里的 u 都是小 ü"
+  },
+  {
+   "n": 7,
+   "title": "声母 z c s y w",
+   "label": "z c s y w",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "z",
+     "kj": "像个2字 z z z",
+     "han": "资",
+     "strokes": [
+      "横左斜横"
+     ],
+     "xie": "中格，一笔写成",
+     "say": "一笔写成，占中格",
+     "kjAudio": "lessons/kj_z",
+     "sayAudio": "lessons/write_z",
+     "word": "写字",
+     "wp": "xiě zì",
+     "em": "📝"
+    },
+    {
+     "k": "c",
+     "kj": "半圆带钩 c c c",
+     "han": "雌",
+     "strokes": [
+      "左半圆"
+     ],
+     "xie": "中格，一笔写成",
+     "say": "一笔写成，占中格",
+     "kjAudio": "lessons/kj_c",
+     "sayAudio": "lessons/write_c",
+     "word": "刺猬",
+     "wp": "cì wei",
+     "em": "🦔"
+    },
+    {
+     "k": "s",
+     "kj": "蚕儿吐丝 s s s",
+     "han": "丝",
+     "strokes": [
+      "左弯右弯"
+     ],
+     "xie": "中格，一笔写成",
+     "say": "一笔写成，占中格",
+     "kjAudio": "lessons/kj_s",
+     "sayAudio": "lessons/write_s",
+     "word": "蚕宝宝",
+     "wp": "cán bǎo bao",
+     "em": "🐛"
+    },
+    {
+     "k": "y",
+     "kj": "树杈树杈 y y y",
+     "han": "一",
+     "strokes": [
+      "右斜",
+      "左斜"
+     ],
+     "xie": "中格和下格，两笔写成",
+     "say": "先写右斜，再写左斜，两笔写成",
+     "kjAudio": "lessons/kj_y",
+     "sayAudio": "lessons/write_y",
+     "word": "鸭子",
+     "wp": "yā zi",
+     "em": "🦆"
+    },
+    {
+     "k": "w",
+     "kj": "屋顶相连 w w w",
+     "han": "乌",
+     "strokes": [
+      "斜下斜上",
+      "斜下斜上"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写斜下斜上，再写斜下斜上，两笔写成",
+     "kjAudio": "lessons/kj_w",
+     "sayAudio": "lessons/write_w",
+     "word": "乌龟",
+     "wp": "wū guī",
+     "em": "🐢"
+    }
+   ],
+   "tones": [
+    {
+     "base": "za",
+     "display": "za",
+     "tones": [
+      {
+       "t": 1,
+       "display": "zā",
+       "file": "za1"
+      },
+      {
+       "t": 2,
+       "display": "zá",
+       "file": "za2"
+      },
+      {
+       "t": 3,
+       "display": "zǎ",
+       "file": "za3"
+      },
+      {
+       "t": 4,
+       "display": "zà",
+       "file": "za4"
+      }
+     ]
+    },
+    {
+     "base": "ca",
+     "display": "ca",
+     "tones": [
+      {
+       "t": 1,
+       "display": "cā",
+       "file": "ca1"
+      },
+      {
+       "t": 2,
+       "display": "cá",
+       "file": "ca2"
+      },
+      {
+       "t": 3,
+       "display": "cǎ",
+       "file": "ca3"
+      },
+      {
+       "t": 4,
+       "display": "cà",
+       "file": "ca4"
+      }
+     ]
+    },
+    {
+     "base": "sa",
+     "display": "sa",
+     "tones": [
+      {
+       "t": 1,
+       "display": "sā",
+       "file": "sa1"
+      },
+      {
+       "t": 2,
+       "display": "sá",
+       "file": "sa2"
+      },
+      {
+       "t": 3,
+       "display": "sǎ",
+       "file": "sa3"
+      },
+      {
+       "t": 4,
+       "display": "sà",
+       "file": "sa4"
+      }
+     ]
+    },
+    {
+     "base": "yi",
+     "display": "i",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ī",
+       "file": "yi1"
+      },
+      {
+       "t": 2,
+       "display": "í",
+       "file": "yi2"
+      },
+      {
+       "t": 3,
+       "display": "ǐ",
+       "file": "yi3"
+      },
+      {
+       "t": 4,
+       "display": "ì",
+       "file": "yi4"
+      }
+     ]
+    },
+    {
+     "base": "wu",
+     "display": "u",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ū",
+       "file": "wu1"
+      },
+      {
+       "t": 2,
+       "display": "ú",
+       "file": "wu2"
+      },
+      {
+       "t": 3,
+       "display": "ǔ",
+       "file": "wu3"
+      },
+      {
+       "t": 4,
+       "display": "ù",
+       "file": "wu4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "z",
+     "fin": "a",
+     "syl": "za",
+     "tone": 1,
+     "display": "zā",
+     "char": "",
+     "file": "za1"
+    },
+    {
+     "ini": "z",
+     "fin": "e",
+     "syl": "ze",
+     "tone": 1,
+     "display": "zē",
+     "char": "",
+     "file": "ze1"
+    },
+    {
+     "ini": "z",
+     "fin": "u",
+     "syl": "zu",
+     "tone": 2,
+     "display": "zú",
+     "char": "足",
+     "file": "zu2"
+    },
+    {
+     "ini": "c",
+     "fin": "a",
+     "syl": "ca",
+     "tone": 1,
+     "display": "cā",
+     "char": "",
+     "file": "ca1"
+    },
+    {
+     "ini": "c",
+     "fin": "e",
+     "syl": "ce",
+     "tone": 1,
+     "display": "cē",
+     "char": "",
+     "file": "ce1"
+    },
+    {
+     "ini": "c",
+     "fin": "u",
+     "syl": "cu",
+     "tone": 1,
+     "display": "cū",
+     "char": "",
+     "file": "cu1"
+    },
+    {
+     "ini": "s",
+     "fin": "a",
+     "syl": "sa",
+     "tone": 1,
+     "display": "sā",
+     "char": "",
+     "file": "sa1"
+    },
+    {
+     "ini": "s",
+     "fin": "e",
+     "syl": "se",
+     "tone": 1,
+     "display": "sē",
+     "char": "",
+     "file": "se1"
+    },
+    {
+     "ini": "s",
+     "fin": "u",
+     "syl": "su",
+     "tone": 1,
+     "display": "sū",
+     "char": "",
+     "file": "su1"
+    },
+    {
+     "ini": "y",
+     "fin": "a",
+     "syl": "ya",
+     "tone": 1,
+     "display": "yā",
+     "char": "鸭",
+     "file": "ya1"
+    },
+    {
+     "ini": "y",
+     "fin": "i",
+     "syl": "yi",
+     "tone": 1,
+     "display": "yī",
+     "char": "衣",
+     "file": "yi1"
+    },
+    {
+     "ini": "w",
+     "fin": "a",
+     "syl": "wa",
+     "tone": 1,
+     "display": "wā",
+     "char": "",
+     "file": "wa1"
+    },
+    {
+     "ini": "w",
+     "fin": "u",
+     "syl": "wu",
+     "tone": 1,
+     "display": "wū",
+     "char": "屋",
+     "file": "wu1"
+    }
+   ]
+  },
+  {
+   "n": 8,
+   "title": "声母 zh ch sh r",
+   "label": "zh ch sh r",
+   "kind": "sm",
+   "letters": [
+    {
+     "k": "zh",
+     "kj": "舌尖翘起 zh zh zh",
+     "han": "知",
+     "strokes": [
+      "横左斜横",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 z，再写 h，共 2 个字母",
+     "say": "从左到右，先写 z，再写 h，共 2 个字母",
+     "kjAudio": "lessons/kj_zh",
+     "sayAudio": "lessons/write_zh",
+     "word": "竹子",
+     "wp": "zhú zi",
+     "em": "🎋"
+    },
+    {
+     "k": "ch",
+     "kj": "翘舌发音 ch ch ch",
+     "han": "吃",
+     "strokes": [
+      "左半圆",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 c，再写 h，共 2 个字母",
+     "say": "从左到右，先写 c，再写 h，共 2 个字母",
+     "kjAudio": "lessons/kj_ch",
+     "sayAudio": "lessons/write_ch",
+     "word": "茶",
+     "wp": "chá",
+     "em": "🍵"
+    },
+    {
+     "k": "sh",
+     "kj": "翘舌发音 sh sh sh",
+     "han": "诗",
+     "strokes": [
+      "左弯右弯",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 s，再写 h，共 2 个字母",
+     "say": "从左到右，先写 s，再写 h，共 2 个字母",
+     "kjAudio": "lessons/kj_sh",
+     "sayAudio": "lessons/write_sh",
+     "word": "狮子",
+     "wp": "shī zi",
+     "em": "🦁"
+    },
+    {
+     "k": "r",
+     "kj": "苗芽出土 r r r",
+     "han": "日",
+     "strokes": [
+      "竖",
+      "右弯"
+     ],
+     "xie": "中格，两笔写成",
+     "say": "先写竖，再写右弯，两笔写成",
+     "kjAudio": "lessons/kj_r",
+     "sayAudio": "lessons/write_r",
+     "word": "肉",
+     "wp": "ròu",
+     "em": "🍖"
+    }
+   ],
+   "tones": [
+    {
+     "base": "zha",
+     "display": "zha",
+     "tones": [
+      {
+       "t": 1,
+       "display": "zhā",
+       "file": "zha1"
+      },
+      {
+       "t": 2,
+       "display": "zhá",
+       "file": "zha2"
+      },
+      {
+       "t": 3,
+       "display": "zhǎ",
+       "file": "zha3"
+      },
+      {
+       "t": 4,
+       "display": "zhà",
+       "file": "zha4"
+      }
+     ]
+    },
+    {
+     "base": "cha",
+     "display": "cha",
+     "tones": [
+      {
+       "t": 1,
+       "display": "chā",
+       "file": "cha1"
+      },
+      {
+       "t": 2,
+       "display": "chá",
+       "file": "cha2"
+      },
+      {
+       "t": 3,
+       "display": "chǎ",
+       "file": "cha3"
+      },
+      {
+       "t": 4,
+       "display": "chà",
+       "file": "cha4"
+      }
+     ]
+    },
+    {
+     "base": "sha",
+     "display": "sha",
+     "tones": [
+      {
+       "t": 1,
+       "display": "shā",
+       "file": "sha1"
+      },
+      {
+       "t": 2,
+       "display": "shá",
+       "file": "sha2"
+      },
+      {
+       "t": 3,
+       "display": "shǎ",
+       "file": "sha3"
+      },
+      {
+       "t": 4,
+       "display": "shà",
+       "file": "sha4"
+      }
+     ]
+    },
+    {
+     "base": "re",
+     "display": "re",
+     "tones": [
+      {
+       "t": 1,
+       "display": "rē",
+       "file": "re1"
+      },
+      {
+       "t": 2,
+       "display": "ré",
+       "file": "re2"
+      },
+      {
+       "t": 3,
+       "display": "rě",
+       "file": "re3"
+      },
+      {
+       "t": 4,
+       "display": "rè",
+       "file": "re4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "zh",
+     "fin": "a",
+     "syl": "zha",
+     "tone": 1,
+     "display": "zhā",
+     "char": "",
+     "file": "zha1"
+    },
+    {
+     "ini": "zh",
+     "fin": "e",
+     "syl": "zhe",
+     "tone": 1,
+     "display": "zhē",
+     "char": "",
+     "file": "zhe1"
+    },
+    {
+     "ini": "zh",
+     "fin": "u",
+     "syl": "zhu",
+     "tone": 2,
+     "display": "zhú",
+     "char": "竹",
+     "file": "zhu2"
+    },
+    {
+     "ini": "ch",
+     "fin": "a",
+     "syl": "cha",
+     "tone": 2,
+     "display": "chá",
+     "char": "茶",
+     "file": "cha2"
+    },
+    {
+     "ini": "ch",
+     "fin": "e",
+     "syl": "che",
+     "tone": 1,
+     "display": "chē",
+     "char": "车",
+     "file": "che1"
+    },
+    {
+     "ini": "ch",
+     "fin": "u",
+     "syl": "chu",
+     "tone": 1,
+     "display": "chū",
+     "char": "出",
+     "file": "chu1"
+    },
+    {
+     "ini": "sh",
+     "fin": "a",
+     "syl": "sha",
+     "tone": 1,
+     "display": "shā",
+     "char": "",
+     "file": "sha1"
+    },
+    {
+     "ini": "sh",
+     "fin": "e",
+     "syl": "she",
+     "tone": 1,
+     "display": "shē",
+     "char": "",
+     "file": "she1"
+    },
+    {
+     "ini": "sh",
+     "fin": "u",
+     "syl": "shu",
+     "tone": 4,
+     "display": "shù",
+     "char": "树",
+     "file": "shu4"
+    },
+    {
+     "ini": "r",
+     "fin": "e",
+     "syl": "re",
+     "tone": 4,
+     "display": "rè",
+     "char": "热",
+     "file": "re4"
+    },
+    {
+     "ini": "r",
+     "fin": "u",
+     "syl": "ru",
+     "tone": 1,
+     "display": "rū",
+     "char": "",
+     "file": "ru1"
+    }
+   ]
+  },
+  {
+   "n": 9,
+   "title": "复韵母 ai ei ui ao ou iu",
+   "label": "ai ei ui",
+   "kind": "fu",
+   "letters": [
+    {
+     "k": "ai",
+     "kj": "a 和 i 挨在一起 ai",
+     "han": "挨",
+     "strokes": [
+      "左半圆",
+      "竖右弯",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 a，再写 i，共 2 个字母",
+     "say": "从左到右，先写 a，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_ai",
+     "sayAudio": "lessons/write_ai",
+     "word": "白菜",
+     "wp": "bái cài",
+     "em": "🥬"
+    },
+    {
+     "k": "ei",
+     "kj": "用力砍树 ei ei ei",
+     "han": "欸",
+     "strokes": [
+      "横加左半圆",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 e，再写 i，共 2 个字母",
+     "say": "从左到右，先写 e，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_ei",
+     "sayAudio": "lessons/write_ei",
+     "word": "杯子",
+     "wp": "bēi zi",
+     "em": "🥤"
+    },
+    {
+     "k": "ui",
+     "kj": "u 在前是 ui（围巾）",
+     "han": "围",
+     "strokes": [
+      "竖右弯",
+      "竖",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 u，再写 i，共 2 个字母",
+     "say": "从左到右，先写 u，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_ui",
+     "sayAudio": "lessons/write_ui",
+     "word": "水花",
+     "wp": "shuǐ huā",
+     "em": "💧"
+    },
+    {
+     "k": "ao",
+     "kj": "棉袄棉袄 ao ao ao",
+     "han": "袄",
+     "strokes": [
+      "左半圆",
+      "竖右弯",
+      "圆"
+     ],
+     "xie": "从左到右，先写 a，再写 o，共 2 个字母",
+     "say": "从左到右，先写 a，再写 o，共 2 个字母",
+     "kjAudio": "lessons/kj_ao",
+     "sayAudio": "lessons/write_ao",
+     "word": "小猫",
+     "wp": "xiǎo māo",
+     "em": "🐱"
+    },
+    {
+     "k": "ou",
+     "kj": "海鸥海鸥 ou ou ou",
+     "han": "鸥",
+     "strokes": [
+      "圆",
+      "竖右弯",
+      "竖"
+     ],
+     "xie": "从左到右，先写 o，再写 u，共 2 个字母",
+     "say": "从左到右，先写 o，再写 u，共 2 个字母",
+     "kjAudio": "lessons/kj_ou",
+     "sayAudio": "lessons/write_ou",
+     "word": "猴子",
+     "wp": "hóu zi",
+     "em": "🐵"
+    },
+    {
+     "k": "iu",
+     "kj": "i 在前是 iu（皮球）",
+     "han": "邮",
+     "strokes": [
+      "竖",
+      "点",
+      "竖右弯",
+      "竖"
+     ],
+     "xie": "从左到右，先写 i，再写 u，共 2 个字母",
+     "say": "从左到右，先写 i，再写 u，共 2 个字母",
+     "kjAudio": "lessons/kj_iu",
+     "sayAudio": "lessons/write_iu",
+     "word": "牛奶",
+     "wp": "niú nǎi",
+     "em": "🥛"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ai",
+     "display": "ai",
+     "tones": [
+      {
+       "t": 1,
+       "display": "āi",
+       "file": "ai1"
+      },
+      {
+       "t": 2,
+       "display": "ái",
+       "file": "ai2"
+      },
+      {
+       "t": 3,
+       "display": "ǎi",
+       "file": "ai3"
+      },
+      {
+       "t": 4,
+       "display": "ài",
+       "file": "ai4"
+      }
+     ]
+    },
+    {
+     "base": "ei",
+     "display": "ei",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ēi",
+       "file": "ei1"
+      },
+      {
+       "t": 2,
+       "display": "éi",
+       "file": "ei2"
+      },
+      {
+       "t": 3,
+       "display": "ěi",
+       "file": "ei3"
+      },
+      {
+       "t": 4,
+       "display": "èi",
+       "file": "ei4"
+      }
+     ]
+    },
+    {
+     "base": "wei",
+     "display": "ui",
+     "tones": [
+      {
+       "t": 1,
+       "display": "uī",
+       "file": "wei1"
+      },
+      {
+       "t": 2,
+       "display": "uí",
+       "file": "wei2"
+      },
+      {
+       "t": 3,
+       "display": "uǐ",
+       "file": "wei3"
+      },
+      {
+       "t": 4,
+       "display": "uì",
+       "file": "wei4"
+      }
+     ]
+    },
+    {
+     "base": "ao",
+     "display": "ao",
+     "tones": [
+      {
+       "t": 1,
+       "display": "āo",
+       "file": "ao1"
+      },
+      {
+       "t": 2,
+       "display": "áo",
+       "file": "ao2"
+      },
+      {
+       "t": 3,
+       "display": "ǎo",
+       "file": "ao3"
+      },
+      {
+       "t": 4,
+       "display": "ào",
+       "file": "ao4"
+      }
+     ]
+    },
+    {
+     "base": "ou",
+     "display": "ou",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ōu",
+       "file": "ou1"
+      },
+      {
+       "t": 2,
+       "display": "óu",
+       "file": "ou2"
+      },
+      {
+       "t": 3,
+       "display": "ǒu",
+       "file": "ou3"
+      },
+      {
+       "t": 4,
+       "display": "òu",
+       "file": "ou4"
+      }
+     ]
+    },
+    {
+     "base": "you",
+     "display": "iu",
+     "tones": [
+      {
+       "t": 1,
+       "display": "iū",
+       "file": "you1"
+      },
+      {
+       "t": 2,
+       "display": "iú",
+       "file": "you2"
+      },
+      {
+       "t": 3,
+       "display": "iǔ",
+       "file": "you3"
+      },
+      {
+       "t": 4,
+       "display": "iù",
+       "file": "you4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "b",
+     "fin": "ai",
+     "syl": "bai",
+     "tone": 2,
+     "display": "bái",
+     "char": "白",
+     "file": "bai2"
+    },
+    {
+     "ini": "h",
+     "fin": "ai",
+     "syl": "hai",
+     "tone": 3,
+     "display": "hǎi",
+     "char": "海",
+     "file": "hai3"
+    },
+    {
+     "ini": "b",
+     "fin": "ei",
+     "syl": "bei",
+     "tone": 3,
+     "display": "běi",
+     "char": "北",
+     "file": "bei3"
+    },
+    {
+     "ini": "f",
+     "fin": "ei",
+     "syl": "fei",
+     "tone": 1,
+     "display": "fēi",
+     "char": "飞",
+     "file": "fei1"
+    },
+    {
+     "ini": "sh",
+     "fin": "ui",
+     "syl": "shui",
+     "tone": 3,
+     "display": "shuǐ",
+     "char": "水",
+     "file": "shui3"
+    },
+    {
+     "ini": "m",
+     "fin": "ao",
+     "syl": "mao",
+     "tone": 1,
+     "display": "māo",
+     "char": "猫",
+     "file": "mao1"
+    },
+    {
+     "ini": "d",
+     "fin": "ao",
+     "syl": "dao",
+     "tone": 1,
+     "display": "dāo",
+     "char": "刀",
+     "file": "dao1"
+    },
+    {
+     "ini": "t",
+     "fin": "ao",
+     "syl": "tao",
+     "tone": 2,
+     "display": "táo",
+     "char": "桃",
+     "file": "tao2"
+    },
+    {
+     "ini": "n",
+     "fin": "iu",
+     "syl": "niu",
+     "tone": 2,
+     "display": "niú",
+     "char": "牛",
+     "file": "niu2"
+    },
+    {
+     "ini": "l",
+     "fin": "iu",
+     "syl": "liu",
+     "tone": 4,
+     "display": "liù",
+     "char": "六",
+     "file": "liu4"
+    },
+    {
+     "ini": "z",
+     "fin": "ou",
+     "syl": "zou",
+     "tone": 1,
+     "display": "zōu",
+     "char": "",
+     "file": "zou1"
+    },
+    {
+     "ini": "ch",
+     "fin": "ou",
+     "syl": "chou",
+     "tone": 1,
+     "display": "chōu",
+     "char": "",
+     "file": "chou1"
+    }
+   ]
+  },
+  {
+   "n": 10,
+   "title": "ie üe er 与前鼻韵母",
+   "label": "ie üe er",
+   "kind": "fu",
+   "letters": [
+    {
+     "k": "ie",
+     "kj": "i 在前是 ie（椰子树）",
+     "han": "耶",
+     "strokes": [
+      "竖",
+      "点",
+      "横加左半圆"
+     ],
+     "xie": "从左到右，先写 i，再写 e，共 2 个字母",
+     "say": "从左到右，先写 i，再写 e，共 2 个字母",
+     "kjAudio": "lessons/kj_ie",
+     "sayAudio": "lessons/write_ie",
+     "word": "椰子",
+     "wp": "yē zi",
+     "em": "🌴"
+    },
+    {
+     "k": "üe",
+     "kj": "月亮弯弯 üe üe üe",
+     "han": "约",
+     "strokes": [
+      "竖右弯",
+      "竖",
+      "点",
+      "点",
+      "横加左半圆"
+     ],
+     "xie": "从左到右，先写 ü，再写 e，共 2 个字母",
+     "say": "从左到右，先写 ü，再写 e，共 2 个字母",
+     "kjAudio": "lessons/kj_ve",
+     "sayAudio": "lessons/write_ve",
+     "word": "月亮",
+     "wp": "yuè liang",
+     "em": "🌙"
+    },
+    {
+     "k": "er",
+     "kj": "耳朵耳朵 er er er",
+     "han": "耳",
+     "strokes": [
+      "横加左半圆",
+      "竖",
+      "右弯"
+     ],
+     "xie": "从左到右，先写 e，再写 r，共 2 个字母",
+     "say": "从左到右，先写 e，再写 r，共 2 个字母",
+     "kjAudio": "lessons/kj_er",
+     "sayAudio": "lessons/write_er",
+     "word": "耳朵",
+     "wp": "ěr duo",
+     "em": "👂"
+    },
+    {
+     "k": "an",
+     "kj": "an 是前鼻音，舌尖顶上牙",
+     "han": "安",
+     "strokes": [
+      "左半圆",
+      "竖右弯",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 a，再写 n，共 2 个字母",
+     "say": "从左到右，先写 a，再写 n，共 2 个字母",
+     "kjAudio": "lessons/kj_an",
+     "sayAudio": "lessons/write_an",
+     "word": "大山",
+     "wp": "dà shān",
+     "em": "⛰️"
+    },
+    {
+     "k": "en",
+     "kj": "en 是前鼻音，舌尖顶上牙",
+     "han": "恩",
+     "strokes": [
+      "横加左半圆",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 e，再写 n，共 2 个字母",
+     "say": "从左到右，先写 e，再写 n，共 2 个字母",
+     "kjAudio": "lessons/kj_en",
+     "sayAudio": "lessons/write_en",
+     "word": "大门",
+     "wp": "dà mén",
+     "em": "🚪"
+    },
+    {
+     "k": "in",
+     "kj": "in 是前鼻音，舌尖顶上牙",
+     "han": "音",
+     "strokes": [
+      "竖",
+      "点",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 i，再写 n，共 2 个字母",
+     "say": "从左到右，先写 i，再写 n，共 2 个字母",
+     "kjAudio": "lessons/kj_in",
+     "sayAudio": "lessons/write_in",
+     "word": "音乐",
+     "wp": "yīn yuè",
+     "em": "🎵"
+    },
+    {
+     "k": "un",
+     "kj": "u 加 n 组成 un",
+     "han": "温",
+     "strokes": [
+      "竖右弯",
+      "竖",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 u，再写 n，共 2 个字母",
+     "say": "从左到右，先写 u，再写 n，共 2 个字母",
+     "kjAudio": "lessons/kj_un",
+     "sayAudio": "lessons/write_un",
+     "word": "蚊子",
+     "wp": "wén zi",
+     "em": "🦟"
+    },
+    {
+     "k": "ün",
+     "kj": "ü 加 n 组成 ün",
+     "han": "晕",
+     "strokes": [
+      "竖右弯",
+      "竖",
+      "点",
+      "点",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 ü，再写 n，共 2 个字母",
+     "say": "从左到右，先写 ü，再写 n，共 2 个字母",
+     "kjAudio": "lessons/kj_vn",
+     "sayAudio": "lessons/write_vn",
+     "word": "白云",
+     "wp": "bái yún",
+     "em": "☁️"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ye",
+     "display": "ie",
+     "tones": [
+      {
+       "t": 1,
+       "display": "iē",
+       "file": "ye1"
+      },
+      {
+       "t": 2,
+       "display": "ié",
+       "file": "ye2"
+      },
+      {
+       "t": 3,
+       "display": "iě",
+       "file": "ye3"
+      },
+      {
+       "t": 4,
+       "display": "iè",
+       "file": "ye4"
+      }
+     ]
+    },
+    {
+     "base": "yue",
+     "display": "üe",
+     "tones": [
+      {
+       "t": 1,
+       "display": "üē",
+       "file": "yue1"
+      },
+      {
+       "t": 2,
+       "display": "üé",
+       "file": "yue2"
+      },
+      {
+       "t": 3,
+       "display": "üě",
+       "file": "yue3"
+      },
+      {
+       "t": 4,
+       "display": "üè",
+       "file": "yue4"
+      }
+     ]
+    },
+    {
+     "base": "er",
+     "display": "er",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ēr",
+       "file": "er1"
+      },
+      {
+       "t": 2,
+       "display": "ér",
+       "file": "er2"
+      },
+      {
+       "t": 3,
+       "display": "ěr",
+       "file": "er3"
+      },
+      {
+       "t": 4,
+       "display": "èr",
+       "file": "er4"
+      }
+     ]
+    },
+    {
+     "base": "an",
+     "display": "an",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ān",
+       "file": "an1"
+      },
+      {
+       "t": 2,
+       "display": "án",
+       "file": "an2"
+      },
+      {
+       "t": 3,
+       "display": "ǎn",
+       "file": "an3"
+      },
+      {
+       "t": 4,
+       "display": "àn",
+       "file": "an4"
+      }
+     ]
+    },
+    {
+     "base": "en",
+     "display": "en",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ēn",
+       "file": "en1"
+      },
+      {
+       "t": 2,
+       "display": "én",
+       "file": "en2"
+      },
+      {
+       "t": 3,
+       "display": "ěn",
+       "file": "en3"
+      },
+      {
+       "t": 4,
+       "display": "èn",
+       "file": "en4"
+      }
+     ]
+    },
+    {
+     "base": "yin",
+     "display": "in",
+     "tones": [
+      {
+       "t": 1,
+       "display": "īn",
+       "file": "yin1"
+      },
+      {
+       "t": 2,
+       "display": "ín",
+       "file": "yin2"
+      },
+      {
+       "t": 3,
+       "display": "ǐn",
+       "file": "yin3"
+      },
+      {
+       "t": 4,
+       "display": "ìn",
+       "file": "yin4"
+      }
+     ]
+    },
+    {
+     "base": "wen",
+     "display": "un",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ūn",
+       "file": "wen1"
+      },
+      {
+       "t": 2,
+       "display": "ún",
+       "file": "wen2"
+      },
+      {
+       "t": 3,
+       "display": "ǔn",
+       "file": "wen3"
+      },
+      {
+       "t": 4,
+       "display": "ùn",
+       "file": "wen4"
+      }
+     ]
+    },
+    {
+     "base": "yun",
+     "display": "ün",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ǖn",
+       "file": "yun1"
+      },
+      {
+       "t": 2,
+       "display": "ǘn",
+       "file": "yun2"
+      },
+      {
+       "t": 3,
+       "display": "ǚn",
+       "file": "yun3"
+      },
+      {
+       "t": 4,
+       "display": "ǜn",
+       "file": "yun4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "b",
+     "fin": "an",
+     "syl": "ban",
+     "tone": 1,
+     "display": "bān",
+     "char": "",
+     "file": "ban1"
+    },
+    {
+     "ini": "m",
+     "fin": "an",
+     "syl": "man",
+     "tone": 4,
+     "display": "màn",
+     "char": "慢",
+     "file": "man4"
+    },
+    {
+     "ini": "m",
+     "fin": "en",
+     "syl": "men",
+     "tone": 2,
+     "display": "mén",
+     "char": "门",
+     "file": "men2"
+    },
+    {
+     "ini": "n",
+     "fin": "en",
+     "syl": "nen",
+     "tone": 1,
+     "display": "nēn",
+     "char": "",
+     "file": "nen1"
+    },
+    {
+     "ini": "j",
+     "fin": "in",
+     "syl": "jin",
+     "tone": 1,
+     "display": "jīn",
+     "char": "金",
+     "file": "jin1"
+    },
+    {
+     "ini": "x",
+     "fin": "in",
+     "syl": "xin",
+     "tone": 1,
+     "display": "xīn",
+     "char": "新",
+     "file": "xin1"
+    },
+    {
+     "ini": "ch",
+     "fin": "un",
+     "syl": "chun",
+     "tone": 1,
+     "display": "chūn",
+     "char": "春",
+     "file": "chun1"
+    },
+    {
+     "ini": "q",
+     "fin": "ün",
+     "syl": "qun",
+     "tone": 1,
+     "display": "qūn",
+     "char": "",
+     "file": "qun1"
+    }
+   ],
+   "note": "前鼻音尾巴 n：舌尖顶住上牙，嘴巴不张大"
+  },
+  {
+   "n": 11,
+   "title": "后鼻韵母 ang eng ing ong",
+   "label": "后鼻韵母",
+   "kind": "fu",
+   "letters": [
+    {
+     "k": "ang",
+     "kj": "ang 是后鼻音，嘴巴张大响",
+     "han": "昂",
+     "strokes": [
+      "左半圆",
+      "竖右弯",
+      "竖",
+      "左弯竖",
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "从左到右，先写 a，再写 n，再写 g，共 3 个字母",
+     "say": "从左到右，先写 a，再写 n，再写 g，共 3 个字母",
+     "kjAudio": "lessons/kj_ang",
+     "sayAudio": "lessons/write_ang",
+     "word": "山羊",
+     "wp": "shān yáng",
+     "em": "🐐"
+    },
+    {
+     "k": "eng",
+     "kj": "eng 是后鼻音，嘴巴张大响",
+     "han": "鞥",
+     "strokes": [
+      "横加左半圆",
+      "竖",
+      "左弯竖",
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "从左到右，先写 e，再写 n，再写 g，共 3 个字母",
+     "say": "从左到右，先写 e，再写 n，再写 g，共 3 个字母",
+     "kjAudio": "lessons/kj_eng",
+     "sayAudio": "lessons/write_eng",
+     "word": "台灯",
+     "wp": "tái dēng",
+     "em": "💡"
+    },
+    {
+     "k": "ing",
+     "kj": "ing 是后鼻音，嘴巴张大响",
+     "han": "鹰",
+     "strokes": [
+      "竖",
+      "点",
+      "竖",
+      "左弯竖",
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "从左到右，先写 i，再写 n，再写 g，共 3 个字母",
+     "say": "从左到右，先写 i，再写 n，再写 g，共 3 个字母",
+     "kjAudio": "lessons/kj_ing",
+     "sayAudio": "lessons/write_ing",
+     "word": "老鹰",
+     "wp": "lǎo yīng",
+     "em": "🦅"
+    },
+    {
+     "k": "ong",
+     "kj": "ong ong ong",
+     "han": "",
+     "strokes": [
+      "圆",
+      "竖",
+      "左弯竖",
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "从左到右，先写 o，再写 n，再写 g，共 3 个字母",
+     "say": "从左到右，先写 o，再写 n，再写 g，共 3 个字母",
+     "kjAudio": "lessons/kj_ong",
+     "sayAudio": "lessons/write_ong"
+    }
+   ],
+   "tones": [
+    {
+     "base": "ang",
+     "display": "ang",
+     "tones": [
+      {
+       "t": 1,
+       "display": "āng",
+       "file": "ang1"
+      },
+      {
+       "t": 2,
+       "display": "áng",
+       "file": "ang2"
+      },
+      {
+       "t": 3,
+       "display": "ǎng",
+       "file": "ang3"
+      },
+      {
+       "t": 4,
+       "display": "àng",
+       "file": "ang4"
+      }
+     ]
+    },
+    {
+     "base": "eng",
+     "display": "eng",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ēng",
+       "file": "eng1"
+      },
+      {
+       "t": 2,
+       "display": "éng",
+       "file": "eng2"
+      },
+      {
+       "t": 3,
+       "display": "ěng",
+       "file": "eng3"
+      },
+      {
+       "t": 4,
+       "display": "èng",
+       "file": "eng4"
+      }
+     ]
+    },
+    {
+     "base": "ying",
+     "display": "ing",
+     "tones": [
+      {
+       "t": 1,
+       "display": "īng",
+       "file": "ying1"
+      },
+      {
+       "t": 2,
+       "display": "íng",
+       "file": "ying2"
+      },
+      {
+       "t": 3,
+       "display": "ǐng",
+       "file": "ying3"
+      },
+      {
+       "t": 4,
+       "display": "ìng",
+       "file": "ying4"
+      }
+     ]
+    },
+    {
+     "base": "weng",
+     "display": "ong",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ōng",
+       "file": "weng1"
+      },
+      {
+       "t": 2,
+       "display": "óng",
+       "file": "weng2"
+      },
+      {
+       "t": 3,
+       "display": "ǒng",
+       "file": "weng3"
+      },
+      {
+       "t": 4,
+       "display": "òng",
+       "file": "weng4"
+      }
+     ]
+    }
+   ],
+   "blends": [
+    {
+     "ini": "f",
+     "fin": "ang",
+     "syl": "fang",
+     "tone": 1,
+     "display": "fāng",
+     "char": "方",
+     "file": "fang1"
+    },
+    {
+     "ini": "sh",
+     "fin": "ang",
+     "syl": "shang",
+     "tone": 4,
+     "display": "shàng",
+     "char": "上",
+     "file": "shang4"
+    },
+    {
+     "ini": "f",
+     "fin": "eng",
+     "syl": "feng",
+     "tone": 1,
+     "display": "fēng",
+     "char": "风",
+     "file": "feng1"
+    },
+    {
+     "ini": "h",
+     "fin": "eng",
+     "syl": "heng",
+     "tone": 1,
+     "display": "hēng",
+     "char": "",
+     "file": "heng1"
+    },
+    {
+     "ini": "d",
+     "fin": "ong",
+     "syl": "dong",
+     "tone": 1,
+     "display": "dōng",
+     "char": "",
+     "file": "dong1"
+    },
+    {
+     "ini": "h",
+     "fin": "ong",
+     "syl": "hong",
+     "tone": 1,
+     "display": "hōng",
+     "char": "",
+     "file": "hong1"
+    },
+    {
+     "ini": "x",
+     "fin": "ing",
+     "syl": "xing",
+     "tone": 1,
+     "display": "xīng",
+     "char": "星",
+     "file": "xing1"
+    },
+    {
+     "ini": "m",
+     "fin": "ing",
+     "syl": "ming",
+     "tone": 1,
+     "display": "mīng",
+     "char": "",
+     "file": "ming1"
+    }
+   ],
+   "note": "后鼻音尾巴 ng：嘴巴张开，声音从鼻子出来"
+  },
+  {
+   "n": 12,
+   "title": "整体认读音节 16 个",
+   "label": "整体认读",
+   "kind": "zt",
+   "letters": [
+    {
+     "k": "zhi",
+     "kj": "蜘蛛蜘蛛 zhī zhī zhī",
+     "han": "之",
+     "strokes": [
+      "横左斜横",
+      "竖",
+      "左弯竖",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 z，再写 h，再写 i，共 3 个字母",
+     "say": "从左到右，先写 z，再写 h，再写 i，共 3 个字母",
+     "kjAudio": "lessons/kj_zhi",
+     "sayAudio": "lessons/write_zhi",
+     "word": "蜘蛛",
+     "wp": "zhī zhū",
+     "em": "🕷️"
+    },
+    {
+     "k": "chi",
+     "kj": "吃饭吃饭 chī chī chī",
+     "han": "吃",
+     "strokes": [
+      "左半圆",
+      "竖",
+      "左弯竖",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 c，再写 h，再写 i，共 3 个字母",
+     "say": "从左到右，先写 c，再写 h，再写 i，共 3 个字母",
+     "kjAudio": "lessons/kj_chi",
+     "sayAudio": "lessons/write_chi",
+     "word": "尺子",
+     "wp": "chǐ zi",
+     "em": "📏"
+    },
+    {
+     "k": "shi",
+     "kj": "狮子狮子 shī shī shī",
+     "han": "是",
+     "strokes": [
+      "左弯右弯",
+      "竖",
+      "左弯竖",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 s，再写 h，再写 i，共 3 个字母",
+     "say": "从左到右，先写 s，再写 h，再写 i，共 3 个字母",
+     "kjAudio": "lessons/kj_shi",
+     "sayAudio": "lessons/write_shi",
+     "word": "一个十",
+     "wp": "yí gè shí",
+     "em": "🔟"
+    },
+    {
+     "k": "ri",
+     "kj": "日头日头 rì rì rì",
+     "han": "日",
+     "strokes": [
+      "竖",
+      "右弯",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 r，再写 i，共 2 个字母",
+     "say": "从左到右，先写 r，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_ri",
+     "sayAudio": "lessons/write_ri",
+     "word": "日出",
+     "wp": "rì chū",
+     "em": "🌅"
+    },
+    {
+     "k": "zi",
+     "kj": "写字写字 zì zì zì",
+     "han": "字",
+     "strokes": [
+      "横左斜横",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 z，再写 i，共 2 个字母",
+     "say": "从左到右，先写 z，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_zi",
+     "sayAudio": "lessons/write_zi",
+     "word": "字典",
+     "wp": "zì diǎn",
+     "em": "📚"
+    },
+    {
+     "k": "ci",
+     "kj": "刺猬刺猬 cì cì cì",
+     "han": "词",
+     "strokes": [
+      "左半圆",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 c，再写 i，共 2 个字母",
+     "say": "从左到右，先写 c，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_ci",
+     "sayAudio": "lessons/write_ci",
+     "word": "词卡",
+     "wp": "cí kǎ",
+     "em": "🃏"
+    },
+    {
+     "k": "si",
+     "kj": "丝瓜丝瓜 sī sī sī",
+     "han": "丝",
+     "strokes": [
+      "左弯右弯",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 s，再写 i，共 2 个字母",
+     "say": "从左到右，先写 s，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_si",
+     "sayAudio": "lessons/write_si",
+     "word": "丝瓜",
+     "wp": "sī guā",
+     "em": "🥒"
+    },
+    {
+     "k": "yi",
+     "kj": "衣服衣服 yī yī yī",
+     "han": "衣",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖",
+      "点"
+     ],
+     "xie": "从左到右，先写 y，再写 i，共 2 个字母",
+     "say": "从左到右，先写 y，再写 i，共 2 个字母",
+     "kjAudio": "lessons/kj_yi",
+     "sayAudio": "lessons/write_yi",
+     "word": "衣服",
+     "wp": "yī fu",
+     "em": "👕"
+    },
+    {
+     "k": "wu",
+     "kj": "乌鸦乌鸦 wū wū wū",
+     "han": "乌",
+     "strokes": [
+      "斜下斜上",
+      "斜下斜上",
+      "竖右弯",
+      "竖"
+     ],
+     "xie": "从左到右，先写 w，再写 u，共 2 个字母",
+     "say": "从左到右，先写 w，再写 u，共 2 个字母",
+     "kjAudio": "lessons/kj_wu",
+     "sayAudio": "lessons/write_wu",
+     "word": "乌鸦",
+     "wp": "wū yā",
+     "em": "🐦‍⬛"
+    },
+    {
+     "k": "yu",
+     "kj": "小鱼小鱼 yú yú yú",
+     "han": "鱼",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖右弯",
+      "竖",
+      "点",
+      "点"
+     ],
+     "xie": "从左到右，先写 y，再写 ü，共 2 个字母",
+     "say": "从左到右，先写 y，再写 ü，共 2 个字母",
+     "kjAudio": "lessons/kj_yu",
+     "sayAudio": "lessons/write_yu",
+     "word": "小鱼",
+     "wp": "xiǎo yú",
+     "em": "🐟"
+    },
+    {
+     "k": "ye",
+     "kj": "爷爷爷爷 yé yé yé",
+     "han": "耶",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "横加左半圆"
+     ],
+     "xie": "从左到右，先写 y，再写 e，共 2 个字母",
+     "say": "从左到右，先写 y，再写 e，共 2 个字母",
+     "kjAudio": "lessons/kj_ye",
+     "sayAudio": "lessons/write_ye",
+     "word": "夜空",
+     "wp": "yè kōng",
+     "em": "🌙"
+    },
+    {
+     "k": "yue",
+     "kj": "月亮月亮 yuè yuè yuè",
+     "han": "月",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖右弯",
+      "竖",
+      "点",
+      "点",
+      "横加左半圆"
+     ],
+     "xie": "从左到右，先写 y，再写 ü，再写 e，共 3 个字母",
+     "say": "从左到右，先写 y，再写 ü，再写 e，共 3 个字母",
+     "kjAudio": "lessons/kj_yue",
+     "sayAudio": "lessons/write_yue",
+     "word": "月亮",
+     "wp": "yuè liàng",
+     "em": "🌕"
+    },
+    {
+     "k": "yuan",
+     "kj": "圆圈圆圈 yuán yuán yuán",
+     "han": "圆",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖右弯",
+      "竖",
+      "左半圆",
+      "竖右弯",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 y，再写 u，再写 a，再写 n，共 4 个字母",
+     "say": "从左到右，先写 y，再写 u，再写 a，再写 n，共 4 个字母",
+     "kjAudio": "lessons/kj_yuan",
+     "sayAudio": "lessons/write_yuan",
+     "word": "圆圈",
+     "wp": "yuán quān",
+     "em": "⭕"
+    },
+    {
+     "k": "yin",
+     "kj": "银白银白 yín yín yín",
+     "han": "音",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖",
+      "点",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 y，再写 i，再写 n，共 3 个字母",
+     "say": "从左到右，先写 y，再写 i，再写 n，共 3 个字母",
+     "kjAudio": "lessons/kj_yin",
+     "sayAudio": "lessons/write_yin",
+     "word": "音响",
+     "wp": "yīn xiǎng",
+     "em": "🔊"
+    },
+    {
+     "k": "yun",
+     "kj": "云朵云朵 yún yún yún",
+     "han": "云",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖右弯",
+      "竖",
+      "点",
+      "点",
+      "竖",
+      "左弯竖"
+     ],
+     "xie": "从左到右，先写 y，再写 ü，再写 n，共 3 个字母",
+     "say": "从左到右，先写 y，再写 ü，再写 n，共 3 个字母",
+     "kjAudio": "lessons/kj_yun",
+     "sayAudio": "lessons/write_yun",
+     "word": "云朵",
+     "wp": "yún duǒ",
+     "em": "☁️"
+    },
+    {
+     "k": "ying",
+     "kj": "老鹰老鹰 yīng yīng yīng",
+     "han": "鹰",
+     "strokes": [
+      "右斜",
+      "左斜",
+      "竖",
+      "点",
+      "竖",
+      "左弯竖",
+      "左半圆",
+      "竖左弯"
+     ],
+     "xie": "从左到右，先写 y，再写 i，再写 n，再写 g，共 4 个字母",
+     "say": "从左到右，先写 y，再写 i，再写 n，再写 g，共 4 个字母",
+     "kjAudio": "lessons/kj_ying",
+     "sayAudio": "lessons/write_ying",
+     "word": "萤火虫",
+     "wp": "yíng huǒ chóng",
+     "em": "✨"
+    }
+   ],
+   "tones": [
+    {
+     "base": "zhi",
+     "display": "zhi",
+     "tones": [
+      {
+       "t": 1,
+       "display": "zhī",
+       "file": "zhi1"
+      },
+      {
+       "t": 2,
+       "display": "zhí",
+       "file": "zhi2"
+      },
+      {
+       "t": 3,
+       "display": "zhǐ",
+       "file": "zhi3"
+      },
+      {
+       "t": 4,
+       "display": "zhì",
+       "file": "zhi4"
+      }
+     ]
+    },
+    {
+     "base": "yi",
+     "display": "i",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ī",
+       "file": "yi1"
+      },
+      {
+       "t": 2,
+       "display": "í",
+       "file": "yi2"
+      },
+      {
+       "t": 3,
+       "display": "ǐ",
+       "file": "yi3"
+      },
+      {
+       "t": 4,
+       "display": "ì",
+       "file": "yi4"
+      }
+     ]
+    },
+    {
+     "base": "wu",
+     "display": "u",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ū",
+       "file": "wu1"
+      },
+      {
+       "t": 2,
+       "display": "ú",
+       "file": "wu2"
+      },
+      {
+       "t": 3,
+       "display": "ǔ",
+       "file": "wu3"
+      },
+      {
+       "t": 4,
+       "display": "ù",
+       "file": "wu4"
+      }
+     ]
+    },
+    {
+     "base": "yu",
+     "display": "ü",
+     "tones": [
+      {
+       "t": 1,
+       "display": "ǖ",
+       "file": "yu1"
+      },
+      {
+       "t": 2,
+       "display": "ǘ",
+       "file": "yu2"
+      },
+      {
+       "t": 3,
+       "display": "ǚ",
+       "file": "yu3"
+      },
+      {
+       "t": 4,
+       "display": "ǜ",
+       "file": "yu4"
+      }
+     ]
+    },
+    {
+     "base": "yuan",
+     "display": "yuan",
+     "tones": [
+      {
+       "t": 1,
+       "display": "yuān",
+       "file": "yuan1"
+      },
+      {
+       "t": 2,
+       "display": "yuán",
+       "file": "yuan2"
+      },
+      {
+       "t": 3,
+       "display": "yuǎn",
+       "file": "yuan3"
+      },
+      {
+       "t": 4,
+       "display": "yuàn",
+       "file": "yuan4"
+      }
+     ]
+    },
+    {
+     "base": "ying",
+     "display": "ing",
+     "tones": [
+      {
+       "t": 1,
+       "display": "īng",
+       "file": "ying1"
+      },
+      {
+       "t": 2,
+       "display": "íng",
+       "file": "ying2"
+      },
+      {
+       "t": 3,
+       "display": "ǐng",
+       "file": "ying3"
+      },
+      {
+       "t": 4,
+       "display": "ìng",
+       "file": "ying4"
+      }
+     ]
+    }
+   ],
+   "blends": [],
+   "ztlist": [
+    {
+     "k": "zhi",
+     "kj": "蜘蛛蜘蛛 zhī zhī zhī"
+    },
+    {
+     "k": "chi",
+     "kj": "吃饭吃饭 chī chī chī"
+    },
+    {
+     "k": "shi",
+     "kj": "狮子狮子 shī shī shī"
+    },
+    {
+     "k": "ri",
+     "kj": "日头日头 rì rì rì"
+    },
+    {
+     "k": "zi",
+     "kj": "写字写字 zì zì zì"
+    },
+    {
+     "k": "ci",
+     "kj": "刺猬刺猬 cì cì cì"
+    },
+    {
+     "k": "si",
+     "kj": "丝瓜丝瓜 sī sī sī"
+    },
+    {
+     "k": "yi",
+     "kj": "衣服衣服 yī yī yī"
+    },
+    {
+     "k": "wu",
+     "kj": "乌鸦乌鸦 wū wū wū"
+    },
+    {
+     "k": "yu",
+     "kj": "小鱼小鱼 yú yú yú"
+    },
+    {
+     "k": "ye",
+     "kj": "爷爷爷爷 yé yé yé"
+    },
+    {
+     "k": "yue",
+     "kj": "月亮月亮 yuè yuè yuè"
+    },
+    {
+     "k": "yuan",
+     "kj": "圆圈圆圈 yuán yuán yuán"
+    },
+    {
+     "k": "yin",
+     "kj": "银白银白 yín yín yín"
+    },
+    {
+     "k": "yun",
+     "kj": "云朵云朵 yún yún yún"
+    },
+    {
+     "k": "ying",
+     "kj": "老鹰老鹰 yīng yīng yīng"
+    }
+   ],
+   "note": "整体认读音节不用拼，看到就直接读出来"
+  }
+ ]
+}

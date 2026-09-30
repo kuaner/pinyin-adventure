@@ -556,3 +556,415 @@ bao1.mp3|包 bāo → bao1|studycli.org/audio (mp3直拷)
 bi3.mp3|笔 bǐ → bi3|studycli.org/audio (mp3直拷)
 zhi3.mp3|纸 zhǐ → zhi3|studycli.org/audio (mp3直拷)
 jia1.mp3|家 jiā → jia1|studycli.org/audio (mp3直拷)
+
+# ===== 学习岛（v2.2 2026-09-30）：声调基音×4声 + 拼读表音节，studycli.org/wp-content/uploads/mp3 直拷 =====
+hyp/a1.mp3|学习岛 声调/拼读 a1|studycli.org (mp3直拷)
+hyp/a2.mp3|学习岛 声调/拼读 a2|studycli.org (mp3直拷)
+hyp/a3.mp3|学习岛 声调/拼读 a3|studycli.org (mp3直拷)
+hyp/a4.mp3|学习岛 声调/拼读 a4|studycli.org (mp3直拷)
+hyp/ai1.mp3|学习岛 声调/拼读 ai1|studycli.org (mp3直拷)
+hyp/ai2.mp3|学习岛 声调/拼读 ai2|studycli.org (mp3直拷)
+hyp/ai3.mp3|学习岛 声调/拼读 ai3|studycli.org (mp3直拷)
+hyp/ai4.mp3|学习岛 声调/拼读 ai4|studycli.org (mp3直拷)
+hyp/an1.mp3|学习岛 声调/拼读 an1|studycli.org (mp3直拷)
+hyp/an2.mp3|学习岛 声调/拼读 an2|studycli.org (mp3直拷)
+hyp/an3.mp3|学习岛 声调/拼读 an3|studycli.org (mp3直拷)
+hyp/an4.mp3|学习岛 声调/拼读 an4|studycli.org (mp3直拷)
+hyp/ang1.mp3|学习岛 声调/拼读 ang1|studycli.org (mp3直拷)
+hyp/ang2.mp3|学习岛 声调/拼读 ang2|studycli.org (mp3直拷)
+hyp/ang3.mp3|学习岛 声调/拼读 ang3|studycli.org (mp3直拷)
+hyp/ang4.mp3|学习岛 声调/拼读 ang4|studycli.org (mp3直拷)
+hyp/ao1.mp3|学习岛 声调/拼读 ao1|studycli.org (mp3直拷)
+hyp/ao2.mp3|学习岛 声调/拼读 ao2|studycli.org (mp3直拷)
+hyp/ao3.mp3|学习岛 声调/拼读 ao3|studycli.org (mp3直拷)
+hyp/ao4.mp3|学习岛 声调/拼读 ao4|studycli.org (mp3直拷)
+hyp/ba1.mp3|学习岛 声调/拼读 ba1|studycli.org (mp3直拷)
+hyp/ba2.mp3|学习岛 声调/拼读 ba2|studycli.org (mp3直拷)
+hyp/ba3.mp3|学习岛 声调/拼读 ba3|studycli.org (mp3直拷)
+hyp/ba4.mp3|学习岛 声调/拼读 ba4|studycli.org (mp3直拷)
+hyp/bai2.mp3|学习岛 声调/拼读 bai2|studycli.org (mp3直拷)
+hyp/ban1.mp3|学习岛 声调/拼读 ban1|studycli.org (mp3直拷)
+hyp/bei3.mp3|学习岛 声调/拼读 bei3|studycli.org (mp3直拷)
+hyp/bi3.mp3|学习岛 声调/拼读 bi3|studycli.org (mp3直拷)
+hyp/bo1.mp3|学习岛 声调/拼读 bo1|studycli.org (mp3直拷)
+hyp/bu1.mp3|学习岛 声调/拼读 bu1|studycli.org (mp3直拷)
+hyp/ca1.mp3|学习岛 声调/拼读 ca1|studycli.org (mp3直拷)
+hyp/ca2.mp3|学习岛 声调/拼读 ca2|studycli.org (mp3直拷)
+hyp/ca3.mp3|学习岛 声调/拼读 ca3|studycli.org (mp3直拷)
+hyp/ca4.mp3|学习岛 声调/拼读 ca4|studycli.org (mp3直拷)
+hyp/ce1.mp3|学习岛 声调/拼读 ce1|studycli.org (mp3直拷)
+hyp/cha1.mp3|学习岛 声调/拼读 cha1|studycli.org (mp3直拷)
+hyp/cha2.mp3|学习岛 声调/拼读 cha2|studycli.org (mp3直拷)
+hyp/cha3.mp3|学习岛 声调/拼读 cha3|studycli.org (mp3直拷)
+hyp/cha4.mp3|学习岛 声调/拼读 cha4|studycli.org (mp3直拷)
+hyp/che1.mp3|学习岛 声调/拼读 che1|studycli.org (mp3直拷)
+hyp/chou1.mp3|学习岛 声调/拼读 chou1|studycli.org (mp3直拷)
+hyp/chu1.mp3|学习岛 声调/拼读 chu1|studycli.org (mp3直拷)
+hyp/chun1.mp3|学习岛 声调/拼读 chun1|studycli.org (mp3直拷)
+hyp/cu1.mp3|学习岛 声调/拼读 cu1|studycli.org (mp3直拷)
+hyp/da1.mp3|学习岛 声调/拼读 da1|studycli.org (mp3直拷)
+hyp/da2.mp3|学习岛 声调/拼读 da2|studycli.org (mp3直拷)
+hyp/da3.mp3|学习岛 声调/拼读 da3|studycli.org (mp3直拷)
+hyp/da4.mp3|学习岛 声调/拼读 da4|studycli.org (mp3直拷)
+hyp/dao1.mp3|学习岛 声调/拼读 dao1|studycli.org (mp3直拷)
+hyp/de1.mp3|学习岛 声调/拼读 de1|studycli.org (mp3直拷)
+hyp/di1.mp3|学习岛 声调/拼读 di1|studycli.org (mp3直拷)
+hyp/dong1.mp3|学习岛 声调/拼读 dong1|studycli.org (mp3直拷)
+hyp/du2.mp3|学习岛 声调/拼读 du2|studycli.org (mp3直拷)
+hyp/e1.mp3|学习岛 声调/拼读 e1|studycli.org (mp3直拷)
+hyp/e2.mp3|学习岛 声调/拼读 e2|studycli.org (mp3直拷)
+hyp/e3.mp3|学习岛 声调/拼读 e3|studycli.org (mp3直拷)
+hyp/e4.mp3|学习岛 声调/拼读 e4|studycli.org (mp3直拷)
+hyp/ei1.mp3|学习岛 声调/拼读 ei1|studycli.org (mp3直拷)
+hyp/ei2.mp3|学习岛 声调/拼读 ei2|studycli.org (mp3直拷)
+hyp/ei3.mp3|学习岛 声调/拼读 ei3|studycli.org (mp3直拷)
+hyp/ei4.mp3|学习岛 声调/拼读 ei4|studycli.org (mp3直拷)
+hyp/en1.mp3|学习岛 声调/拼读 en1|studycli.org (mp3直拷)
+hyp/en2.mp3|学习岛 声调/拼读 en2|studycli.org (mp3直拷)
+hyp/en3.mp3|学习岛 声调/拼读 en3|studycli.org (mp3直拷)
+hyp/en4.mp3|学习岛 声调/拼读 en4|studycli.org (mp3直拷)
+hyp/eng1.mp3|学习岛 声调/拼读 eng1|studycli.org (mp3直拷)
+hyp/eng2.mp3|学习岛 声调/拼读 eng2|studycli.org (mp3直拷)
+hyp/eng3.mp3|学习岛 声调/拼读 eng3|studycli.org (mp3直拷)
+hyp/eng4.mp3|学习岛 声调/拼读 eng4|studycli.org (mp3直拷)
+hyp/er1.mp3|学习岛 声调/拼读 er1|studycli.org (mp3直拷)
+hyp/er2.mp3|学习岛 声调/拼读 er2|studycli.org (mp3直拷)
+hyp/er3.mp3|学习岛 声调/拼读 er3|studycli.org (mp3直拷)
+hyp/er4.mp3|学习岛 声调/拼读 er4|studycli.org (mp3直拷)
+hyp/fa1.mp3|学习岛 声调/拼读 fa1|studycli.org (mp3直拷)
+hyp/fa2.mp3|学习岛 声调/拼读 fa2|studycli.org (mp3直拷)
+hyp/fa3.mp3|学习岛 声调/拼读 fa3|studycli.org (mp3直拷)
+hyp/fa4.mp3|学习岛 声调/拼读 fa4|studycli.org (mp3直拷)
+hyp/fang1.mp3|学习岛 声调/拼读 fang1|studycli.org (mp3直拷)
+hyp/fei1.mp3|学习岛 声调/拼读 fei1|studycli.org (mp3直拷)
+hyp/feng1.mp3|学习岛 声调/拼读 feng1|studycli.org (mp3直拷)
+hyp/fu1.mp3|学习岛 声调/拼读 fu1|studycli.org (mp3直拷)
+hyp/ga1.mp3|学习岛 声调/拼读 ga1|studycli.org (mp3直拷)
+hyp/ga2.mp3|学习岛 声调/拼读 ga2|studycli.org (mp3直拷)
+hyp/ga3.mp3|学习岛 声调/拼读 ga3|studycli.org (mp3直拷)
+hyp/ga4.mp3|学习岛 声调/拼读 ga4|studycli.org (mp3直拷)
+hyp/ge1.mp3|学习岛 声调/拼读 ge1|studycli.org (mp3直拷)
+hyp/gu1.mp3|学习岛 声调/拼读 gu1|studycli.org (mp3直拷)
+hyp/ha1.mp3|学习岛 声调/拼读 ha1|studycli.org (mp3直拷)
+hyp/ha2.mp3|学习岛 声调/拼读 ha2|studycli.org (mp3直拷)
+hyp/ha3.mp3|学习岛 声调/拼读 ha3|studycli.org (mp3直拷)
+hyp/ha4.mp3|学习岛 声调/拼读 ha4|studycli.org (mp3直拷)
+hyp/hai3.mp3|学习岛 声调/拼读 hai3|studycli.org (mp3直拷)
+hyp/he1.mp3|学习岛 声调/拼读 he1|studycli.org (mp3直拷)
+hyp/heng1.mp3|学习岛 声调/拼读 heng1|studycli.org (mp3直拷)
+hyp/hong1.mp3|学习岛 声调/拼读 hong1|studycli.org (mp3直拷)
+hyp/hu2.mp3|学习岛 声调/拼读 hu2|studycli.org (mp3直拷)
+hyp/ji1.mp3|学习岛 声调/拼读 ji1|studycli.org (mp3直拷)
+hyp/ji2.mp3|学习岛 声调/拼读 ji2|studycli.org (mp3直拷)
+hyp/ji3.mp3|学习岛 声调/拼读 ji3|studycli.org (mp3直拷)
+hyp/ji4.mp3|学习岛 声调/拼读 ji4|studycli.org (mp3直拷)
+hyp/jin1.mp3|学习岛 声调/拼读 jin1|studycli.org (mp3直拷)
+hyp/ju1.mp3|学习岛 声调/拼读 ju1|studycli.org (mp3直拷)
+hyp/ka1.mp3|学习岛 声调/拼读 ka1|studycli.org (mp3直拷)
+hyp/ka2.mp3|学习岛 声调/拼读 ka2|studycli.org (mp3直拷)
+hyp/ka3.mp3|学习岛 声调/拼读 ka3|studycli.org (mp3直拷)
+hyp/ka4.mp3|学习岛 声调/拼读 ka4|studycli.org (mp3直拷)
+hyp/ke1.mp3|学习岛 声调/拼读 ke1|studycli.org (mp3直拷)
+hyp/ku1.mp3|学习岛 声调/拼读 ku1|studycli.org (mp3直拷)
+hyp/la1.mp3|学习岛 声调/拼读 la1|studycli.org (mp3直拷)
+hyp/la2.mp3|学习岛 声调/拼读 la2|studycli.org (mp3直拷)
+hyp/la3.mp3|学习岛 声调/拼读 la3|studycli.org (mp3直拷)
+hyp/la4.mp3|学习岛 声调/拼读 la4|studycli.org (mp3直拷)
+hyp/le1.mp3|学习岛 声调/拼读 le1|studycli.org (mp3直拷)
+hyp/li3.mp3|学习岛 声调/拼读 li3|studycli.org (mp3直拷)
+hyp/liu4.mp3|学习岛 声调/拼读 liu4|studycli.org (mp3直拷)
+hyp/lu4.mp3|学习岛 声调/拼读 lu4|studycli.org (mp3直拷)
+hyp/ma1.mp3|学习岛 声调/拼读 ma1|studycli.org (mp3直拷)
+hyp/ma2.mp3|学习岛 声调/拼读 ma2|studycli.org (mp3直拷)
+hyp/ma3.mp3|学习岛 声调/拼读 ma3|studycli.org (mp3直拷)
+hyp/ma4.mp3|学习岛 声调/拼读 ma4|studycli.org (mp3直拷)
+hyp/man4.mp3|学习岛 声调/拼读 man4|studycli.org (mp3直拷)
+hyp/mao1.mp3|学习岛 声调/拼读 mao1|studycli.org (mp3直拷)
+hyp/men2.mp3|学习岛 声调/拼读 men2|studycli.org (mp3直拷)
+hyp/mi3.mp3|学习岛 声调/拼读 mi3|studycli.org (mp3直拷)
+hyp/ming1.mp3|学习岛 声调/拼读 ming1|studycli.org (mp3直拷)
+hyp/mo1.mp3|学习岛 声调/拼读 mo1|studycli.org (mp3直拷)
+hyp/mu3.mp3|学习岛 声调/拼读 mu3|studycli.org (mp3直拷)
+hyp/na1.mp3|学习岛 声调/拼读 na1|studycli.org (mp3直拷)
+hyp/na2.mp3|学习岛 声调/拼读 na2|studycli.org (mp3直拷)
+hyp/na3.mp3|学习岛 声调/拼读 na3|studycli.org (mp3直拷)
+hyp/na4.mp3|学习岛 声调/拼读 na4|studycli.org (mp3直拷)
+hyp/ne1.mp3|学习岛 声调/拼读 ne1|studycli.org (mp3直拷)
+hyp/nen1.mp3|学习岛 声调/拼读 nen1|studycli.org (mp3直拷)
+hyp/ni3.mp3|学习岛 声调/拼读 ni3|studycli.org (mp3直拷)
+hyp/niu2.mp3|学习岛 声调/拼读 niu2|studycli.org (mp3直拷)
+hyp/nu1.mp3|学习岛 声调/拼读 nu1|studycli.org (mp3直拷)
+hyp/o1.mp3|学习岛 声调/拼读 o1|studycli.org (mp3直拷)
+hyp/o2.mp3|学习岛 声调/拼读 o2|studycli.org (mp3直拷)
+hyp/o3.mp3|学习岛 声调/拼读 o3|studycli.org (mp3直拷)
+hyp/o4.mp3|学习岛 声调/拼读 o4|studycli.org (mp3直拷)
+hyp/ou1.mp3|学习岛 声调/拼读 ou1|studycli.org (mp3直拷)
+hyp/ou2.mp3|学习岛 声调/拼读 ou2|studycli.org (mp3直拷)
+hyp/ou3.mp3|学习岛 声调/拼读 ou3|studycli.org (mp3直拷)
+hyp/ou4.mp3|学习岛 声调/拼读 ou4|studycli.org (mp3直拷)
+hyp/pa1.mp3|学习岛 声调/拼读 pa1|studycli.org (mp3直拷)
+hyp/pa2.mp3|学习岛 声调/拼读 pa2|studycli.org (mp3直拷)
+hyp/pa3.mp3|学习岛 声调/拼读 pa3|studycli.org (mp3直拷)
+hyp/pa4.mp3|学习岛 声调/拼读 pa4|studycli.org (mp3直拷)
+hyp/pi2.mp3|学习岛 声调/拼读 pi2|studycli.org (mp3直拷)
+hyp/po1.mp3|学习岛 声调/拼读 po1|studycli.org (mp3直拷)
+hyp/pu1.mp3|学习岛 声调/拼读 pu1|studycli.org (mp3直拷)
+hyp/qi1.mp3|学习岛 声调/拼读 qi1|studycli.org (mp3直拷)
+hyp/qi2.mp3|学习岛 声调/拼读 qi2|studycli.org (mp3直拷)
+hyp/qi3.mp3|学习岛 声调/拼读 qi3|studycli.org (mp3直拷)
+hyp/qi4.mp3|学习岛 声调/拼读 qi4|studycli.org (mp3直拷)
+hyp/qu4.mp3|学习岛 声调/拼读 qu4|studycli.org (mp3直拷)
+hyp/qun1.mp3|学习岛 声调/拼读 qun1|studycli.org (mp3直拷)
+hyp/re1.mp3|学习岛 声调/拼读 re1|studycli.org (mp3直拷)
+hyp/re2.mp3|学习岛 声调/拼读 re2|studycli.org (mp3直拷)
+hyp/re3.mp3|学习岛 声调/拼读 re3|studycli.org (mp3直拷)
+hyp/re4.mp3|学习岛 声调/拼读 re4|studycli.org (mp3直拷)
+hyp/ru1.mp3|学习岛 声调/拼读 ru1|studycli.org (mp3直拷)
+hyp/sa1.mp3|学习岛 声调/拼读 sa1|studycli.org (mp3直拷)
+hyp/sa2.mp3|学习岛 声调/拼读 sa2|studycli.org (mp3直拷)
+hyp/sa3.mp3|学习岛 声调/拼读 sa3|studycli.org (mp3直拷)
+hyp/sa4.mp3|学习岛 声调/拼读 sa4|studycli.org (mp3直拷)
+hyp/se1.mp3|学习岛 声调/拼读 se1|studycli.org (mp3直拷)
+hyp/sha1.mp3|学习岛 声调/拼读 sha1|studycli.org (mp3直拷)
+hyp/sha2.mp3|学习岛 声调/拼读 sha2|studycli.org (mp3直拷)
+hyp/sha3.mp3|学习岛 声调/拼读 sha3|studycli.org (mp3直拷)
+hyp/sha4.mp3|学习岛 声调/拼读 sha4|studycli.org (mp3直拷)
+hyp/shang4.mp3|学习岛 声调/拼读 shang4|studycli.org (mp3直拷)
+hyp/she1.mp3|学习岛 声调/拼读 she1|studycli.org (mp3直拷)
+hyp/shu4.mp3|学习岛 声调/拼读 shu4|studycli.org (mp3直拷)
+hyp/shui3.mp3|学习岛 声调/拼读 shui3|studycli.org (mp3直拷)
+hyp/su1.mp3|学习岛 声调/拼读 su1|studycli.org (mp3直拷)
+hyp/ta1.mp3|学习岛 声调/拼读 ta1|studycli.org (mp3直拷)
+hyp/ta2.mp3|学习岛 声调/拼读 ta2|studycli.org (mp3直拷)
+hyp/ta3.mp3|学习岛 声调/拼读 ta3|studycli.org (mp3直拷)
+hyp/ta4.mp3|学习岛 声调/拼读 ta4|studycli.org (mp3直拷)
+hyp/tao2.mp3|学习岛 声调/拼读 tao2|studycli.org (mp3直拷)
+hyp/te1.mp3|学习岛 声调/拼读 te1|studycli.org (mp3直拷)
+hyp/ti1.mp3|学习岛 声调/拼读 ti1|studycli.org (mp3直拷)
+hyp/tu3.mp3|学习岛 声调/拼读 tu3|studycli.org (mp3直拷)
+hyp/wa1.mp3|学习岛 声调/拼读 wa1|studycli.org (mp3直拷)
+hyp/wei1.mp3|学习岛 声调/拼读 wei1|studycli.org (mp3直拷)
+hyp/wei2.mp3|学习岛 声调/拼读 wei2|studycli.org (mp3直拷)
+hyp/wei3.mp3|学习岛 声调/拼读 wei3|studycli.org (mp3直拷)
+hyp/wei4.mp3|学习岛 声调/拼读 wei4|studycli.org (mp3直拷)
+hyp/wen1.mp3|学习岛 声调/拼读 wen1|studycli.org (mp3直拷)
+hyp/wen2.mp3|学习岛 声调/拼读 wen2|studycli.org (mp3直拷)
+hyp/wen3.mp3|学习岛 声调/拼读 wen3|studycli.org (mp3直拷)
+hyp/wen4.mp3|学习岛 声调/拼读 wen4|studycli.org (mp3直拷)
+hyp/weng1.mp3|学习岛 声调/拼读 weng1|studycli.org (mp3直拷)
+hyp/weng2.mp3|学习岛 声调/拼读 weng2|studycli.org (mp3直拷)
+hyp/weng3.mp3|学习岛 声调/拼读 weng3|studycli.org (mp3直拷)
+hyp/weng4.mp3|学习岛 声调/拼读 weng4|studycli.org (mp3直拷)
+hyp/wu1.mp3|学习岛 声调/拼读 wu1|studycli.org (mp3直拷)
+hyp/wu2.mp3|学习岛 声调/拼读 wu2|studycli.org (mp3直拷)
+hyp/wu3.mp3|学习岛 声调/拼读 wu3|studycli.org (mp3直拷)
+hyp/wu4.mp3|学习岛 声调/拼读 wu4|studycli.org (mp3直拷)
+hyp/xi1.mp3|学习岛 声调/拼读 xi1|studycli.org (mp3直拷)
+hyp/xi2.mp3|学习岛 声调/拼读 xi2|studycli.org (mp3直拷)
+hyp/xi3.mp3|学习岛 声调/拼读 xi3|studycli.org (mp3直拷)
+hyp/xi4.mp3|学习岛 声调/拼读 xi4|studycli.org (mp3直拷)
+hyp/xin1.mp3|学习岛 声调/拼读 xin1|studycli.org (mp3直拷)
+hyp/xing1.mp3|学习岛 声调/拼读 xing1|studycli.org (mp3直拷)
+hyp/xu1.mp3|学习岛 声调/拼读 xu1|studycli.org (mp3直拷)
+hyp/ya1.mp3|学习岛 声调/拼读 ya1|studycli.org (mp3直拷)
+hyp/ye1.mp3|学习岛 声调/拼读 ye1|studycli.org (mp3直拷)
+hyp/ye2.mp3|学习岛 声调/拼读 ye2|studycli.org (mp3直拷)
+hyp/ye3.mp3|学习岛 声调/拼读 ye3|studycli.org (mp3直拷)
+hyp/ye4.mp3|学习岛 声调/拼读 ye4|studycli.org (mp3直拷)
+hyp/yi1.mp3|学习岛 声调/拼读 yi1|studycli.org (mp3直拷)
+hyp/yi2.mp3|学习岛 声调/拼读 yi2|studycli.org (mp3直拷)
+hyp/yi3.mp3|学习岛 声调/拼读 yi3|studycli.org (mp3直拷)
+hyp/yi4.mp3|学习岛 声调/拼读 yi4|studycli.org (mp3直拷)
+hyp/yin1.mp3|学习岛 声调/拼读 yin1|studycli.org (mp3直拷)
+hyp/yin2.mp3|学习岛 声调/拼读 yin2|studycli.org (mp3直拷)
+hyp/yin3.mp3|学习岛 声调/拼读 yin3|studycli.org (mp3直拷)
+hyp/yin4.mp3|学习岛 声调/拼读 yin4|studycli.org (mp3直拷)
+hyp/ying1.mp3|学习岛 声调/拼读 ying1|studycli.org (mp3直拷)
+hyp/ying2.mp3|学习岛 声调/拼读 ying2|studycli.org (mp3直拷)
+hyp/ying3.mp3|学习岛 声调/拼读 ying3|studycli.org (mp3直拷)
+hyp/ying4.mp3|学习岛 声调/拼读 ying4|studycli.org (mp3直拷)
+hyp/you1.mp3|学习岛 声调/拼读 you1|studycli.org (mp3直拷)
+hyp/you2.mp3|学习岛 声调/拼读 you2|studycli.org (mp3直拷)
+hyp/you3.mp3|学习岛 声调/拼读 you3|studycli.org (mp3直拷)
+hyp/you4.mp3|学习岛 声调/拼读 you4|studycli.org (mp3直拷)
+hyp/yu1.mp3|学习岛 声调/拼读 yu1|studycli.org (mp3直拷)
+hyp/yu2.mp3|学习岛 声调/拼读 yu2|studycli.org (mp3直拷)
+hyp/yu3.mp3|学习岛 声调/拼读 yu3|studycli.org (mp3直拷)
+hyp/yu4.mp3|学习岛 声调/拼读 yu4|studycli.org (mp3直拷)
+hyp/yuan1.mp3|学习岛 声调/拼读 yuan1|studycli.org (mp3直拷)
+hyp/yuan2.mp3|学习岛 声调/拼读 yuan2|studycli.org (mp3直拷)
+hyp/yuan3.mp3|学习岛 声调/拼读 yuan3|studycli.org (mp3直拷)
+hyp/yuan4.mp3|学习岛 声调/拼读 yuan4|studycli.org (mp3直拷)
+hyp/yue1.mp3|学习岛 声调/拼读 yue1|studycli.org (mp3直拷)
+hyp/yue2.mp3|学习岛 声调/拼读 yue2|studycli.org (mp3直拷)
+hyp/yue3.mp3|学习岛 声调/拼读 yue3|studycli.org (mp3直拷)
+hyp/yue4.mp3|学习岛 声调/拼读 yue4|studycli.org (mp3直拷)
+hyp/yun1.mp3|学习岛 声调/拼读 yun1|studycli.org (mp3直拷)
+hyp/yun2.mp3|学习岛 声调/拼读 yun2|studycli.org (mp3直拷)
+hyp/yun3.mp3|学习岛 声调/拼读 yun3|studycli.org (mp3直拷)
+hyp/yun4.mp3|学习岛 声调/拼读 yun4|studycli.org (mp3直拷)
+hyp/za1.mp3|学习岛 声调/拼读 za1|studycli.org (mp3直拷)
+hyp/za2.mp3|学习岛 声调/拼读 za2|studycli.org (mp3直拷)
+hyp/za3.mp3|学习岛 声调/拼读 za3|studycli.org (mp3直拷)
+hyp/za4.mp3|学习岛 声调/拼读 za4|studycli.org (mp3直拷)
+hyp/ze1.mp3|学习岛 声调/拼读 ze1|studycli.org (mp3直拷)
+hyp/zha1.mp3|学习岛 声调/拼读 zha1|studycli.org (mp3直拷)
+hyp/zha2.mp3|学习岛 声调/拼读 zha2|studycli.org (mp3直拷)
+hyp/zha3.mp3|学习岛 声调/拼读 zha3|studycli.org (mp3直拷)
+hyp/zha4.mp3|学习岛 声调/拼读 zha4|studycli.org (mp3直拷)
+hyp/zhe1.mp3|学习岛 声调/拼读 zhe1|studycli.org (mp3直拷)
+hyp/zhi1.mp3|学习岛 声调/拼读 zhi1|studycli.org (mp3直拷)
+hyp/zhi2.mp3|学习岛 声调/拼读 zhi2|studycli.org (mp3直拷)
+hyp/zhi3.mp3|学习岛 声调/拼读 zhi3|studycli.org (mp3直拷)
+hyp/zhi4.mp3|学习岛 声调/拼读 zhi4|studycli.org (mp3直拷)
+hyp/zhu2.mp3|学习岛 声调/拼读 zhu2|studycli.org (mp3直拷)
+hyp/zou1.mp3|学习岛 声调/拼读 zou1|studycli.org (mp3直拷)
+hyp/zu2.mp3|学习岛 声调/拼读 zu2|studycli.org (mp3直拷)
+
+# ===== 学习岛口诀/写法旁白/鼓励（mimo 冰糖 24kHz，幼儿园老师教学风格；文本纯汉字，字母以直注汉字读音） =====
+lessons/cheer_pass.mp3|太棒了，通过啦，下一课已经解锁|mimo 冰糖
+lessons/cheer_perfect.mp3|全部答对，你是拼音小天才|mimo 冰糖
+lessons/cheer_retry.mp3|差一点点，我们再学一遍，你一定可以的|mimo 冰糖
+lessons/kj_a.mp3|张大嘴巴 阿 阿 阿|mimo 冰糖
+lessons/kj_ai.mp3|阿 和 衣 挨在一起 挨|mimo 冰糖
+lessons/kj_an.mp3|安 是前鼻音，舌尖顶上牙|mimo 冰糖
+lessons/kj_ang.mp3|昂 是后鼻音，嘴巴张大响|mimo 冰糖
+lessons/kj_ao.mp3|棉袄棉袄 袄 袄 袄|mimo 冰糖
+lessons/kj_b.mp3|右下半圆 玻 玻 玻|mimo 冰糖
+lessons/kj_c.mp3|半圆带钩 雌 雌 雌|mimo 冰糖
+lessons/kj_ch.mp3|翘舌发音 吃 吃 吃|mimo 冰糖
+lessons/kj_chi.mp3|吃饭吃饭 吃 吃 吃|mimo 冰糖
+lessons/kj_ci.mp3|刺猬刺猬 词 词 词|mimo 冰糖
+lessons/kj_d.mp3|左下半圆 得 得 得|mimo 冰糖
+lessons/kj_e.mp3|扁扁嘴巴 鹅 鹅 鹅|mimo 冰糖
+lessons/kj_ei.mp3|用力砍树 欸 欸 欸|mimo 冰糖
+lessons/kj_en.mp3|恩 是前鼻音，舌尖顶上牙|mimo 冰糖
+lessons/kj_eng.mp3|鞥 是后鼻音，嘴巴张大响|mimo 冰糖
+lessons/kj_er.mp3|耳朵耳朵 耳 耳 耳|mimo 冰糖
+lessons/kj_f.mp3|一根拐杖 佛 佛 佛|mimo 冰糖
+lessons/kj_g.mp3|像个9字加弯 哥 哥 哥|mimo 冰糖
+lessons/kj_h.mp3|一把椅子 喝 喝 喝|mimo 冰糖
+lessons/kj_i.mp3|牙齿对齐 衣 衣 衣|mimo 冰糖
+lessons/kj_ie.mp3|衣 在前是 耶（椰子树）|mimo 冰糖
+lessons/kj_in.mp3|音 是前鼻音，舌尖顶上牙|mimo 冰糖
+lessons/kj_ing.mp3|鹰 是后鼻音，嘴巴张大响|mimo 冰糖
+lessons/kj_iu.mp3|衣 在前是 邮（皮球）|mimo 冰糖
+lessons/kj_j.mp3|小鸡啄米 鸡 鸡 鸡|mimo 冰糖
+lessons/kj_k.mp3|蝌蚪水草 科 科 科|mimo 冰糖
+lessons/kj_l.mp3|一根棍子 乐 乐 乐|mimo 冰糖
+lessons/kj_m.mp3|两个门洞 摸 摸 摸|mimo 冰糖
+lessons/kj_n.mp3|一个门洞 讷 讷 讷|mimo 冰糖
+lessons/kj_o.mp3|圆圆嘴巴 喔 喔 喔|mimo 冰糖
+lessons/kj_ong.mp3|喔讷哥 喔讷哥 喔讷哥|mimo 冰糖
+lessons/kj_ou.mp3|海鸥海鸥 鸥 鸥 鸥|mimo 冰糖
+lessons/kj_p.mp3|右上半圆 坡 坡 坡|mimo 冰糖
+lessons/kj_q.mp3|左上半圆 七 七 七|mimo 冰糖
+lessons/kj_r.mp3|苗芽出土 日 日 日|mimo 冰糖
+lessons/kj_ri.mp3|日头日头 日 日 日|mimo 冰糖
+lessons/kj_s.mp3|蚕儿吐丝 丝 丝 丝|mimo 冰糖
+lessons/kj_sh.mp3|翘舌发音 诗 诗 诗|mimo 冰糖
+lessons/kj_shi.mp3|狮子狮子 是 是 是|mimo 冰糖
+lessons/kj_si.mp3|丝瓜丝瓜 丝 丝 丝|mimo 冰糖
+lessons/kj_t.mp3|伞柄朝下 特 特 特|mimo 冰糖
+lessons/kj_u.mp3|嘴巴突出 屋 屋 屋|mimo 冰糖
+lessons/kj_ui.mp3|屋 在前是 围（围巾）|mimo 冰糖
+lessons/kj_un.mp3|屋 加 讷 组成 温|mimo 冰糖
+lessons/kj_v.mp3|小鱼吐泡 鱼 鱼 鱼|mimo 冰糖
+lessons/kj_ve.mp3|月亮弯弯 约 约 约|mimo 冰糖
+lessons/kj_vn.mp3|鱼 加 讷 组成 晕|mimo 冰糖
+lessons/kj_w.mp3|屋顶相连 乌 乌 乌|mimo 冰糖
+lessons/kj_wu.mp3|乌鸦乌鸦 乌 乌 乌|mimo 冰糖
+lessons/kj_x.mp3|切个西瓜 西 西 西|mimo 冰糖
+lessons/kj_y.mp3|树杈树杈 一 一 一|mimo 冰糖
+lessons/kj_ye.mp3|爷爷爷爷 耶 耶 耶|mimo 冰糖
+lessons/kj_yi.mp3|衣服衣服 衣 衣 衣|mimo 冰糖
+lessons/kj_yin.mp3|银白银白 音 音 音|mimo 冰糖
+lessons/kj_ying.mp3|老鹰老鹰 鹰 鹰 鹰|mimo 冰糖
+lessons/kj_yu.mp3|小鱼小鱼 鱼 鱼 鱼|mimo 冰糖
+lessons/kj_yuan.mp3|圆圈圆圈 圆 圆 圆|mimo 冰糖
+lessons/kj_yue.mp3|月亮月亮 月 月 月|mimo 冰糖
+lessons/kj_yun.mp3|云朵云朵 云 云 云|mimo 冰糖
+lessons/kj_z.mp3|像个2字 资 资 资|mimo 冰糖
+lessons/kj_zh.mp3|舌尖翘起 知 知 知|mimo 冰糖
+lessons/kj_zhi.mp3|蜘蛛蜘蛛 之 之 之|mimo 冰糖
+lessons/kj_zi.mp3|写字写字 字 字 字|mimo 冰糖
+lessons/open_1.mp3|现在开始学第一课|mimo 冰糖
+lessons/open_10.mp3|现在开始学第十课|mimo 冰糖
+lessons/open_11.mp3|现在开始学第十一课|mimo 冰糖
+lessons/open_12.mp3|现在开始学第十二课|mimo 冰糖
+lessons/open_2.mp3|现在开始学第二课|mimo 冰糖
+lessons/open_3.mp3|现在开始学第三课|mimo 冰糖
+lessons/open_4.mp3|现在开始学第四课|mimo 冰糖
+lessons/open_5.mp3|现在开始学第五课|mimo 冰糖
+lessons/open_6.mp3|现在开始学第六课|mimo 冰糖
+lessons/open_7.mp3|现在开始学第七课|mimo 冰糖
+lessons/open_8.mp3|现在开始学第八课|mimo 冰糖
+lessons/open_9.mp3|现在开始学第九课|mimo 冰糖
+lessons/step_1.mp3|第一步，认识新朋友|mimo 冰糖
+lessons/step_2.mp3|第二步，看看怎么写|mimo 冰糖
+lessons/step_3.mp3|第三步，练习四声调|mimo 冰糖
+lessons/step_4.mp3|第四步，练习拼读|mimo 冰糖
+lessons/step_5.mp3|第五步，小小测试|mimo 冰糖
+lessons/write_a.mp3|先写左半圆，再写竖右弯，两笔写成|mimo 冰糖
+lessons/write_ai.mp3|从左到右，先写 阿，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_an.mp3|从左到右，先写 阿，再写 讷，共 2 个字母|mimo 冰糖
+lessons/write_ang.mp3|从左到右，先写 阿，再写 讷，再写 哥，共 3 个字母|mimo 冰糖
+lessons/write_ao.mp3|从左到右，先写 阿，再写 喔，共 2 个字母|mimo 冰糖
+lessons/write_b.mp3|先写竖，再写右半圆，两笔写成|mimo 冰糖
+lessons/write_c.mp3|一笔写成，占中格|mimo 冰糖
+lessons/write_ch.mp3|从左到右，先写 雌，再写 喝，共 2 个字母|mimo 冰糖
+lessons/write_chi.mp3|从左到右，先写 雌，再写 喝，再写 衣，共 3 个字母|mimo 冰糖
+lessons/write_ci.mp3|从左到右，先写 雌，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_d.mp3|先写左半圆，再写竖，两笔写成|mimo 冰糖
+lessons/write_e.mp3|一笔写成，占中格|mimo 冰糖
+lessons/write_ei.mp3|从左到右，先写 鹅，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_en.mp3|从左到右，先写 鹅，再写 讷，共 2 个字母|mimo 冰糖
+lessons/write_eng.mp3|从左到右，先写 鹅，再写 讷，再写 哥，共 3 个字母|mimo 冰糖
+lessons/write_er.mp3|从左到右，先写 鹅，再写 日，共 2 个字母|mimo 冰糖
+lessons/write_f.mp3|先写右弯竖，再写横，两笔写成|mimo 冰糖
+lessons/write_g.mp3|先写左半圆，再写竖左弯，两笔写成|mimo 冰糖
+lessons/write_h.mp3|先写竖，再写左弯竖，两笔写成|mimo 冰糖
+lessons/write_i.mp3|先写竖，再写点，两笔写成|mimo 冰糖
+lessons/write_ie.mp3|从左到右，先写 衣，再写 鹅，共 2 个字母|mimo 冰糖
+lessons/write_in.mp3|从左到右，先写 衣，再写 讷，共 2 个字母|mimo 冰糖
+lessons/write_ing.mp3|从左到右，先写 衣，再写 讷，再写 哥，共 3 个字母|mimo 冰糖
+lessons/write_iu.mp3|从左到右，先写 衣，再写 屋，共 2 个字母|mimo 冰糖
+lessons/write_j.mp3|先写竖左弯，再写点，两笔写成|mimo 冰糖
+lessons/write_k.mp3|先写竖，再写左斜右斜，两笔写成|mimo 冰糖
+lessons/write_l.mp3|一笔写成，占上格和中格|mimo 冰糖
+lessons/write_m.mp3|先写竖，再写左弯竖，最后写左弯竖，三笔写成|mimo 冰糖
+lessons/write_n.mp3|先写竖，再写左弯竖，两笔写成|mimo 冰糖
+lessons/write_o.mp3|一笔写成，占中格|mimo 冰糖
+lessons/write_ong.mp3|从左到右，先写 喔，再写 讷，再写 哥，共 3 个字母|mimo 冰糖
+lessons/write_ou.mp3|从左到右，先写 喔，再写 屋，共 2 个字母|mimo 冰糖
+lessons/write_p.mp3|先写竖，再写右半圆，两笔写成|mimo 冰糖
+lessons/write_q.mp3|先写左半圆，再写竖，两笔写成|mimo 冰糖
+lessons/write_r.mp3|先写竖，再写右弯，两笔写成|mimo 冰糖
+lessons/write_ri.mp3|从左到右，先写 日，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_s.mp3|一笔写成，占中格|mimo 冰糖
+lessons/write_sh.mp3|从左到右，先写 丝，再写 喝，共 2 个字母|mimo 冰糖
+lessons/write_shi.mp3|从左到右，先写 丝，再写 喝，再写 衣，共 3 个字母|mimo 冰糖
+lessons/write_si.mp3|从左到右，先写 丝，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_t.mp3|先写竖右弯，再写横，两笔写成|mimo 冰糖
+lessons/write_u.mp3|先写竖右弯，再写竖，两笔写成|mimo 冰糖
+lessons/write_ui.mp3|从左到右，先写 屋，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_un.mp3|从左到右，先写 屋，再写 讷，共 2 个字母|mimo 冰糖
+lessons/write_v.mp3|先写竖右弯，再写竖，再写点，最后写点，四笔写成|mimo 冰糖
+lessons/write_ve.mp3|从左到右，先写 鱼，再写 鹅，共 2 个字母|mimo 冰糖
+lessons/write_vn.mp3|从左到右，先写 鱼，再写 讷，共 2 个字母|mimo 冰糖
+lessons/write_w.mp3|先写斜下斜上，再写斜下斜上，两笔写成|mimo 冰糖
+lessons/write_wu.mp3|从左到右，先写 乌，再写 屋，共 2 个字母|mimo 冰糖
+lessons/write_x.mp3|先写右斜，再写左斜，两笔写成|mimo 冰糖
+lessons/write_y.mp3|先写右斜，再写左斜，两笔写成|mimo 冰糖
+lessons/write_ye.mp3|从左到右，先写 一，再写 鹅，共 2 个字母|mimo 冰糖
+lessons/write_yi.mp3|从左到右，先写 一，再写 衣，共 2 个字母|mimo 冰糖
+lessons/write_yin.mp3|从左到右，先写 一，再写 衣，再写 讷，共 3 个字母|mimo 冰糖
+lessons/write_ying.mp3|从左到右，先写 一，再写 衣，再写 讷，再写 哥，共 4 个字母|mimo 冰糖
+lessons/write_yu.mp3|从左到右，先写 一，再写 鱼，共 2 个字母|mimo 冰糖
+lessons/write_yuan.mp3|从左到右，先写 一，再写 屋，再写 阿，再写 讷，共 4 个字母|mimo 冰糖
+lessons/write_yue.mp3|从左到右，先写 一，再写 鱼，再写 鹅，共 3 个字母|mimo 冰糖
+lessons/write_yun.mp3|从左到右，先写 一，再写 鱼，再写 讷，共 3 个字母|mimo 冰糖
+lessons/write_z.mp3|一笔写成，占中格|mimo 冰糖
+lessons/write_zh.mp3|从左到右，先写 资，再写 喝，共 2 个字母|mimo 冰糖
+lessons/write_zhi.mp3|从左到右，先写 资，再写 喝，再写 衣，共 3 个字母|mimo 冰糖
+lessons/write_zi.mp3|从左到右，先写 资，再写 衣，共 2 个字母|mimo 冰糖

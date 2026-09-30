@@ -1,0 +1,161 @@
+<script lang="ts">
+  /* 声调练习（五步之③）：四声演示（真人音 + 声调符号方向动画）+ 听调辨调小练（听音选声调符号） */
+  import { playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
+  import { toast } from '../../stores/ui.svelte'
+  import Ruby from '../Ruby.svelte'
+  import Icon from '../Icon.svelte'
+
+  export type ToneRow = { base: string; display: string; tones: { t: number; display: string; file: string }[] }
+
+  let { rows, ondone }: { rows: ToneRow[]; ondone?: () => void } = $props()
+
+  let sel = $state(0)
+  let playing = $state(-1)          // 正在演示第几声
+  let quizOn = $state(false)
+  let qIdx = $state(0)
+  let qTone = $state(0)
+  let qPick = $state(0)
+  let qRight = $state(0)
+  let qDone = $state(false)
+  let lastPickTone = $state(0)
+  let timer: ReturnType<typeof setTimeout> | null = null
+
+  const MARKS = [
+    { t: 1, name: '一声', d: 'M6 14 H50', tip: '平平走' },
+    { t: 2, name: '二声', d: 'M8 24 L48 4', tip: '往上扬' },
+    { t: 3, name: '三声', d: 'M6 6 L27 24 L50 6', tip: '拐个弯' },
+    { t: 4, name: '四声', d: 'M8 4 L48 24', tip: '往下降' },
+  ]
+  const COLORS = ['#2A9D8F', '#E76F51', '#6C86E8', '#B77DEE']
+
+  const row = $derived(rows[sel])
+
+  function playTone(i: number) {
+    playing = i
+    playAudio(row.tones[i].file, { hint: '语音未准备好' })
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => (playing = -1), 1400)
+  }
+
+  function playAll() {
+    row.tones.forEach((_, i) => {
+      setTimeout(() => playTone(i), i * 1500)
+    })
+  }
+
+  function startQuiz() {
+    quizOn = true; qIdx = 0; qRight = 0; qDone = false; qPick = 0
+    nextQ()
+  }
+  function nextQ() {
+    qPick = 0; lastPickTone = 0
+    qTone = 1 + Math.floor(Math.random() * 4)
+    playAudio(row.tones[qTone - 1].file, { hint: '语音未准备好' })
+  }
+  function pick(t: number) {
+    if (qPick) return
+    qPick = 1; lastPickTone = t
+    if (t === qTone) { qRight++; sndOk() } else { sndNo(); playAudio(row.tones[qTone - 1].file, { hint: '再听一遍' }) }
+    setTimeout(() => {
+      qIdx++
+      if (qIdx >= 4) { qDone = true; sndStar() } else nextQ()
+    }, t === qTone ? 750 : 1500)
+  }
+</script>
+
+<div class="tonedrill">
+  {#if !quizOn}
+    <!-- 基音选择 -->
+    <div class="bases">
+      {#each rows as r, i (r.base)}
+        <button class="basechip" class:on={i === sel} onclick={() => (sel = i)}>
+          {#if r.display.length > 2}<span class="blong">{r.display}</span>{:else}<span class="bglyph">{r.display}</span>{/if}
+        </button>
+      {/each}
+    </div>
+
+    <div class="bigbase">{#if playing >= 0}<span class="basetone">{row.tones[playing].display}</span>{:else}{row.display}{/if}</div>
+
+    <div class="tonerows">
+      {#each row.tones as tn, i (tn.t)}
+        <button class="tonerow" class:on={playing === i} onclick={() => playTone(i)}>
+          <svg viewBox="0 0 56 30" class="mark" class:draw={playing === i}>
+            <path d={MARKS[i].d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+          </svg>
+          <span class="tsyl">{tn.display}</span>
+          <span class="tname"><Ruby text="{MARKS[i].name} {MARKS[i].tip}" /></span>
+        </button>
+      {/each}
+    </div>
+
+    <div class="trow">
+      <button class="btn teal small" onclick={playAll}><Icon name="play" size={20} /> <Ruby text="跟我读" /></button>
+      <button class="btn green small" onclick={startQuiz}><Icon name="headphones" size={20} /> <Ruby text="小耳朵练一练" /></button>
+    </div>
+  {:else if !qDone}
+    <div class="qhint"><Ruby text="听一听，是第几声？" /></div>
+    <div class="qprog">{#each Array(4) as _, i}<span class="dot" class:ok={i < qRight}></span>{/each}</div>
+    <button class="replay" onclick={() => playAudio(row.tones[qTone - 1].file, { hint: '语音未准备好' })}>
+      <Icon name="play" size={44} />
+    </button>
+    <div class="topts">
+      {#each MARKS as m, i (m.t)}
+        <button class="topt" class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
+          <svg viewBox="0 0 56 30"><path d={m.d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+          <span>{m.name}</span>
+        </button>
+      {/each}
+    </div>
+  {:else}
+    <div class="qresult">
+      <div class="qemoji">👂🎉</div>
+      <div class="qscore"><Ruby text="听对了 {qRight} 个" /></div>
+      {#if qRight >= 3}<div class="qpraise"><Ruby text="小耳朵真灵！" /></div>{:else}<div class="qpraise"><Ruby text="再多听几遍就更棒啦" /></div>{/if}
+      <div class="trow">
+        <button class="btn teal small" onclick={startQuiz}><Icon name="refresh" size={20} /> <Ruby text="再练一次" /></button>
+        <button class="btn green small" onclick={() => { quizOn = false; ondone?.() }}><Ruby text="练好啦" /></button>
+      </div>
+    </div>
+  {/if}
+</div>
+
+<style>
+  .tonedrill { display: flex; flex-direction: column; gap: 14px; }
+  .bases { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .basechip { min-width: 72px; min-height: 56px; border-radius: 18px; border: 2.5px solid #e3d9c8; background: #fff;
+    font-size: 30px; font-weight: 900; color: #6f6353; font-family: inherit; }
+  .basechip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
+  .bigbase { text-align: center; font-size: 64px; font-weight: 900; color: #264653; line-height: 1.35; min-height: 92px; }
+  .basetone { color: #E76F51; }
+  .tonerows { display: flex; flex-direction: column; gap: 10px; }
+  .tonerow { display: flex; align-items: center; gap: 14px; background: #fff; border: 2.5px solid #eee4d3;
+    border-radius: 18px; padding: 10px 16px; min-height: 68px; font-family: inherit; text-align: left; }
+  .tonerow.on { border-color: #E76F51; background: #fdeee7; transform: scale(1.015); }
+  .mark { width: 58px; height: 32px; flex: 0 0 58px; }
+  .mark path { stroke-dasharray: 130; stroke-dashoffset: 130; }
+  .mark.draw path { animation: drawmark .5s cubic-bezier(.4,0,.6,1) forwards; }
+  @keyframes drawmark { to { stroke-dashoffset: 0; } }
+  .tsyl { font-size: 44px; font-weight: 900; color: #264653; min-width: 72px; text-align: center; }
+  .tname { font-size: 20px; font-weight: 700; color: #8a7a68; }
+  .trow { display: flex; gap: 10px; }
+  .trow .btn { flex: 1; }
+  .qhint { text-align: center; font-size: 26px; font-weight: 900; color: #264653; margin-top: 6px; }
+  .qprog { display: flex; gap: 8px; justify-content: center; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: #eee4d3; }
+  .dot.ok { background: #2A9D8F; }
+  .replay { align-self: center; width: 110px; height: 110px; border-radius: 50%; border: none; background: #fff;
+    box-shadow: 0 5px 0 #e3d9c8; color: #2A9D8F; display: flex; align-items: center; justify-content: center; }
+  .replay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
+  .topts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .topt { background: #fff; border: 2.5px solid #eee4d3; border-radius: 18px; min-height: 84px;
+    display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit; }
+  .topt svg { width: 52px; height: 28px; }
+  .topt span { font-size: 22px; font-weight: 800; color: #6f6353; }
+  .topt.right { border-color: #2A9D8F; background: #e6f7f2; }
+  .topt.wrong { border-color: #E76F51; background: #fdeee7; animation: shake .3s; }
+  @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
+  .qresult { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0; }
+  .qemoji { font-size: 58px; }
+  .qscore { font-size: 28px; font-weight: 900; color: #264653; }
+  .qpraise { font-size: 22px; font-weight: 700; color: #2A9D8F; }
+</style>

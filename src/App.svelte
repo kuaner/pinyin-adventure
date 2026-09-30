@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { ui } from './stores/ui.svelte'
+  import { ui, show } from './stores/ui.svelte'
   import { QZ } from './stores/session.svelte'
   import { ac } from './lib/audio'
   import { initApp } from './lib/probe'
@@ -14,11 +14,14 @@
   import PracticePage from './components/PracticePage.svelte'
   import HistoryPage from './components/HistoryPage.svelte'
   import BoltSprint from './components/BoltSprint.svelte'
+  import LearnIsland from './components/learn/LearnIsland.svelte'
   import PairModal from './components/PairModal.svelte'
   import Feedback from './components/Feedback.svelte'
 
   onMount(() => {
     initApp()
+    /* ?learn=N 深链直达学习岛（进度续学/验收截图） */
+    if (new URLSearchParams(location.search).get('learn')) show('learn')
     /* 兜底：任意首触也尝试解锁音效（部分安卓浏览器） */
     document.addEventListener('touchstart', function once() {
       ac()
@@ -46,6 +49,8 @@
     <HistoryPage />
   {:else if ui.view === 'bolt'}
     <BoltSprint />
+  {:else if ui.view === 'learn'}
+    <LearnIsland />
   {/if}
 </div>
 

@@ -1,7 +1,7 @@
 /* UI 全局状态：视图路由 + toast + 探针横幅 + 辨析卡弹窗 + 解锁层 */
 import { T } from '../lib/ruby'
 
-export type View = 'home' | 'levels' | 'quiz' | 'result' | 'flash' | 'pairs' | 'practice' | 'history' | 'bolt'
+export type View = 'home' | 'levels' | 'quiz' | 'result' | 'flash' | 'pairs' | 'practice' | 'history' | 'bolt' | 'learn'
 
 export const ui = $state({
   view: 'home' as View,

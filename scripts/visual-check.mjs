@@ -30,7 +30,7 @@ const home = await page.evaluate(() => ({
   appnameFs: getComputedStyle(document.querySelector('.appname')).fontSize,
 }))
 ok('首页全量注音（ruby≥30, rt≥30）', home.rubies >= 30 && home.rts >= 30, 'ruby=' + home.rubies + ' rt=' + home.rts)
-ok('首页八入口', home.btnCount === 8, 'btn=' + home.btnCount)
+ok('首页九入口（v2.2 学习岛置顶）', home.btnCount === 9, 'btn=' + home.btnCount)
 ok('标题字号 30px', home.appnameFs === '30px', home.appnameFs)
 await overflowCheck('首页')
 

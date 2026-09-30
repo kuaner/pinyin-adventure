@@ -17,6 +17,10 @@
   <div class="subtitle"><Ruby text="跟小鸡一起学拼音 · 专治 b d 分不清" /></div>
   <div class="starsline" id="homestars"><Ruby text="星星" />：{totalStars()} <Ruby text="颗" /></div>
   <div class="menu">
+    <button class="btn green" data-go="learn" style="flex-direction:column;gap:1px;min-height:80px" onclick={() => show('learn')}>
+      <span><Icon name="bulb" size={26} /> <Ruby text="学习岛" /></span>
+      <span style="font-size:15px;font-weight:700;opacity:.92;line-height:1.8"><Ruby text="零基础课程 · 一个脚印一个脚印学" /></span>
+    </button>
     <button class="btn" data-go="levels" onclick={() => show('levels')}><Icon name="flag" size={26} /> <Ruby text="闯关冒险" /></button>
     <button class="btn teal" data-go="detect" onclick={startDet}><Icon name="search" size={26} /> <Ruby text="正反小侦探" /></button>
     <button class="btn red" data-go="bolt" style="flex-direction:column;gap:1px;min-height:80px" onclick={() => startBolt(false)}>

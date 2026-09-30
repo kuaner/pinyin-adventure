@@ -48,14 +48,17 @@ src/
     quiz/ListenQ LookQ LlQ RuleQ                            # 闯关四题型
     MirrorDetect（正反判断+修复题） ZiQuiz（看字/词选拼音）   # 题型
     UnlockLayer AnchorBar PairModal Feedback Ruby            # 通用件
+    learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 五步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
     pinyin.json           # 字母表 57 条(口诀/例词) + 锚点表 + 9 关 + 正反覆盖集
     confusion.json        # 14 组易混对 + 组名
     zi180.json            # 一年级 180 字（拼音逐字核对过）
     words.json            # 30 双字词
     phrases.json          # UI 短语/题型名/夸奖语/自由练习配置
-public/audio/             # 305 条 mp3（mimo 冰糖 24kHz），URL 不变
-scripts/                  # 一次性/验收脚本（extract-data 抽取留档、gen-icons、acceptance、visual-check）
+    lessons.json          # 学习岛 12 课（字母/口诀/写法旁白/声调/拼读表）
+    strokes.json          # 47 单元笔顺 SVG 几何（部编版规范，scripts/stroke-verify.mjs 自检）
+public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
+scripts/                  # 一次性/验收脚本（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
 ```
 
 ## 数据格式
