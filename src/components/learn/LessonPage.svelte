@@ -139,7 +139,10 @@
   function pickLetter(i: number) {
     if (i === li || !letters[i]) return
     li = i
-    goto(letterStep[letter.k] || 1)
+    /* Bug#14：切字母保持当前步骤（在写法页切 b→m 应直接看 m 的笔顺，不跳回认识页）。
+       每字母记忆仍保留（切走再切回=回到该字母上次的步骤），但记忆的初始值=当前步骤而非 1 */
+    if (!letterStep[letter.k]) letterStep[letter.k] = step
+    goto(letterStep[letter.k])
   }
   function restudy() { quiz.done = false; buildQuiz() }
 
