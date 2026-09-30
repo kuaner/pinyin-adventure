@@ -30,10 +30,12 @@ jobs:
         env:
           GITHUB_PAGES: 1
 
-      # v2.9.4 终版：Pages 已切 legacy 模式（source=gh-pages）——workflow deployment
-      # 管线对本仓库失效（v2.1~v2.9.3 部署空转、线上冻结一天，v2.9.4 用 legacy
-      # 回退解卡）。deploy=把 dist 强推 gh-pages 分支，legacy Pages 在分支推送后
-      # 自动构建上线。
+      # v2.9.4 起 Pages 运行于 legacy 模式（source=gh-pages 分支，推送后自动构建上线）。
+      # 注意：迁到 legacy 是在一次误诊排查中完成的（当时把 deployments API 记录缺失 +
+      # 本地构建未带 GITHUB_PAGES=1 的哈希差，误读成"部署管线失效、线上冻结"）；
+      # sha1 复核证明 serving 一直正常。legacy 流已验证可用（run4 绿+双 sha1 一致），
+      # 维持现状；如需切回 workflow 模式：PUT pages build_type=workflow + 恢复
+      # actions/deploy-pages（必须带 environment: github-pages，环境白名单已含 v* tag 策略）。
       - name: Deploy to gh-pages (legacy Pages source)
         run: |
           cd dist
