@@ -15,6 +15,7 @@ import { S } from '../stores/progress.svelte'
 import { AUDIO_CACHE } from './audio'
 import { buildQuestions, buildDetQs, makeDfix, makeZiQ, shuffle } from './quizEngine'
 import { LEVELS, ZWORDS, ZI, PH } from '../data'
+import { tRaw } from '../text/strings'
 import { T } from './ruby'
 import type { Question } from './types'
 
@@ -185,7 +186,7 @@ function openView(v: string) {
   else if (v === 'free' || v === 'practice') show('free') /* 旧参 practice = 自由练习配置页 */
   else if (v === 'history') show('history')
   else if (v === 'result') {
-    const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('解锁下一关！'), wlabel: 'b↔d', lvNo: 2 }
+    const res: ResultState = { sc: 8, stars: 2, unlockMsg: tRaw('unlockNext'), wlabel: 'b↔d', lvNo: 2 }  /* v2.8: 纯文本入 Speak（T() 预注音会双层 ruby） */
     showResult(res)
   } else if (v === 'quiz') {
     let qs = buildQuestions(LEVELS[0])

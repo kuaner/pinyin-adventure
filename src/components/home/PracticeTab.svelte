@@ -94,26 +94,27 @@
 </section>
 
 <style>
-  #v-pracetab { padding: calc(var(--sat) + 10px) 16px 12px; }
-  #greet { flex: none; margin-top: 2px; }
-  #greet .g1 { font-size: 22px; font-weight: 900; }
-  #greet .g2 { font-size: 12px; font-weight: 700; color: var(--animal-text-2); margin-top: 1px; line-height: 1.9; }
+  #v-pracetab { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
+  #greet { flex: none; margin-top: 0; }
+  #greet .g1 { font-size:var(--fs-lg); font-weight: 900; line-height: 1.6; }
+  #greet .g2 { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); margin-top: 0; line-height: 1.6; }
   #pgrid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
-    gap: 12px; margin-top: 12px; }
-  .mode { border-radius: var(--animal-r-lg); padding: 12px 10px 12px; position: relative; display: flex; flex-direction: column;
+    gap: var(--sp-2); margin-top: var(--sp-2); }
+  .mode { border-radius: var(--animal-r-lg); padding: var(--sp-4) var(--sp-2) var(--sp-3); position: relative; display: flex; flex-direction: column;
     align-items: center; justify-content: center; text-align: center; box-shadow: var(--animal-shadow); cursor: pointer; overflow: hidden;
-    border: none; font-family: inherit; min-height: 0; }
+    border: none; font-family: inherit; min-height: 0; min-width: 0; }
   .mode:active { transform: scale(.97); }
-  .mode .mic { width: 54px; height: 54px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 3px 0 rgba(61,52,40,.14); margin-bottom: 10px; flex: none; }
-  .mode .mic svg { width: 28px; height: 28px; }
-  .mode .mname { font-size: 17px; font-weight: 900; line-height: 1.75; }
-  /* v2.6：desc 注音后变宽，去 nowrap 放两行（防溢出裁切） */
-  .mode .mdesc { font-size: 10px; font-weight: 700; color: var(--animal-text-2); margin-top: 3px; line-height: 1.8;
-    max-width: 100%; padding: 0 3px; }
-  .mode .mdesc :global(rt) { font-size: 7.5px; }
-  .mode .mbadge { position: absolute; top: 10px; right: 10px; font-size: 9.5px; font-weight: 900; padding: 4px 9px;
-    border-radius: 999px; background: rgba(255,255,255,.85); color: var(--animal-text); box-shadow: 0 1px 4px rgba(61,52,40,.12); }
+  .mode .mic { width: 44px; height: 44px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 3px 0 rgba(61,52,40,.14); margin-bottom: var(--sp-1); flex: none; }
+  .mode .mic svg { width: 24px; height: 24px; }
+  .mode .mname { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; max-width: 100%; }
+  /* v2.8：ruby 行高预算（rt 13px ≈ 1.6 倍行框），desc 限两行内不裁切 */
+  .mode .mdesc { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); margin-top: 0; line-height: 1.6;
+    max-width: 100%; padding: 0 var(--sp-1); }
+  .mode .mdesc :global(rt) { font-size:var(--fs-rt); }
+  .mode .mbadge { position: absolute; top: var(--sp-2); right: var(--sp-2); font-size:var(--fs-xs); font-weight: 900; padding: 2px var(--sp-2);
+    border-radius: 999px; background: rgba(255,255,255,.85); color: var(--animal-text); box-shadow: 0 1px 4px rgba(61,52,40,.12); max-width: calc(100% - var(--sp-4)); }
+  .mode .mbadge :global(rt) { font-size:var(--fs-rt); }
   .m-teal { background: linear-gradient(160deg, #e6f9f6, #d2f1ec); }
   .m-teal .mic { background: var(--animal-primary); }
   .m-blue { background: linear-gradient(160deg, #e8edff, #dbe3fb); }

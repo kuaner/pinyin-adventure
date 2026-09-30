@@ -54,7 +54,7 @@
       </div>
     {/key}
   </div>
-  <button class="btn ghost small" id="boltstop" style="margin-top:12px;display:{BT.resultOn ? 'none' : 'block'}" onclick={endBolt}><Speak k="stopEarly" plain /></button>
+  <button class="btn ghost small" id="boltstop" style="margin-top:var(--sp-3);display:{BT.resultOn ? 'none' : 'block'}" onclick={endBolt}><Speak k="stopEarly" plain /></button>
   <div id="boltresult" style="display:{BT.resultOn ? 'flex' : 'none'}">
     {#each BT.confetti as i (i)}
       <div class="bfire" style="left:{5 + Math.random() * 90}%;top:{18 + Math.random() * 40}%;animation-delay:{i * 0.12}s"><Icon name={['star','balloon','heart','flower'][i % 4]} size={34} /></div>
@@ -77,12 +77,12 @@
 </section>
 
 <style>
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; }
-  .lprog { font-size: 14px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
-    padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: var(--sp-2) var(--sp-3); border-radius: 999px; white-space: nowrap; }
   #bolttime.low { color: var(--animal-error); animation: blinkT 1s steps(2) infinite; }
   @keyframes blinkT { 50% { opacity: .45; } }
 </style>

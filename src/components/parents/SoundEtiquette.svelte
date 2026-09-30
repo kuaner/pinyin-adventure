@@ -41,29 +41,29 @@
 </section>
 
 <style>
-  #v-sound { padding: calc(var(--sat) + 10px) 16px 14px; }
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  #v-sound { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size: 15.5px; font-weight: 900; }
-  .intro { font-size: 12.5px; font-weight: 700; color: var(--animal-text-2); margin: 2px 2px 12px; flex: none; }
-  .srule { display: flex; align-items: center; gap: 14px; padding: 12px 15px; margin-bottom: 10px; flex: none; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-sm); font-weight: 900; }
+  .intro { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); margin: var(--sp-1) var(--sp-1) var(--sp-3); flex: none; }
+  .srule { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-2); flex: none; }
   .srule .sic { width: 46px; height: 46px; border-radius: 15px; display: flex; align-items: center; justify-content: center; flex: none; }
   .srule .sic svg { width: 24px; height: 24px; }
-  .srule b { font-size: 15px; font-weight: 900; display: block; line-height: 1.8; }
-  .srule span { font-size: 11.5px; font-weight: 700; color: var(--animal-text-2); display: block; line-height: 1.5; }
-  .srule .rnum { margin-left: auto; font-size: 26px; font-weight: 900; color: var(--animal-border-light); }
-  #soundmap { margin-top: 2px; padding: 13px 16px 8px; flex: none; }
-  #soundmap .sec-label { margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
-  #soundmap .sec-label b { font-size: 14px; font-weight: 900; }
-  #soundmap .sec-label span { font-size: 11px; font-weight: 700; color: var(--animal-text-dis); }
-  .smaprow { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--animal-border-light);
-    font-size: 12.5px; font-weight: 800; }
+  .srule b { font-size:var(--fs-sm); font-weight: 900; display: block; line-height: 1.8; }
+  .srule span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); display: block; line-height: 1.5; }
+  .srule .rnum { margin-left: auto; font-size:var(--fs-lg); font-weight: 900; color: var(--animal-border-light); }
+  #soundmap { margin-top: var(--sp-1); padding: var(--sp-3) var(--sp-4) var(--sp-2); flex: none; }
+  #soundmap .sec-label { margin-bottom: var(--sp-1); display: flex; align-items: center; justify-content: space-between; }
+  #soundmap .sec-label b { font-size:var(--fs-xs); font-weight: 900; }
+  #soundmap .sec-label span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); }
+  .smaprow { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-2) 0; border-bottom: 1px dashed var(--animal-border-light);
+    font-size:var(--fs-xs); font-weight: 800; }
   .smaprow:last-of-type { border-bottom: none; }
   .smaprow .sc { color: var(--animal-text-2); font-weight: 700; }
-  .tag { font-size: 10.5px; font-weight: 900; padding: 3px 10px; border-radius: 999px; }
+  .tag { font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-2); border-radius: 999px; }
   .tag.silent { background: #f4f0e4; color: var(--animal-text-dis); }
   .tag.sound { background: var(--animal-primary-bg); color: var(--animal-primary-active); }
-  #soundmap .note { font-size: 10.5px; font-weight: 700; color: var(--animal-text-dis); padding: 8px 0 6px; line-height: 1.6; }
+  #soundmap .note { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); padding: var(--sp-2) 0 var(--sp-2); line-height: 1.6; }
 </style>

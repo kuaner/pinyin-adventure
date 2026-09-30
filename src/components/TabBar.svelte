@@ -32,12 +32,12 @@
   /* Bug#13：高度含底部安全区——84px 图标区恒定（手机/电脑图标位置一致），env 只向下加厚底衬 */
   #tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: calc(84px + var(--sab)); z-index: 50; display: flex;
     background: rgba(255,255,254,.92); backdrop-filter: blur(8px); border-top: 1px solid var(--animal-border-light);
-    padding: 8px 10px calc(var(--sab) + 14px); transition: transform .22s ease; }
-  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+    padding: var(--sp-2) var(--sp-2) calc(var(--sab) + var(--sp-3)); transition: transform .22s ease; }
+  .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1);
     border: none; background: none; font-family: inherit; color: var(--animal-text-2); cursor: pointer; border-radius: 16px; }
   .tab svg { width: 25px; height: 25px; }
-  .tab .tl { font-size: 12px; font-weight: 800; position: relative; }
-  .tab .tl :global(rt) { font-size: 8px; font-weight: 700; letter-spacing: .5px; }
+  .tab .tl { font-size:var(--fs-xs); font-weight: 800; position: relative; }
+  .tab .tl :global(rt) { font-size:var(--fs-rt); font-weight: 700; letter-spacing: .5px; }
   .tab.on { color: var(--animal-primary-active); }
   /* v2.5 金标准 Tabs 对齐（animal-island-ui tabs.module.less）：选中 = teal 实心胶囊 + 白图标
      + 硬底实边 0 3px 0（其 @shadow-color-light 语义） */

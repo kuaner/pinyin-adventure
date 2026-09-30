@@ -33,6 +33,8 @@
     onmain?: () => void; tip?: string; glyphMax?: number
   } = $props()
 
+  /* v2.8：字模长度适配——Nunito ≈0.55em/字母，250px 内容宽反推字号上限（yuan/zhi/zh 这类长单元零溢出） */
+  const fitMax = $derived(Math.round(250 / (0.55 * Math.max(1, k.length))))
   /* 数据三级兜底：pinyin-cards.json → LETTERS（pinyin.json）→ 空对象（渲染层判空） */
   const C = $derived(CARDS.get(k) || (() => {
     const L: any = (LETTERS as any)[k] || {}
@@ -67,7 +69,7 @@
     <button class="pc-mainbtn" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
       <!-- 四线三格底衬（五要素之一：字模四线三格）；下限 112px/31vw 保 ≥120px 儿童字模契约 -->
       <i class="pc-grid" aria-hidden="true"></i>
-      <span class="pc-big" style="font-size:clamp(112px,31vw,{glyphMax}px)">{k}</span>
+      <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
     </button>
     <button class="pc-read" data-pcread={k} onclick={() => say(k)} aria-label="读音">
       <Icon name="headphones" size={17} />
@@ -144,7 +146,7 @@
 
 <style>
   /* ---------- full ---------- */
-  .pcfull { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; width: 100%; min-height: 0; flex: 1; }
+  .pcfull { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); width: 100%; min-height: 0; flex: 1; }
   .pc-mainbtn { border: none; background: none; font-family: inherit; padding: 0; cursor: pointer; line-height: 1; position: relative;
     width: 82%; display: flex; align-items: center; justify-content: center; }
   /* 四线三格（与笔顺区/课本格一致的四线） */
@@ -152,53 +154,54 @@
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .5; border-radius: 4px; }
   .pc-big { font-weight: 900; line-height: 1.08; color: var(--animal-primary); text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; position: relative; z-index: 1; }
-  .pc-read { display: flex; align-items: center; gap: 6px; border: 2px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size: 14.5px; font-weight: 900; padding: 5px 14px; border-radius: 999px; cursor: pointer; flex: none; }
+  .pc-read { display: flex; align-items: center; gap: var(--sp-2); border: 2px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+    font-family: inherit; font-size:var(--fs-sm); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: 999px; cursor: pointer; flex: none; }
   .pc-read:active { transform: translateY(2px); }
   .pc-han { font-style: normal; font-weight: 800; opacity: .8; }
-  .pc-strokewrap { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 88%; min-height: 0; flex: 1;
-    background: #fbf7ec; border-radius: 16px; padding: 4px 6px; }
+  .pc-strokewrap { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); width: 88%; min-height: 0; flex: 1;
+    background: #fbf7ec; border-radius: 16px; padding: var(--sp-1) var(--sp-2); }
   .pc-strokefit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
   .pc-strokefit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
-  .pc-replay { display: flex; align-items: center; gap: 5px; border: none; background: none; color: var(--animal-primary-active);
-    font-family: inherit; font-size: 12.5px; font-weight: 900; cursor: pointer; padding: 2px 8px 4px; flex: none; }
+  .pc-replay { display: flex; align-items: center; gap: var(--sp-1); border: none; background: none; color: var(--animal-primary-active);
+    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; cursor: pointer; padding: var(--sp-1) var(--sp-2) var(--sp-1); flex: none; }
   .pc-replay :global(svg) { width: 13px; height: 13px; }
-  .pc-kj { display: flex; align-items: center; gap: 7px; border: none; background: #eef8e2; font-family: inherit;
-    font-size: 15.5px; font-weight: 800; color: var(--animal-text); padding: 7px 15px; border-radius: 999px; cursor: pointer; flex: none; max-width: 100%; }
+  /* v2.8：长口诀两行内换行（胶囊改大圆角，零溢出） */
+  .pc-kj { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: var(--sp-1); column-gap: var(--sp-2); border: none; background: #eef8e2; font-family: inherit;
+    font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text); padding: var(--sp-2) var(--sp-3); border-radius: var(--animal-r-lg); cursor: pointer; flex: none; max-width: 100%; text-align: center; line-height: 1.5; }
   .pc-kj:active { transform: translateY(1px); }
   .pc-kjplay { width: 22px; height: 22px; border-radius: 50%; background: var(--animal-success); color: #fff;
     display: inline-flex; align-items: center; justify-content: center; flex: none; }
   .pc-kjen { font-weight: 900; color: var(--animal-primary-active); letter-spacing: 2px; }
-  .pc-word { display: flex; align-items: center; gap: 6px; background: #fff8e0; border-radius: 999px;
-    padding: 5px 13px; font-size: 13.5px; font-weight: 800; color: var(--animal-text); flex: none; max-width: 100%; }
-  .pc-em { font-size: 19px; }
-  .pc-wp { font-size: 12px; color: #dba90e; font-weight: 900; }
-  .pc-tip { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--animal-text-2); flex: none; }
+  .pc-word { display: flex; align-items: center; gap: var(--sp-2); background: #fff8e0; border-radius: 999px;
+    padding: var(--sp-1) var(--sp-3); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text); flex: none; max-width: 100%; }
+  .pc-em { font-size:var(--fs-md); }
+  .pc-wp { font-size:var(--fs-xs); color: #dba90e; font-weight: 900; }
+  .pc-tip { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); flex: none; }
   .pc-tip :global(svg) { width: 14px; height: 14px; }
 
   /* ---------- card ---------- */
-  .pccard { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; min-height: 0; }
-  .pcc-front, .pcc-back { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 0; flex: 1; }
-  .pcc-glyph { font-size: clamp(96px, 30vw, 128px); font-weight: 800; line-height: 1.15; color: var(--animal-text); }
-  .pcc-glyph.sm { font-size: 64px; }
-  .pcc-kj { display: flex; align-items: center; gap: 7px; font-size: 15.5px; font-weight: 800; color: var(--animal-success);
-    background: #eef8e2; padding: 7px 14px; border-radius: 14px; max-width: 100%; text-align: center; }
-  .pcc-back { gap: 8px; }
+  .pccard { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); width: 100%; height: 100%; min-height: 0; }
+  .pcc-front, .pcc-back { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); width: 100%; min-height: 0; flex: 1; }
+  .pcc-glyph { font-size: clamp(96px,30vw,var(--fs-hero)); font-weight: 800; line-height: 1.15; color: var(--animal-text); }
+  .pcc-glyph.sm { font-size:var(--fs-glyph); }
+  .pcc-kj { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-sm); font-weight: 800; color: var(--animal-success);
+    background: #eef8e2; padding: var(--sp-2) var(--sp-3); border-radius: 14px; max-width: 100%; text-align: center; }
+  .pcc-back { gap: var(--sp-2); }
   .pcc-strokefit { flex: 1; min-height: 0; width: 92%; display: flex; align-items: center; justify-content: center;
-    background: #fbf7ec; border-radius: 16px; padding: 4px; }
+    background: #fbf7ec; border-radius: 16px; padding: var(--sp-1); }
   .pcc-strokefit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
-  .pcc-row { display: flex; align-items: center; gap: 8px; flex: none; font-size: 19px; font-weight: 900; color: var(--animal-text); }
-  .pcc-tts { color: var(--animal-primary-active); font-size: 24px; }
-  .pcc-word { font-size: 17px; }
+  .pcc-row { display: flex; align-items: center; gap: var(--sp-2); flex: none; font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); }
+  .pcc-tts { color: var(--animal-primary-active); font-size:var(--fs-lg); }
+  .pcc-word { font-size:var(--fs-md); }
 
   /* ---------- mini ---------- */
-  .pcmini { display: flex; align-items: center; gap: 12px; width: 100%; }
+  .pcmini { display: flex; align-items: center; gap: var(--sp-3); width: 100%; }
   .pcm-g { flex: none; width: 62px; height: 62px; border-radius: 16px; background: var(--animal-primary-bg); border: 2px solid #bce8e2;
-    color: var(--animal-primary-active); font-family: inherit; font-size: 38px; font-weight: 900; line-height: 1;
+    color: var(--animal-primary-active); font-family: inherit; font-size:var(--fs-em); font-weight: 900; line-height: 1;
     display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 3px 0 #bce8e2; }
   .pcm-g:active { transform: translateY(2px); box-shadow: 0 1px 0 #bce8e2; }
-  .pcm-r { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-  .pcm-kj { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 800; color: var(--animal-text); line-height: 1.9; max-width: 100%; }
-  .pcm-say { display: flex; align-items: center; gap: 5px; border: none; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size: 13px; font-weight: 900; padding: 4px 11px; border-radius: 999px; cursor: pointer; }
+  .pcm-r { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-1); }
+  .pcm-kj { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text); line-height: 1.9; max-width: 100%; }
+  .pcm-say { display: flex; align-items: center; gap: var(--sp-1); border: none; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: 999px; cursor: pointer; }
 </style>

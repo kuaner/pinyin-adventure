@@ -118,54 +118,57 @@
 </section>
 
 <style>
-  #v-minetab { padding: calc(var(--sat) + 10px) 16px 12px; }
+  #v-minetab { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
   .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
-  .rowhead .h1 { font-size: 21px; font-weight: 900; letter-spacing: .5px; }
-  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px;
-    font-size: 12.5px; font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); }
+  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; }
+  .chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-2); border-radius: 999px;
+    font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); white-space: nowrap; flex: none; }
   .chip svg { width: 14px; height: 14px; }
 
   #mascot { flex: 1; min-height: 0; position: relative; display: flex; flex-direction: column; align-items: center;
-    justify-content: flex-end; padding-bottom: 2px; }
+    justify-content: flex-end; padding-bottom: var(--sp-1); }
   #mascot .blob { position: absolute; width: 240px; height: 150px; border-radius: 48% 52% 55% 45% / 55% 48% 52% 45%;
     background: var(--animal-primary-bg); bottom: 58px; left: 50%; transform: translateX(-50%); }
-  #chick { position: relative; z-index: 1; width: 128px; height: 125px; margin-bottom: 2px; }
-  #mname { font-size: 16.5px; font-weight: 900; margin-top: 8px; line-height: 1.9; position: relative; z-index: 1; }
-  #mmeta { display: flex; gap: 10px; margin-top: 7px; position: relative; z-index: 1; }
+  #chick { position: relative; z-index: 1; width: 128px; height: 125px; margin-bottom: var(--sp-1); }
+  /* v2.8：名字行/徽标 chip 注音防溢出（可换行不叠压） */
+  #mname { font-size:var(--fs-md); font-weight: 900; margin-top: var(--sp-2); line-height: 1.6; position: relative; z-index: 1;
+    max-width: 100%; text-align: center; }
+  #mmeta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); position: relative; z-index: 1; }
 
-  #flash-entry { height: 76px; flex: none; display: flex; align-items: center; gap: 13px; padding: 0 16px; margin-top: 8px;
+  /* v2.8：闪卡入口自适应高（ruby 两行内不裁切不叠压） */
+  #flash-entry { min-height: 76px; flex: none; display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-4); margin-top: var(--sp-2);
     border: none; font-family: inherit; width: 100%; cursor: pointer; }
   #flash-entry:active { transform: scale(.98); }
   #flash-entry .fic { width: 48px; height: 48px; border-radius: 15px; background: #b58cff; display: flex;
     align-items: center; justify-content: center; box-shadow: 0 3px 0 #9a5fd4; flex: none; }
   #flash-entry .fic svg { width: 26px; height: 26px; }
   #flash-entry .ftx { flex: 1; text-align: left; min-width: 0; }
-  #flash-entry .ftx b { font-size: 16.5px; font-weight: 900; line-height: 1.9; display: block; }
-  #flash-entry .ftx span { display: block; font-size: 11px; font-weight: 700; color: var(--animal-text-2); }
-  #flash-entry .ftx span :global(rt) { font-size: 8px; }
-  #flash-entry .due { font-size: 15px; font-weight: 900; color: #9a5fd4; background: #efe9ff; padding: 8px 12px; border-radius: 14px; flex: none; }
+  #flash-entry .ftx b { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; display: block; }
+  #flash-entry .ftx span { display: block; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.5; }
+  #flash-entry .ftx span :global(rt) { font-size:var(--fs-rt); }
+  #flash-entry .due { font-size:var(--fs-sm); font-weight: 900; color: #9a5fd4; background: #efe9ff; padding: var(--sp-2) var(--sp-3); border-radius: 14px; flex: none; }
 
-  #week { margin-top: 12px; padding: 12px 16px 13px; flex: none; }
-  #week .sec-label { margin-bottom: 10px; }
+  #week { margin-top: var(--sp-3); padding: var(--sp-3) var(--sp-4) var(--sp-3); flex: none; }
+  #week .sec-label { margin-bottom: var(--sp-2); }
   #wrow { display: flex; justify-content: space-between; }
-  .wday { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-  .wday i { font-style: normal; font-size: 10.5px; font-weight: 800; color: var(--animal-text-2); }
+  .wday { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); }
+  .wday i { font-style: normal; font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
   .wday .wc { width: 32px; height: 32px; border-radius: 50%; background: #f4f0e4; display: flex; align-items: center; justify-content: center; }
   .wday.hit .wc { background: var(--animal-primary); }
   .wday.hit .wc svg { width: 15px; height: 15px; }
   .wday.today .wc { box-shadow: 0 0 0 2.5px var(--animal-warning); background: #fff; }
 
-  #parent { margin-top: 10px; flex: none; }
-  #parent .sec-label { margin-bottom: 2px; }
-  #parent .sec-label b { font-size: 12px; color: var(--animal-text-2); }
-  .prow { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--animal-border-light);
+  #parent { margin-top: var(--sp-2); flex: none; }
+  #parent .sec-label { margin-bottom: var(--sp-1); }
+  #parent .sec-label b { font-size:var(--fs-xs); color: var(--animal-text-2); }
+  .prow { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-1); border-bottom: 1px solid var(--animal-border-light);
     background: none; border-radius: 0; box-shadow: none; width: 100%; border-left: none; border-right: none; border-top: none;
     font-family: inherit; cursor: pointer; }
   .prow:last-child { border-bottom: none; }
   .prow .pic { width: 30px; height: 30px; border-radius: 10px; background: #f4f0e4; display: flex; align-items: center; justify-content: center; flex: none; }
   .prow .pic svg { width: 16px; height: 16px; }
-  .prow b { flex: 1; font-size: 13.5px; font-weight: 800; text-align: left; }
-  .prow .new { font-size: 9px; font-weight: 900; color: #fff; background: var(--animal-error); border-radius: 999px; padding: 2px 7px; }
+  .prow b { flex: 1; font-size:var(--fs-xs); font-weight: 800; text-align: left; }
+  .prow .new { font-size:var(--fs-xs); font-weight: 900; color: #fff; background: var(--animal-error); border-radius: 999px; padding: var(--sp-1) var(--sp-2); }
   .prow .chev { display: inline-flex; }
   .prow .chev svg { width: 14px; height: 14px; }
 </style>

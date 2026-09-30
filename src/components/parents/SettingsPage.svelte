@@ -38,30 +38,29 @@
   </div>
 
   <div class="ver">{t('verLine')}</div>
+  <div class="verrow">版本 {__APP_VERSION__} · Powered by openduo.ai</div>
 </section>
-
-<div class="verrow">版本 {__APP_VERSION__} · Powered by openduo.ai</div>
 
 
 <style>
-.verrow { text-align: center; font-size: 13px; color: #9f927d; padding: 18px 0 6px; font-weight: 700; }
-  #v-settings { padding: calc(var(--sat) + 10px) 16px 14px; }
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; margin-bottom: 10px; }
+.verrow { text-align: center; font-size:var(--fs-xs); color: #9f927d; padding: 0 0 var(--sp-2); font-weight: 700; }
+  #v-settings { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; margin-bottom: var(--sp-2); }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; }
-  .setcard { padding: 4px 16px; margin-bottom: 12px; flex: none; }
-  .setrow { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--animal-border-light); }
-  .setrow.col { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .setcard { padding: var(--sp-1) var(--sp-4); margin-bottom: var(--sp-3); flex: none; }
+  .setrow { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-3) 0; border-bottom: 1px solid var(--animal-border-light); }
+  .setrow.col { flex-direction: column; align-items: flex-start; gap: var(--sp-1); }
   .stx { flex: 1; }
-  .stx b { font-size: 15px; font-weight: 900; display: block; }
-  .stx span { font-size: 12px; font-weight: 700; color: var(--animal-text-2); line-height: 1.6; display: block; margin-top: 2px; }
+  .stx b { font-size:var(--fs-sm); font-weight: 900; display: block; }
+  .stx span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.6; display: block; margin-top: var(--sp-1); }
   .switch { flex: none; width: 54px; height: 32px; border-radius: 999px; background: #e8e2d6; border: none; position: relative;
     cursor: pointer; transition: background .2s; }
   .switch i { position: absolute; top: 3px; left: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff;
     box-shadow: 0 2px 4px rgba(61,52,40,.2); transition: left .2s; }
   .switch.on { background: var(--animal-primary); }
   .switch.on i { left: 25px; }
-  .ver { text-align: center; font-size: 11px; font-weight: 700; color: var(--animal-text-dis); margin-top: 6px; }
+  .ver { text-align: center; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); margin-top: auto; }
 </style>

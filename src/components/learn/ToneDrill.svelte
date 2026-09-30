@@ -114,42 +114,42 @@
 </div>
 
 <style>
-  .tonedrill { display: flex; flex-direction: column; gap: 14px; }
-  .bases { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .tonedrill { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .bases { display: flex; gap: var(--sp-2); justify-content: center; flex-wrap: wrap; }
   .basechip { min-width: 72px; min-height: 56px; border-radius: 18px; border: 2.5px solid #e3d9c8; background: #fff;
-    font-size: 30px; font-weight: 900; color: #6f6353; font-family: inherit; }
+    font-size:var(--fs-xl); font-weight: 900; color: #6f6353; font-family: inherit; }
   .basechip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
-  .bigbase { text-align: center; font-size: 64px; font-weight: 900; color: #264653; line-height: 1.35; min-height: 92px; }
+  .bigbase { text-align: center; font-size:var(--fs-glyph); font-weight: 900; color: #264653; line-height: 1.35; min-height: 92px; }
   .basetone { color: #E76F51; }
-  .tonerows { display: flex; flex-direction: column; gap: 10px; }
-  .tonerow { display: flex; align-items: center; gap: 14px; background: #fff; border: 2.5px solid #eee4d3;
-    border-radius: 18px; padding: 10px 16px; min-height: 68px; font-family: inherit; text-align: left; }
+  .tonerows { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .tonerow { display: flex; align-items: center; gap: var(--sp-3); background: #fff; border: 2.5px solid #eee4d3;
+    border-radius: 18px; padding: var(--sp-2) var(--sp-4); min-height: 68px; font-family: inherit; text-align: left; }
   .tonerow.on { border-color: #E76F51; background: #fdeee7; transform: scale(1.015); }
   .mark { width: 58px; height: 32px; flex: 0 0 58px; }
   .mark path { stroke-dasharray: 130; stroke-dashoffset: 130; }
   .mark.draw path { animation: drawmark .5s cubic-bezier(.4,0,.6,1) forwards; }
   @keyframes drawmark { to { stroke-dashoffset: 0; } }
-  .tsyl { font-size: 44px; font-weight: 900; color: #264653; min-width: 72px; text-align: center; }
-  .tname { font-size: 20px; font-weight: 700; color: #8a7a68; }
-  .trow { display: flex; gap: 10px; }
+  .tsyl { font-size:var(--fs-glyph-sm); font-weight: 900; color: #264653; min-width: 72px; text-align: center; }
+  .tname { font-size:var(--fs-md); font-weight: 700; color: #8a7a68; }
+  .trow { display: flex; gap: var(--sp-2); }
   .trow .btn { flex: 1; }
-  .qhint { text-align: center; font-size: 26px; font-weight: 900; color: #264653; margin-top: 6px; }
-  .qprog { display: flex; gap: 8px; justify-content: center; }
+  .qhint { text-align: center; font-size:var(--fs-lg); font-weight: 900; color: #264653; margin-top: var(--sp-2); }
+  .qprog { display: flex; gap: var(--sp-2); justify-content: center; }
   .dot { width: 14px; height: 14px; border-radius: 50%; background: #eee4d3; }
   .dot.ok { background: #2A9D8F; }
   .replay { align-self: center; width: 110px; height: 110px; border-radius: 50%; border: none; background: #fff;
     box-shadow: 0 5px 0 #e3d9c8; color: #2A9D8F; display: flex; align-items: center; justify-content: center; }
   .replay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
-  .topts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .topts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
   .topt { background: #fff; border: 2.5px solid #eee4d3; border-radius: 18px; min-height: 84px;
-    display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit; }
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-family: inherit; }
   .topt svg { width: 52px; height: 28px; }
-  .topt span { font-size: 22px; font-weight: 800; color: #6f6353; }
+  .topt span { font-size:var(--fs-lg); font-weight: 800; color: #6f6353; }
   .topt.right { border-color: #2A9D8F; background: #e6f7f2; }
   .topt.wrong { border-color: #E76F51; background: #fdeee7; animation: shake .3s; }
   @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
-  .qresult { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0; }
-  .qemoji { font-size: 58px; }
-  .qscore { font-size: 28px; font-weight: 900; color: #264653; }
-  .qpraise { font-size: 22px; font-weight: 700; color: #2A9D8F; }
+  .qresult { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); padding: var(--sp-4) 0; }
+  .qemoji { font-size:var(--fs-glyph); }
+  .qscore { font-size:var(--fs-xl); font-weight: 900; color: #264653; }
+  .qpraise { font-size:var(--fs-lg); font-weight: 700; color: #2A9D8F; }
 </style>

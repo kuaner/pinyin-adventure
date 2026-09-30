@@ -45,7 +45,7 @@
   .speak.canplay { cursor: pointer; transition: transform .12s ease; -webkit-tap-highlight-color: transparent; }
   .speak.canplay:active { transform: scale(.93); }
   /* 小声波纹：三根跳动的细条，随文字基线，弱存在感 */
-  .swave { display: inline-flex; align-items: flex-end; gap: 1.5px; height: .58em; margin-left: .3em;
+  .swave { display: inline-flex; align-items: flex-end; gap: var(--sp-1); height: .58em; margin-left: .3em;
     vertical-align: baseline; opacity: .5; pointer-events: none; }
   .swave b { width: 2.5px; border-radius: 2px; background: currentColor; transform-origin: bottom;
     animation: swv 1.1s ease-in-out infinite; }

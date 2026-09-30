@@ -239,7 +239,7 @@
 
 <style>
   .sawrap { display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 4px; width: 100%; height: 100%; min-height: 0; }
+    gap: var(--sp-1); width: 100%; height: 100%; min-height: 0; }
   .svgfit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
   .strokeanim { display: block; margin: 0 auto; }
   .grid { stroke: #ded4c3; stroke-width: 1.5; }
@@ -253,7 +253,7 @@
   .p-done { stroke: #264653; }
   .numbg { fill: #E76F51; opacity: .55; }
   .numbg-cur { opacity: 1; }
-  .numtx { font-size: 10px; font-weight: 800; fill: #fff; }
+  .numtx { font-size:var(--fs-xs); font-weight: 800; fill: #fff; }
   /* 当前笔起笔点呼吸（letter-writing numberDot pulse 的 CSS 化） */
   .sdot { animation: breathe 1.1s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
   @keyframes breathe { 0%, 100% { transform: scale(1); opacity: .95 } 50% { transform: scale(1.45); opacity: .5 } }
@@ -263,15 +263,15 @@
   .mdot { fill: #E76F51; stroke: #fff; stroke-width: 1.1; }
 
   /* 底部笔名清单 */
-  .slist { display: flex; flex-wrap: wrap; gap: 5px 8px; justify-content: center; flex: none;
-    max-width: 100%; padding: 0 8px; }
-  .sit { display: inline-flex; align-items: center; gap: 5px; padding: 3px 11px 3px 4px; border-radius: 999px;
-    background: #f4ede0; color: #8a7a63; font-size: 13px; font-weight: 700;
+  .slist { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); justify-content: center; flex: none;
+    max-width: 100%; padding: 0 var(--sp-2); }
+  .sit { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-3) var(--sp-1) var(--sp-1); border-radius: 999px;
+    background: #f4ede0; color: #8a7a63; font-size:var(--fs-xs); font-weight: 700;
     box-shadow: inset 0 0 0 1.5px transparent; transition: background .25s, color .25s, box-shadow .25s; }
   .sit.is-cur { background: #fdeee7; color: #E76F51; box-shadow: inset 0 0 0 1.5px #E76F51; }
   .sit.is-done { background: #eef2ee; color: #264653; }
   .sn { width: 19px; height: 19px; border-radius: 50%; background: #d9cdb8; color: #fff;
-    font-size: 11px; font-weight: 800; font-style: normal; display: grid; place-items: center; flex: none; }
+    font-size:var(--fs-xs); font-weight: 800; font-style: normal; display: grid; place-items: center; flex: none; }
   .is-cur .sn { background: #E76F51; }
   .is-done .sn { background: #264653; }
   .sname { line-height: 1.15; }

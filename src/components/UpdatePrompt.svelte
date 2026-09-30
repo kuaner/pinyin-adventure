@@ -61,19 +61,19 @@
 {/if}
 
 <style>
-  .updwrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; padding: 0 14px calc(var(--sab) + 14px);
+  .updwrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; padding: 0 var(--sp-3) calc(var(--sab) + var(--sp-3));
     pointer-events: none; display: flex; justify-content: center; }
   .updbar { pointer-events: auto; width: min(100%, 400px); background: #fff; border: 2.5px solid #eee4d3; border-radius: 20px;
-    box-shadow: 0 5px 0 #e3d9c8; padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 5px 0 #e3d9c8; padding: var(--sp-3) var(--sp-3); display: flex; align-items: center; gap: var(--sp-3);
     animation: updin .4s cubic-bezier(.2, 1.4, .4, 1); }
   @keyframes updin { 0% { transform: translateY(80px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
   .updchick { flex: 0 0 52px; height: 52px; border-radius: 50%; background: #e6f7f2; display: flex; align-items: center;
     justify-content: center; animation: bob 2.4s ease-in-out infinite; }
   .updboard { flex: 1; min-width: 0; }
-  .updtitle { font-size: 19px; font-weight: 900; color: #264653; line-height: 1.8; }
-  .upddesc { font-size: 14px; font-weight: 700; color: #8a7a68; line-height: 1.8; }
-  .updgo { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; border: none; cursor: pointer;
-    background: #2A9D8F; color: #fff; font-family: inherit; font-size: 17px; font-weight: 900;
-    border-radius: 50px; padding: 11px 20px; box-shadow: 0 4px 0 #129d8f; }
+  .updtitle { font-size:var(--fs-md); font-weight: 900; color: #264653; line-height: 1.8; }
+  .upddesc { font-size:var(--fs-xs); font-weight: 700; color: #8a7a68; line-height: 1.8; }
+  .updgo { flex: 0 0 auto; display: inline-flex; align-items: center; gap: var(--sp-2); border: none; cursor: pointer;
+    background: #2A9D8F; color: #fff; font-family: inherit; font-size:var(--fs-md); font-weight: 900;
+    border-radius: 50px; padding: var(--sp-3) var(--sp-4); box-shadow: 0 4px 0 #129d8f; }
   .updgo:active { transform: translateY(3px); box-shadow: 0 1px 0 #129d8f; }
 </style>

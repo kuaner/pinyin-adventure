@@ -4,7 +4,7 @@
   import { onMount } from 'svelte'
   import lessonsData from '../../data/lessons.json'
   import { LETTERS } from '../../data'
-  import { L as LRN, quizPassed, currentLesson, lessonShort } from '../../stores/learn.svelte'
+  import { L as LRN, quizPassed, currentLesson } from '../../stores/learn.svelte'
   import { openLesson, show } from '../../stores/ui.svelte'
   import { totalStars } from '../../stores/progress.svelte'
   import { say } from '../../lib/audio'
@@ -48,10 +48,9 @@
 
   <div class="card" id="hero">
     <div class="lchip">
-      <Speak k="lessonN" vars={{ n: cur }} /> ·
-      {#if lessonShort(cur, lesson.title).zh}<Speak text={lessonShort(cur, lesson.title).zh!} />{:else}{lessonShort(cur, lesson.title).raw}{/if}
+      <Speak k="lessonN" vars={{ n: cur }} /> · <Speak text={lesson.title} />
     </div>
-    <div id="letters" class="grid4">
+    <div id="letters" class="grid4" class:n4={letters.length >= 4} class:n5={letters.length >= 5}>
       {#each letters as l, i (l.k)}
         <button class="letterbtn" data-ler={l.k} onclick={() => { li = i; say(l.k) }} aria-label={l.k}>
           <span class="letter" class:curo={i === li}>{l.k}</span>
@@ -102,59 +101,67 @@
 </section>
 
 <style>
-  #v-learntab { padding: calc(var(--sat) + 10px) 16px 12px; gap: 0; }
+  #v-learntab { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); gap: 0; }
   .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
-  .rowhead .h1 { font-size: 21px; font-weight: 900; letter-spacing: .5px; }
-  .rowhead .h1 small { font-size: 12px; font-weight: 700; color: var(--animal-text-dis); margin-left: 6px; }
-  .chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px;
-    font-size: 12.5px; font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); }
+  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; }
+  .rowhead .h1 small { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); margin-left: var(--sp-2); }
+  .chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-3); border-radius: 999px;
+    font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); }
   .chip svg { width: 14px; height: 14px; }
 
-  #hero { flex: 1; min-height: 0; margin-top: 12px; padding: 18px 22px 18px; display: flex; flex-direction: column; position: relative; }
+  #hero { flex: 1; min-height: 0; margin-top: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; position: relative; }
+  /* v2.8：课名 chip 全称不截断（超宽自动两行） */
   #hero .lchip { align-self: flex-start; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-size: 13px; font-weight: 900; padding: 6px 14px; border-radius: 999px; }
+    font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: var(--animal-r); line-height: 1.6;
+    max-width: 100%; text-align: left; }
   .grid4 { position: relative; }
   .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
-  #letters { flex: 1; display: flex; align-items: center; justify-content: center; gap: 20px; min-height: 0; padding-bottom: 10px; }
-  .letterbtn { border: none; background: none; font-family: inherit; padding: 0; }
-  .letter { font-weight: 900; font-size: 104px; line-height: 1; color: var(--animal-text-dis); opacity: .5; position: relative;
+  /* v2.8：字模条按字母数适配（4~5 个字母自动降档，零溢出） */
+  #letters { flex: 1; display: flex; align-items: center; justify-content: center; gap: var(--sp-4); min-height: 0; padding-bottom: var(--sp-2); }
+  #letters.n4 { gap: var(--sp-3); }
+  #letters.n5 { gap: var(--sp-2); }
+  .letterbtn { border: none; background: none; font-family: inherit; padding: 0; min-width: 0; }
+  .letter { font-weight: 900; font-size:var(--fs-hero); line-height: 1; color: var(--animal-text-dis); opacity: .5; position: relative;
     z-index: 1; transition: .2s; display: block; }
-  .letter.curo { color: var(--animal-primary); opacity: 1; font-size: 148px; text-shadow: 0 6px 0 rgba(18,157,143,.18); }
+  #letters.n4 .letter { font-size:var(--fs-glyph-lg); }
+  #letters.n5 .letter { font-size:var(--fs-glyph); }
+  .letter.curo { color: var(--animal-primary); opacity: 1; text-shadow: 0 6px 0 rgba(18,157,143,.18); }
   .letter.curo::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -14px;
     width: 12px; height: 12px; border-radius: 50%; background: var(--animal-warning); box-shadow: 0 2px 0 var(--animal-warning-active); }
-  #koujue { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 17px; font-weight: 800; line-height: 2.1; flex: none; }
-  #koujue .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size: 19px; letter-spacing: 2px; }
-  #steps5 { display: flex; justify-content: center; gap: 10px; margin: 12px 0 14px; flex: none; }
+  #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 2.1; flex: none; }
+  #koujue .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size:var(--fs-md); letter-spacing: 2px; }
+  #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-3) 0 var(--sp-3); flex: none; }
   #steps5 i { width: 34px; height: 7px; border-radius: 7px; background: var(--animal-border-light); }
   #steps5 i.d { background: var(--animal-primary); }
   #steps5 i.c { background: var(--animal-warning); }
   #cta { height: 62px; border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
-    font-size: 19px; font-weight: 900; letter-spacing: 1px; box-shadow: 0 5px 0 var(--press-teal), var(--animal-shadow-lg); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px; flex: none; }
+    font-size:var(--fs-md); font-weight: 900; letter-spacing: 1px; box-shadow: 0 5px 0 var(--press-teal), var(--animal-shadow-lg); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); flex: none; }
   #cta:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--press-teal); }
   #cta rt { color: #fff; opacity: .85; }
 
-  #mapbar { margin-top: 14px; flex: none; }
-  .sec-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-  .sec-label b { font-size: 13.5px; font-weight: 900; }
-  .sec-label span { font-size: 11px; font-weight: 700; color: var(--animal-text-dis); }
-  #caps { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  #mapbar { margin-top: var(--sp-3); flex: none; }
+  .sec-label { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+  .sec-label b { font-size:var(--fs-xs); font-weight: 900; white-space: nowrap; }
+  .sec-label span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
+  #caps { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); scrollbar-width: none; }
   #caps::-webkit-scrollbar { display: none; }
   .cap { flex: 0 0 auto; width: 46px; height: 58px; border-radius: 16px; background: #fff; box-shadow: var(--animal-shadow);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; font-family: inherit; padding: 0; }
-  .cap b { font-size: 17px; font-weight: 900; color: var(--animal-text-dis); }
-  .cap i { font-style: normal; font-size: 8.5px; font-weight: 700; color: var(--animal-text-dis); }
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); border: none; font-family: inherit; padding: 0; }
+  .cap b { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis); }
+  .cap i { font-style: normal; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); }
   .cap.locked { background: #f3efe6; border: 2px solid #eee4d3; box-shadow: 0 2px 0 #e3d9c8; }
   .cap.locked b, .cap.locked i { color: #b7ab97; }
   .cap.done { background: var(--animal-primary-bg); }
   .cap.done b, .cap.done i { color: var(--animal-primary-active); }
   .cap.cur { width: 96px; background: var(--animal-primary); box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
-  .cap.cur b { color: #fff; font-size: 15px; }
+  .cap.cur b { color: #fff; font-size:var(--fs-sm); }
   .cap.cur i { color: #fff; opacity: .9; }
 
-  #radio { margin-top: 14px; height: 74px; flex: none; display: flex; align-items: center; gap: 13px; padding: 0 16px;
+  /* v2.8：口诀广播入口条自适应高（ruby 两行不裁切） */
+  #radio { margin-top: var(--sp-3); min-height: 64px; flex: none; display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-4);
     background: var(--animal-warning-hover); border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow);
     background: #fff8e0; border: none; font-family: inherit; width: 100%; cursor: pointer; }
   #radio:active { transform: scale(.98); }
@@ -162,9 +169,9 @@
     justify-content: center; box-shadow: 0 3px 0 var(--animal-warning-active); flex: none; }
   #radio .ric svg { width: 24px; height: 24px; }
   #radio .rtx { flex: 1; min-width: 0; text-align: left; }
-  #radio .rtx b { font-size: 16px; font-weight: 900; line-height: 1.9; display: block; }
-  #radio .rtx span { display: block; font-size: 11px; font-weight: 700; color: var(--animal-text-2); }
-  #radio .rtx span :global(rt) { font-size: 8px; }
+  #radio .rtx b { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; display: block; }
+  #radio .rtx span { display: block; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.5; }
+  #radio .rtx span :global(rt) { font-size:var(--fs-rt); }
   #radio .rplay { width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; flex: none; }
   #radio .rplay svg { width: 18px; height: 18px; }

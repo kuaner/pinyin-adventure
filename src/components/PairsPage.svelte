@@ -49,29 +49,30 @@
 </section>
 
 <style>
-  #v-pairs { padding: calc(var(--sat) + 10px) 16px 8px; }
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  #v-pairs { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; }
-  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
-    padding: 6px 11px; border-radius: 999px; }
-  #pgwrap { flex: 1; min-height: 0; margin: 12px 0 4px; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
+  #pgwrap { flex: 1; min-height: 0; margin: var(--sp-3) 0 var(--sp-1); }
   .pcard { height: 100%; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
-    display: flex; flex-direction: column; align-items: center; padding: 20px 16px 16px; overflow: hidden; }
+    display: flex; flex-direction: column; align-items: center; padding: var(--sp-4) var(--sp-4) var(--sp-4); overflow: hidden; }
   .ghead { flex: none; text-align: center; }
-  .gtitle { font-size: 20px; font-weight: 900; color: var(--animal-text); line-height: 2; }
-  .gdesc { font-size: 12.5px; font-weight: 700; color: var(--animal-text-2); line-height: 1.9; }
-  .chips { flex: 1; min-height: 0; display: flex; flex-wrap: wrap; gap: 10px; align-content: center; justify-content: center; margin: 8px 0; }
+  .gtitle { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; }
+  .gdesc { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.9; }
+  /* v2.8：组chip纵向均匀分布（内容不足时填满中段，不留成片空白） */
+  .chips { flex: 1; min-height: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-content: space-evenly; justify-content: center; margin: var(--sp-2) 0; }
   .chip { border: 2px solid var(--animal-border-light); background: var(--animal-bg); color: var(--animal-text); font-family: inherit;
-    font-size: 20px; font-weight: 900; padding: 6px 16px; border-radius: var(--animal-r-pill); cursor: pointer; min-height: 52px; }
+    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: var(--animal-r-pill); cursor: pointer; min-height: 52px; }
   .chip:active { transform: translateY(2px); }
   .gstart { flex: none; width: 100%; max-width: 280px; }
-  #pager { height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-  #dots { display: flex; gap: 7px; }
+  #pager { height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
+  #dots { display: flex; gap: var(--sp-2); }
   #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); }
   #dots i.on { width: 22px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--animal-text-2); }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
   #swipehint svg { width: 16px; height: 16px; }
 </style>

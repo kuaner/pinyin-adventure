@@ -75,12 +75,13 @@
 </section>
 
 <style>
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  /* v2.8：顶栏自适应高（关名 ruby 换行不裁切），题名 --fs-sm 保单行优先 */
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); min-height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; line-height: 1.8; }
-  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
-    padding: 6px 11px; border-radius: 999px; white-space: nowrap; }
+  .ltt { flex: 1; min-width: 0; text-align: center; font-size:var(--fs-sm); font-weight: 900; line-height: 1.6; }
+  .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: var(--sp-1) var(--sp-2); border-radius: 999px; white-space: nowrap; flex: none; }
   .qcard { flex: 1; min-height: 0; touch-action: pan-y; }
 </style>
 

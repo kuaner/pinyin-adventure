@@ -73,41 +73,43 @@
 </section>
 
 <style>
-  #v-history { padding: calc(var(--sat) + 10px) 16px 12px; }
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; margin-bottom: 8px; }
+  #v-history { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; margin-bottom: var(--sp-2); }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; }
-  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg); padding: 6px 11px; border-radius: 999px; }
-  .learnprog { flex: none; background: #fff; border: 2px solid #eee4d3; border-radius: 18px; padding: 10px 12px; margin-bottom: 10px; }
-  .lptitle { font-size: 13px; font-weight: 800; color: #264653; margin-bottom: 7px; display: flex; align-items: center; gap: 5px; }
-  .gol { margin-left: auto; border: none; background: #e6f7f2; color: #1f7a68; font-family: inherit; font-size: 12px; font-weight: 900;
-    padding: 5px 10px; border-radius: 999px; cursor: pointer; }
-  .lpmap { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
-  .lpcell { border: 1.5px solid #eee4d3; border-radius: 9px; padding: 3px 2px; text-align: center;
-    font-size: 10.5px; font-weight: 700; color: #8a7a68; display: flex; flex-direction: column; gap: 1px; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg); padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
+  .learnprog { flex: none; background: #fff; border: 2px solid #eee4d3; border-radius: 18px; padding: var(--sp-2) var(--sp-3); margin-bottom: var(--sp-2); }
+  .lptitle { font-size:var(--fs-xs); font-weight: 800; color: #264653; margin-bottom: var(--sp-2); display: flex; align-items: center; gap: var(--sp-1); }
+  .gol { margin-left: auto; border: none; background: #e6f7f2; color: #1f7a68; font-family: inherit; font-size:var(--fs-xs); font-weight: 900;
+    padding: var(--sp-1) var(--sp-2); border-radius: 999px; cursor: pointer; }
+  /* v2.8：minmax(0,1fr) 防内容吹爆网格（12 课两行六列，格内标签截断） */
+  .lpmap { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--sp-1); }
+  .lpcell { border: 1.5px solid #eee4d3; border-radius: 9px; padding: var(--sp-1) var(--sp-1); text-align: center;
+    font-size:var(--fs-xs); font-weight: 700; color: #8a7a68; display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
   .lpcell.done { border-color: #bfe8df; background: #e6f7f2; color: #1f7a68; }
   .lpcell.lock { opacity: .5; }
-  .lpn { font-size: 9.5px; color: #b7ab97; }
-  .lpl { font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .lps { font-size: 10px; }
+  .lpn { font-size:var(--fs-xs); color: #b7ab97; }
+  .lpl { font-size:var(--fs-xs); line-height: 1.3; word-break: break-all; }
+  .lps { font-size:var(--fs-xs); }
 
   #histwrap { flex: 1; min-height: 0; }
+  /* v2.8：记录卡内容簇居中（去掉 flex:1 拉伸造成的条内大片空白） */
   .pcard { height: 100%; background: #fff; border-radius: var(--animal-r-lg); border: 2px solid var(--animal-border-light);
-    box-shadow: var(--animal-shadow); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
-  .hitem { background: var(--animal-bg); border-radius: var(--animal-r-sm); padding: 8px 12px; display: flex; align-items: center;
-    gap: 8px; flex-wrap: wrap; flex: 1; min-height: 0; }
-  .hitem .ht { font-size: 11.5px; color: var(--animal-text-2); font-weight: 800; flex: 0 0 100%; order: 3; }
-  .hitem .hl { font-size: 14.5px; font-weight: 900; color: var(--animal-text); flex: 1; }
-  .hitem .hs { font-size: 13.5px; font-weight: 900; color: var(--animal-warning-active); }
-  .hempty { text-align: center; color: var(--animal-text-dis); font-weight: 800; margin: auto; font-size: 15px; line-height: 2; }
+    box-shadow: var(--animal-shadow); padding: var(--sp-3) var(--sp-3); display: flex; flex-direction: column; justify-content: center; gap: var(--sp-2); overflow: hidden; }
+  .hitem { background: var(--animal-bg); border-radius: var(--animal-r-sm); padding: var(--sp-2) var(--sp-3); display: flex; align-items: center;
+    gap: var(--sp-2); flex-wrap: wrap; flex: 0 0 auto; }
+  .hitem .ht { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 800; flex: 0 0 100%; order: 3; }
+  .hitem .hl { font-size:var(--fs-sm); font-weight: 900; color: var(--animal-text); flex: 1; }
+  .hitem .hs { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-warning-active); }
+  .hempty { text-align: center; color: var(--animal-text-dis); font-weight: 800; margin: auto; font-size:var(--fs-sm); line-height: 2; }
 
-  #pager { height: 46px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-  #dots { display: flex; gap: 7px; }
+  #pager { height: 46px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); }
+  #dots { display: flex; gap: var(--sp-2); }
   #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); }
   #dots i.on { width: 22px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 800; color: var(--animal-text-2); }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
   #swipehint svg { width: 14px; height: 14px; }
-  #hclear { flex: none; min-height: 44px; font-size: 14px; }
+  #hclear { flex: none; min-height: 44px; font-size:var(--fs-xs); }
 </style>

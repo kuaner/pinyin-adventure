@@ -127,5 +127,5 @@
   .hswrap.end::after { opacity: 0; }
   .hstage { position: absolute; inset: 0; display: flex; height: 100%; will-change: transform;
     touch-action: pan-y; }
-  .hstage :global(.hspage) { flex: 0 0 100%; min-width: 0; padding-right: 12px; display: flex; flex-direction: column; min-height: 0; }
+  .hstage :global(.hspage) { flex: 0 0 100%; min-width: 0; padding-right: var(--sp-3); display: flex; flex-direction: column; min-height: 0; }
 </style>

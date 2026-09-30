@@ -12,15 +12,16 @@
     <button class="backbtn" data-back="home" onclick={() => show('practice')}>‹</button>
     <h2><Icon name="dumbbell" size={26} /> <Speak k="freePractice" /></h2>
   </div>
-  <div id="pgroups2" style="display:flex;flex-direction:column;gap:11px">
+  <!-- v2.8：四卡弹性等分填满内容区（消除底部空白） -->
+  <div id="pgroups2" style="display:flex;flex-direction:column;gap:var(--sp-3);flex:1;min-height:0">
     {#each PH.practice as it (it.kind)}
       <button
         class="btn {it.kind === 'all' ? 'purple' : 'blue'}"
-        style="flex-direction:column;gap:1px;min-height:78px"
+        style="flex-direction:column;gap:var(--sp-1);flex:1;min-height:0"
         onclick={() => startPractice(it.kind)}
       >
         <span><Icon name={it.icon} size={22} /> <Speak text={it.btn} plain /></span>
-        <span style="font-size:15px;font-weight:700;opacity:.92;line-height:1.8"><Speak text={it.desc} plain /></span>
+        <span style="font-size:var(--fs-sm);font-weight:700;opacity:.92;line-height:1.6"><Speak text={it.desc} plain /></span>
       </button>
     {/each}
   </div>

@@ -101,49 +101,49 @@
 </div>
 
 <style>
-  .blenddrill { display: flex; flex-direction: column; gap: 12px; }
-  .magicnote { background: #fff8e0; border: 2.5px dashed #e6c96a; border-radius: 16px; padding: 10px 14px;
-    font-size: 19px; font-weight: 700; color: #8a6d1f; display: flex; align-items: center; gap: 8px; line-height: 1.9; }
-  .stage { position: relative; height: 190px; display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .blenddrill { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .magicnote { background: #fff8e0; border: 2.5px dashed #e6c96a; border-radius: 16px; padding: var(--sp-2) var(--sp-3);
+    font-size:var(--fs-md); font-weight: 700; color: #8a6d1f; display: flex; align-items: center; gap: var(--sp-2); line-height: 1.9; }
+  .stage { position: relative; height: 190px; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); }
   .card { width: 104px; height: 132px; border-radius: 22px; background: #fff; box-shadow: 0 5px 0 #e3d9c8;
-    display: flex; align-items: center; justify-content: center; font-size: 62px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center; font-size:var(--fs-glyph); font-weight: 900;
     transition: transform .6s cubic-bezier(.55,0,.35,1); font-family: inherit; }
   .inicard { color: #2A9D8F; border: 3px solid #bfe8df; }
   .fincard { color: #E76F51; border: 3px solid #f6cdc2; }
-  .plus { font-size: 40px; font-weight: 900; color: #8a7a68; transition: opacity .3s; }
+  .plus { font-size:var(--fs-em); font-weight: 900; color: #8a7a68; transition: opacity .3s; }
   .stage.merged .inicard { transform: translateX(56px) rotate(-4deg); }
   .stage.merged .fincard { transform: translateX(-56px) rotate(4deg); }
   .stage.merged .plus { opacity: 0; }
   .result { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
     opacity: 0; transform: scale(.4); transition: all .5s cubic-bezier(.2,1.4,.4,1) .45s; pointer-events: none; }
   .result.show { opacity: 1; transform: scale(1); }
-  .rsyl { font-size: 76px; font-weight: 900; color: #264653; }
-  .rchar { font-size: 44px; color: #E76F51; font-weight: 900; }
-  .steps { display: flex; gap: 10px; align-items: center; }
+  .rsyl { font-size:var(--fs-glyph-lg); font-weight: 900; color: #264653; }
+  .rchar { font-size:var(--fs-glyph-sm); color: #E76F51; font-weight: 900; }
+  .steps { display: flex; gap: var(--sp-2); align-items: center; }
   .steps .btn { flex: 1; }
   .navbtn { width: 56px; height: 56px; border-radius: 16px; border: 2px solid #e3d9c8; background: #fff;
-    font-size: 30px; font-weight: 900; color: #6f6353; font-family: inherit; }
+    font-size:var(--fs-xl); font-weight: 900; color: #6f6353; font-family: inherit; }
   .navbtn:disabled { opacity: .35; }
-  .pcount { text-align: center; color: #8a7a68; font-weight: 800; font-size: 15px; }
-  .btable { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-  .bchip { background: #fff; border: 2px solid #eee4d3; border-radius: 14px; padding: 10px 14px;
-    font-size: 20px; font-weight: 800; color: #6f6353; font-family: inherit; }
+  .pcount { text-align: center; color: #8a7a68; font-weight: 800; font-size:var(--fs-sm); }
+  .btable { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; }
+  .bchip { background: #fff; border: 2px solid #eee4d3; border-radius: 14px; padding: var(--sp-2) var(--sp-3);
+    font-size:var(--fs-md); font-weight: 800; color: #6f6353; font-family: inherit; }
   .bchip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
-  .zthint { text-align: center; font-size: 21px; font-weight: 800; color: #264653; }
+  .zthint { text-align: center; font-size:var(--fs-lg); font-weight: 800; color: #264653; }
   /* 单韵母四声读一读（v2.4.1 BUGS#5） */
-  .srows { display: flex; flex-direction: column; gap: 9px; width: 100%; }
-  .srow { display: flex; align-items: center; gap: 10px; }
+  .srows { display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; }
+  .srow { display: flex; align-items: center; gap: var(--sp-2); }
   .sbase { flex: 0 0 52px; height: 52px; border-radius: 14px; background: var(--animal-primary-bg, #e6f9f6);
-    display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: #1f7a68; }
-  .sgrid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    display: flex; align-items: center; justify-content: center; font-size:var(--fs-xl); font-weight: 900; color: #1f7a68; }
+  .sgrid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
   .scard { height: 52px; border-radius: 14px; border: 2px solid #eee4d3; background: #fff; font-family: inherit;
-    font-size: 26px; font-weight: 900; color: #264653; }
+    font-size:var(--fs-lg); font-weight: 900; color: #264653; }
   .scard:active { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
-  .stip { text-align: center; font-size: 13px; font-weight: 800; color: #8a7a68; }
-  .bempty { text-align: center; font-size: 18px; font-weight: 800; color: #8a7a68; line-height: 2; padding: 30px 10px; }
-  .ztgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .ztcard { background: #fff; border: 2.5px solid #eee4d3; border-radius: 18px; padding: 12px 8px;
-    display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; }
-  .ztu { font-size: 40px; font-weight: 900; color: #264653; }
-  .zkj { font-size: 16px; font-weight: 700; color: #8a7a68; line-height: 1.7; }
+  .stip { text-align: center; font-size:var(--fs-xs); font-weight: 800; color: #8a7a68; }
+  .bempty { text-align: center; font-size:var(--fs-md); font-weight: 800; color: #8a7a68; line-height: 2; padding: var(--sp-6) var(--sp-2); }
+  .ztgrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+  .ztcard { background: #fff; border: 2.5px solid #eee4d3; border-radius: 18px; padding: var(--sp-3) var(--sp-2);
+    display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); font-family: inherit; }
+  .ztu { font-size:var(--fs-em); font-weight: 900; color: #264653; }
+  .zkj { font-size:var(--fs-md); font-weight: 700; color: #8a7a68; line-height: 1.7; }
 </style>

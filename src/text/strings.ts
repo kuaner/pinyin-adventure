@@ -81,7 +81,7 @@ export const strings = {
   parentZone: s('家长区'),
   history: s('学习历史'),
   soundEtiquette: s('声音礼仪'),
-  newTag: s('v2.6 新'),
+  newTag: s('新'),
   settings: s('设置'),
 
   /* ---------- 关卡地图 ---------- */
@@ -235,7 +235,7 @@ export const strings = {
   dataDesc: s('全部学习进度只保存在本机浏览器（localStorage），不联网、不上传、无账号。'),
   soundSource: s('声音来源'),
   soundSourceDesc: s('拼音读音=真人音频库，界面文字=预生成配音（无设备合成）。声音礼仪详情见「声音礼仪」页。'),
-  verLine: s('拼音闯关大冒险 v2.6 · 拼音岛'),
+  verLine: s('拼音闯关大冒险 · 拼音岛'),
   etiquetteTitle: s('声音礼仪 · 全局规则'),
   etiquetteIntro: s('什么时候有声音、什么时候安静——三条规则 + 一张声音地图。'),
   soundMap: s('声音地图'),

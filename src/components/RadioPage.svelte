@@ -128,7 +128,7 @@ import { t, tRaw } from '../text/strings'
   </div>
 
   <div id="rlistbar">
-    <div class="sec-label"><b><Speak k="kjList" plain /> · {ALL.length} <Speak k="groupCount" vars={{ n: ALL.length }} plain /></b><span><Speak k="swipeHintH" /></span></div>
+    <div class="sec-label"><b><Speak k="kjList" plain /> · <Speak k="groupCount" vars={{ n: ALL.length }} plain /></b><span><Speak k="swipeHintH" /></span></div>
     <div id="rcaps" bind:this={capsEl}>
       {#each ALL as e, i (e.k + i)}
         <button class="cap" class:on={i === cur} data-idx={i} onclick={() => jump(i)}>{e.k}</button>
@@ -143,53 +143,53 @@ import { t, tRaw } from '../text/strings'
 </section>
 
 <style>
-  #v-radio { padding: calc(var(--sat) + 10px) 16px 10px; gap: 0; }
-  .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
+  #v-radio { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); gap: 0; }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size: 16px; font-weight: 900; line-height: 1.8; }
-  .lprog { font-size: 12px; font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
-    padding: 6px 11px; border-radius: 999px; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; }
+  .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
+    padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
 
   .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 18px 16px; overflow: hidden; position: relative; }
-  .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size: 11px; font-weight: 900; color: var(--animal-text-dis);
-    background: #f4f0e4; padding: 4px 10px; border-radius: 999px; z-index: 2; }
-  .radfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-top: 18px; }
+    display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-4) var(--sp-4) var(--sp-4); overflow: hidden; position: relative; }
+  .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size:var(--fs-xs); font-weight: 900; color: var(--animal-text-dis);
+    background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; z-index: 2; }
+  .radfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-top: var(--sp-4); }
 
-  #rctrl { display: flex; gap: 10px; margin: 12px 0 0; flex: none; }
-  .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size: 16px; font-weight: 900;
-    display: flex; align-items: center; justify-content: center; gap: 7px; cursor: pointer;
+  #rctrl { display: flex; gap: var(--sp-2); margin: var(--sp-3) 0 0; flex: none; }
+  .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size:var(--fs-md); font-weight: 900;
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); cursor: pointer;
     background: #fff; color: var(--animal-text-2); box-shadow: 0 3px 0 var(--animal-border-light), var(--animal-shadow); }
   .rbtn svg { width: 19px; height: 19px; }
   .rbtn.main { background: var(--animal-primary); color: #fff; box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
   .rbtn.main.live { background: #f29cb6; box-shadow: 0 4px 0 var(--press-pink), var(--animal-shadow-lg); }
   .rbtn.live2 { color: var(--animal-primary-active); background: var(--animal-primary-bg); }
 
-  #rlistbar { margin-top: 12px; flex: none; }
-  .sec-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .sec-label b { font-size: 13px; font-weight: 900; }
-  .sec-label span { font-size: 11px; font-weight: 700; color: var(--animal-text-dis); }
-  #rcaps { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  #rlistbar { margin-top: var(--sp-3); flex: none; }
+  .sec-label { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+  .sec-label b { font-size:var(--fs-xs); font-weight: 900; white-space: nowrap; }
+  .sec-label span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
+  #rcaps { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); scrollbar-width: none; }
   #rcaps::-webkit-scrollbar { display: none; }
   .cap { flex: 0 0 auto; min-width: 46px; height: 44px; border-radius: 14px; background: #fff; box-shadow: var(--animal-shadow);
-    display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: var(--animal-text-dis);
-    border: none; font-family: inherit; padding: 0 8px; }
+    display: flex; align-items: center; justify-content: center; font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis);
+    border: none; font-family: inherit; padding: 0 var(--sp-2); }
   .cap.on { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
 
-  #pager { height: 58px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
-  #dots { display: flex; gap: 6px; max-width: 100%; overflow: hidden; }
+  #pager { height: 58px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
+  #dots { display: flex; gap: var(--sp-2); max-width: 100%; overflow: hidden; }
   #dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; flex: none; }
   #dots i.on { width: 20px; border-radius: 6px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--animal-text-2); }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
   #swipehint svg { width: 15px; height: 15px; }
 
   /* 空态兜底（BUGS#7） */
-  .kempty { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .kempty { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3); }
   .kempty-ic svg { width: 54px; height: 54px; }
-  .kempty-tx { font-size: 17px; font-weight: 800; color: var(--animal-text-2); line-height: 2.1; text-align: center; max-width: 260px; }
+  .kempty-tx { font-size:var(--fs-md); font-weight: 800; color: var(--animal-text-2); line-height: 2.1; text-align: center; max-width: 260px; }
   .kempty-btn { border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
-    font-size: 16px; font-weight: 900; padding: 12px 30px; box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
+    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-3) var(--sp-6); box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
   .kempty-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
 </style>
