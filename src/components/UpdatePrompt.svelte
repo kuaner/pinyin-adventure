@@ -27,17 +27,21 @@
 
   let reloading = $state(false)
   function handleUpdate() {
-    /* Bug#11：updateSW 只负责 skipWaiting（新 SW 就绪），必须自己监听 controllerchange 重载；
-       另加 1.8s 兜底强刷——无论 SW 接管与否，冷加载即新版 */
+    /* Bug#11+Bug#16：reload 必须等新 SW 完全激活（预缓存做完）再刷——
+       controllerchange 触发时 SW 刚接管但预缓存可能未完，立刻 reload 会白屏；
+       修=等 navigator.serviceWorker.ready 确认新 SW ready 再 reload */
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (reloading) return
       reloading = true
-      window.location.reload()
+      navigator.serviceWorker.ready.then(() => {
+        window.location.reload()
+      }).catch(() => { window.location.reload() })
     })
     updateSW?.().catch(() => {})
+    /* 兜底放宽到 3s，给预缓存足够时间 */
     setTimeout(() => {
       if (!reloading) { reloading = true; window.location.reload() }
-    }, 1800)
+    }, 3000)
   }
 </script>
 
