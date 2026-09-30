@@ -58,7 +58,11 @@ export function sndStar() { tone(659, 0, 0.1); tone(784, 0.09, 0.1); tone(1046, 
 export const AUDIO_CACHE: Record<string, HTMLAudioElement> = {}
 
 export function letterAudio(k: string): string {
-  return k === 'ü' ? 'v' : (k === 'ün' ? 'vn' : k)
+  /* ü 系复韵母的呼读音在 hyp 库用 ASCII 安全名（v/vn/ve，硬约束#2） */
+  if (k === 'ü') return 'v'
+  if (k === 'ün') return 'vn'
+  if (k === 'üe') return 've'
+  return k
 }
 
 export function audioURL(name: string): string {

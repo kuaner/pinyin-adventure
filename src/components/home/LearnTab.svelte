@@ -12,12 +12,17 @@
   import { t, type StringKey } from '../../text/strings'
 
   const LESSONS = (lessonsData as any).lessons as { n: number; title: string; label: string; letters: { k: string; kj: string }[] }[]
-  const STEPS: StringKey[] = ['stepKnow', 'stepWrite', 'stepTone', 'stepBlend', 'stepQuiz']
+  const ALL_STEPS: StringKey[] = ['stepKnow', 'stepWrite', 'stepTone', 'stepBlend', 'stepQuiz']
 
   const cur = $derived(currentLesson(LESSONS.length))
   const lesson = $derived(LESSONS[cur - 1])
-  const bp = $derived(Math.min(5, LRN.step[cur] || 1))          // 五步断点
-  const bpKey = $derived(STEPS[bp - 1])
+  /* v2.9 步骤架构跟内容走（BUGS#17）：纯韵母课 4 步无拼读，断点/CTA 步名同步适配 */
+  const steps = $derived.by(() => {
+    const hb = (lesson as any).hasBlend ?? !!((lesson as any).blends?.length || (lesson as any).ztlist?.length)
+    return hb ? ALL_STEPS : ALL_STEPS.filter((k) => k !== 'stepBlend')
+  })
+  const bp = $derived(Math.min(steps.length, LRN.step[cur] || 1))   // 动态步数断点
+  const bpKey = $derived(steps[bp - 1])
   const passedCur = $derived(quizPassed(cur))
 
   let li = $state(0)                                             // 大卡当前字母
@@ -59,7 +64,7 @@
     </div>
     <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
     <div id="steps5">
-      {#each STEPS as s, i (s)}
+      {#each steps as s, i (s)}
         <i class:d={i < bp - 1 || passedCur} class:c={i === bp - 1 && !passedCur}></i>
       {/each}
     </div>

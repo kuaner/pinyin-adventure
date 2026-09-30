@@ -1,6 +1,6 @@
 # 拼音闯关大冒险（pinyin-adventure）
 
-儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课五步、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3。
+儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课（v2.9 动态步数：纯韵母课 4 步、有声母课 5 步，小测三题型=听音选字母/看字母选音/听调辨调·仅韵母课）、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3。
 
 ## 技术栈
 
@@ -59,14 +59,14 @@ src/
     AnchorBar PairModal Feedback UpdatePrompt                # 通用件（v2.3：解锁层删除，新增更新提示条）
     Speak.svelte         # v2.6 Ruby 升级：注音渲染+有音频则整段可点击播放（轻按压反馈+小声波纹）；全 app 文案/题面/反馈走它
     PinyinCard（v2.5 统一学习卡片：full=学习岛认识页/口诀广播展开区，card=闪卡，mini=答错反馈；五要素=字模四线三格/真人读音/笔顺动画/口诀/例词；数据 data/pinyin-cards.json）
-    learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 五步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
+    learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 动态 4/5 步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
     pinyin.json           # 字母表 57 条(口诀/例词) + 锚点表 + 9 关 + 正反覆盖集
     confusion.json        # 14 组易混对 + 组名
     zi180.json            # 一年级 180 字（拼音逐字核对过）
     words.json            # 30 双字词
     phrases.json          # UI 短语/题型名/夸奖语/自由练习配置
-    lessons.json          # 学习岛 12 课（字母/口诀/写法旁白/声调/拼读表）
+    lessons.json          # 学习岛 12 课（字母/口诀/写法旁白/声调/拼读表/hasBlend 动态步数）
     strokes.json          # 47 单元笔顺 SVG 几何（v2.3 换血：lasagoo/letter-writing 底本+部编版适配，生成器 gen-strokes-lw.mjs 勿手改；stroke-verify.mjs 自检）
     pinyin-cards.json     # v2.5 PinyinCard 数据正本（一拼音一条记录，gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成，勿手改）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）

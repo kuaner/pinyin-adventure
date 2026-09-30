@@ -133,7 +133,8 @@
      ]
     }
    ],
-   "blends": []
+   "blends": [],
+   "hasBlend": false
   },
   {
    "n": 2,
@@ -272,7 +273,8 @@
      ]
     }
    ],
-   "blends": []
+   "blends": [],
+   "hasBlend": false
   },
   {
    "n": 3,
@@ -579,7 +581,8 @@
      "char": "",
      "file": "fu1"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 4,
@@ -902,7 +905,8 @@
      "char": "路",
      "file": "lu4"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 5,
@@ -1121,7 +1125,8 @@
      "char": "湖",
      "file": "hu2"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 6,
@@ -1314,7 +1319,8 @@
      "file": "xu1"
     }
    ],
-   "note": "小魔法：ü 见了 j q x，两点要摘掉，还念 ü。ju qu xu 里的 u 都是小 ü"
+   "note": "小魔法：ü 见了 j q x，两点要摘掉，还念 ü。ju qu xu 里的 u 都是小 ü",
+   "hasBlend": true
   },
   {
    "n": 7,
@@ -1650,7 +1656,8 @@
      "char": "屋",
      "file": "wu1"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 8,
@@ -1932,7 +1939,8 @@
      "char": "",
      "file": "ru1"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 9,
@@ -2313,7 +2321,8 @@
      "char": "",
      "file": "chou1"
     }
-   ]
+   ],
+   "hasBlend": true
   },
   {
    "n": 10,
@@ -2750,7 +2759,8 @@
      "file": "qun1"
     }
    ],
-   "note": "前鼻音尾巴 n：舌尖顶住上牙，嘴巴不张大"
+   "note": "前鼻音尾巴 n：舌尖顶住上牙，嘴巴不张大",
+   "hasBlend": true
   },
   {
    "n": 11,
@@ -3014,7 +3024,8 @@
      "file": "ming1"
     }
    ],
-   "note": "后鼻音尾巴 ng：嘴巴张开，声音从鼻子出来"
+   "note": "后鼻音尾巴 ng：嘴巴张开，声音从鼻子出来",
+   "hasBlend": true
   },
   {
    "n": 12,
@@ -3554,7 +3565,8 @@
      "kj": "老鹰老鹰 yīng yīng yīng"
     }
    ],
-   "note": "整体认读音节不用拼，看到就直接读出来"
+   "note": "整体认读音节不用拼，看到就直接读出来",
+   "hasBlend": true
   }
  ]
 }

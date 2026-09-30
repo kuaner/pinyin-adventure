@@ -1,6 +1,7 @@
 <script lang="ts">
   /* 声调练习（五步之③）：四声演示（真人音 + 声调符号方向动画）+ 听调辨调小练（听音选声调符号） */
   import { playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
+  import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import { toast } from '../../stores/ui.svelte'
   import { tRaw } from '../../text/strings'
   import Speak from '../Speak.svelte'
@@ -21,13 +22,9 @@
   let lastPickTone = $state(0)
   let timer: ReturnType<typeof setTimeout> | null = null
 
-  const MARKS = [
-    { t: 1, name: tRaw('toneName1'), d: 'M6 14 H50', tip: tRaw('toneTip1') },
-    { t: 2, name: tRaw('toneName2'), d: 'M8 24 L48 4', tip: tRaw('toneTip2') },
-    { t: 3, name: tRaw('toneName3'), d: 'M6 6 L27 24 L50 6', tip: tRaw('toneTip3') },
-    { t: 4, name: tRaw('toneName4'), d: 'M8 4 L48 24', tip: tRaw('toneTip4') },
-  ]
-  const COLORS = ['#2A9D8F', '#E76F51', '#6C86E8', '#B77DEE']
+  /* 四声符号几何走共享模块（lib/toneMarks，与课内小测听调题同一套图形） */
+  const MARKS = TONE_MARKS.map((m) => ({ ...m, name: tRaw('toneName' + m.t), tip: tRaw('toneTip' + m.t) }))
+  const COLORS = TONE_COLORS
 
   const row = $derived(rows[sel])
 
