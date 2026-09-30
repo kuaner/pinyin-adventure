@@ -27,6 +27,8 @@
      布局侧一律 calc(var(--sat/--sab) + N px)——env() 只在此定义一次 */
   --sat:env(safe-area-inset-top,0px);
   --sab:env(safe-area-inset-bottom,0px);
+  /* BUGS#24 架构根治：tabbar 占位单一真相（=图标区 84px + 底部安全区），#shell/#tab-view-root 同源引用 */
+  --tabbar-h:calc(84px + var(--sab));
   /* ---------- v2.8 排版系统立法（kuaner 布局系统级修复）----------
      字号阶梯：全 app font-size 只准引用变量，组件不许自造值。
      rt 最小 14px = 验收最小可读下限（旧 clamp(11px,.44em,12.5px) 废除）。 */
@@ -102,12 +104,19 @@ body{overflow-wrap:break-word}
 /* v2.5 动森有机异形外框（clip-path 定义见 App.svelte，animal-island-ui Modal game 变体同源） */
 .blob{border-radius:0;clip-path:url(#animal-modal-clip)}
 
-/* ---------- v2.4 App 壳：固定视口，零纵向滚动（每屏内容预算制） ---------- */
-html,body{overflow:hidden}
+/* ---------- v2.4 App 壳：固定视口，零纵向滚动（每屏内容预算制） ----------
+   BUGS#24 架构根治（第三次复发）：滚动禁令不再只靠祖先链继承——课页 #lesson-root、
+   三 tab 屏 #tab-view-root 各自容器级硬锁（height 锁视口 + overflow:hidden + flex column），
+   纵向滚动在容器级即不可能；内部区块按 flex 分配，内容超高=压缩/横滑，永不出现滚动。 */
+html,body{overflow:hidden;overscroll-behavior:none}    /* overscroll-behavior:断 iOS 橡皮筋/滚动链 */
 #wrap{max-width:430px;margin:0 auto;height:100vh;height:100dvh;position:relative;overflow:hidden}
 /* Bug#13：TabBar 高度含底部安全区（图标区恒 84px，不随 env 挤压）；shell 底同步让位 */
-#shell{position:absolute;left:0;right:0;top:0;bottom:calc(84px + var(--sab))}          /* tab 常驻区上方 */
+#shell{position:absolute;left:0;right:0;top:0;bottom:var(--tabbar-h)}               /* tab 常驻区上方 */
 #wrap.focus #shell{bottom:0}                                        /* 全屏专注态：tab 隐藏 */
+/* BUGS#24：三 tab 屏（学习/练习/我的）容器硬锁——不依赖 #shell 的绝对定位，自身也扛住禁滚 */
+#tab-view-root{height:calc(100vh - var(--tabbar-h));height:calc(100dvh - var(--tabbar-h));
+  max-height:100%;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+#tab-view-root .view{flex:1 1 0;min-height:0}
 .view{display:flex;flex-direction:column;height:100%;padding:calc(var(--sat) + var(--sp-3)) var(--sp-4) var(--sp-3);
   overflow:hidden;min-height:0}
 #wrap.focus .view{padding-bottom:calc(var(--sab) + var(--sp-3))}            /* 专注态屏底让开 home indicator（特异性高于组件 #v-* 覆写） */

@@ -55,6 +55,12 @@
   const isFinals = $derived(lesson.kind === 'ym' || lesson.kind === 'fu')
 
   let sa: StrokeAnim
+  let chipsEl: HTMLDivElement
+  /* 横滑 chip 条（L12=16 个）：切字母后选中 chip 滚回视野中央（block:nearest 不动纵向） */
+  $effect(() => {
+    void li
+    chipsEl?.querySelector('.lchip.on')?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  })
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false,
   })
@@ -184,6 +190,9 @@
   })
 </script>
 
+<!-- BUGS#24 架构根治：课页最外层容器硬锁——height 锁视口（专注态全屏，无 tabbar 让位）+ overflow:hidden
+     纵向滚动在容器级即不可能；课程/字母/步骤切换再怎么变内容，总高度也出不了这个盒子 -->
+<div id="lesson-root">
 <section id="v-lesson" class="view on" data-screen="lesson">
   <div class="ltop">
     <button class="cbtn" data-back="learn" onclick={onexit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
@@ -211,7 +220,7 @@
   <!-- 字母切换器（Bug#12/Bug#14：任何步骤可直接切字母，切字母步骤绝对不动；
      BUGS#18②：拼读/小测两步隐藏——拼读是课级内容、小测考的是整课，字母切换在这两步无意义） -->
   {#if step !== BLEND_STEP && step !== QUIZ_STEP}
-  <div class="lchips" data-lchips>
+  <div class="lchips" data-lchips bind:this={chipsEl}>
     {#each letters as l, i (l.k)}
       <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => pickLetter(i)}>{l.k}</button>
     {/each}
@@ -350,10 +359,26 @@
     </div>
     <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextStep" /></div>
   </div></section>
+</div>
 
-<style>
+  <style>
+  /* ===== BUGS#24 架构根治：课页容器硬锁（不依赖祖先链，滚动禁令自己扛） =====
+     height:100% 挂靠 #shell（专注态=全视口），max-height:100dvh 硬顶任何父级变化；
+     overflow:hidden + flex column——纵向滚动在容器级不可能。
+     内部分配：固定件 flex:none（返回栏/步骤条/chip 条/页点），舞台 flex:1 1 0 弹性吃掉剩余。
+     内容超高 → 卡内弹性区压缩/横滑消化，绝不滚动、绝不撑破容器。 */
+  #lesson-root {
+    height: 100%; height: 100dvh;
+    max-height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+  }
+  #lesson-root #v-lesson { flex: 1 1 0; min-height: 0; }
   #v-lesson { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); gap: 0; }
-  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: 0 0 auto; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
@@ -376,7 +401,7 @@
   .rstep.cur .rd { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
   .rstep.cur .rname { color: var(--animal-primary-active); }
 
-  #stagewrap { flex: 1; min-height: 0; margin: var(--sp-2) 0 var(--sp-1); position: relative; }
+  #stagewrap { flex: 1 1 0; min-height: 0; margin: var(--sp-2) 0 var(--sp-1); position: relative; }
   :global(.hswrap) { flex: 1; }
   /* BUGS#18⑥：页内左右对称留缝——相邻页卡片连阴影一起留在界外，左缘零碎片（仅课页覆写，不动 HSteps 其他消费方） */
   #stagewrap :global(.hspage) { padding-left: var(--sp-3); }
@@ -388,10 +413,17 @@
 
   /* 认识：PinyinCard full 承载区 */
   .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
-  /* 字母 chip 条：常驻 rail 之下（Bug#12），紧凑版给舞台省纵向 */
-  .lchips { display: flex; gap: var(--sp-2); margin: var(--sp-2) var(--sp-2) 0; flex: none; justify-content: center; }
+  /* 字母 chip 条：常驻 rail 之下（Bug#12），紧凑版给舞台省纵向。
+     BUGS#24：L12=16 个整体认读，chip 挤压换行+右半不可达——改横滑胶囊条消化
+     （硬约束#10：横向滚动仅限胶囊条带状物）；首尾 auto margin=放得下居中、放不下可滑 */
+  .lchips { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 0; flex: none;
+    overflow-x: auto; scrollbar-width: none; padding: 2px; }
+  .lchips::-webkit-scrollbar { display: none; }
+  .lchips .lchip:first-child { margin-left: auto; }
+  .lchips .lchip:last-child { margin-right: auto; }
   .lchip { min-width: 40px; height: 34px; border-radius: 11px; border: 2px solid #e3d9c8; background: #fff;
-    font-size:var(--fs-md); font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 var(--sp-2); }
+    font-size:var(--fs-md); font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 var(--sp-2);
+    white-space: nowrap; flex: 0 0 auto; }
   .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
 
   /* 写法 */
@@ -443,11 +475,11 @@
   .qdot.ok { background: var(--animal-primary); }
   .qdot.cur { background: #fff; border: 3px solid var(--animal-primary); width: 13px; height: 13px; }
   .qplay { width: 84px; height: 84px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 0 #e3d9c8;
-    color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: none; }
+    color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .qplay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
-  .qglyph { font-size:var(--fs-glyph-lg); font-weight: 900; color: var(--animal-text); line-height: 1.2; }
+  .qglyph { font-size:var(--fs-glyph-lg); font-weight: 900; color: var(--animal-text); line-height: 1.2; flex: 0 0 auto; }
   .qhint { font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text-2); flex: none; }
-  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; flex: none; }
+  .opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; flex: 0 0 auto; }
   .opt { min-height: 96px; border-radius: 18px; border: 3px solid var(--animal-border-light); background: #fbf8ee;
     font-size:var(--fs-glyph-sm); font-weight: 900; color: var(--animal-text); font-family: inherit; cursor: pointer; }
   .opt.right { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }

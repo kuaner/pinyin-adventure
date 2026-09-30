@@ -114,7 +114,8 @@
     font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); }
   .chip svg { width: 14px; height: 14px; }
 
-  #hero { flex: 1; min-height: 0; margin-top: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; position: relative; }
+  #hero { flex: 1; min-height: 0; margin-top: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; position: relative;
+    overflow: hidden; }   /* BUGS#24：卡内内容（字模条）再怎么高也压在卡内，绝不涂到课程地图条 */
   /* v2.8：课名 chip 全称不截断（超宽自动两行） */
   #hero .lchip { align-self: flex-start; background: var(--animal-primary-bg); color: var(--animal-primary-active);
     font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: var(--animal-r); line-height: 1.6;

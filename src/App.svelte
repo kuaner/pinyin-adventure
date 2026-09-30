@@ -46,12 +46,17 @@
     </defs>
   </svg>
   <div id="shell">
-    {#if ui.view === 'learn'}
-      <LearnTab />
-    {:else if ui.view === 'practice'}
-      <PracticeTab />
-    {:else if ui.view === 'mine'}
-      <MineTab />
+    {#if isTab}
+      <!-- BUGS#24 架构根治：三 tab 屏容器硬锁（height=视口-tabbar + overflow:hidden），tab 屏纵向滚动在容器级不可能 -->
+      <div id="tab-view-root">
+        {#if ui.view === 'learn'}
+          <LearnTab />
+        {:else if ui.view === 'practice'}
+          <PracticeTab />
+        {:else if ui.view === 'mine'}
+          <MineTab />
+        {/if}
+      </div>
     {:else if ui.view === 'lesson'}
       <LessonPage n={ui.lessonN} li0={ui.lessonLi} onexit={() => show('learn')} />
     {:else if ui.view === 'levels'}

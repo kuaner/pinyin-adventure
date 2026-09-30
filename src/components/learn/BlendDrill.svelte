@@ -15,6 +15,7 @@
     { blends?: Blend[]; ztlist?: ZtItem[]; tones?: ToneRow[]; note?: string; ondone?: () => void } = $props()
 
   let idx = $state(0)
+  let ztIdx = $state(0)
   let merging = $state(false)     // 0 未拼 1 合成中 2 完成
   let timer: ReturnType<typeof setTimeout> | null = null
 
@@ -22,6 +23,14 @@
   const ztMode = $derived(ztlist.length > 0)
   const singleMode = $derived(!ztMode && blends.length === 0 && tones.length > 0)
   const emptyAll = $derived(!ztMode && blends.length === 0 && tones.length === 0)
+  /* BUGS#24：L12 整体认读 16 张卡单网格被 overflow 裁掉 6 张（内容丢失）——分页 2×2×4 页 */
+  const ZT_PER = 4
+  const ztPages = $derived.by(() => {
+    const out: ZtItem[][] = []
+    for (let i = 0; i < ztlist.length; i += ZT_PER) out.push(ztlist.slice(i, i + ZT_PER))
+    return out
+  })
+  function ztMove(d: number) { ztIdx = Math.max(0, Math.min(ztPages.length - 1, ztIdx + d)) }
 
   function merge() {
     if (!b || merging) return
@@ -46,13 +55,20 @@
   {#if ztMode}
     <div class="zthint"><Speak k="ztDirect" /></div>
     <div class="ztgrid">
-      {#each ztlist as z (z.k)}
+      {#each ztPages[Math.min(ztIdx, ztPages.length - 1)] as z (z.k)}
         <button class="ztcard" onclick={() => playAudio(letterAudio(z.k), { hint: tRaw('notReady') })}>
           <span class="ztu">{z.k}</span>
           <span class="zkj"><Speak text={z.kj} plain /></span>
         </button>
       {/each}
     </div>
+    {#if ztPages.length > 1}
+      <div class="steps">
+        <button class="navbtn" disabled={ztIdx === 0} onclick={() => ztMove(-1)} aria-label="上一页">‹</button>
+        <div class="pcount">{ztIdx + 1} / {ztPages.length}</div>
+        <button class="navbtn" disabled={ztIdx === ztPages.length - 1} onclick={() => ztMove(1)} aria-label="下一页">›</button>
+      </div>
+    {/if}
   {:else if singleMode}
     <div class="zthint"><Speak k="fourTonesRead" /></div>
     <div class="srows">
