@@ -10,7 +10,7 @@
 
   let { rows, sel: selProp, ondone }: { rows: ToneRow[]; sel?: number; ondone?: () => void } = $props()
 
-  let sel = $state(0) /* 由 LessonPage 的 letter 索引驱动（$effect 同步） */
+  const sel = $derived(selProp !== undefined ? Math.min(selProp, rows.length - 1) : 0)
   let playing = $state(-1)          // 正在演示第几声
   let quizOn = $state(false)
   let qIdx = $state(0)
