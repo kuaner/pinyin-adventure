@@ -46,14 +46,12 @@
   const short = $derived(lessonShort(n, lesson.title))
   const letters = $derived(lesson.letters as { k: string; kj: string; kjAudio?: string; xie: string; strokes: string[]; say: string; sayAudio?: string }[])
 
-  /* Bug#12 步骤状态机：step 与 HSteps 页号（cur=step-1）双向同步；进门=兑现断点
-     （学习 tab CTA「继续学习·步名」承诺的步，已通过课=认识页重学；?step= 深链覆盖）；
-     letterStep = 每字母独立五步记忆（Map<字母,step>），切字母跳到该字母自己的进度（首次=认识页） */
+  /* Bug#14 终极修复：letterStep（每字母独立步骤记忆）全删——它就是"切拼音跳步骤"的根源。
+     现在的规则只有一条：切字母 → 步骤不动。步骤切换只靠 HSteps 翻页/步骤条点击。 */
   const initStep = quizPassed(n) ? 1 : Math.min(5, LRN.step[n] || 1)
   const initLi = Math.max(0, Math.min(letters.length - 1, li0 || 0))
   let step = $state(initStep)        // 1..5（= HSteps 页号 + 1）
   let li = $state(initLi)            // 当前字母下标
-  let letterStep = $state<Record<string, number>>({ [(letters[initLi] || letters[0]).k]: initStep })
   const letter = $derived(letters[li] || letters[0])
 
   function pickDistractors(k: string, count: number): string[] {
@@ -126,10 +124,9 @@
     return [parts.slice(0, -1).join('，'), parts[parts.length - 1]]
   }
 
-  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记五步断点（当前字母名下 + 学习 tab 课级 CTA） */
+  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记课级断点（学习 tab CTA 用） */
   function goto(s: number) {
     step = Math.max(1, Math.min(5, s))
-    letterStep[letter.k] = step
     setStep(n, step)
     if (s === 5 && !quiz.q.length) buildQuiz()
     else if (s === 5 && quiz.done) buildQuiz()
@@ -139,10 +136,9 @@
   function pickLetter(i: number) {
     if (i === li || !letters[i]) return
     li = i
-    /* Bug#14：切字母保持当前步骤（在写法页切 b→m 应直接看 m 的笔顺，不跳回认识页）。
-       每字母记忆仍保留（切走再切回=回到该字母上次的步骤），但记忆的初始值=当前步骤而非 1 */
-    if (!letterStep[letter.k]) letterStep[letter.k] = step
-    goto(letterStep[letter.k])
+    /* Bug#14 终极修复：切字母只换字母，步骤绝对不动。
+       "每字母独立记忆步骤"功能整个废弃——它就是跳步骤 bug 的根源（e 记住了上次在声调 → 切 e 就跳声调）。
+       正确交互=当前在写法 → 切任何字母都留在写法看新字母的笔顺 */
   }
   function restudy() { quiz.done = false; buildQuiz() }
 
@@ -156,7 +152,6 @@
     if (iN >= 0 && iN < letters.length) li = iN
     if (sN >= 1 && sN <= 5) {
       step = sN
-      letterStep[(letters[Math.max(0, iN)] || letters[0]).k] = sN
       if (sN === 5) buildQuiz()
     }
     const st = q.get('static')
