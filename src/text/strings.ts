@@ -336,3 +336,6 @@ export const etiquette = {
     ['口诀连播（手动开启）', '广播', true],
   ] as [string, string, boolean][],
 }
+
+/* 系统消息注册（T 层不加注音） */
+registerSys([S.notReady, S.fallbackHint, S.anchorMissing])

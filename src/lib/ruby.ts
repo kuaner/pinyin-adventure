@@ -119,9 +119,15 @@ function startsWithAt(chars: string[], at: number, w: string): boolean {
 }
 
 /** 注音主入口：纯文本进，ruby HTML 出 */
+const SYS_SET: Set<string> = new Set([]) /* populated by strings.ts via registerSys */
+export function registerSys(msgs: string[]) { msgs.forEach(m => SYS_SET.add(m)) }
+
 export function T(s: string, py?: Record<string, string>): string {
   s = String(s)
   if (py) return s.replace(RE_HAN, (run) => annotate(run, py))
+  /* 系统消息不加注音（kuaner：注音朗读维护在一个组件——决策在 T 层非调用点）
+     SYS_SET=src/text/strings.ts 导出的系统 key 集，T 收到系统 key 的值时直接返回纯文本 */
+  if (SYS_SET.has(s)) return s
   const hit = cache.get(s)
   if (hit !== undefined) return hit
   const out = s.replace(RE_HAN, (run) => annotate(run))
