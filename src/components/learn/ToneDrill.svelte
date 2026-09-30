@@ -8,9 +8,9 @@
 
   export type ToneRow = { base: string; display: string; tones: { t: number; display: string; file: string }[] }
 
-  let { rows, ondone }: { rows: ToneRow[]; ondone?: () => void } = $props()
+  let { rows, sel: selProp, ondone }: { rows: ToneRow[]; sel?: number; ondone?: () => void } = $props()
 
-  let sel = $state(0)
+  let sel = $state(0) /* 由 LessonPage 的 letter 索引驱动（$effect 同步） */
   let playing = $state(-1)          // 正在演示第几声
   let quizOn = $state(false)
   let qIdx = $state(0)
@@ -66,14 +66,7 @@
 
 <div class="tonedrill">
   {#if !quizOn}
-    <!-- 基音选择 -->
-    <div class="bases">
-      {#each rows as r, i (r.base)}
-        <button class="basechip" class:on={i === sel} onclick={() => (sel = i)}>
-          {#if r.display.length > 2}<span class="blong">{r.display}</span>{:else}<span class="bglyph">{r.display}</span>{/if}
-        </button>
-      {/each}
-    </div>
+    <!-- Bug#15：删内部字母选择器（与 LessonPage 顶部 lchip 重复且不同步）——字母切换只走顶部唯一入口 -->
 
     <div class="bigbase">{#if playing >= 0}<span class="basetone">{row.tones[playing].display}</span>{:else}{row.display}{/if}</div>
 

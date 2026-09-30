@@ -224,7 +224,7 @@
       <!-- 页3 · 声调 -->
       <div class="hspage"><div class="pcard">
         <div class="ptag hot"><Speak k="stepTone" plain /></div>
-        <div class="drillfit"><ToneDrill rows={lesson.tones} /></div>
+        <div class="drillfit"><ToneDrill rows={lesson.tones} sel={li} /></div>
       </div></div>
 
       <!-- 页4 · 拼读 / 整体认读 -->
