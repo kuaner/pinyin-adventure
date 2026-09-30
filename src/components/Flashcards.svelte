@@ -113,18 +113,17 @@
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; white-space: nowrap; }
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
     padding: var(--sp-2) var(--sp-2); border-radius: 999px; white-space: nowrap; }
   .ftabs { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 var(--sp-2); flex: none; }
-  /* v2.8：四分类 tab 等宽不吹爆（长名两行内换行） */
+  /* v2.9.4 换行立法修订：tab 标签零换行（旧"长名两行内换行"及其 .rw 换行特批废除——BUGS#25+#27） */
   .ftab { flex: 1; min-width: 0; min-height: 44px; border: none; border-radius: var(--animal-r-sm); background: #fff; color: var(--animal-text-2);
-    font-family: inherit; font-size:var(--fs-sm); font-weight: 800; box-shadow: 0 3px 0 var(--animal-border-light); cursor: pointer; line-height: 1.5; padding: var(--sp-1) var(--sp-1); }
+    font-family: inherit; font-size:var(--fs-sm); font-weight: 800; box-shadow: 0 3px 0 var(--animal-border-light); cursor: pointer; line-height: 1.5; padding: var(--sp-1) var(--sp-1); white-space: nowrap; }
   .ftab.on { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
-  .ftab :global(.rw) { white-space: normal; word-break: break-all; }
 
   .deckline { flex: none; text-align: center; font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2);
-    margin: 0 0 var(--sp-2); line-height: 1.5; }
+    margin: 0 0 var(--sp-2); line-height: 1.5; white-space: nowrap; }    /* 盒内统计短句零换行 */
   .stackwrap { flex: 1; min-height: 0; position: relative; }
   .ghostcard { position: absolute; left: 14px; right: 14px; background: #fff; border-radius: var(--animal-r-lg);
     border: 3px solid var(--animal-border-light); opacity: .7; }
@@ -136,7 +135,7 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3);
     padding: var(--sp-5) var(--sp-4); cursor: pointer; overflow: hidden; touch-action: pan-y; }
   #flashcard .fcglyph { font-size: clamp(96px,30vw,var(--fs-hero)); font-weight: 800; line-height: 1.15; color: var(--animal-text); }
-  #flashcard .fchint { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 800; line-height: 1.9; }
+  #flashcard .fchint { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 800; line-height: 1.9; white-space: nowrap; }    /* 提示文案零换行 */
   #flashcard .fcbox { position: absolute; top: 13px; right: 15px; font-size:var(--fs-xs); font-weight: 900; color: #fff;
     background: var(--animal-text-2); padding: var(--sp-1) var(--sp-3); border-radius: 12px; z-index: 2; }
   #fcinner { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }

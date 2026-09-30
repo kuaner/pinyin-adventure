@@ -112,7 +112,7 @@
 
 <style>
   .tonedrill { display: flex; flex-direction: column; gap: var(--sp-3); }
-  .bases { display: flex; gap: var(--sp-2); justify-content: center; flex-wrap: wrap; }
+  .bases { display: flex; gap: var(--sp-2); justify-content: center; flex-wrap: wrap; }    /* 声调 base 行=内容网格允许换行（卡内弹性区消化） */
   .basechip { min-width: 72px; min-height: 56px; border-radius: 18px; border: 2.5px solid #e3d9c8; background: #fff;
     font-size:var(--fs-xl); font-weight: 900; color: #6f6353; font-family: inherit; }
   .basechip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }

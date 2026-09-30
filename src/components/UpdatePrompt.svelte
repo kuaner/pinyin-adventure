@@ -70,8 +70,8 @@
   .updchick { flex: 0 0 52px; height: 52px; border-radius: 50%; background: #e6f7f2; display: flex; align-items: center;
     justify-content: center; animation: bob 2.4s ease-in-out infinite; }
   .updboard { flex: 1; min-width: 0; }
-  .updtitle { font-size:var(--fs-md); font-weight: 900; color: #264653; line-height: 1.8; }
-  .upddesc { font-size:var(--fs-xs); font-weight: 700; color: #8a7a68; line-height: 1.8; }
+  .updtitle { font-size:var(--fs-md); font-weight: 900; color: #264653; line-height: 1.8; white-space: nowrap; }
+  .upddesc { font-size:var(--fs-xs); font-weight: 700; color: #8a7a68; line-height: 1.8; }    /* 更新说明=成句内容允许换行 */
   .updgo { flex: 0 0 auto; display: inline-flex; align-items: center; gap: var(--sp-2); border: none; cursor: pointer;
     background: #2A9D8F; color: #fff; font-family: inherit; font-size:var(--fs-md); font-weight: 900;
     border-radius: 50px; padding: var(--sp-3) var(--sp-4); box-shadow: 0 4px 0 #129d8f; }

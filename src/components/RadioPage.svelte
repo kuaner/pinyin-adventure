@@ -151,7 +151,7 @@ import { t, tRaw } from '../text/strings'
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; white-space: nowrap; }
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
     padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
 
@@ -163,7 +163,7 @@ import { t, tRaw } from '../text/strings'
 
   #rctrl { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 0; flex: none; }
   .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size:var(--fs-md); font-weight: 900;
-    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); cursor: pointer; white-space: nowrap;
     background: #fff; color: var(--animal-text-2); box-shadow: 0 3px 0 var(--animal-border-light), var(--animal-shadow); }
   .rbtn svg { width: 19px; height: 19px; }
   .rbtn.main { background: var(--animal-primary); color: #fff; box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
@@ -178,21 +178,21 @@ import { t, tRaw } from '../text/strings'
   #rcaps::-webkit-scrollbar { display: none; }
   .cap { flex: 0 0 auto; min-width: 46px; height: 40px; border-radius: 14px; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis);
-    border: none; font-family: inherit; padding: 0 var(--sp-2); }
+    border: none; font-family: inherit; padding: 0 var(--sp-2); white-space: nowrap; }
   .cap.on { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
 
   #pager { height: 46px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
   #dots { display: flex; gap: var(--sp-2); max-width: 100%; overflow: hidden; }
   #dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; flex: none; }
   #dots i.on { width: 20px; border-radius: 6px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); white-space: nowrap; }
   #swipehint svg { width: 15px; height: 15px; }
 
   /* 空态兜底（BUGS#7） */
   .kempty { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-3); }
   .kempty-ic svg { width: 54px; height: 54px; }
-  .kempty-tx { font-size:var(--fs-md); font-weight: 800; color: var(--animal-text-2); line-height: 2.1; text-align: center; max-width: 260px; }
+  .kempty-tx { font-size:var(--fs-md); font-weight: 800; color: var(--animal-text-2); line-height: 2.1; text-align: center; max-width: 260px; }    /* 空态说明=长内容允许换行 */
   .kempty-btn { border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
-    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-3) var(--sp-6); box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
+    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-3) var(--sp-6); box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; white-space: nowrap; }
   .kempty-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
 </style>

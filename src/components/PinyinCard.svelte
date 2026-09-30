@@ -178,7 +178,7 @@
   .pc-replay { display: flex; align-items: center; gap: var(--sp-1); border: none; background: none; color: var(--animal-primary-active);
     font-family: inherit; font-size:var(--fs-xs); font-weight: 900; cursor: pointer; padding: 0 var(--sp-2); flex: none; }
   .pc-replay :global(svg) { width: 13px; height: 13px; }
-  /* v2.8：长口诀两行内换行（胶囊改大圆角，零溢出） */
+  /* 口诀全文=长内容允许换行（v2.9.4 换行立法豁免类；胶囊改大圆角，零溢出） */
   .pc-kj { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: var(--sp-1); column-gap: var(--sp-2); border: none; background: #eef8e2; font-family: inherit;
     font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text); padding: var(--sp-2) var(--sp-3); border-radius: var(--animal-r-lg); cursor: pointer; flex: none; max-width: 100%; text-align: center; line-height: 1.5; }
   .pc-kj:active { transform: translateY(1px); }

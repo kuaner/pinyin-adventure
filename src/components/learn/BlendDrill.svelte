@@ -141,7 +141,7 @@
     font-size:var(--fs-xl); font-weight: 900; color: #6f6353; font-family: inherit; }
   .navbtn:disabled { opacity: .35; }
   .pcount { text-align: center; color: #8a7a68; font-weight: 800; font-size:var(--fs-sm); }
-  .btable { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; }
+  .btable { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; }    /* 拼读表=内容网格允许换行（卡内 flex:1 弹性区消化，撑不出页面） */
   .bchip { background: #fff; border: 2px solid #eee4d3; border-radius: 14px; padding: var(--sp-2) var(--sp-3);
     font-size:var(--fs-md); font-weight: 800; color: #6f6353; font-family: inherit; }
   .bchip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }

@@ -382,9 +382,9 @@
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; white-space: nowrap; }    /* 课名标题零换行 */
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
-    padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
+    padding: var(--sp-2) var(--sp-3); border-radius: 999px; white-space: nowrap; }
 
   /* 步骤条：4/5 步等宽列排布；标签容器 fit-content 零截断（BUGS#18③，禁 ellipsis）。
      v2.9.1 密度回收：徽章 32→28——卡内笔顺预览的预算从壳件挤出来 */
@@ -395,7 +395,7 @@
   .rstep .rd { width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; font-size:var(--fs-xs); font-weight: 900; font-style: normal; }
   .rstep .rd svg { width: 13px; height: 13px; }
-  .rstep .rname { min-width: fit-content; font-size:var(--fs-xs); font-weight: 800; }
+  .rstep .rname { min-width: fit-content; font-size:var(--fs-xs); font-weight: 800; white-space: nowrap; }    /* 步骤名零换行（BUGS#27） */
   .rstep .rname :global(rt) { font-size:var(--fs-rt); }
   .rstep.done .rd { background: var(--animal-primary-bg); color: var(--animal-primary-active); }
   .rstep.cur .rd { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
@@ -408,7 +408,7 @@
   .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
     display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-3) var(--sp-4) var(--sp-3); overflow: hidden; position: relative; gap: var(--sp-2); }
   .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size:var(--fs-xs); font-weight: 900; color: var(--animal-text-dis);
-    background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; max-width: calc(100% - 28px); }
+    background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; max-width: calc(100% - 28px); white-space: nowrap; }
   .pcard .ptag.hot { background: #fff8e0; color: var(--animal-warning-active); }
 
   /* 认识：PinyinCard full 承载区 */
@@ -429,10 +429,10 @@
   /* 写法 */
   .animfit { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
   .animfit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
-  .sayline { font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); line-height: 2; text-align: center; flex: none; }
+  .sayline { font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); line-height: 2; text-align: center; flex: none; }    /* 写法旁白=长内容允许换行（sayLines 已按逗号分好行） */
   .xrow { display: flex; gap: var(--sp-2); flex: none; }
   .rebtn { display: flex; align-items: center; gap: var(--sp-2); border: none; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: 999px; cursor: pointer; }
+    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: 999px; cursor: pointer; white-space: nowrap; }
   .rebtn svg { width: 15px; height: 15px; }
 
   /* 声调 / 拼读 drill 卡内适配 */
@@ -464,9 +464,9 @@
   /* 小测（BUGS#18④：qbody 占满卡片、space-evenly 均布——大空白/播放按钮叠压的病灶根除） */
   .qbody { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center;
     justify-content: space-evenly; gap: var(--sp-2); padding-top: 42px; }
-  .quizboot { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; }
+  .quizboot { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; white-space: nowrap; }
   .bootbtn { border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
-    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-3) var(--sp-6); box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
+    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-3) var(--sp-6); box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; white-space: nowrap; }
   .bootbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
   .bootbtn.ghost { background: #fff; color: var(--animal-primary-active); box-shadow: 0 4px 0 #e3d9c8; }
   .bootbtn.ghost:active { box-shadow: 0 1px 0 #e3d9c8; }
@@ -478,7 +478,7 @@
     color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .qplay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
   .qglyph { font-size:var(--fs-glyph-lg); font-weight: 900; color: var(--animal-text); line-height: 1.2; flex: 0 0 auto; }
-  .qhint { font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text-2); flex: none; }
+  .qhint { font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text-2); flex: none; }    /* 题目指令=长内容允许换行 */
   .opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: 100%; flex: 0 0 auto; }
   .opt { min-height: 96px; border-radius: 18px; border: 3px solid var(--animal-border-light); background: #fbf8ee;
     font-size:var(--fs-glyph-sm); font-weight: 900; color: var(--animal-text); font-family: inherit; cursor: pointer; }
@@ -494,9 +494,9 @@
   .res { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center;
     justify-content: space-evenly; gap: var(--sp-2); padding: var(--sp-4) 0 var(--sp-2); }
   .resemoji { display: flex; gap: var(--sp-2); }
-  .resscore { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; }
+  .resscore { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; }    /* 结算语=成句说明允许换行 */
   .resstars { color: #e9c46a; display: flex; gap: var(--sp-1); }
-  .resmsg { font-size:var(--fs-sm); font-weight: 800; color: var(--animal-primary-active); text-align: center; line-height: 1.9; max-width: 260px; }
+  .resmsg { font-size:var(--fs-sm); font-weight: 800; color: var(--animal-primary-active); text-align: center; line-height: 1.9; max-width: 260px; }    /* 安慰语=成句说明允许换行 */
   .resbtns { display: flex; gap: var(--sp-3); width: 100%; }
   .resbtns .bootbtn { flex: 1; padding: var(--sp-3) var(--sp-2); }
 
@@ -504,6 +504,6 @@
   #dots { display: flex; gap: var(--sp-2); }
   #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; }
   #dots i.on { width: 22px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: var(--sp-1); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-1); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); white-space: nowrap; }    /* 提示文案零换行 */
   #swipehint svg { width: 14px; height: 14px; }
 </style>

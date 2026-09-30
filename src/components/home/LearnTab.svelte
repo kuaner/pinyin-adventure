@@ -111,15 +111,15 @@
   .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; }
   .rowhead .h1 small { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); margin-left: var(--sp-2); }
   .chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-3); border-radius: 999px;
-    font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); }
+    font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); white-space: nowrap; }
   .chip svg { width: 14px; height: 14px; }
 
   #hero { flex: 1; min-height: 0; margin-top: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; position: relative;
     overflow: hidden; }   /* BUGS#24：卡内内容（字模条）再怎么高也压在卡内，绝不涂到课程地图条 */
-  /* v2.8：课名 chip 全称不截断（超宽自动两行） */
+  /* 课名 chip（v2.9.4 换行立法修订）：一行显示不换行（旧"超宽自动两行"废除——换行撑高=滚动条根源） */
   #hero .lchip { align-self: flex-start; background: var(--animal-primary-bg); color: var(--animal-primary-active);
     font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: var(--animal-r); line-height: 1.6;
-    max-width: 100%; text-align: left; }
+    max-width: 100%; text-align: left; white-space: nowrap; }
   .grid4 { position: relative; }
   .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
@@ -136,7 +136,7 @@
   .letter.curo { color: var(--animal-primary); opacity: 1; text-shadow: 0 6px 0 rgba(18,157,143,.18); }
   .letter.curo::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -14px;
     width: 12px; height: 12px; border-radius: 50%; background: var(--animal-warning); box-shadow: 0 2px 0 var(--animal-warning-active); }
-  #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 2.1; flex: none; }
+  #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 2.1; flex: none; }    /* 口诀全文=长内容允许换行 */
   #koujue .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size:var(--fs-md); letter-spacing: 2px; }
   #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-3) 0 var(--sp-3); flex: none; }
   #steps5 i { width: 34px; height: 7px; border-radius: 7px; background: var(--animal-border-light); }
@@ -144,7 +144,7 @@
   #steps5 i.c { background: var(--animal-warning); }
   #cta { height: 62px; border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
     font-size:var(--fs-md); font-weight: 900; letter-spacing: 1px; box-shadow: 0 5px 0 var(--press-teal), var(--animal-shadow-lg); cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); flex: none; }
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-2); flex: none; white-space: nowrap; }
   #cta:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--press-teal); }
   #cta rt { color: #fff; opacity: .85; }
 
@@ -154,15 +154,17 @@
   .sec-label span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
   #caps { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); scrollbar-width: none; }
   #caps::-webkit-scrollbar { display: none; }
-  .cap { flex: 0 0 auto; width: 46px; height: 58px; border-radius: 16px; background: #fff; box-shadow: var(--animal-shadow);
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); border: none; font-family: inherit; padding: 0; }
-  .cap b { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis); }
-  .cap i { font-style: normal; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); }
+  /* 课程地图 Tab（BUGS#25+#27）：标签零换行一行显示——宽度不够由横滑消化（硬约束#10），
+     chip 宽随文字自适应（min-width 保底），绝不换行撑高容器（滚动条根源） */
+  .cap { flex: 0 0 auto; min-width: 46px; height: 58px; border-radius: 16px; background: #fff; box-shadow: var(--animal-shadow);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); border: none; font-family: inherit; padding: 0 var(--sp-2); }
+  .cap b { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis); white-space: nowrap; }
+  .cap i { font-style: normal; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
   .cap.locked { background: #f3efe6; border: 2px solid #eee4d3; box-shadow: 0 2px 0 #e3d9c8; }
   .cap.locked b, .cap.locked i { color: #b7ab97; }
   .cap.done { background: var(--animal-primary-bg); }
   .cap.done b, .cap.done i { color: var(--animal-primary-active); }
-  .cap.cur { width: 96px; background: var(--animal-primary); box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
+  .cap.cur { min-width: 96px; background: var(--animal-primary); box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
   .cap.cur b { color: #fff; font-size:var(--fs-sm); }
   .cap.cur i { color: #fff; opacity: .9; }
 
@@ -175,8 +177,8 @@
     justify-content: center; box-shadow: 0 3px 0 var(--animal-warning-active); flex: none; }
   #radio .ric svg { width: 24px; height: 24px; }
   #radio .rtx { flex: 1; min-width: 0; text-align: left; }
-  #radio .rtx b { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; display: block; }
-  #radio .rtx span { display: block; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.5; }
+  #radio .rtx b { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; display: block; white-space: nowrap; }
+  #radio .rtx span { display: block; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.5; white-space: nowrap; }    /* 提示文案零换行 */
   #radio .rtx span :global(rt) { font-size:var(--fs-rt); }
   #radio .rplay { width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; flex: none; }

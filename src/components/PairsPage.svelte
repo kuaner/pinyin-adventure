@@ -64,7 +64,7 @@
   .gtitle { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 2; }
   .gdesc { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.9; }
   /* v2.8：组chip纵向均匀分布（内容不足时填满中段，不留成片空白） */
-  .chips { flex: 1; min-height: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-content: space-evenly; justify-content: center; margin: var(--sp-2) 0; }
+  .chips { flex: 1; min-height: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-content: space-evenly; justify-content: center; margin: var(--sp-2) 0; }    /* 易混对卡阵=内容网格允许换行（flex:1 弹性区消化） */
   .chip { border: 2px solid var(--animal-border-light); background: var(--animal-bg); color: var(--animal-text); font-family: inherit;
     font-size:var(--fs-md); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: var(--animal-r-pill); cursor: pointer; min-height: 52px; }
   .chip:active { transform: translateY(2px); }

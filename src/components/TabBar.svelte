@@ -36,7 +36,7 @@
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1);
     border: none; background: none; font-family: inherit; color: var(--animal-text-2); cursor: pointer; border-radius: 16px; }
   .tab svg { width: 25px; height: 25px; }
-  .tab .tl { font-size:var(--fs-xs); font-weight: 800; position: relative; }
+  .tab .tl { font-size:var(--fs-xs); font-weight: 800; position: relative; white-space: nowrap; }
   .tab .tl :global(rt) { font-size:var(--fs-rt); font-weight: 700; letter-spacing: .5px; }
   .tab.on { color: var(--animal-primary-active); }
   /* v2.5 金标准 Tabs 对齐（animal-island-ui tabs.module.less）：选中 = teal 实心胶囊 + 白图标

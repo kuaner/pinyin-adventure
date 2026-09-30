@@ -293,6 +293,7 @@
   .mdot { fill: #E76F51; stroke: #fff; stroke-width: 1.1; }
 
   /* 底部笔名清单 */
+  /* 笔名清单=长内容允许换行（v2.9.4 换行立法豁免类） */
   .slist { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-2); justify-content: center; flex: none;
     max-width: 100%; padding: 0 var(--sp-2); }
   .sit { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-3) var(--sp-1) var(--sp-1); border-radius: 999px;

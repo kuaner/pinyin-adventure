@@ -91,7 +91,7 @@
   .lpcell.done { border-color: #bfe8df; background: #e6f7f2; color: #1f7a68; }
   .lpcell.lock { opacity: .5; }
   .lpn { font-size:var(--fs-xs); color: #b7ab97; }
-  .lpl { font-size:var(--fs-xs); line-height: 1.3; word-break: break-all; }
+  .lpl { font-size:var(--fs-xs); line-height: 1.3; word-break: break-all; }    /* 家长向允许换行 */
   .lps { font-size:var(--fs-xs); }
 
   #histwrap { flex: 1; min-height: 0; }

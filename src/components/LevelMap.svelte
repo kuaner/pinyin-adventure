@@ -65,7 +65,7 @@
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .cbtn svg { width: 18px; height: 18px; }
-  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; white-space: nowrap; }
   .lprog { display: flex; gap: var(--sp-1); }
   /* v2.8：翻页容器 + 卡片等分填满页（内容不足不留大片空白） */
   #lvwrap { flex: 1; min-height: 0; }
@@ -91,8 +91,8 @@
   .lvlcard.boss .lvnum { background: #fde4e8; }
   .lvlcard .lvinfo { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; }
   /* v2.8：关名/副题换行不截断（孩子必须看到完整关名），ruby 行高 1.6 预算 */
-  .lvlcard .lvname { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 1.6; }
-  .lvlcard .lvsub { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 700; line-height: 1.6; }
+  .lvlcard .lvname { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 1.6; white-space: nowrap; }    /* 关卡名零换行 */
+  .lvlcard .lvsub { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 700; line-height: 1.6; }    /* 关卡副题=成句说明允许换行 */
   .lvlcard .lvstars { display: flex; gap: var(--sp-1); flex: none; }
   .bosstag { font-size:var(--fs-xs); color: var(--animal-error); font-weight: 900; }
 </style>

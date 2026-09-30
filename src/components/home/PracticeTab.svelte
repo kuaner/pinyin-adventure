@@ -107,12 +107,13 @@
   .mode .mic { width: 44px; height: 44px; border-radius: 15px; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 3px 0 rgba(61,52,40,.14); margin-bottom: var(--sp-1); flex: none; }
   .mode .mic svg { width: 24px; height: 24px; }
-  .mode .mname { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; max-width: 100%; }
-  /* v2.8：ruby 行高预算（rt 13px ≈ 1.6 倍行框），desc 限两行内不裁切 */
+  .mode .mname { font-size:var(--fs-md); font-weight: 900; line-height: 1.6; max-width: 100%; white-space: nowrap; }    /* 模式名零换行 */
+  /* v2.8：ruby 行高预算（rt 13px ≈ 1.6 倍行框）。mdesc=一句话说明（长内容允许换行，
+     v2.9.4 立法豁免类——卡内固定网格单元消化，撑不出页面；模式名/角标已 nowrap） */
   .mode .mdesc { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-2); margin-top: 0; line-height: 1.6;
     max-width: 100%; padding: 0 var(--sp-1); }
   .mode .mdesc :global(rt) { font-size:var(--fs-rt); }
-  .mode .mbadge { position: absolute; top: var(--sp-2); right: var(--sp-2); font-size:var(--fs-xs); font-weight: 900; padding: 2px var(--sp-2);
+  .mode .mbadge { position: absolute; top: var(--sp-2); right: var(--sp-2); font-size:var(--fs-xs); font-weight: 900; padding: 2px var(--sp-2); white-space: nowrap;
     border-radius: 999px; background: rgba(255,255,255,.85); color: var(--animal-text); box-shadow: 0 1px 4px rgba(61,52,40,.12); max-width: calc(100% - var(--sp-4)); }
   .mode .mbadge :global(rt) { font-size:var(--fs-rt); }
   .m-teal { background: linear-gradient(160deg, #e6f9f6, #d2f1ec); }

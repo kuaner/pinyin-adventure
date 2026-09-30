@@ -80,7 +80,7 @@
   .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
-  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; }
+  .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; white-space: nowrap; }
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
     padding: var(--sp-2) var(--sp-3); border-radius: 999px; white-space: nowrap; }
   #bolttime.low { color: var(--animal-error); animation: blinkT 1s steps(2) infinite; }

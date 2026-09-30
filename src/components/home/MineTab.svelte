@@ -133,7 +133,7 @@
   /* v2.8：名字行/徽标 chip 注音防溢出（可换行不叠压） */
   #mname { font-size:var(--fs-md); font-weight: 900; margin-top: var(--sp-2); line-height: 1.6; position: relative; z-index: 1;
     max-width: 100%; text-align: center; }
-  #mmeta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); position: relative; z-index: 1; }
+  #mmeta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-2); margin-top: var(--sp-2); position: relative; z-index: 1; }    /* 周历 chips=内容网格允许换行 */
 
   /* v2.8：闪卡入口自适应高（ruby 两行内不裁切不叠压） */
   #flash-entry { min-height: 76px; flex: none; display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-4); margin-top: var(--sp-2);
@@ -167,8 +167,8 @@
   .prow:last-child { border-bottom: none; }
   .prow .pic { width: 30px; height: 30px; border-radius: 10px; background: #f4f0e4; display: flex; align-items: center; justify-content: center; flex: none; }
   .prow .pic svg { width: 16px; height: 16px; }
-  .prow b { flex: 1; font-size:var(--fs-xs); font-weight: 800; text-align: left; }
-  .prow .new { font-size:var(--fs-xs); font-weight: 900; color: #fff; background: var(--animal-error); border-radius: 999px; padding: var(--sp-1) var(--sp-2); }
+  .prow b { flex: 1; font-size:var(--fs-xs); font-weight: 800; text-align: left; white-space: nowrap; }
+  .prow .new { font-size:var(--fs-xs); font-weight: 900; color: #fff; background: var(--animal-error); border-radius: 999px; padding: var(--sp-1) var(--sp-2); white-space: nowrap; }
   .prow .chev { display: inline-flex; }
   .prow .chev svg { width: 14px; height: 14px; }
 </style>
