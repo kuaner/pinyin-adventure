@@ -23,6 +23,10 @@
      金标准实测：Button default = box-shadow: 0 5px 0 0 #bdaea0（hover 加深 6px，active 收 1px），
      旧值 #e8e2d6 过浅过薄 = 扁平感病根 */
   --edge-cream:#bdaea0;
+  /* v2.6.1 Bug#13 iPhone 安全区：刘海/底部 home indicator 全局出口（PWA standalone 下非零），
+     布局侧一律 calc(var(--sat/--sab) + N px)——env() 只在此定义一次 */
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
 }
 
 /* ---------- 字体：Nunito（拉丁/拼音圆润字形）+ 系统中文栈 ---------- */
@@ -69,10 +73,12 @@ rt{font-size:clamp(11px,.44em,12.5px);font-weight:700;color:#8a7a68;line-height:
 /* ---------- v2.4 App 壳：固定视口，零纵向滚动（每屏内容预算制） ---------- */
 html,body{overflow:hidden}
 #wrap{max-width:430px;margin:0 auto;height:100vh;height:100dvh;position:relative;overflow:hidden}
-#shell{position:absolute;left:0;right:0;top:0;bottom:84px}          /* tab 常驻区上方 */
+/* Bug#13：TabBar 高度含底部安全区（图标区恒 84px，不随 env 挤压）；shell 底同步让位 */
+#shell{position:absolute;left:0;right:0;top:0;bottom:calc(84px + var(--sab))}          /* tab 常驻区上方 */
 #wrap.focus #shell{bottom:0}                                        /* 全屏专注态：tab 隐藏 */
-.view{display:flex;flex-direction:column;height:100%;padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
+.view{display:flex;flex-direction:column;height:100%;padding:calc(var(--sat) + 12px) 16px 12px;
   overflow:hidden;min-height:0}
+#wrap.focus .view{padding-bottom:calc(var(--sab) + 12px)}            /* 专注态屏底让开 home indicator（特异性高于组件 #v-* 覆写） */
 .view.on{display:flex}
 
 /* ---------- 各模式粉彩波点分区（底色=animal-island dots-*） ---------- */
@@ -216,7 +222,7 @@ html,body{overflow:hidden}
 #fbdetail{display:flex;align-items:center;gap:12px;background:#fff;border-radius:var(--animal-r);border:2px solid var(--animal-border-light);padding:12px 18px;box-shadow:var(--animal-shadow);max-width:340px}
 #fbdetail .glyph{font-size:60px;min-width:0;padding:2px 16px;border-width:3px}
 #fbdetail .fdesc{font-size:18px;font-weight:800;color:var(--animal-text);line-height:2;flex:1}
-#fbskip{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 28px);border:none;background:var(--animal-bg-2);color:var(--animal-text);
+#fbskip{position:absolute;bottom:calc(var(--sab) + 28px);border:none;background:var(--animal-bg-2);color:var(--animal-text);
   font-family:inherit;font-size:18px;font-weight:800;padding:10px 28px;border-radius:var(--animal-r-pill);cursor:pointer}
 @keyframes popin{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
 .floatstar{position:absolute;font-size:34px;color:var(--animal-warning);animation:floatup 1s ease forwards}
@@ -278,7 +284,7 @@ html,body{overflow:hidden}
 .hempty{text-align:center;color:var(--animal-text-dis);font-weight:800;padding:40px 0;font-size:17px;line-height:2}
 
 /* ---------- 辨析卡弹窗（v2.5 动森化：有机异形 blob 外框，奶油底） ---------- */
-.modal{position:fixed;inset:0;background:rgba(61,52,40,.35);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(61,52,40,.35);display:flex;align-items:center;justify-content:center;z-index:70;padding:calc(var(--sat) + 20px) 20px calc(var(--sab) + 20px)}
 .mcard{background:#fdf6dc;border-radius:0;clip-path:url(#animal-modal-clip);border:none;padding:34px 26px;max-width:360px;width:100%;position:relative}
 .mclose{position:absolute;top:22px;right:42px;border:none;background:rgba(255,255,255,.8);width:40px;height:40px;border-radius:50%;
   font-size:18px;font-weight:900;color:var(--animal-text);cursor:pointer;font-family:inherit;z-index:2;
@@ -333,12 +339,12 @@ html,body{overflow:hidden}
 .ic{display:inline-flex;vertical-align:-0.18em}
 
 /* ---------- 探针横幅 ---------- */
-#probe{position:fixed;left:8px;right:8px;bottom:calc(env(safe-area-inset-bottom) + 8px);z-index:99;
+#probe{position:fixed;left:8px;right:8px;bottom:calc(var(--sab) + 8px);z-index:99;
   background:#222;color:#7CFC98;font-family:Menlo,monospace;font-size:13px;font-weight:700;
   padding:10px 12px;border-radius:12px;text-align:center;opacity:.94}
 
 /* ---------- 兜底提示（家长向，不注音） ---------- */
-#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(61,52,40,.92);color:#fff;
+#toast{position:fixed;left:50%;bottom:calc(110px + var(--sab));transform:translateX(-50%);background:rgba(61,52,40,.92);color:#fff;
   font-size:16px;font-weight:800;padding:10px 20px;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:80;
   max-width:340px;text-align:center;line-height:1.8}
 #toast.on{opacity:1}

@@ -49,7 +49,7 @@
 </section>
 
 <style>
-  #v-pairs { padding: 10px 16px 8px; }
+  #v-pairs { padding: calc(var(--sat) + 10px) 16px 8px; }
   .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }

@@ -36,7 +36,7 @@
 </section>
 
 <style>
-  #v-levels { padding: 10px 16px 12px; }
+  #v-levels { padding: calc(var(--sat) + 10px) 16px 12px; }
   .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; margin-bottom: 8px; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }

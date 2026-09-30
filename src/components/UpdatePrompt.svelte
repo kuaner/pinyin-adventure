@@ -61,7 +61,7 @@
 {/if}
 
 <style>
-  .updwrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; padding: 0 14px calc(env(safe-area-inset-bottom) + 14px);
+  .updwrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; padding: 0 14px calc(var(--sab) + 14px);
     pointer-events: none; display: flex; justify-content: center; }
   .updbar { pointer-events: auto; width: min(100%, 400px); background: #fff; border: 2.5px solid #eee4d3; border-radius: 20px;
     box-shadow: 0 5px 0 #e3d9c8; padding: 12px 14px; display: flex; align-items: center; gap: 12px;

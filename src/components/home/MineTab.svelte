@@ -118,7 +118,7 @@
 </section>
 
 <style>
-  #v-minetab { padding: 10px 16px 12px; }
+  #v-minetab { padding: calc(var(--sat) + 10px) 16px 12px; }
   .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
   .rowhead .h1 { font-size: 21px; font-weight: 900; letter-spacing: .5px; }
   .chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 999px;

@@ -29,9 +29,10 @@
   {/each}
 </nav>
 <style>
-  #tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; z-index: 50; display: flex;
+  /* Bug#13：高度含底部安全区——84px 图标区恒定（手机/电脑图标位置一致），env 只向下加厚底衬 */
+  #tabbar { position: absolute; left: 0; right: 0; bottom: 0; height: calc(84px + var(--sab)); z-index: 50; display: flex;
     background: rgba(255,255,254,.92); backdrop-filter: blur(8px); border-top: 1px solid var(--animal-border-light);
-    padding: 8px 10px calc(env(safe-area-inset-bottom) + 14px); transition: transform .22s ease; }
+    padding: 8px 10px calc(var(--sab) + 14px); transition: transform .22s ease; }
   .tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
     border: none; background: none; font-family: inherit; color: var(--animal-text-2); cursor: pointer; border-radius: 16px; }
   .tab svg { width: 25px; height: 25px; }

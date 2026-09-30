@@ -45,7 +45,7 @@
 
 <style>
 .verrow { text-align: center; font-size: 13px; color: #9f927d; padding: 18px 0 6px; font-weight: 700; }
-  #v-settings { padding: 10px 16px 14px; }
+  #v-settings { padding: calc(var(--sat) + 10px) 16px 14px; }
   .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; margin-bottom: 10px; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; }

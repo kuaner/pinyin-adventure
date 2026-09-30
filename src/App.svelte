@@ -53,7 +53,7 @@
     {:else if ui.view === 'mine'}
       <MineTab />
     {:else if ui.view === 'lesson'}
-      <LessonPage n={ui.lessonN} onexit={() => show('learn')} />
+      <LessonPage n={ui.lessonN} li0={ui.lessonLi} onexit={() => show('learn')} />
     {:else if ui.view === 'levels'}
       <LevelMap />
     {:else if ui.view === 'quiz'}

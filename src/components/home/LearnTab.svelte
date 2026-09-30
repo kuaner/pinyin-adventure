@@ -64,7 +64,7 @@
         <i class:d={i < bp - 1 || passedCur} class:c={i === bp - 1 && !passedCur}></i>
       {/each}
     </div>
-    <button id="cta" data-cta onclick={() => openLesson(cur)}>
+    <button id="cta" data-cta onclick={() => openLesson(cur, li)}>
       {#if passedCur}
         <Speak k="restudy" plain /> · <Speak k="stepKnow" plain />
       {:else}
@@ -102,7 +102,7 @@
 </section>
 
 <style>
-  #v-learntab { padding: 10px 16px 12px; gap: 0; }
+  #v-learntab { padding: calc(var(--sat) + 10px) 16px 12px; gap: 0; }
   .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
   .rowhead .h1 { font-size: 21px; font-weight: 900; letter-spacing: .5px; }
   .rowhead .h1 small { font-size: 12px; font-weight: 700; color: var(--animal-text-dis); margin-left: 6px; }

@@ -143,7 +143,7 @@ import { t, tRaw } from '../text/strings'
 </section>
 
 <style>
-  #v-radio { padding: 10px 16px 10px; gap: 0; }
+  #v-radio { padding: calc(var(--sat) + 10px) 16px 10px; gap: 0; }
   .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }

@@ -3,10 +3,6 @@ dist
 .DS_Store
 *.local
 .claude
+.acceptance*
 .stroke-shots/
-<<<<<<< HEAD
-.acceptance*/
-.stroke-shots/
-=======
 .stroke-anim-shots/
->>>>>>> 16facc1 (fix: v2.4.4 笔顺逐笔动画真实可播（BUGS #6b）——letter-writing 机制移植 + HSteps 点击死锁修复（#11）)

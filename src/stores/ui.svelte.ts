@@ -12,6 +12,7 @@ export const TAB_VIEWS: View[] = ['learn', 'practice', 'mine']
 export const ui = $state({
   view: 'learn' as View,
   lessonN: 1,     /* 题内课号（?learn=N 深链 / 学习 tab CTA 直达） */
+  lessonLi: 0,    /* 题内初始字母下标（Bug#12：hero 卡选中的字母带入课内，不再永远从第一个字母起） */
   toastMsg: '',
   toastOn: false,
   probeText: '',
@@ -26,8 +27,9 @@ export function show(v: View) {
   window.scrollTo(0, 0)
 }
 
-export function openLesson(n: number) {
+export function openLesson(n: number, li = 0) {
   ui.lessonN = n
+  ui.lessonLi = Math.max(0, li)
   show('lesson')
 }
 

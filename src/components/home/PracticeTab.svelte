@@ -94,7 +94,7 @@
 </section>
 
 <style>
-  #v-pracetab { padding: 10px 16px 12px; }
+  #v-pracetab { padding: calc(var(--sat) + 10px) 16px 12px; }
   #greet { flex: none; margin-top: 2px; }
   #greet .g1 { font-size: 22px; font-weight: 900; }
   #greet .g2 { font-size: 12px; font-weight: 700; color: var(--animal-text-2); margin-top: 1px; line-height: 1.9; }

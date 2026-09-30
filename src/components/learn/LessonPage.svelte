@@ -4,7 +4,7 @@
   import lessonsData from '../../data/lessons.json'
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, say, sndOk, sndNo, sndStar } from '../../lib/audio'
-  import { submitQuiz, setStep, lessonShort } from '../../stores/learn.svelte'
+  import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed } from '../../stores/learn.svelte'
   import { t, tRaw, cnNum, NUM_PY, type StringKey } from '../../text/strings'
   import { T } from '../../lib/ruby'
   import Speak from '../Speak.svelte'
@@ -15,7 +15,7 @@
   import HSteps from '../HSteps.svelte'
   import PinyinCard from '../PinyinCard.svelte'
 
-  let { n, onexit }: { n: number; onexit: () => void } = $props()
+  let { n, li0 = 0, onexit }: { n: number; li0?: number; onexit: () => void } = $props()
 
   const LESSONS = (lessonsData as any).lessons as any[]
   const cn = cnNum
@@ -37,8 +37,6 @@
     { id: 5, k: 'stepQuiz' },
   ]
 
-  let step = $state(1)                // 1..5（= HSteps 页号 + 1）
-  let li = $state(0)                 // 当前字母下标
   let sa: StrokeAnim
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', done: false, passed: false,
@@ -47,6 +45,15 @@
   const lesson = $derived(LESSONS.find((x) => x.n === n) || LESSONS[0])
   const short = $derived(lessonShort(n, lesson.title))
   const letters = $derived(lesson.letters as { k: string; kj: string; kjAudio?: string; xie: string; strokes: string[]; say: string; sayAudio?: string }[])
+
+  /* Bug#12 步骤状态机：step 与 HSteps 页号（cur=step-1）双向同步；进门=兑现断点
+     （学习 tab CTA「继续学习·步名」承诺的步，已通过课=认识页重学；?step= 深链覆盖）；
+     letterStep = 每字母独立五步记忆（Map<字母,step>），切字母跳到该字母自己的进度（首次=认识页） */
+  const initStep = quizPassed(n) ? 1 : Math.min(5, LRN.step[n] || 1)
+  const initLi = Math.max(0, Math.min(letters.length - 1, li0 || 0))
+  let step = $state(initStep)        // 1..5（= HSteps 页号 + 1）
+  let li = $state(initLi)            // 当前字母下标
+  let letterStep = $state<Record<string, number>>({ [(letters[initLi] || letters[0]).k]: initStep })
   const letter = $derived(letters[li] || letters[0])
 
   function pickDistractors(k: string, count: number): string[] {
@@ -119,26 +126,36 @@
     return [parts.slice(0, -1).join('，'), parts[parts.length - 1]]
   }
 
-  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记五步断点（学习 tab 断点续学 CTA） */
+  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记五步断点（当前字母名下 + 学习 tab 课级 CTA） */
   function goto(s: number) {
     step = Math.max(1, Math.min(5, s))
+    letterStep[letter.k] = step
     setStep(n, step)
     if (s === 5 && !quiz.q.length) buildQuiz()
     else if (s === 5 && quiz.done) buildQuiz()
   }
+
+  /* Bug#12 切字母：跳到该字母自己的记忆步（首次=认识页），不再停在旧字母的步骤位 */
+  function pickLetter(i: number) {
+    if (i === li || !letters[i]) return
+    li = i
+    goto(letterStep[letter.k] || 1)
+  }
   function restudy() { quiz.done = false; buildQuiz() }
 
-  /* ?step=S&li=I&static=K 深链（验收截图/笔顺自检用；static=前 K 笔静态帧） */
+  /* ?step=S&li=I&static=K 深链（验收截图/笔顺自检用；static=前 K 笔静态帧）。
+     注意：effect 内只读 iN 局部量、不读 li——li 一旦进依赖，切字母会重跑本 effect 被深链打回（v2.6.1 实测教训） */
   let staticN = $state(-1)
   $effect(() => {
     const q = new URLSearchParams(location.search)
     const sN = parseInt(q.get('step') || '', 10)
-    if (sN >= 1 && sN <= 5) {
-      step = sN
-      if (sN === 5) buildQuiz()
-    }
     const iN = parseInt(q.get('li') || '', 10)
     if (iN >= 0 && iN < letters.length) li = iN
+    if (sN >= 1 && sN <= 5) {
+      step = sN
+      letterStep[(letters[Math.max(0, iN)] || letters[0]).k] = sN
+      if (sN === 5) buildQuiz()
+    }
     const st = q.get('static')
     if (st !== null) staticN = Math.max(0, parseInt(st, 10))
   })
@@ -149,7 +166,7 @@
     <button class="cbtn" data-back="learn" onclick={onexit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
     <div class="ltt">
       <Speak k="lessonN" vars={{ n: cn(n) }} py={{ 第: 'dì', ...npy(n), 课: 'kè' }} />
-      {#if short.zh}&nbsp;·&nbsp;<Speak text={short.zh} py={{ [short.zh]: short.py }} />{:else}&nbsp;·&nbsp;{short.raw}{/if}
+      {#if short.zh}&nbsp;·&nbsp;<Speak text={short.zh} py={{ [short.zh]: short.py || '' }} />{:else}&nbsp;·&nbsp;{short.raw}{/if}
     </div>
     <div class="lprog" id="lprog">{step}/5</div>
   </div>
@@ -168,17 +185,20 @@
     {/each}
   </div>
 
+  <!-- 字母切换器（Bug#12：常驻五步之上，任何步骤可直接切字母——不再必须回认识页；
+     切换=跳到该字母自己的记忆步，首次=认识页） -->
+  <div class="lchips" data-lchips>
+    {#each letters as l, i (l.k)}
+      <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => pickLetter(i)}>{l.k}</button>
+    {/each}
+  </div>
+
   <!-- 横向翻页舞台 -->
   <div id="stagewrap">
     <HSteps n={5} cur={step - 1} onchange={(i) => goto(i + 1)}>
       <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5） -->
       <div class="hspage"><div class="pcard">
         <div class="ptag"><Speak k="stepKnow" plain /> · {letter.k}</div>
-        <div class="lchips">
-          {#each letters as l, i (l.k)}
-            <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => (li = i)}>{l.k}</button>
-          {/each}
-        </div>
         <div class="knowfit">
           <PinyinCard mode="full" k={letter.k} tip={T(tRaw('tapHearSound'))} />
         </div>
@@ -267,7 +287,7 @@
 </section>
 
 <style>
-  #v-lesson { padding: 10px 16px 8px; gap: 0; }
+  #v-lesson { padding: calc(var(--sat) + 10px) 16px 8px; gap: 0; }
   .ltop { display: flex; align-items: center; gap: 10px; height: 44px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
@@ -289,7 +309,7 @@
   .rstep.cur .rd { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
   .rstep.cur .rname { color: var(--animal-primary-active); }
 
-  #stagewrap { flex: 1; min-height: 0; margin: 12px 0 4px; position: relative; }
+  #stagewrap { flex: 1; min-height: 0; margin: 8px 0 4px; position: relative; }
   :global(.hswrap) { flex: 1; }
   .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
     display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px 18px 14px; overflow: hidden; position: relative; gap: 6px; }
@@ -299,9 +319,10 @@
 
   /* 认识：PinyinCard full 承载区 */
   .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
-  .lchips { display: flex; gap: 7px; margin-top: 22px; flex: none; }
-  .lchip { min-width: 44px; height: 40px; border-radius: 13px; border: 2px solid #e3d9c8; background: #fff;
-    font-size: 20px; font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 8px; }
+  /* 字母 chip 条：常驻 rail 之下（Bug#12），紧凑版给舞台省纵向 */
+  .lchips { display: flex; gap: 7px; margin: 8px 6px 0; flex: none; justify-content: center; }
+  .lchip { min-width: 44px; height: 38px; border-radius: 12px; border: 2px solid #e3d9c8; background: #fff;
+    font-size: 19px; font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 8px; }
   .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
 
   /* 写法 */
