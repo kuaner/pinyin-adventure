@@ -1,3 +1,5 @@
+import { registerSys } from '../lib/ruby'
+
 /* v2.6 文案层：全 app 用户可见字符串唯一真相（kuaner 2026-09-30 12:02 文案层+全点击语音架构）。
    key→中文文本；组件里禁止字面量中文（scripts/check-ruby.mjs lint 强制）。
    - py：多音字/引擎消歧逃生口（hand-rt 平价：组件里原手写 <rt> 的文案迁入时带 py，
