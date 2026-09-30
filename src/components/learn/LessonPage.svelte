@@ -185,11 +185,13 @@
 
   <!-- 字母切换器（Bug#12：常驻五步之上，任何步骤可直接切字母——不再必须回认识页；
      切换=跳到该字母自己的记忆步，首次=认识页） -->
+  {#if step !== 4}
   <div class="lchips" data-lchips>
     {#each letters as l, i (l.k)}
       <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => pickLetter(i)}>{l.k}</button>
     {/each}
   </div>
+  {/if}
 
   <!-- 横向翻页舞台 -->
   <div id="stagewrap">
