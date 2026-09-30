@@ -30,7 +30,7 @@ function parsePy(v: string | string[] | undefined): string[] | null {
 /* 汉字 run 注音：pinyin-pro 基线 + 覆盖表打补丁 + 词组 nowrap 分组 */
 function annotate(run: string, py?: Record<string, string>): string {
   const chars = [...run]
-  const base = pinyin(run, { type: 'array', tone: true }) as unknown as string[]
+  const base = (pinyin as any)(run, { type: 'array', tone: true }) as string[]
   const pys: string[] = chars.map((_, i) => base[i] || '')
   const groups: { w: string; from: number; to: number }[] = []
   let i = 0

@@ -196,7 +196,7 @@ function openView(v: string) {
     newSession({ name: T((PH as any).detName), det: true, qs: buildDetQs(true) })
   } else if (v === 'dfix') {
     const dq = makeDfix('b')
-    newSession({ name: T((PH as any).detName), det: true, qs: [dq].concat(buildDetQs(false).slice(1)) as any })
+    newSession({ name: T((PH as any).detName), det: true, qs: [dq].concat(buildDetQs(false).slice(1) as any[]) })
   } else if (v === 'bolt') {
     startBolt(true) /* 冻结计时，供截图 */
   } else if (v === 'zi') {

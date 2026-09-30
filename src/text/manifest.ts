@@ -15,8 +15,8 @@ export const manifest: Record<string, string> = m.keys || {}
 
 /* zh 反查表：数据段 + 文案层静态 key（含 {x} 占位的模板不可播，不进表） */
 export const zhAudio: Record<string, string> = { ...(m.zh || {}) }
-for (const k in strings) {
+Object.keys(strings).forEach((k: string) => {
   const f = manifest[k]
-  const zh = strings[k].zh
+  const zh = (strings as any)[k]?.zh
   if (f && zh && !zh.includes('{')) zhAudio[zh] = f
-}
+})
