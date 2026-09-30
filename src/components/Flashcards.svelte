@@ -4,13 +4,12 @@
   import { FC, setCat, flip, rate, deckInfo } from '../stores/flash.svelte'
   import { cardRec } from '../stores/progress.svelte'
   import { show } from '../stores/ui.svelte'
-  import { LETTERS } from '../data'
   import { T } from '../lib/ruby'
   import Ruby from './Ruby.svelte'
   import Icon from './Icon.svelte'
+  import PinyinCard from './PinyinCard.svelte'
 
   const k = $derived(FC.deck[FC.idx])
-  const L = $derived(k ? LETTERS[k] : null)
   const finished = $derived(FC.idx >= FC.deck.length)
   const tabs = [
     { cat: 'all', label: '全部' },
@@ -93,16 +92,8 @@
       {:else}
         <div class="fcbox" id="fcbox">{@html T('盒')} {cardRec(k).box}</div>
         <div id="fcinner">
-          {#if FC.flipped && L}
-            <div class="fcback">
-              <div class="fcem">{L.em}</div>
-              <div class="fcread">{L.tts}</div>
-              <div class="fckj">{@html T(L.kj)}</div>
-              <div class="fcword">{@html T(L.word)} <span class="fcwp">{L.wp}</span></div>
-            </div>
-          {:else if k}
-            <div class="fcglyph">{k}</div>
-          {/if}
+          <!-- v2.5 PinyinCard card 档：正面=字模+口诀，翻面=笔顺动画+例词（统一学习卡片接入点） -->
+          {#if k}<PinyinCard mode="card" k={k} flipped={FC.flipped} />{/if}
         </div>
         <div class="fchint" id="fchint">{@html FC.flipped ? T('点卡片翻回 · 左滑下一张') : T('点卡片翻面听读音')}</div>
       {/if}
@@ -147,13 +138,6 @@
   #flashcard .fcbox { position: absolute; top: 13px; right: 15px; font-size: 14px; font-weight: 900; color: #fff;
     background: var(--animal-text-2); padding: 4px 12px; border-radius: 12px; z-index: 2; }
   #fcinner { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
-  #flashcard .fcback { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; max-height: 100%; overflow: hidden; }
-  #flashcard .fcread { font-size: 34px; font-weight: 900; color: var(--animal-primary-active); line-height: 1.6; }
-  #flashcard .fckj { font-size: 15.5px; font-weight: 800; color: var(--animal-success); background: #eef8e2;
-    padding: 8px 14px; border-radius: 14px; text-align: center; line-height: 2.3; max-width: 100%; }
-  #flashcard .fcword { font-size: 22px; font-weight: 900; color: var(--animal-text); line-height: 2; }
-  #flashcard .fcwp { font-size: 15px; color: var(--animal-text-2); font-weight: 800; }
-  #flashcard .fcem { font-size: 44px; line-height: 1.2; }
 
   #rate { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; margin-top: 10px; flex: none; }
   .ratebtn { min-height: 62px; border: none; border-radius: var(--animal-r); font-family: inherit; font-size: 15px; font-weight: 900;

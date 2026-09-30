@@ -53,6 +53,7 @@ src/
     quiz/ListenQ LookQ                                      # 闯关题型（v2.3：LlQ/RuleQ 已删——零错误信息铁律）
     MirrorDetect（正反判断+修复题） ZiQuiz（看字/词选拼音）   # 题型
     AnchorBar PairModal Feedback Ruby UpdatePrompt           # 通用件（v2.3：解锁层删除，新增更新提示条）
+    PinyinCard（v2.5 统一学习卡片：full=学习岛认识页/口诀广播展开区，card=闪卡，mini=答错反馈；五要素=字模四线三格/真人读音/笔顺动画/口诀/例词；数据 data/pinyin-cards.json）
     learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 五步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
     pinyin.json           # 字母表 57 条(口诀/例词) + 锚点表 + 9 关 + 正反覆盖集
@@ -62,6 +63,7 @@ src/
     phrases.json          # UI 短语/题型名/夸奖语/自由练习配置
     lessons.json          # 学习岛 12 课（字母/口诀/写法旁白/声调/拼读表）
     strokes.json          # 47 单元笔顺 SVG 几何（v2.3 换血：lasagoo/letter-writing 底本+部编版适配，生成器 gen-strokes-lw.mjs 勿手改；stroke-verify.mjs 自检）
+    pinyin-cards.json     # v2.5 PinyinCard 数据正本（一拼音一条记录，gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成，勿手改）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
 scripts/                  # 一次性/验收脚本（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
 ```

@@ -5,12 +5,14 @@
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, say, sndOk, sndNo, sndStar } from '../../lib/audio'
   import { submitQuiz, setStep, lessonShort } from '../../stores/learn.svelte'
+  import { T } from '../../lib/ruby'
   import Ruby from '../Ruby.svelte'
   import Icon from '../Icon.svelte'
   import StrokeAnim from './StrokeAnim.svelte'
   import ToneDrill from './ToneDrill.svelte'
   import BlendDrill from './BlendDrill.svelte'
   import HSteps from '../HSteps.svelte'
+  import PinyinCard from '../PinyinCard.svelte'
 
   let { n, onexit }: { n: number; onexit: () => void } = $props()
 
@@ -167,7 +169,7 @@
   <!-- 横向翻页舞台 -->
   <div id="stagewrap">
     <HSteps n={5} cur={step - 1} onchange={(i) => goto(i + 1)}>
-      <!-- 页1 · 认识：大字模 + 点读 + 口诀 + 例词 -->
+      <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5） -->
       <div class="hspage"><div class="pcard">
         <div class="ptag"><ruby>认识<rt>rèn shi</rt></ruby> · {letter.k}</div>
         <div class="lchips">
@@ -175,21 +177,9 @@
             <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => (li = i)}>{l.k}</button>
           {/each}
         </div>
-        <div class="bigwrap grid4">
-          <button class="bigbtn" data-say={letter.k} onclick={() => say(letter.k)}>
-            <span class="big" data-big>{letter.k}</span>
-          </button>
+        <div class="knowfit">
+          <PinyinCard mode="full" k={letter.k} tip={T('点一点，听读音')} />
         </div>
-        <div class="kjline" data-kj={letter.k}>
-          {#if letter.kjAudio}<button class="kjplay" onclick={() => playAudio(letter.kjAudio!, { hint: '语音未准备好' })}><Icon name="play" size={15} /></button>{/if}
-          <Ruby text={letter.kj} />
-        </div>
-        {#if LETTERS[letter.k]?.word}
-          <div class="wrow">
-            <span class="cip"><span class="wem">{LETTERS[letter.k].em}</span><Ruby text={LETTERS[letter.k].word} />&nbsp;<span class="wp">{LETTERS[letter.k].wp}</span></span>
-          </div>
-        {/if}
-        <div class="taptip"><svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" /><path d="M16.5 8.5a5 5 0 010 7" /></svg><ruby>点一点，听读音<rt>diǎn yī diǎn tīng dú yīn</rt></ruby></div>
       </div></div>
 
       <!-- 页2 · 写法：笔顺动画 + 旁白 -->
@@ -304,30 +294,12 @@
     background: #f4f0e4; padding: 4px 10px; border-radius: 999px; max-width: calc(100% - 28px); }
   .pcard .ptag.hot { background: #fff8e0; color: var(--animal-warning-active); }
 
-  .grid4 { position: relative; }
-  .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
-    background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
-    background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
-
-  /* 认识 */
-  .lchips { display: flex; gap: 7px; margin-top: 22px; }
+  /* 认识：PinyinCard full 承载区 */
+  .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+  .lchips { display: flex; gap: 7px; margin-top: 22px; flex: none; }
   .lchip { min-width: 44px; height: 40px; border-radius: 13px; border: 2px solid #e3d9c8; background: #fff;
     font-size: 20px; font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 8px; }
   .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
-  .bigwrap { width: 82%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
-  .bigbtn { border: none; background: none; font-family: inherit; padding: 0; }
-  .big { font-weight: 900; font-size: clamp(120px, 40vw, 176px); line-height: 1; color: var(--animal-primary);
-    text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; }
-  .kjline { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: var(--animal-text); line-height: 2; flex: none; }
-  .kjplay { width: 30px; height: 30px; border-radius: 50%; border: none; background: #fdeee7; color: #e76f51;
-    display: inline-flex; align-items: center; justify-content: center; flex: none; }
-  .wrow { display: flex; align-items: center; justify-content: center; flex: none; }
-  .cip { display: flex; align-items: center; gap: 6px; background: #fff8e0; border-radius: 999px;
-    padding: 6px 13px; font-size: 13.5px; font-weight: 800; color: var(--animal-text); }
-  .wem { font-size: 20px; }
-  .wp { font-size: 12px; color: #dba90e; font-weight: 900; }
-  .taptip { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 800; color: var(--animal-text-2); flex: none; margin-bottom: 14px; }
-  .taptip svg { width: 16px; height: 16px; }
 
   /* 写法 */
   .animfit { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }

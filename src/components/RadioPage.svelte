@@ -10,6 +10,7 @@
   import Ruby from './Ruby.svelte'
   import Icon from './Icon.svelte'
   import HSteps from './HSteps.svelte'
+  import PinyinCard from './PinyinCard.svelte'
 
   interface KJEntry { k: string; kj: string; audio: string }
   /* v2.4.1 修列表空白（BUGS#7）：数据提取包兜底——任何异常转空数组，由空态兜底呈现，
@@ -30,14 +31,6 @@
   let capsEl: HTMLDivElement
 
   const entry = $derived(ALL[cur])
-  /* 口诀拆 汉字 + 字母段 */
-  const kjParts = $derived.by(() => {
-    const kj = entry?.kj || ''
-    const m = kj.match(/^([一-鿿，、！？]+)\s*(.*)$/)
-    return m ? [m[1], m[2]] : [kj, '']
-  })
-
-  function glyphSize(k: string): number { return k.length >= 3 ? 58 : k.length === 2 ? 92 : 148 }
 
   function play(i: number) {
     const e = ALL[i]
@@ -57,7 +50,6 @@
     })
   }
 
-  function tapPlay() { play(cur) }                     // 逐条点播
   function toggleChain() {
     if (chainOn) { chainOn = false; stopAll(); playingK = '' }
     else { loopOn = false; chainOn = true; play(cur) }
@@ -100,19 +92,18 @@
       <div class="hspage">
         <div class="pcard">
           <div class="ptag"><ruby>第 {i + 1} 条<rt>dì {i + 1} tiáo</rt></ruby></div>
-          <div class="bigwrap grid4">
-            <button class="bigbtn" data-kj={e.k} onclick={() => play(i)} aria-label={e.k}>
-              <span class="big" style="font-size:{glyphSize(e.k)}px" class:spin={playingK === e.k}>{e.k}</span>
-            </button>
+          <!-- v2.5 口诀×笔顺联动：展开区 = PinyinCard full，点播/连播中笔顺动画随口诀音频同步跑（R5 唯一例外声源） -->
+          <div class="radfit">
+            <PinyinCard
+              mode="full"
+              k={e.k}
+              glyphMax={118}
+              strokePlay={playingK === e.k}
+              strokeLoop={true}
+              onmain={() => play(i)}
+              tip={playingK === e.k ? T('听口诀，看笔顺') : T('点一点，听这句')}
+            />
           </div>
-          <div class="kjline">
-            {#if kjParts[0]}<Ruby text={kjParts[0]} />{/if}
-            {#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}
-          </div>
-          <button class="playone" onclick={tapPlay} aria-label="播放">
-            <svg viewBox="0 0 24 24" fill="#19c8b9"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" /><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" fill="none" stroke="#19c8b9" stroke-width="2.2" stroke-linecap="round" /></svg>
-            <span><ruby>点一点，听这句<rt>diǎn yī diǎn tīng zhè jù</rt></ruby></span>
-          </button>
         </div>
       </div>
     {/each}
@@ -162,22 +153,8 @@
   .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
     display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 18px 16px; overflow: hidden; position: relative; }
   .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size: 11px; font-weight: 900; color: var(--animal-text-dis);
-    background: #f4f0e4; padding: 4px 10px; border-radius: 999px; }
-  .grid4 { position: relative; }
-  .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
-    background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
-    background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
-  .bigwrap { width: 76%; flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
-  .bigbtn { border: none; background: none; font-family: inherit; padding: 0; }
-  .big { font-weight: 900; line-height: 1; color: var(--animal-primary); text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; }
-  .big.spin { animation: pulse 1s ease-in-out infinite; }
-  @keyframes pulse { 50% { transform: scale(1.05); } }
-  .kjline { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 18px; font-weight: 800;
-    line-height: 2.1; flex: none; margin-top: 8px; }
-  .kjline .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size: 20px; letter-spacing: 2px; }
-  .playone { display: flex; align-items: center; gap: 7px; margin-top: 10px; font-size: 13px; font-weight: 800;
-    color: var(--animal-text-2); border: none; background: none; font-family: inherit; flex: none; }
-  .playone svg { width: 20px; height: 20px; }
+    background: #f4f0e4; padding: 4px 10px; border-radius: 999px; z-index: 2; }
+  .radfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-top: 18px; }
 
   #rctrl { display: flex; gap: 10px; margin: 12px 0 0; flex: none; }
   .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size: 16px; font-weight: 900;

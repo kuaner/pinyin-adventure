@@ -18,6 +18,10 @@
   /* 按钮按压影（糖果手感：底边硬色投影，:active 收短） */
   --press-teal:#129d8f; --press-blue:#5b74d6; --press-green:#57941f; --press-purple:#9a5fd4;
   --press-red:#c94444; --press-pink:#d97a9b; --press-orange:#c97749; --press-cream:#cbbfae;
+  /* v2.5 设计基因移植（组件级对齐 animal-island-ui）：白/奶油底元素的玩具底实边。
+     金标准实测：Button default = box-shadow: 0 5px 0 0 #bdaea0（hover 加深 6px，active 收 1px），
+     旧值 #e8e2d6 过浅过薄 = 扁平感病根 */
+  --edge-cream:#bdaea0;
 }
 
 /* ---------- 字体：Nunito（拉丁/拼音圆润字形）+ 系统中文栈 ---------- */
@@ -52,10 +56,12 @@ rt{font-size:clamp(11px,.44em,12.5px);font-weight:700;color:#8a7a68;line-height:
 .btn rt,.ftab rt,.ratebtn rt{color:inherit;opacity:.9}
 .mirror{display:inline-block;transform:scaleX(-1)}
 
-/* ---------- v2.4 通用卡（打样 .card：白底大圆角 + 软阴影） ---------- */
-.card{background:#fff;border-radius:26px;box-shadow:var(--animal-shadow)}
+/* ---------- v2.4 通用卡（v2.5 对齐金标准 Card：radius 20px，去模糊阴影，轻压边） ---------- */
+.card{background:#fff;border-radius:20px;box-shadow:0 2px 0 rgba(61,52,40,.05)}
 .pressable{cursor:pointer;transition:transform .08s}
 .pressable:active{transform:scale(.97)}
+/* v2.5 动森有机异形外框（clip-path 定义见 App.svelte，animal-island-ui Modal game 变体同源） */
+.blob{border-radius:0;clip-path:url(#animal-modal-clip)}
 
 /* ---------- v2.4 App 壳：固定视口，零纵向滚动（每屏内容预算制） ---------- */
 html,body{overflow:hidden}
@@ -108,8 +114,8 @@ html,body{overflow:hidden}
 /* ---------- 顶栏 ---------- */
 .topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .backbtn{flex:0 0 48px;height:48px;border:none;border-radius:var(--animal-r-sm);background:#fff;color:var(--animal-text-2);font-size:24px;font-weight:800;
-  box-shadow:0 3px 0 var(--animal-border-light);cursor:pointer;font-family:inherit}
-.backbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--animal-border-light)}
+  box-shadow:0 4px 0 var(--edge-cream);cursor:pointer;font-family:inherit}
+.backbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge-cream)}
 .topbar h2{flex:1;font-size:22px;font-weight:900;color:var(--animal-text);line-height:1.8}
 .topbar .scorechip{background:var(--animal-primary-bg);color:var(--animal-primary-active);font-size:16px;font-weight:800;padding:6px 12px;border-radius:14px;white-space:nowrap;line-height:1.9}
 
@@ -138,9 +144,9 @@ html,body{overflow:hidden}
 
 /* ---------- 关卡地图 ---------- */
 #lvgrid{display:flex;flex-direction:column;gap:11px;padding-bottom:10px}
-.lvlcard{display:flex;align-items:center;gap:13px;background:#fff;border-radius:var(--animal-r-lg);border:2px solid var(--animal-border-light);padding:13px 15px;cursor:pointer;
-  box-shadow:0 3px 0 var(--animal-border-light);font-family:inherit;text-align:left;width:100%}
-.lvlcard:active{transform:translateY(2px);box-shadow:0 1px 0 var(--animal-border-light)}
+.lvlcard{display:flex;align-items:center;gap:13px;background:#fff;border-radius:20px;border:2px solid var(--animal-border-light);padding:13px 15px;cursor:pointer;
+  box-shadow:0 4px 0 var(--edge-cream);font-family:inherit;text-align:left;width:100%}
+.lvlcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge-cream)}
 .lvlcard.locked{opacity:.55;filter:grayscale(.6)}
 .lvlcard .lvnum{flex:0 0 56px;height:56px;border-radius:var(--animal-r-sm);display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--animal-bg-2)}
 .lvlcard.boss .lvnum{background:#fde4e8}
@@ -150,10 +156,10 @@ html,body{overflow:hidden}
 .lvlcard .lvstars{font-size:19px;letter-spacing:2px;color:var(--animal-warning-active)}
 .bosstag{font-size:12px;color:var(--animal-error);font-weight:900}
 
-/* ---------- 答题页 ---------- */
+/* ---------- 答题页（v2.5 进度条对齐金标准 Progress：奶油轨道内凹影 + 纯 teal 圆头填充） ---------- */
 .progresswrap{margin:2px 0 12px}
-.pbar{height:14px;background:#efe9db;border-radius:8px;overflow:hidden}
-.pfill{height:100%;width:0%;background:linear-gradient(90deg,var(--animal-primary-hover),var(--animal-primary));border-radius:8px;transition:width .3s}
+.pbar{height:14px;background:#efe9db;border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(61,52,40,.08)}
+.pfill{height:100%;width:0%;background:var(--animal-primary);border-radius:999px;transition:width .3s}
 .ptext{font-size:14px;color:var(--animal-text-2);font-weight:800;margin-bottom:5px;display:flex;justify-content:space-between}
 .qcard{background:#fff;border-radius:var(--animal-r-lg);border:2px solid var(--animal-border-light);padding:16px 14px 20px;box-shadow:var(--animal-shadow);
   display:flex;flex-direction:column;align-items:center;gap:11px}
@@ -175,10 +181,10 @@ html,body{overflow:hidden}
 .bigsound:active{transform:translateY(3px);box-shadow:0 2px 0 #bce8e2}
 .bigsound .bslabel{position:absolute;bottom:9px;left:0;right:0;font-size:15px;font-weight:900;color:var(--animal-primary-active);line-height:1.7}
 #optbox{display:grid;grid-template-columns:1fr 1fr;gap:11px;width:100%;margin-top:8px}
-.opt{min-height:98px;border:none;border-radius:var(--animal-r);background:#fff;font-family:inherit;cursor:pointer;
-  box-shadow:0 4px 0 var(--animal-border-light);border:3px solid #f0ebe0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
-  transition:transform .06s;padding:6px 4px}
-.opt:active{transform:translateY(3px)}
+.opt{min-height:98px;border:none;border-radius:20px;background:#fff;font-family:inherit;cursor:pointer;
+  box-shadow:0 5px 0 var(--edge-cream);border:2px solid #f4efe4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+  transition:transform .06s,box-shadow .06s;padding:6px 4px}
+.opt:active{transform:translateY(4px);box-shadow:0 1px 0 var(--edge-cream)}
 .opt .og{font-size:50px;font-weight:800;color:var(--animal-text);line-height:1.2}
 .opt .og.small{font-size:44px}
 .opt .ob{font-size:16px;font-weight:800;color:var(--animal-text-2);line-height:1.9}
@@ -230,8 +236,8 @@ html,body{overflow:hidden}
 /* ---------- 闪卡 ---------- */
 .ftabs{display:flex;gap:7px;margin-bottom:10px}
 .ftab{flex:1;min-height:48px;border:none;border-radius:var(--animal-r-sm);background:#fff;color:var(--animal-text-2);font-family:inherit;font-size:16px;font-weight:800;
-  box-shadow:0 3px 0 var(--animal-border-light);cursor:pointer;line-height:1.8;padding:4px 2px}
-.ftab.on{background:var(--animal-primary);color:#fff;box-shadow:0 3px 0 var(--press-teal)}
+  box-shadow:0 4px 0 var(--edge-cream);cursor:pointer;line-height:1.8;padding:4px 2px}
+.ftab.on{background:var(--animal-primary);color:#fff;box-shadow:0 4px 0 var(--press-teal)}
 #deckinfo{font-size:16px;font-weight:800;color:var(--animal-text-2);text-align:center;margin-bottom:8px;line-height:1.9}
 #flashcard{background:#fff;border-radius:var(--animal-r-lg);min-height:384px;box-shadow:var(--animal-shadow);border:3px solid var(--animal-border-light);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:26px 18px;cursor:pointer;position:relative;overflow:visible}
@@ -268,14 +274,15 @@ html,body{overflow:hidden}
 .hitem .hs{font-size:16px;font-weight:900;color:var(--animal-warning-active)}
 .hempty{text-align:center;color:var(--animal-text-dis);font-weight:800;padding:40px 0;font-size:17px;line-height:2}
 
-/* ---------- 辨析卡弹窗 ---------- */
+/* ---------- 辨析卡弹窗（v2.5 动森化：有机异形 blob 外框，奶油底） ---------- */
 .modal{position:fixed;inset:0;background:rgba(61,52,40,.35);display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
-.mcard{background:var(--animal-bg);border-radius:var(--animal-r-lg);border:2px solid var(--animal-border-light);padding:20px 16px;max-width:360px;width:100%;box-shadow:var(--animal-shadow-lg);position:relative}
-.mclose{position:absolute;top:10px;right:12px;border:none;background:var(--animal-bg-2);width:40px;height:40px;border-radius:14px;
-  font-size:18px;font-weight:900;color:var(--animal-text);cursor:pointer;font-family:inherit}
+.mcard{background:#fdf6dc;border-radius:0;clip-path:url(#animal-modal-clip);border:none;padding:34px 26px;max-width:360px;width:100%;position:relative}
+.mclose{position:absolute;top:22px;right:42px;border:none;background:rgba(255,255,255,.8);width:40px;height:40px;border-radius:50%;
+  font-size:18px;font-weight:900;color:var(--animal-text);cursor:pointer;font-family:inherit;z-index:2;
+  display:flex;align-items:center;justify-content:center}
 .mtitle{font-size:22px;font-weight:900;color:var(--animal-text);text-align:center;margin-bottom:12px;line-height:1.9}
 .mduo{display:flex;gap:11px;justify-content:center;margin-bottom:11px}
-.mhalf{flex:1;background:#fff;border-radius:var(--animal-r);padding:11px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 3px 0 var(--animal-border-light)}
+.mhalf{flex:1;background:#fff;border-radius:var(--animal-r);padding:11px 7px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 4px 0 var(--edge-cream)}
 .mhalf .mg{font-size:64px;font-weight:800;line-height:1.2}
 .mhalf .mkj{font-size:15px;font-weight:800;color:var(--animal-success);text-align:center;line-height:2}
 .mhalf .msay{border:none;background:var(--animal-bg-2);border-radius:12px;font-family:inherit;font-size:16px;font-weight:900;color:var(--animal-text);padding:6px 14px;cursor:pointer}
@@ -301,7 +308,7 @@ html,body{overflow:hidden}
 .btn.orange:active{box-shadow:0 1px 0 var(--press-orange)}
 .bolthud{display:flex;gap:7px;margin-bottom:10px}
 .bolthud span{flex:1;text-align:center;background:#fff;border-radius:14px;padding:7px 4px;font-size:15px;font-weight:900;
-  color:var(--animal-text);box-shadow:0 3px 0 var(--animal-border-light);line-height:1.8;white-space:nowrap}
+  color:var(--animal-text);box-shadow:0 4px 0 var(--edge-cream);line-height:1.8;white-space:nowrap}
 .bolthud span.hot{color:var(--animal-error)}
 .boltopts{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:8px}
 .boltopts .opt{min-height:118px}

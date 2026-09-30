@@ -219,8 +219,8 @@ async function noHScroll(page) {
   }))
   ok('口诀全集收录（63 条，声母+韵母+整体认读全覆盖）', r.n >= 47 && r.caps === r.n, JSON.stringify({ n: r.n, caps: r.caps }))
   ok('连播/循环控件在屏', /连播/.test(r.chain || '') && /循环/.test(r.loop || ''), r.chain + '/' + r.loop)
-  /* 点播：音频元素真实起播 */
-  await page.evaluate(() => document.querySelector('#v-radio .bigbtn').click())
+  /* 点播：音频元素真实起播（v2.5 起点播主字模 = PinyinCard [data-pcmain]） */
+  await page.evaluate(() => document.querySelector('#v-radio [data-pcmain]').click())
   await page.waitForTimeout(500)
   const playing = await page.evaluate(() => {
     const a = Object.values(window.__PJ?.AUDIO || {}).find((x) => (x.src || '').includes('kj_'))
@@ -269,7 +269,7 @@ async function noHScroll(page) {
   await page.waitForTimeout(700)
   const z = await zeroScroll(page)
   ok('闪卡零纵向滚动', z.ok, JSON.stringify(z))
-  const f1 = await page.evaluate(() => ({ glyph: document.querySelector('#flashcard .fcglyph')?.textContent, ghosts: document.querySelectorAll('.ghostcard').length }))
+  const f1 = await page.evaluate(() => ({ glyph: document.querySelector('#flashcard .pcc-glyph')?.textContent, ghosts: document.querySelectorAll('.ghostcard').length }))
   await page.evaluate(() => {
     const card = document.getElementById('flashcard')
     const r = card.getBoundingClientRect()
@@ -279,7 +279,7 @@ async function noHScroll(page) {
     card.dispatchEvent(new PointerEvent('pointerup', { clientX: r.left + 180, y: y, clientY: y, bubbles: true, pointerId: 1 }))
   })
   await page.waitForTimeout(500)
-  const f2 = await page.evaluate(() => document.querySelector('#flashcard .fcglyph')?.textContent)
+  const f2 = await page.evaluate(() => document.querySelector('#flashcard .pcc-glyph')?.textContent)
   ok('闪卡卡堆视觉（后卡两张）', f1.ghosts === 2, 'ghosts=' + f1.ghosts)
   ok('左滑换张', f1.glyph !== f2, f1.glyph + ' → ' + f2)
   await shot(page, '8-flash')
@@ -315,10 +315,11 @@ for (const [name, url, sel] of [
   await page.waitForTimeout(800)
   const z = await zeroScroll(page)
   ok('认识页零纵向滚动', z.ok, JSON.stringify(z))
+  /* v2.5 起认识页五要素由 PinyinCard 承载：字模 = [data-pcmain] .pc-big，口诀行 = [data-pckj] */
   const big = await page.evaluate(() => ({
-    big: document.querySelector('#v-lesson [data-big]')?.textContent,
-    size: document.querySelector('#v-lesson [data-big]') ? getComputedStyle(document.querySelector('#v-lesson [data-big]')).fontSize : '',
-    kj: !!document.querySelector('#v-lesson [data-kj]'),
+    big: document.querySelector('#v-lesson [data-pcmain] .pc-big')?.textContent,
+    size: document.querySelector('#v-lesson [data-pcmain] .pc-big') ? getComputedStyle(document.querySelector('#v-lesson [data-pcmain] .pc-big')).fontSize : '',
+    kj: !!document.querySelector('#v-lesson [data-pckj]'),
   }))
   ok('认识页大字模（≥120px）+ 口诀行', parseInt(big.size) >= 120 && big.kj, JSON.stringify(big))
   await shot(page, '13-lesson-renshi')

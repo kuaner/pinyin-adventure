@@ -37,7 +37,10 @@
   .tab .tl { font-size: 12px; font-weight: 800; position: relative; }
   .tab .tl :global(rt) { font-size: 8px; font-weight: 700; letter-spacing: .5px; }
   .tab.on { color: var(--animal-primary-active); }
-  .tab.on .tic { background: var(--animal-primary-bg); }
+  /* v2.5 金标准 Tabs 对齐（animal-island-ui tabs.module.less）：选中 = teal 实心胶囊 + 白图标
+     + 硬底实边 0 3px 0（其 @shadow-color-light 语义） */
+  .tab.on .tic { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
+  .tab.on .tic:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--press-teal); }
   .tic { width: 46px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 999px;
     transition: background .15s; }
 </style>
