@@ -7,7 +7,8 @@
   import { playAudio, stopAll } from '../lib/audio'
   import { show } from '../stores/ui.svelte'
   import { T } from '../lib/ruby'
-  import Ruby from './Ruby.svelte'
+import { t, tRaw } from '../text/strings'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import HSteps from './HSteps.svelte'
   import PinyinCard from './PinyinCard.svelte'
@@ -38,7 +39,7 @@
     cur = i
     playingK = e.k
     playAudio(e.audio, {
-      hint: T('语音未准备好'),
+      hint: tRaw('notReady'),
       onend: () => {
         playingK = ''
         if (chainOn) {
@@ -66,6 +67,7 @@
   }
 
   function exit() { chainOn = false; loopOn = false; stopAll(); playingK = ''; show('learn') }
+  const tipText = (on: boolean) => (on ? tRaw('listenKjSeeStroke') : tRaw('tapHearThis'))
 
   $effect(() => {
     requestAnimationFrame(() => capsEl?.querySelector('.cap.on')?.scrollIntoView({ inline: 'center', block: 'nearest' }))
@@ -74,8 +76,8 @@
 
 <section id="v-radio" class="view on" data-screen="radio">
   <div class="ltop">
-    <button class="cbtn" data-back="learn" onclick={exit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt"><ruby>口诀小广播<rt>kǒu jué xiǎo guǎng bō</rt></ruby></div>
+    <button class="cbtn" data-back="learn" onclick={exit} aria-label="back"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt"><Speak k="radioTitle" /></div>
     <div class="lprog">{cur + 1}/{ALL.length}</div>
   </div>
 
@@ -83,15 +85,15 @@
     <!-- 空态兜底（BUGS#7）：数据缺失时给出可见引导，不再无声空白 -->
     <div class="kempty">
       <div class="kempty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#dba90e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0116 0" /><rect x="3" y="13" width="4" height="7" rx="2" fill="#dba90e" stroke="none" /><rect x="17" y="13" width="4" height="7" rx="2" fill="#dba90e" stroke="none" /></svg></div>
-      <div class="kempty-tx"><ruby>口诀还在路上，先回去学一课吧<rt>kǒu jué hái zài lù shàng xiān huí qù xué yī kè ba</rt></ruby></div>
-      <button class="kempty-btn" onclick={exit}><ruby>回学习岛<rt>huí xué xí dǎo</rt></ruby></button>
+      <div class="kempty-tx"><Speak k="radioEmpty" /></div>
+      <button class="kempty-btn" onclick={exit}><Speak k="backIsland" plain /></button>
     </div>
   {:else}
   <HSteps n={ALL.length} bind:cur onchange={onSwipe}>
     {#each ALL as e, i (e.k + i)}
       <div class="hspage">
         <div class="pcard">
-          <div class="ptag"><ruby>第 {i + 1} 条<rt>dì {i + 1} tiáo</rt></ruby></div>
+          <div class="ptag"><Speak k="entryN" vars={{ n: i + 1 }} plain /></div>
           <!-- v2.5 口诀×笔顺联动：展开区 = PinyinCard full，点播/连播中笔顺动画随口诀音频同步跑（R5 唯一例外声源） -->
           <div class="radfit">
             <PinyinCard
@@ -101,7 +103,7 @@
               strokePlay={playingK === e.k}
               strokeLoop={true}
               onmain={() => play(i)}
-              tip={playingK === e.k ? T('听口诀，看笔顺') : T('点一点，听这句')}
+              tip={playingK === e.k ? T(tipText(true)) : T(tipText(false))}
             />
           </div>
         </div>
@@ -113,20 +115,20 @@
     <button class="rbtn main" class:live={chainOn} id="chainbtn" onclick={toggleChain}>
       {#if chainOn}
         <svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="5" width="4" height="14" rx="1.5" /><rect x="14" y="5" width="4" height="14" rx="1.5" /></svg>
-        <span><ruby>停止连播<rt>tíng zhǐ lián bō</rt></ruby></span>
+        <span><Speak k="stopChain" plain /></span>
       {:else}
         <svg viewBox="0 0 24 24" fill="#fff"><path d="M8 5.5v13l11-6.5z" /></svg>
-        <span><ruby>连播<rt>lián bō</rt></ruby></span>
+        <span><Speak k="chain" plain /></span>
       {/if}
     </button>
     <button class="rbtn" class:live2={loopOn} id="loopbtn" onclick={toggleLoop}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4" /><path d="M21 4v5h-5" /></svg>
-      <span><ruby>循环<rt>xún huán</rt></ruby></span>
+      <span><Speak k="loop" plain /></span>
     </button>
   </div>
 
   <div id="rlistbar">
-    <div class="sec-label"><b><ruby>口诀单<rt>kǒu jué dān</rt></ruby> · {ALL.length} 条</b><span><ruby>横向滑动<rt>héng xiàng huá dòng</rt></ruby></span></div>
+    <div class="sec-label"><b><Speak k="kjList" plain /> · {ALL.length} <Speak k="groupCount" vars={{ n: ALL.length }} plain /></b><span><Speak k="swipeHintH" /></span></div>
     <div id="rcaps" bind:this={capsEl}>
       {#each ALL as e, i (e.k + i)}
         <button class="cap" class:on={i === cur} data-idx={i} onclick={() => jump(i)}>{e.k}</button>
@@ -135,7 +137,7 @@
   </div>
 
   <div id="pager">
-    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一句<rt>zuǒ huá xià yī jù</rt></ruby></div>
+    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextKj" /></div>
   </div>
   {/if}
 </section>

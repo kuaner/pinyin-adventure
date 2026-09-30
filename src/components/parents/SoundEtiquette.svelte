@@ -1,28 +1,19 @@
 <script lang="ts">
   /* 声音礼仪页（v2.4 家长区入口，打样屏6）：三规则 + 声音地图。家长向文本，不注音 */
   import { show } from '../../stores/ui.svelte'
+  import { t, etiquette } from '../../text/strings'
 
-  const RULES = [
-    { n: '①', t: '安静进入', d: '打开 App、翻页、切标签页：零语音。不再有"准备开始"盖住读音。', num: '0', bg: '#e6f9f6' },
-    { n: '②', t: '点了才说', d: '声音只从三处来：点读、听题、对错反馈。没有别的声音。', num: '3', bg: '#fff8e0' },
-    { n: '③', t: '一次一路', d: '同一时刻只有一路声音；新声音一响，旧声音立刻停。', num: '1', bg: '#efe9ff' },
-  ]
-  const MAP: [string, string, boolean][] = [
-    ['进入 App / 切 tab / 翻页', '静', false],
-    ['点字母、点汉字、点选项', '真人读音', true],
-    ['听写 / 听音辨调题', '题目音', true],
-    ['答对 / 答错', '反馈音（叮 / 嘟）', true],
-    ['口诀连播（手动开启）', '广播', true],
-  ]
+  const RULES = etiquette.rules
+  const MAP = etiquette.map
 </script>
 
 <section id="v-sound" class="view on" data-screen="sound">
   <div class="ltop">
     <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt">声音礼仪 · v2.4 全局规则</div>
+    <div class="ltt">{t('etiquetteTitle')}</div>
     <div style="width:38px;flex:none"></div>
   </div>
-  <div class="intro">什么时候有声音、什么时候安静——三条规则 + 一张声音地图。</div>
+  <div class="intro">{t('etiquetteIntro')}</div>
 
   {#each RULES as r (r.t)}
     <div class="card srule">
@@ -41,11 +32,11 @@
   {/each}
 
   <div class="card" id="soundmap">
-    <div class="sec-label"><b>声音地图</b><span>场景 → 有没有声音</span></div>
+    <div class="sec-label"><b>{t('soundMap')}</b><span>{t('soundMapHead')}</span></div>
     {#each MAP as row (row[0])}
       <div class="smaprow"><span class="sc">{row[0]}</span><span class="tag" class:silent={!row[2]} class:sound={row[2]}>{row[1]}</span></div>
     {/each}
-    <div class="note">v2.4 删除清单：入口过场语音、"准备开始"、翻页音、按钮杂音——全部为 0。</div>
+    <div class="note">{t('deletedNote')}</div>
   </div>
 </section>
 

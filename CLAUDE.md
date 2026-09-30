@@ -39,8 +39,12 @@ src/
     session.svelte.ts     # 10 题会话（闯关/侦探/快拼/专练共用）：answer/反馈/结算/历史
     bolt.svelte.ts        # ⚡闪电会话（5 分钟计时/连对/纪录/礼花）
     flash.svelte.ts       # 闪卡三盒（到期优先排序/自评移动盒子）
+  text/                   # v2.6 文案层（唯一真相+配音清单）
+    strings.ts            # 全 app 用户可见字符串唯一真相（key→中文，216 键；组件禁字面量中文，lint 强制）
+    audio-manifest.json   # 配音清单（gen-audio.ts 产出）：keys=key→文件，zh=数据层文案反查
+    manifest.ts           # 清单运行时入口（Speak 点播依据）
   lib/
-    audio.ts              # 声音三层：AudioContext 反馈音 / mp3 播放器 / 🔊自检
+    audio.ts              # 声音两层：AudioContext 反馈音 / mp3 播放器（🔊自检已删）
     ruby.ts               # v2.1 pinyin-pro 引擎：T('答对啦') 逐字自动注音（三层兜底+词组 nowrap）
     icons.ts              # naive-icons 手绘 SVG 内联（MIT 48 枚，Icon.svelte 渲染）
     storage.ts            # localStorage pinyin_v2 读写
@@ -52,7 +56,8 @@ src/
     PairsPage / PracticePage / HistoryPage / BoltSprint      # 页面
     quiz/ListenQ LookQ                                      # 闯关题型（v2.3：LlQ/RuleQ 已删——零错误信息铁律）
     MirrorDetect（正反判断+修复题） ZiQuiz（看字/词选拼音）   # 题型
-    AnchorBar PairModal Feedback Ruby UpdatePrompt           # 通用件（v2.3：解锁层删除，新增更新提示条）
+    AnchorBar PairModal Feedback UpdatePrompt                # 通用件（v2.3：解锁层删除，新增更新提示条）
+    Speak.svelte         # v2.6 Ruby 升级：注音渲染+有音频则整段可点击播放（轻按压反馈+小声波纹）；全 app 文案/题面/反馈走它
     PinyinCard（v2.5 统一学习卡片：full=学习岛认识页/口诀广播展开区，card=闪卡，mini=答错反馈；五要素=字模四线三格/真人读音/笔顺动画/口诀/例词；数据 data/pinyin-cards.json）
     learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 五步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
@@ -65,7 +70,7 @@ src/
     strokes.json          # 47 单元笔顺 SVG 几何（v2.3 换血：lasagoo/letter-writing 底本+部编版适配，生成器 gen-strokes-lw.mjs 勿手改；stroke-verify.mjs 自检）
     pinyin-cards.json     # v2.5 PinyinCard 数据正本（一拼音一条记录，gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成，勿手改）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
-scripts/                  # 一次性/验收脚本（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
+scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清单生成器：扫描 strings+数据→diff→补生成，mimo 冰糖/hyp 拼接铁律）（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
 ```
 
 ## 数据格式
@@ -83,9 +88,9 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 4. 儿童可见文字必须带 ruby 注音；家长向文本（历史表格/诊断 toast/隐私说明）可不注音。
 5. 数据改动进 `src/data/*.json`，不在组件里内联大数组。
 6. **零错误信息铁律**（v2.3）：面向孩子的题目不得以任何形式展示错误配对/错误形态/错误口诀——ll 听看一致、rule 错句判断、"看大字选一样"已全面删除；闯关=listen/look/kj（口诀正向回忆），闪电=blisten(70%)/bkj(30%)；答错只展示正确答案+读音。
-7. **注音收口**（Bug#2）：数据层纯文本，渲染层中文一律 T()/Ruby；`node scripts/check-ruby.mjs` 是 lint 门槛（裸中文插值=warning）。
+7. **注音收口+文案层**（Bug#2 → v2.6）：数据层纯文本；用户可见字符串唯一真相=src/text/strings.ts（key→中文），组件/stores 禁中文字面量；渲染走 `<Speak k=…/>`（注音+点播）；`node scripts/check-ruby.mjs` 是 lint 门槛（字面量=exit 2）。
 8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
-9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
+9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来（v2.6 起全 app 零自动语音：题面音一律 🔊 大按钮点播，孩子控节奏；文案层 Speak 有音频即可点播）；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
 10. **零纵向滚动**（v2.4）：`.view` height:100% overflow:hidden，每屏内容预算制；序列内容一律横向翻页（HSteps，55px 阈值）；横向滚动仅限胶囊条/卡单等带状物。验收逐屏 scrollHeight<=clientHeight 断言。
 
 ## 发布流程

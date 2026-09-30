@@ -3,10 +3,9 @@
      v2.3：ll 听看一致 / rule 错句判断删除（零错误信息铁律），新增 kj 口诀正向回忆；
      Bug#2 收口：题面指令 hint 等中文文案渲染层一律过 T() 注音（数据层纯文本）
      v2.4：全屏专注态零纵向滚动；答完左滑 = 跳过反馈等价（下一题） */
-  import { QZ, answer, quitQuiz, fbSkip, scheduleAutoSay } from '../stores/session.svelte'
-  import { say, playAudio } from '../lib/audio'
+  import { QZ, answer, quitQuiz, fbSkip } from '../stores/session.svelte'
   import { PH } from '../data'
-  import { T } from '../lib/ruby'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import ListenQ from './quiz/ListenQ.svelte'
   import LookQ from './quiz/LookQ.svelte'
@@ -18,16 +17,7 @@
   const CIRC: string[] = (PH as any).circ
   const reveal = $derived(QZ.reveal)
 
-  /* 自动读音：listen 400ms，zi/zword 350ms（出题即读，读音是考题不是反馈） */
-  $effect(() => {
-    const cur = QZ.q as any
-    if (!cur) return
-    if (cur.type === 'listen') {
-      scheduleAutoSay(400, () => say(cur.A))
-    } else if (cur.type === 'zi' || cur.type === 'zword') {
-      scheduleAutoSay(350, () => playAudio(cur.z.f, { hint: '字音缺失：' + cur.z.f }))
-    }
-  })
+  /* v2.6 零自动播放：出题不再自动读音——listen/zi 题面自带的 🔊 大按钮点播，孩子控节奏 */
 
   /* 题内左滑：反馈层在显示时 = 提前进入下一题（R1 翻页零音效） */
   let sx: number | null = null
@@ -41,17 +31,17 @@
 
 <section id="v-quiz" class="view on" data-screen="quiz">
   <div class="ltop">
-    <button class="cbtn" data-back="quit" onclick={quitQuiz} aria-label="退出"><Icon name="close" size={20} /></button>
+    <button class="cbtn" data-back="quit" onclick={quitQuiz} aria-label="exit"><Icon name="close" size={20} /></button>
     <div class="ltt" id="qtitle">{@html QZ.cfg?.name ?? ''}</div>
-    <div class="lprog" id="qscore">{@html T('得分 ')}{QZ.score}</div>
+    <div class="lprog" id="qscore"><Speak k="score" vars={{}} plain />{QZ.score}</div>
   </div>
   <div class="progresswrap">
-    <div class="ptext"><span id="qprog">{@html T('第 ')}{QZ.i + 1}/10 {@html T('题')}</span><span id="qkind">{@html T(kindName)}</span></div>
+    <div class="ptext"><span id="qprog"><Speak k="qProg" vars={{ a: QZ.i + 1 }} plain /></span><span id="qkind"><Speak text={kindName} /></span></div>
     <div class="pbar"><div class="pfill" id="pfill" style="width:{QZ.i * 10}%"></div></div>
   </div>
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="qcard" onpointerdown={dwn} onpointerup={up2}>
-    <div class="qhint" id="qhint">{@html T((q as any)?.hint ?? '')}</div>
+    <div class="qhint" id="qhint"><Speak text={(q as any)?.hint ?? ''} /></div>
     {#key QZ.seq}
       {#if (q as any).type === 'listen'}
         <ListenQ q={(q as any)} />
@@ -59,7 +49,7 @@
         <LookQ q={(q as any)} />
       {:else if (q as any).type === 'kj'}
         <div class="glyphbox" id="glyphbox">
-          <div class="ruletext">「{@html T((q as any).stmt)}」</div>
+          <div class="ruletext">「<Speak text={(q as any).stmt} />」</div>
         </div>
         <div class="qextra" id="qextra"></div>
         <div id="optbox">

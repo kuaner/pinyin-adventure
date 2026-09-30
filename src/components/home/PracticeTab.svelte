@@ -6,7 +6,7 @@
   import { startDet, startZi } from '../../stores/session.svelte'
   import { startBolt } from '../../stores/bolt.svelte'
   import { show } from '../../stores/ui.svelte'
-  import Ruby from '../Ruby.svelte'
+  import Speak from '../Speak.svelte'
 
   /* ---- 真实进度角标 ---- */
   const curLv = $derived.by(() => { for (let i = 1; i <= 9; i++) if (levelUnlocked(i) && !(S.stars[i] >= 1)) return i; return 9 })
@@ -42,53 +42,53 @@
 
 <section id="v-pracetab" class="view on" data-screen="practice">
   <div id="greet">
-    <div class="g1"><ruby>练习场<rt>liàn xí chǎng</rt></ruby></div>
+    <div class="g1"><Speak k="practiceField" /></div>
     <div class="g2" id="todaysum">
-      {#if today.n}今天已经练了 {today.n * 10} 题{#if today.acc} · 正确率 {today.acc}%{/if}{:else}今天还没练，挑一个开始吧{/if}
+      {#if today.n}<Speak k="todayPracticed" vars={{ n: today.n * 10 }} />{#if today.acc} <Speak k="todayAcc" vars={{ n: today.acc }} />{/if}{:else}<Speak k="todayNotYet" />{/if}
     </div>
   </div>
 
   <div id="pgrid">
     <button class="mode m-teal pressable" data-go="levels" onclick={() => show('levels')}>
-      <div class="mbadge">第 {curLv} 关</div>
+      <div class="mbadge"><Speak k="levelN" vars={{ n: curLv }} plain /></div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2-6-2z" /><path d="M9 4v14M15 6v14" /></svg></div>
-      <div class="mname"><ruby>闯关冒险<rt>chuǎng guān mào xiǎn</rt></ruby></div>
-      <div class="mdesc">一关一关，闯到大师关</div>
+      <div class="mname"><Speak k="adventure" /></div>
+      <div class="mdesc"><Speak k="adventureDesc" /></div>
     </button>
 
     <button class="mode m-blue pressable" data-go="bolt" onclick={() => startBolt(false)}>
-      <div class="mbadge">{#if boltBest}最佳 {boltBest}%{:else}5 分钟{/if}</div>
+      <div class="mbadge">{#if boltBest}<Speak k="boltBestN" vars={{ n: boltBest }} plain />{:else}<Speak k="fiveMinutes" plain />{/if}</div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2z" /></svg></div>
-      <div class="mname"><ruby>闪电刷题<rt>shǎn diàn shuā tí</rt></ruby></div>
-      <div class="mdesc"><Ruby text="5 分钟冲刺 · 听一听选出来" /></div>
+      <div class="mname"><Speak k="boltSprint" /></div>
+      <div class="mdesc"><Speak k="boltDesc" /></div>
     </button>
 
     <button class="mode m-green pressable" data-go="zi" onclick={() => startZi()}>
-      <div class="mbadge">{ziDone} / {ziTotal} 字</div>
+      <div class="mbadge"><Speak k="ziBadge" vars={{ a: ziDone, b: ziTotal }} plain /></div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5z" /><path d="M4 18a2.5 2.5 0 012.5-2.5H20" /></svg></div>
-      <div class="mname"><ruby>常见字快拼<rt>cháng jiàn zì kuài pīn</rt></ruby></div>
-      <div class="mdesc"><Ruby text="看看字，选出拼音" /></div>
+      <div class="mname"><Speak k="quickPin" /></div>
+      <div class="mdesc"><Speak k="quickPinDesc" /></div>
     </button>
 
     <button class="mode m-pink pressable" data-go="detect" onclick={() => startDet()}>
-      <div class="mbadge">连对 {detStreak}</div>
+      <div class="mbadge"><Speak k="detStreakN" vars={{ n: detStreak }} plain /></div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5" /><path d="M15.5 15.5L21 21" /></svg></div>
-      <div class="mname"><ruby>正反小侦探<rt>zhèng fǎn xiǎo zhēn tàn</rt></ruby></div>
-      <div class="mdesc">b d p q 写反了吗</div>
+      <div class="mname"><Speak k="detective" /></div>
+      <div class="mdesc"><Speak k="detectiveDesc" /></div>
     </button>
 
     <button class="mode m-orange pressable" data-go="pairs" onclick={() => show('pairs')}>
-      <div class="mbadge">{#if weakPairs}{weakPairs} 组待加强{:else}14 组{/if}</div>
+      <div class="mbadge">{#if weakPairs}<Speak k="weakPairsN" vars={{ n: weakPairs }} plain />{:else}<Speak k="pairsFourteen" plain />{/if}</div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="5.5" /><circle cx="15.5" cy="12" r="5.5" /></svg></div>
-      <div class="mname"><ruby>易混对专练<rt>yì hùn duì zhuān liàn</rt></ruby></div>
-      <div class="mdesc"><Ruby text="一对一对，练清楚" /></div>
+      <div class="mname"><Speak k="pairsDrill" /></div>
+      <div class="mdesc"><Speak k="pairsDesc" /></div>
     </button>
 
     <button class="mode m-purple pressable" data-go="free" onclick={() => show('free')}>
-      <div class="mbadge">自选字母</div>
+      <div class="mbadge"><Speak k="freePick" plain /></div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="8.5" cy="8.5" r="1.6" fill="#fff" stroke="none" /><circle cx="15.5" cy="15.5" r="1.6" fill="#fff" stroke="none" /><circle cx="15.5" cy="8.5" r="1.6" fill="#fff" stroke="none" /><circle cx="8.5" cy="15.5" r="1.6" fill="#fff" stroke="none" /></svg></div>
-      <div class="mname"><ruby>自由练习<rt>zì yóu liàn xí</rt></ruby></div>
-      <div class="mdesc">自己挑字母，想练哪就练哪</div>
+      <div class="mname"><Speak k="freePractice" /></div>
+      <div class="mdesc"><Speak k="freeDesc" /></div>
     </button>
   </div>
 </section>
@@ -108,7 +108,10 @@
     box-shadow: 0 3px 0 rgba(61,52,40,.14); margin-bottom: 10px; flex: none; }
   .mode .mic svg { width: 28px; height: 28px; }
   .mode .mname { font-size: 17px; font-weight: 900; line-height: 1.75; }
-  .mode .mdesc { font-size: 10.5px; font-weight: 700; color: var(--animal-text-2); margin-top: 2px; white-space: nowrap; }
+  /* v2.6：desc 注音后变宽，去 nowrap 放两行（防溢出裁切） */
+  .mode .mdesc { font-size: 10px; font-weight: 700; color: var(--animal-text-2); margin-top: 3px; line-height: 1.8;
+    max-width: 100%; padding: 0 3px; }
+  .mode .mdesc :global(rt) { font-size: 7.5px; }
   .mode .mbadge { position: absolute; top: 10px; right: 10px; font-size: 9.5px; font-weight: 900; padding: 4px 9px;
     border-radius: 999px; background: rgba(255,255,255,.85); color: var(--animal-text); box-shadow: 0 1px 4px rgba(61,52,40,.12); }
   .m-teal { background: linear-gradient(160deg, #e6f9f6, #d2f1ec); }

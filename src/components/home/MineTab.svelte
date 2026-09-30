@@ -6,7 +6,8 @@
   import { L as LRN, quizPassed } from '../../stores/learn.svelte'
   import { renderFlash } from '../../stores/flash.svelte'
   import { show } from '../../stores/ui.svelte'
-  import Ruby from '../Ruby.svelte'
+  import Speak from '../Speak.svelte'
+  import { t, WEEK_DAYS } from '../../text/strings'
 
   /* ---- 派生进度（纯读，不在 derived 内建卡——Svelte 禁 derived 内 mutation） ---- */
   const dueN = $derived.by(() => {
@@ -26,12 +27,11 @@
   const dow = $derived(now.getDay() === 0 ? 7 : now.getDay())          // 一=1…日=7
   const weekDays = $derived.by(() => {
     const out: { key: string; hit: boolean; isToday: boolean; label: string }[] = []
-    const labels = ['一', '二', '三', '四', '五', '六', '日']
     for (let i = 0; i < 7; i++) {
       const d = new Date(now)
       d.setDate(now.getDate() - (dow - 1) + i)
       const key = todayStr(d)
-      out.push({ key, hit: !!S.days[key], isToday: key === todayStr(), label: labels[i] })
+      out.push({ key, hit: !!S.days[key], isToday: key === todayStr(), label: WEEK_DAYS[i] })
     }
     return out
   })
@@ -49,8 +49,8 @@
 
 <section id="v-minetab" class="view on" data-screen="mine">
   <div class="rowhead">
-    <div class="h1">我的</div>
-    <div class="chip"><ruby>连续<rt>lián xù</rt></ruby>&nbsp;{streak}&nbsp;<ruby>天<rt>tiān</rt></ruby></div>
+    <div class="h1"><Speak k="tabMine" /></div>
+    <div class="chip"><Speak k="streakDays" vars={{ n: streak }} /></div>
   </div>
 
   <div id="mascot">
@@ -72,24 +72,24 @@
       <path d="M78 94 h16 l-2.5 4 h-11 Z" fill="#e8772a" />
       <path d="M76 26 q-3 -13 4 -18 M86 24 q0 -14 5 -18 M96 26 q4 -11 10 -13" fill="none" stroke="#f0b429" stroke-width="4.5" stroke-linecap="round" />
     </svg>
-    <div id="mname"><ruby>小黄鸡<rt>xiǎo huáng jī</rt></ruby> · {level} <ruby>级<rt>jí</rt></ruby></div>
+    <div id="mname"><Speak k="chickName" /> · {level} <Speak k="levelTag" vars={{ n: level }} /></div>
     <div id="mmeta">
-      <div class="chip"><svg viewBox="0 0 24 24" fill="#f5c31c" stroke="#dba90e" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z" /></svg><ruby>星星<rt>xīng xing</rt></ruby>&nbsp;{totalStars()}</div>
-      <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z" /></svg><ruby>通关<rt>tōng guān</rt></ruby>&nbsp;{passLv}&nbsp;<ruby>关<rt>guān</rt></ruby></div>
+      <div class="chip"><svg viewBox="0 0 24 24" fill="#f5c31c" stroke="#dba90e" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z" /></svg><Speak k="starLabel" />&nbsp;{totalStars()}</div>
+      <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7z" /></svg><Speak k="passLabel" />&nbsp;<Speak k="passCount" vars={{ n: passLv }} /></div>
     </div>
   </div>
 
   <button class="card pressable" id="flash-entry" data-go="flash" onclick={goFlash}>
     <div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="13" height="14" rx="3" fill="#fff" stroke="none" opacity=".35" /><rect x="7" y="3.5" width="14" height="14" rx="3" /><path d="M11 8h6M11 12h4" /></svg></div>
     <div class="ftx">
-      <b><ruby>闪卡复习<rt>shǎn kǎ fù xí</rt></ruby></b>
-      <span>快忘记的先复习 · 左右滑翻卡</span>
+      <b><Speak k="flashReview" plain /></b>
+      <span><Speak k="flashDesc" /></span>
     </div>
-    <div class="due">{dueN} <ruby>张<rt>zhāng</rt></ruby></div>
+    <div class="due"><Speak k="flashDueN" vars={{ n: dueN }} /></div>
   </button>
 
   <div class="card" id="week">
-    <div class="sec-label"><b><ruby>本周学习<rt>běn zhōu xué xí</rt></ruby></b><span><ruby>已学<rt>yǐ xué</rt></ruby>&nbsp;{weekHit} / 7&nbsp;<ruby>天<rt>tiān</rt></ruby></span></div>
+    <div class="sec-label"><b><Speak k="thisWeek" /></b><span><Speak k="learnedDays" vars={{ a: weekHit }} /></span></div>
     <div id="wrow">
       {#each weekDays as d (d.key)}
         <div class="wday" class:hit={d.hit} class:today={d.isToday}>
@@ -101,18 +101,18 @@
   </div>
 
   <div id="parent">
-    <div class="sec-label"><b>家长区</b></div>
+    <div class="sec-label"><b>{t('parentZone')}</b></div>
     <button class="prow pressable" data-go="history" onclick={() => show('history')}>
       <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg></div>
-      <b>学习历史</b><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
+      <b>{t('history')}</b><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
     </button>
     <button class="prow pressable" data-go="sound" onclick={() => show('sound')}>
       <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z" /><path d="M16.5 8.5a5 5 0 010 7M19 6a8.5 8.5 0 010 12" opacity=".55" /><path d="M16.5 8.5l5 7M21.5 8.5l-5 7" stroke="#c94444" /></svg></div>
-      <b>声音礼仪</b><span class="new">v2.4 新</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
+      <b>{t('soundEtiquette')}</b><span class="new">{t('newTag')}</span><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
     </button>
     <button class="prow pressable" data-go="settings" onclick={() => show('settings')}>
       <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1" /></svg></div>
-      <b>设置</b><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
+      <b>{t('settings')}</b><span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="#c4b89e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7" /></svg></span>
     </button>
   </div>
 </section>
@@ -141,7 +141,8 @@
   #flash-entry .fic svg { width: 26px; height: 26px; }
   #flash-entry .ftx { flex: 1; text-align: left; min-width: 0; }
   #flash-entry .ftx b { font-size: 16.5px; font-weight: 900; line-height: 1.9; display: block; }
-  #flash-entry .ftx span { display: block; font-size: 11.5px; font-weight: 700; color: var(--animal-text-2); white-space: nowrap; }
+  #flash-entry .ftx span { display: block; font-size: 11px; font-weight: 700; color: var(--animal-text-2); }
+  #flash-entry .ftx span :global(rt) { font-size: 8px; }
   #flash-entry .due { font-size: 15px; font-weight: 900; color: #9a5fd4; background: #efe9ff; padding: 8px 12px; border-radius: 14px; flex: none; }
 
   #week { margin-top: 12px; padding: 12px 16px 13px; flex: none; }

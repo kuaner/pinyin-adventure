@@ -5,8 +5,9 @@
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, say, sndOk, sndNo, sndStar } from '../../lib/audio'
   import { submitQuiz, setStep, lessonShort } from '../../stores/learn.svelte'
+  import { t, tRaw, cnNum, NUM_PY, type StringKey } from '../../text/strings'
   import { T } from '../../lib/ruby'
-  import Ruby from '../Ruby.svelte'
+  import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
   import StrokeAnim from './StrokeAnim.svelte'
   import ToneDrill from './ToneDrill.svelte'
@@ -17,8 +18,9 @@
   let { n, onexit }: { n: number; onexit: () => void } = $props()
 
   const LESSONS = (lessonsData as any).lessons as any[]
-  const CN = { 1: '一', 2: '二', 3: '三', 4: '四', 5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十', 11: '十一', 12: '十二' }
-  const cn = (x: number | string) => CN[+x] || String(x)
+  const cn = cnNum
+  /* 中文数字的注音逃生口（题号/课号的 rt 需数字读音，引擎不管数字） */
+  const npy = (x: number | string) => ({ [cn(x)]: NUM_PY[cn(x)] || '' })
 
   /* 截至本课已学过的字母（小测干扰项只从中取，不超纲） */
   const learnedKeys = $derived.by(() => {
@@ -27,13 +29,13 @@
     return set
   })
 
-  const STEPS = [
-    { id: 1, name: '认识', py: 'rèn shi' },
-    { id: 2, name: '写法', py: 'xiě fǎ' },
-    { id: 3, name: '声调', py: 'shēng diào' },
-    { id: 4, name: '拼读', py: 'pīn dú' },
-    { id: 5, name: '小测', py: 'xiǎo cè' },
-  ] as const
+  const STEPS: { id: number; k: StringKey }[] = [
+    { id: 1, k: 'stepKnow' },
+    { id: 2, k: 'stepWrite' },
+    { id: 3, k: 'stepTone' },
+    { id: 4, k: 'stepBlend' },
+    { id: 5, k: 'stepQuiz' },
+  ]
 
   let step = $state(1)                // 1..5（= HSteps 页号 + 1）
   let li = $state(0)                 // 当前字母下标
@@ -81,7 +83,7 @@
       }
     }
     quiz = { q: qs, i: 0, score: 0, pick: '', lastPick: '', done: false, passed: false }
-    setTimeout(() => playQuestionAudio(qs[0]), 400)
+    /* v2.6 零自动播放：小测出题不再自动读音，题面 🔊 点播 */
   }
 
   function playQuestionAudio(q: any) {
@@ -101,11 +103,11 @@
         quiz.done = true
         quiz.passed = submitQuiz(n, quiz.score, LESSONS.length)
         sndStar()
-        playAudio(quiz.passed ? (quiz.score >= 5 ? 'lessons/cheer_perfect' : 'lessons/cheer_pass') : 'lessons/cheer_retry')
+        /* v2.6 零自动播放：结算只留星星音（非语音），cheer 语音废除 */
       } else {
         quiz.i++
         quiz.pick = ''
-        playQuestionAudio(quiz.q[quiz.i])
+        /* v2.6 零自动播放：下一题不自动读音，孩子点 🔊 再听 */
       }
     }, right ? 650 : 1400)
   }
@@ -146,8 +148,8 @@
   <div class="ltop">
     <button class="cbtn" data-back="learn" onclick={onexit} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
     <div class="ltt">
-      <ruby>第 {cn(n)} 课<rt>dì {n} kè</rt></ruby>
-      {#if short.zh}&nbsp;·&nbsp;<ruby>{short.zh}<rt>{short.py}</rt></ruby>{:else}&nbsp;·&nbsp;{short.raw}{/if}
+      <Speak k="lessonN" vars={{ n: cn(n) }} py={{ 第: 'dì', ...npy(n), 课: 'kè' }} />
+      {#if short.zh}&nbsp;·&nbsp;<Speak text={short.zh} py={{ [short.zh]: short.py }} />{:else}&nbsp;·&nbsp;{short.raw}{/if}
     </div>
     <div class="lprog" id="lprog">{step}/5</div>
   </div>
@@ -161,7 +163,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>
           {:else}{s.id}{/if}
         </span>
-        <span class="rname"><ruby>{s.name}<rt>{s.py}</rt></ruby></span>
+        <span class="rname"><Speak k={s.k} /></span>
       </button>
     {/each}
   </div>
@@ -171,58 +173,59 @@
     <HSteps n={5} cur={step - 1} onchange={(i) => goto(i + 1)}>
       <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5） -->
       <div class="hspage"><div class="pcard">
-        <div class="ptag"><ruby>认识<rt>rèn shi</rt></ruby> · {letter.k}</div>
+        <div class="ptag"><Speak k="stepKnow" plain /> · {letter.k}</div>
         <div class="lchips">
           {#each letters as l, i (l.k)}
             <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => (li = i)}>{l.k}</button>
           {/each}
         </div>
         <div class="knowfit">
-          <PinyinCard mode="full" k={letter.k} tip={T('点一点，听读音')} />
+          <PinyinCard mode="full" k={letter.k} tip={T(tRaw('tapHearSound'))} />
         </div>
       </div></div>
 
       <!-- 页2 · 写法：笔顺动画 + 旁白 -->
       <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><ruby>写法<rt>xiě fǎ</rt></ruby> · {letter.k}</div>
+        <div class="ptag hot"><Speak k="stepWrite" plain /> · {letter.k}</div>
         <div class="animfit"><StrokeAnim unit={letter.k} static={staticN} play={step === 2} bind:this={sa} /></div>
-        <div class="sayline">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Ruby text={seg} />{/each}</div>
+        <div class="sayline">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Speak text={seg} />{/each}</div>
         <div class="xrow">
           <button class="rebtn" onclick={() => { sa?.replay(); if (letter.sayAudio) playAudio(letter.sayAudio, { hint: '' }) }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4" /><path d="M21 4v5h-5" /></svg>
-            <ruby>再看一遍<rt>zài kàn yī biàn</rt></ruby>
+            <Speak k="seeAgain" plain />
           </button>
         </div>
-        <div class="taptip"><ruby>看一遍，再写一遍<rt>kàn yī biàn zài xiě yī biàn</rt></ruby></div>
+        <div class="taptip"><Speak k="watchWriteLine" /></div>
       </div></div>
 
       <!-- 页3 · 声调 -->
       <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><ruby>声调<rt>shēng diào</rt></ruby></div>
+        <div class="ptag hot"><Speak k="stepTone" plain /></div>
         <div class="drillfit"><ToneDrill rows={lesson.tones} /></div>
       </div></div>
 
       <!-- 页4 · 拼读 / 整体认读 -->
       <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><ruby>拼读<rt>pīn dú</rt></ruby></div>
+        <div class="ptag hot"><Speak k="stepBlend" plain /></div>
         <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} tones={lesson.tones || []} note={lesson.note || ''} /></div>
       </div></div>
 
       <!-- 页5 · 小测 -->
       <div class="hspage"><div class="pcard">
         {#if !quiz.q.length && !quiz.done}
-          <div class="quizboot"><ruby>准备好了吗<rt>zhǔn bèi hǎo le ma</rt></ruby></div>
-          <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><ruby>开始小测<rt>kāi shǐ xiǎo cè</rt></ruby></button>
+          <div class="quizboot"><Speak k="quizReady" /></div>
+          <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><Speak k="startQuiz" plain /></button>
         {:else if !quiz.done}
           {@const q = quiz.q[quiz.i]}
-          <div class="ptag hot"><ruby>小测<rt>xiǎo cè</rt></ruby> · <ruby>第{cn(quiz.i + 1)}题<rt>dì {cn(quiz.i + 1)} tí</rt></ruby></div>
+          <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
           <div class="qprog">{#each Array(5) as _, i (i)}<span class="qdot" class:ok={i < quiz.i}></span>{/each}</div>
           {#if q.type === 'listen'}
-            <button class="qplay" onclick={() => playQuestionAudio(q)}><Icon name="play" size={40} /></button>
-            <div class="qhint"><ruby>听一听，选出来<rt>tīng yī tīng xuǎn chū lái</rt></ruby></div>
+            <button class="qplay" onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
+            <div class="qhint"><Speak k="listenChoose" /></div>
           {:else}
             <div class="qglyph">{q.k}</div>
-            <div class="qhint"><ruby>看一看，它怎么读<rt>kàn yī kàn tā zěn me dú</rt></ruby></div>
+            <button class="qplay sm" onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={24} /></button>
+            <div class="qhint"><Speak k="lookHowRead" /></div>
           {/if}
           <div class="opts">
             {#each q.opts as o (o)}
@@ -236,16 +239,16 @@
         {:else if quiz.passed}
           <div class="res">
             <div class="resemoji"><Icon name="rainbow" size={46} /><Icon name="star" size={46} /></div>
-            <div class="resscore"><ruby>对了{cn(quiz.score)}题，太棒了！<rt>duì le {quiz.score} tí tài bàng le</rt></ruby></div>
+            <div class="resscore"><Speak k="gotNGreat" vars={{ n: cn(quiz.score) }} /></div>
             <div class="resstars">{#each Array(quiz.score >= 5 ? 3 : 2) as _, i (i)}<Icon name="star" size={30} />{/each}</div>
-            <button class="bootbtn" data-backlearn onclick={onexit}><ruby>回课程地图<rt>huí kè chéng dì tú</rt></ruby></button>
+            <button class="bootbtn" data-backlearn onclick={onexit}><Speak k="backMap" plain /></button>
           </div>
         {:else}
           <div class="res">
             <div class="resemoji"><Icon name="sprout" size={46} /><Icon name="dumbbell" size={46} /></div>
-            <div class="resscore"><ruby>对了{cn(quiz.score)}题<rt>duì le {quiz.score} tí</rt></ruby></div>
-            <div class="resmsg"><ruby>差一点点！再学一遍，你一定可以的<rt>chà yī diǎn diǎn zài xué yī biàn</rt></ruby></div>
-            <button class="bootbtn" onclick={restudy}><ruby>再学一遍<rt>zài xué yī biàn</rt></ruby></button>
+            <div class="resscore"><Speak k="gotNScore" vars={{ n: cn(quiz.score) }} /></div>
+            <div class="resmsg"><Speak k="almostMsg" /></div>
+            <button class="bootbtn" onclick={restudy}><Speak k="restudy" plain /></button>
           </div>
         {/if}
       </div></div>
@@ -259,7 +262,7 @@
         <i class:on={step === i + 1} data-dot={s.id}></i>
       {/each}
     </div>
-    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一步<rt>zuǒ huá xià yī bù</rt></ruby></div>
+    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextStep" /></div>
   </div>
 </section>
 
@@ -346,6 +349,7 @@
   .qdot.ok { background: var(--animal-primary); }
   .qplay { width: 84px; height: 84px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 0 #e3d9c8;
     color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: none; }
+  .qplay.sm { width: 56px; height: 56px; margin: 4px 0; }
   .qplay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }
   .qglyph { font-size: 84px; font-weight: 900; color: var(--animal-text); line-height: 1.2; }
   .qhint { font-size: 15px; font-weight: 800; color: var(--animal-text-2); flex: none; }

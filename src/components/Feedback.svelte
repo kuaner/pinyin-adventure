@@ -4,7 +4,7 @@
      汉字题（常见字快拼）仍走原 glyph+描述版式 */
   import { QZ, fbSkip } from '../stores/session.svelte'
   import { LETTERS } from '../data'
-  import { T } from '../lib/ruby'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import PinyinCard from './PinyinCard.svelte'
 
@@ -15,7 +15,7 @@
 
 <div id="fb" class={'on ' + (fb!.good ? 'good' : 'bad')}>
   <div id="fbicon"><Icon name={({ celebrate: 'rainbow', detect: 'eye', cheer: 'dumbbell' } as Record<string, string>)[fb!.icon] ?? 'smile'} size={96} /></div>
-  <div id="fbtext">{@html T(fb!.text)}</div>
+  <div id="fbtext"><Speak text={fb!.text} /></div>
   {#if pcKey && !fb!.good}
     <div id="fbdetail" style="display:flex" data-pcdetail={pcKey}>
       <PinyinCard mode="mini" k={pcKey} />
@@ -23,7 +23,7 @@
   {:else}
     <div id="fbdetail" style="display:flex">
       <div class="glyph" id="fbglyph">{fb!.glyph}</div>
-      <div class="fdesc" id="fbdesc">{@html T(fb!.desc)}</div>
+      <div class="fdesc" id="fbdesc"><Speak text={fb!.desc} /></div>
     </div>
   {/if}
   {#if fb!.good}
@@ -31,5 +31,5 @@
       <div class="floatstar" style="left:{starLeft};top:42%"><Icon name="star" size={34} /></div>
     {/key}
   {/if}
-  <button id="fbskip" onclick={fbSkip}>{@html T('继续 ›')}</button>
+  <button id="fbskip" onclick={fbSkip}><Speak k="continueBtn" plain /></button>
 </div>

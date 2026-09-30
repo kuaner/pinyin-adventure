@@ -1,5 +1,6 @@
 /* 学习岛进度 store：12 课顺序解锁 + 小测 4/5 门槛 + 星图（localStorage pinyin_learn，独立于 pinyin_v2） */
 import { markDay } from './progress.svelte'
+import { LESSON_SHORT } from '../text/strings'
 
 const KEY = 'pinyin_learn'
 
@@ -58,18 +59,9 @@ export function submitQuiz(n: number, score: number, totalLessons: number): bool
 export function learnDoneCount(): number { return Object.keys(L.stars).length }
 export function learnStarSum(): number { let t = 0; for (const k in L.stars) t += L.stars[k]; return t }
 
-/* 课目短名（学习 tab 课程胶囊/题内标题）：拉丁开头的课（L10）直接用原文名，不注音 */
-const SHORT: Record<number, { zh: string; py: string }> = {
-  1: { zh: '单韵母', py: 'dān yùn mǔ' }, 2: { zh: '单韵母', py: 'dān yùn mǔ' },
-  3: { zh: '声母', py: 'shēng mǔ' }, 4: { zh: '声母', py: 'shēng mǔ' },
-  5: { zh: '声母', py: 'shēng mǔ' }, 6: { zh: '声母', py: 'shēng mǔ' },
-  7: { zh: '声母', py: 'shēng mǔ' }, 8: { zh: '声母', py: 'shēng mǔ' },
-  9: { zh: '复韵母', py: 'fù yùn mǔ' },
-  11: { zh: '后鼻韵母', py: 'hòu bí yùn mǔ' },
-  12: { zh: '整体认读', py: 'zhěng tǐ rèn dú' },
-}
+/* 课目短名（学习 tab 课程胶囊/题内标题）：正本在 strings.ts LESSON_SHORT；拉丁开头的课（L10）直接用原文名 */
 export function lessonShort(n: number, title: string): { zh?: string; py?: string; raw: string } {
-  const s = SHORT[n]
+  const s = LESSON_SHORT[n]
   if (s) return { zh: s.zh, py: s.py, raw: s.zh }
   const first = title.split(/\s/)[0] || title
   return { raw: first }

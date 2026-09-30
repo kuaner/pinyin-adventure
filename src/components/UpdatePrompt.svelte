@@ -3,7 +3,7 @@
      registerSW onNeedRefresh → 小鸡举牌"有新版本啦！" → 点击 updateSW()（skipWaiting+reload）。
      兜底：visibilitychange 回前台时 reg.update() 主动查新（加桌面后长期不刷新的场景）。 */
   import { onMount } from 'svelte'
-  import Ruby from './Ruby.svelte'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
   let needUpdate = $state(false)
@@ -46,11 +46,11 @@
     <div class="updbar">
       <div class="updchick"><Icon name="bird" size={30} /></div>
       <div class="updboard">
-        <div class="updtitle"><Ruby text="有新版本啦！" /></div>
-        <div class="upddesc"><Ruby text="小鸡叼来了新内容，点它更新" /></div>
+        <div class="updtitle"><Speak k="newVersion" /></div>
+        <div class="upddesc"><Speak k="chickUpdate" /></div>
       </div>
       <button class="updgo" type="button" data-update-go onclick={handleUpdate}>
-        <Icon name="refresh" size={18} /> <Ruby text="更新" />
+        <Icon name="refresh" size={18} /> <Speak k="update" plain />
       </button>
     </div>
   </div>
@@ -60,7 +60,7 @@
   .updwrap { position: fixed; left: 0; right: 0; bottom: 0; z-index: 200; padding: 0 14px calc(env(safe-area-inset-bottom) + 14px);
     pointer-events: none; display: flex; justify-content: center; }
   .updbar { pointer-events: auto; width: min(100%, 400px); background: #fff; border: 2.5px solid #eee4d3; border-radius: 20px;
-    box-shadow: 0 8px 24px rgba(61, 52, 40, .18); padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 5px 0 #e3d9c8; padding: 12px 14px; display: flex; align-items: center; gap: 12px;
     animation: updin .4s cubic-bezier(.2, 1.4, .4, 1); }
   @keyframes updin { 0% { transform: translateY(80px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
   .updchick { flex: 0 0 52px; height: 52px; border-radius: 50%; background: #e6f7f2; display: flex; align-items: center;

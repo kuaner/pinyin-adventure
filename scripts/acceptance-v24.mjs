@@ -62,9 +62,9 @@ async function noHScroll(page) {
     on: document.querySelector('#tabbar .tab.on')?.getAttribute('data-tab'),
     hero: !!document.querySelector('#hero'),
     letters: document.querySelectorAll('#hero .letter').length,
-    cta: document.querySelector('#cta')?.textContent?.trim(),
+    cta: (() => { const el = document.querySelector('#cta'); if (!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('rt').forEach((x) => x.remove()); return c.textContent.trim() })(),
     caps: document.querySelectorAll('#caps .cap').length,
-    curCap: document.querySelector('#caps .cap.cur')?.textContent,
+    curCap: (() => { const el = document.querySelector('#caps .cap.cur'); if (!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('rt').forEach((x) => x.remove()); return c.textContent })(),
     radio: !!document.querySelector('#radio'),
     rt: document.querySelectorAll('#v-learntab rt').length,
     grid4: !!document.querySelector('#hero .grid4'),
@@ -95,12 +95,12 @@ async function noHScroll(page) {
   ok('练习 tab 零纵向滚动', z.ok, JSON.stringify(z))
   const pr = await page.evaluate(() => ({
     modes: document.querySelectorAll('#pgrid .mode').length,
-    badges: [...document.querySelectorAll('#pgrid .mbadge')].map((b) => b.textContent.trim()),
+    badges: [...document.querySelectorAll('#pgrid .mbadge')].map((b) => { const c = b.cloneNode(true); c.querySelectorAll('rt').forEach((x) => x.remove()); return c.textContent.trim() }),
     go: ['levels', 'bolt', 'zi', 'detect', 'pairs', 'free'].filter((g) => !!document.querySelector(`[data-go="${g}"]`)).length,
   }))
   ok('六模式卡阵 + 六入口', pr.modes === 6 && pr.go === 6, JSON.stringify(pr))
-  ok('角标=真实进度（第3关/最佳96%/连对12/1组待加强）',
-    /第 3 关/.test(pr.badges[0]) && /96%/.test(pr.badges[1]) && /连对/.test(pr.badges[3]) && /1 组/.test(pr.badges[4]) || /待加强/.test(pr.badges[4] || ''),
+  ok('角标=真实进度（第4关/最佳96%/连对12/1组待加强）',
+    /第 4 关/.test(pr.badges[0]) && /96%/.test(pr.badges[1]) && /连对/.test(pr.badges[3]) && /1 组/.test(pr.badges[4]) || /待加强/.test(pr.badges[4] || ''),
     JSON.stringify(pr.badges))
   await shot(page, '2-practice')
   await page.context().close()
@@ -214,8 +214,8 @@ async function noHScroll(page) {
     n: document.querySelectorAll('#v-radio .pcard').length,
     cur: document.querySelector('#v-radio .ptag')?.textContent,
     caps: document.querySelectorAll('#rcaps .cap').length,
-    chain: document.querySelector('#chainbtn')?.textContent.trim(),
-    loop: document.querySelector('#loopbtn')?.textContent.trim(),
+    chain: (() => { const el = document.querySelector('#chainbtn'); if (!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('rt').forEach((x) => x.remove()); return c.textContent.trim() })(),
+    loop: (() => { const el = document.querySelector('#loopbtn'); if (!el) return ''; const c = el.cloneNode(true); c.querySelectorAll('rt').forEach((x) => x.remove()); return c.textContent.trim() })(),
   }))
   ok('口诀全集收录（63 条，声母+韵母+整体认读全覆盖）', r.n >= 47 && r.caps === r.n, JSON.stringify({ n: r.n, caps: r.caps }))
   ok('连播/循环控件在屏', /连播/.test(r.chain || '') && /循环/.test(r.loop || ''), r.chain + '/' + r.loop)

@@ -2,7 +2,8 @@
   /* 声调练习（五步之③）：四声演示（真人音 + 声调符号方向动画）+ 听调辨调小练（听音选声调符号） */
   import { playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
   import { toast } from '../../stores/ui.svelte'
-  import Ruby from '../Ruby.svelte'
+  import { tRaw } from '../../text/strings'
+  import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
 
   export type ToneRow = { base: string; display: string; tones: { t: number; display: string; file: string }[] }
@@ -21,10 +22,10 @@
   let timer: ReturnType<typeof setTimeout> | null = null
 
   const MARKS = [
-    { t: 1, name: '一声', d: 'M6 14 H50', tip: '平平走' },
-    { t: 2, name: '二声', d: 'M8 24 L48 4', tip: '往上扬' },
-    { t: 3, name: '三声', d: 'M6 6 L27 24 L50 6', tip: '拐个弯' },
-    { t: 4, name: '四声', d: 'M8 4 L48 24', tip: '往下降' },
+    { t: 1, name: tRaw('toneName1'), d: 'M6 14 H50', tip: tRaw('toneTip1') },
+    { t: 2, name: tRaw('toneName2'), d: 'M8 24 L48 4', tip: tRaw('toneTip2') },
+    { t: 3, name: tRaw('toneName3'), d: 'M6 6 L27 24 L50 6', tip: tRaw('toneTip3') },
+    { t: 4, name: tRaw('toneName4'), d: 'M8 4 L48 24', tip: tRaw('toneTip4') },
   ]
   const COLORS = ['#2A9D8F', '#E76F51', '#6C86E8', '#B77DEE']
 
@@ -50,12 +51,12 @@
   function nextQ() {
     qPick = 0; lastPickTone = 0
     qTone = 1 + Math.floor(Math.random() * 4)
-    playAudio(row.tones[qTone - 1].file, { hint: '语音未准备好' })
+    /* v2.6 零自动播放：出题不自动播音，孩子点 🔊 replay 听题 */
   }
   function pick(t: number) {
     if (qPick) return
     qPick = 1; lastPickTone = t
-    if (t === qTone) { qRight++; sndOk() } else { sndNo(); playAudio(row.tones[qTone - 1].file, { hint: '再听一遍' }) }
+    if (t === qTone) { qRight++; sndOk() } else { sndNo() /* v2.6 零自动播放：答错只留嘟声，重听走 replay 键 */ }
     setTimeout(() => {
       qIdx++
       if (qIdx >= 4) { qDone = true; sndStar() } else nextQ()
@@ -83,37 +84,37 @@
             <path d={MARKS[i].d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" />
           </svg>
           <span class="tsyl">{tn.display}</span>
-          <span class="tname"><Ruby text="{MARKS[i].name} {MARKS[i].tip}" /></span>
+          <span class="tname"><Speak text={MARKS[i].name + ' ' + MARKS[i].tip} /></span>
         </button>
       {/each}
     </div>
 
     <div class="trow">
-      <button class="btn teal small" onclick={playAll}><Icon name="play" size={20} /> <Ruby text="跟我读" /></button>
-      <button class="btn green small" onclick={startQuiz}><Icon name="headphones" size={20} /> <Ruby text="小耳朵练一练" /></button>
+      <button class="btn teal small" onclick={playAll}><Icon name="play" size={20} /> <Speak k="followMe" plain /></button>
+      <button class="btn green small" onclick={startQuiz}><Icon name="headphones" size={20} /> <Speak k="earPractice" plain /></button>
     </div>
   {:else if !qDone}
-    <div class="qhint"><Ruby text="听一听，是第几声？" /></div>
+    <div class="qhint"><Speak k="whichTone" /></div>
     <div class="qprog">{#each Array(4) as _, i}<span class="dot" class:ok={i < qRight}></span>{/each}</div>
-    <button class="replay" onclick={() => playAudio(row.tones[qTone - 1].file, { hint: '语音未准备好' })}>
+    <button class="replay" aria-label="listen" onclick={() => playAudio(row.tones[qTone - 1].file, { hint: tRaw('notReady') })}>
       <Icon name="play" size={44} />
     </button>
     <div class="topts">
       {#each MARKS as m, i (m.t)}
         <button class="topt" class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
           <svg viewBox="0 0 56 30"><path d={m.d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
-          <span><Ruby text={m.name} /></span>
+          <span><Speak text={m.name} /></span>
         </button>
       {/each}
     </div>
   {:else}
     <div class="qresult">
       <div class="qemoji"><Icon name="ear" size={46} /> <Icon name="star" size={46} /></div>
-      <div class="qscore"><Ruby text="听对了 {qRight} 个" /></div>
-      {#if qRight >= 3}<div class="qpraise"><Ruby text="小耳朵真灵！" /></div>{:else}<div class="qpraise"><Ruby text="再多听几遍就更棒啦" /></div>{/if}
+      <div class="qscore"><Speak k="heardN" vars={{ n: qRight }} /></div>
+      {#if qRight >= 3}<div class="qpraise"><Speak k="goodEars" /></div>{:else}<div class="qpraise"><Speak k="listenMore" /></div>{/if}
       <div class="trow">
-        <button class="btn teal small" onclick={startQuiz}><Icon name="refresh" size={20} /> <Ruby text="再练一次" /></button>
-        <button class="btn green small" onclick={() => { quizOn = false; ondone?.() }}><Ruby text="练好啦" /></button>
+        <button class="btn teal small" onclick={startQuiz}><Icon name="refresh" size={20} /> <Speak k="tonePracticeAgain" plain /></button>
+        <button class="btn green small" onclick={() => { quizOn = false; ondone?.() }}><Speak k="tonePracticeDone" plain /></button>
       </div>
     </div>
   {/if}

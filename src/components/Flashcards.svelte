@@ -4,19 +4,19 @@
   import { FC, setCat, flip, rate, deckInfo } from '../stores/flash.svelte'
   import { cardRec } from '../stores/progress.svelte'
   import { show } from '../stores/ui.svelte'
-  import { T } from '../lib/ruby'
-  import Ruby from './Ruby.svelte'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import PinyinCard from './PinyinCard.svelte'
+  import type { StringKey } from '../text/strings'
 
   const k = $derived(FC.deck[FC.idx])
   const finished = $derived(FC.idx >= FC.deck.length)
-  const tabs = [
-    { cat: 'all', label: '全部' },
-    { cat: 'sm', label: '声母' },
-    { cat: 'ym', label: '韵母' },
-    { cat: 'zt', label: '整体认读' },
-  ] as const
+  const tabs: { cat: 'all' | 'sm' | 'ym' | 'zt'; k: StringKey }[] = [
+    { cat: 'all', k: 'catAll' },
+    { cat: 'sm', k: 'catSm' },
+    { cat: 'ym', k: 'catYm' },
+    { cat: 'zt', k: 'catZt' },
+  ]
 
   /* ---- 横向拖拽：>55px 左滑 = 下一张（不评分跳过），右滑 = 翻回正面；点按翻面 ---- */
   let x0: number | null = null
@@ -56,14 +56,14 @@
 
 <section id="v-flash" class="view on" data-screen="flash">
   <div class="ltop">
-    <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt"><ruby>闪卡复习<rt>shǎn kǎ fù xí</rt></ruby></div>
+    <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="back"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt"><Speak k="flashReview" /></div>
     <div class="lprog" id="deckinfo">{FC.idx + 1}/{FC.deck.length}</div>
   </div>
-  <div class="deckline" id="decktext">{@html deckInfo()}</div>
+  <div class="deckline" id="decktext"><Speak text={deckInfo()} /></div>
   <div class="ftabs" id="ftabs">
-    {#each tabs as t (t.cat)}
-      <button class="ftab" class:on={FC.cat === t.cat} data-cat={t.cat} onclick={() => setCat(t.cat)}>{@html T(t.label)}</button>
+    {#each tabs as tb (tb.cat)}
+      <button class="ftab" class:on={FC.cat === tb.cat} data-cat={tb.cat} onclick={() => setCat(tb.cat)}><Speak k={tb.k} /></button>
     {/each}
   </div>
 
@@ -87,23 +87,23 @@
     >
       {#if finished}
         <div style="line-height:1"><Icon name="rainbow" size={60} /></div>
-        <div style="font-size:22px;font-weight:900;color:#2FA95C">{@html T('这一盒翻完啦！')}</div>
-        <div class="fchint">{@html T('换分类继续，或明天再来')}</div>
+        <div style="font-size:22px;font-weight:900;color:#2FA95C"><Speak k="boxDone" /></div>
+        <div class="fchint"><Speak k="boxDoneHint" /></div>
       {:else}
-        <div class="fcbox" id="fcbox">{@html T('盒')} {cardRec(k).box}</div>
+        <div class="fcbox" id="fcbox"><Speak k="boxLabel" plain /> {cardRec(k).box}</div>
         <div id="fcinner">
           <!-- v2.5 PinyinCard card 档：正面=字模+口诀，翻面=笔顺动画+例词（统一学习卡片接入点） -->
           {#if k}<PinyinCard mode="card" k={k} flipped={FC.flipped} />{/if}
         </div>
-        <div class="fchint" id="fchint">{@html FC.flipped ? T('点卡片翻回 · 左滑下一张') : T('点卡片翻面听读音')}</div>
+        <div class="fchint" id="fchint">{#if FC.flipped}<Speak k="flipHintBack" />{:else}<Speak k="flipHintFront" />{/if}</div>
       {/if}
     </div>
   </div>
 
   <div id="rate">
-    <button class="ratebtn r1" data-rate="1" onclick={() => rate(1)}><Ruby text="还不会" /><br><Ruby text="今天再学" /></button>
-    <button class="ratebtn r2" data-rate="2" onclick={() => rate(2)}><Ruby text="快会了" /><br><Ruby text="明天再来" /></button>
-    <button class="ratebtn r3" data-rate="3" onclick={() => rate(3)}><Ruby text="会啦" />！<br>3<Ruby text="天后再见" /></button>
+    <button class="ratebtn r1" data-rate="1" onclick={() => rate(1)}><Speak k="rateNotYet" plain /><br><Speak k="rateToday" plain /></button>
+    <button class="ratebtn r2" data-rate="2" onclick={() => rate(2)}><Speak k="rateAlmost" plain /><br><Speak k="rateTomorrow" plain /></button>
+    <button class="ratebtn r3" data-rate="3" onclick={() => rate(3)}><Speak k="rateGot" plain />！<br>3<Speak k="rateDays" plain /></button>
   </div>
 </section>
 

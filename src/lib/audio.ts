@@ -4,7 +4,7 @@
 import { LETTERS, HYP } from '../data'
 import { S } from '../stores/progress.svelte'
 import { toast } from '../stores/ui.svelte'
-import { T } from './ruby'
+import { t } from '../text/strings'
 
 /* ---------- 第一层：AudioContext 触屏解锁 + WebAudio 反馈音 ---------- */
 let AC: AudioContext | null = null
@@ -124,7 +124,7 @@ export function isPlaying(): boolean { return !!CUR }
 export function say(k: string) {
   const L = LETTERS[k]
   if (!L) return
-  playAudio(letterAudio(k), { hint: T('语音未准备好 · 读音像「' + L.han + '」') })
+  playAudio(letterAudio(k), { hint: t('fallbackHint', { han: L.han }) })
 }
 
 export function preloadAudios() {

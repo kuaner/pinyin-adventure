@@ -2,7 +2,7 @@
   /* 看字选音：锚点区 + 大字模 + 宽选项（先点喇叭听 → 再点一次确认） */
   import { QZ, answer, armLook } from '../../stores/session.svelte'
   import { PH } from '../../data'
-  import { T } from '../../lib/ruby'
+  import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
   import AnchorBar from '../AnchorBar.svelte'
   import type { LookQ as LookQT } from '../../lib/types'
@@ -28,8 +28,8 @@
       onclick={() => armLook(idx)}
     >
       <Icon name="headphones" size={34} />
-      <span class="ob" class:confirm={armed === idx}>{#if armed === idx}{@html T('再点一次确认')}{:else}{CIRC[idx]}{/if}</span>
+      <span class="ob" class:confirm={armed === idx}>{#if armed === idx}<Speak k="confirmAgain" plain />{:else}{CIRC[idx]}{/if}</span>
     </button>
   {/each}
 </div>
-<div class="subhint" id="subhint">{@html T('先点喇叭听一听，再点一次选定')}</div>
+<div class="subhint" id="subhint"><Speak k="lookSubHint" /></div>

@@ -2,7 +2,7 @@
   /* 历史成绩 v2.4（家长向，文字不注音）：课程进度条 + 历史记录横向翻页卡片（5 条/页，零纵向滚动） */
   import { S, save } from '../stores/progress.svelte'
   import { show } from '../stores/ui.svelte'
-  import { T } from '../lib/ruby'
+  import { t } from '../text/strings'
   import { L as LRN } from '../stores/learn.svelte'
   import lessonsData from '../data/lessons.json'
   import Icon from './Icon.svelte'
@@ -17,13 +17,13 @@
 
 <section id="v-history" class="view on" data-screen="history">
   <div class="ltop">
-    <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt">学习历史</div>
-    <div class="lprog">{S.hist.length} 条</div>
+    <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="back"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt">{t('histTitle')}</div>
+    <div class="lprog">{t('histCount', { n: S.hist.length })}</div>
   </div>
 
   <div class="learnprog">
-    <div class="lptitle"><Icon name="sprout" size={16} /> 学习岛课程进度（第 {LRN.u} 课已解锁） <button class="gol" data-golearn onclick={() => show('learn')}>去学习 ›</button></div>
+    <div class="lptitle"><Icon name="sprout" size={16} /> {t('learnProgressN', { n: LRN.u })} <button class="gol" data-golearn onclick={() => show('learn')}>{t('goLearn')}</button></div>
     <div class="lpmap">
       {#each LESSONS as ls (ls.n)}
         <div class="lpcell" class:done={(LRN.stars[ls.n] || 0) > 0} class:lock={ls.n > LRN.u}>
@@ -40,13 +40,13 @@
       {#each pages as pg, pi (pi)}
         <div class="hspage"><div class="pcard">
           {#if pg.length === 0}
-            <div class="hempty">还没有记录，快去闯关吧！</div>
+            <div class="hempty">{t('histEmpty')}</div>
           {:else}
             {#each pg as r, ri (pi + '-' + ri)}
               <div class="hitem">
                 <div class="ht">{r.d}</div>
                 <div class="hl">{@html r.lv}</div>
-                <div class="hs">{#if r.st >= 0}{#each Array(r.st) as _, i}<Icon name="star" size={14} />{/each} {/if}{r.sc}分</div>
+                <div class="hs">{#if r.st >= 0}{#each Array(r.st) as _, i}<Icon name="star" size={14} />{/each} {/if}{t('histScore', { n: r.sc })}</div>
                 {#if r.wp}<div class="hs" style="color:#C77B1E">{r.wp}</div>{/if}
               </div>
             {/each}
@@ -61,15 +61,15 @@
       <div id="dots">
         {#each pages as _, i (i)}<i class:on={cur === i}></i>{/each}
       </div>
-      <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg>左滑，更多记录</div>
+      <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg>{t('swipeMoreHist')}</div>
     </div>
   {:else}
     <div style="flex:0 0 8px"></div>
   {/if}
 
   <button class="btn ghost small" id="hclear" onclick={() => {
-    if (confirm('只清空历史成绩，保留闯关进度和星星，确定吗？')) { S.hist = []; save(S); cur = 0 }
-  }}>清空记录</button>
+    if (confirm(t('clearConfirm'))) { S.hist = []; save(S); cur = 0 }
+  }}>{t('clearHist')}</button>
 </section>
 
 <style>

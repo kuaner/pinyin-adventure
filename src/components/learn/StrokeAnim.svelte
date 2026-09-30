@@ -8,7 +8,8 @@
      static >= 0 时仍为静态帧模式（?static=K 深链自检用）。
      用法：<StrokeAnim unit="b" play={step === 2} bind:this={sa} /> ；sa.replay() 重播 */
   import strokesData from '../../data/strokes.json'
-  import Ruby from '../Ruby.svelte'
+  import Speak from '../Speak.svelte'
+  import { STROKE_DOT, t } from '../../text/strings'
 
   const LETTERS = (strokesData as any).letters as Record<string, { strokes: { n: string; d: string }[] }>
   const UNITS = (strokesData as any).units as Record<string, string[]>
@@ -54,7 +55,7 @@
         const lx = m ? +m[1] : 50, ly = m ? +m[2] : 60
         const sx = lx + li * W, sy = ly
         let cx: number, cy: number
-        if (st.n === '点') {
+        if (st.n === STROKE_DOT) {
           cx = sx - 13; cy = sy - 4
         } else {
           const rest = st.d.slice(m![0].length).trim()
@@ -116,7 +117,7 @@
       cur = k
       onstroke?.(k, all[k]?.n || '')
       const L = p.getTotalLength()
-      const d = durOf(L, all[k]?.n === '点')
+      const d = durOf(L, all[k]?.n === STROKE_DOT)
       p.style.transition = 'none'
       p.style.strokeDasharray = L + ' ' + L
       p.style.strokeDashoffset = String(L)
@@ -175,7 +176,7 @@
     viewBox="0 0 {viewBoxW} 160"
     width={cell * letters.length}
     style="max-width:100%;max-height:100%;width:auto;height:100%"
-    role="img" aria-label="{unit} 笔顺演示">
+    role="img" aria-label="{unit} {t('ariaStroke')}">
     {#each [20, 60, 100, 140] as gy (gy)}
       <line x1="0" y1={gy} x2={viewBoxW} y2={gy} class="grid" class:grid2={gy === 60 || gy === 100} />
     {/each}
@@ -229,7 +230,7 @@
       {#each all as st, i (unit + '-' + i)}
         <span class="sit" class:is-cur={cur === i} class:is-done={cur > i || cur >= total} role="listitem">
           <i class="sn">{i + 1}</i>
-          <span class="sname"><Ruby text={st.n} /></span>
+          <span class="sname"><Speak text={st.n} /></span>
         </span>
       {/each}
     </div>

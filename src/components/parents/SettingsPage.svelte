@@ -3,6 +3,7 @@
   import { S, save } from '../../stores/progress.svelte'
   import { stopAll } from '../../lib/audio'
   import { show } from '../../stores/ui.svelte'
+  import { t } from '../../text/strings'
 
   function toggleMute() {
     S.mute = !S.mute
@@ -14,14 +15,14 @@
 <section id="v-settings" class="view on" data-screen="settings">
   <div class="ltop">
     <button class="cbtn" data-back="mine" onclick={() => show('mine')} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt">设置</div>
+    <div class="ltt">{t('settingsTitle')}</div>
     <div style="width:38px;flex:none"></div>
   </div>
 
   <div class="card setcard">
     <div class="setrow">
-      <div class="stx"><b>静音模式</b><span>关闭全部声音（默认关）。孩子界面不显示此状态，没有认知负担。</span></div>
-      <button class="switch" class:on={S.mute} id="mutesw" onclick={toggleMute} aria-label="静音模式">
+      <div class="stx"><b>{t('muteMode')}</b><span>{t('muteDesc')}</span></div>
+      <button class="switch" class:on={S.mute} id="mutesw" onclick={toggleMute} aria-label="mute">
         <i></i>
       </button>
     </div>
@@ -29,14 +30,14 @@
 
   <div class="card setcard">
     <div class="setrow col">
-      <div class="stx"><b>关于数据</b><span>全部学习进度只保存在本机浏览器（localStorage），不联网、不上传、无账号。</span></div>
+      <div class="stx"><b>{t('aboutData')}</b><span>{t('dataDesc')}</span></div>
     </div>
     <div class="setrow col" style="border-bottom:none">
-      <div class="stx"><b>声音来源</b><span>全部读音为预生成真人音频（无设备合成）。声音礼仪详情见「声音礼仪」页。</span></div>
+      <div class="stx"><b>{t('soundSource')}</b><span>{t('soundSourceDesc')}</span></div>
     </div>
   </div>
 
-  <div class="ver">拼音闯关大冒险 v2.4.1 · 拼音岛</div>
+  <div class="ver">{t('verLine')}</div>
 </section>
 
 <style>

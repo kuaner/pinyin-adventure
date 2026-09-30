@@ -2,9 +2,9 @@
 import { show, ui } from './ui.svelte'
 import { S, save, todayStr } from './progress.svelte'
 import { markResult } from './weights.svelte'
-import { playAudio, sndOk, sndNo } from '../lib/audio'
+import { sndOk, sndNo, sndStar } from '../lib/audio'
 import { makeBoltQ, BT_KEYS } from '../lib/quizEngine'
-import { T } from '../lib/ruby'
+import { t } from '../text/strings'
 import type { BoltQ } from '../lib/types'
 
 export const BT = $state({
@@ -69,8 +69,8 @@ export function boltAnswer(idx: number) {
   } else {
     BT.streak = 0
     sndNo()
-    /* 零错误信息铁律：答错只强化正确答案——播正确字母的读音（"这是 l，l l l"） */
-    say(q.A)
+    /* 零错误信息铁律 + v2.6 零自动播放：答错只强化正确答案（reveal 高亮正确项），
+       不再自动播读音——正确项点读走题面 🔊 */
   }
   const qRef = q
   setTimeout(() => {
@@ -103,7 +103,7 @@ export function endBolt() {
   BT.record = record
   BT.resultOn = true
   if (record) {
-    playAudio('star')
+    sndStar() /* v2.6 零自动播放：破纪录庆祝从 star 语音改为星星音（非语音） */
     BT.confetti = Array.from({ length: 14 }, (_, i) => i)
   }
 }
@@ -112,10 +112,10 @@ export function endBolt() {
 export function boltTitle(): string {
   const acc = BT.n ? Math.round(BT.ok * 100 / BT.n) : 0
   return BT.n === 0
-    ? T('还没来得及答题～')
-    : acc >= 90 ? T('闪电神速！')
-    : acc >= 75 ? T('又快又准！')
-    : T('完成挑战！')
+    ? t('boltNotAnswered')
+    : acc >= 90 ? t('boltGodspeed')
+    : acc >= 75 ? t('boltFastAcc')
+    : t('boltDone')
 }
 
 export function boltAcc(): number { return BT.n ? Math.round(BT.ok * 100 / BT.n) : 0 }

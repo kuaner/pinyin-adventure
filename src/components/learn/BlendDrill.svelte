@@ -3,7 +3,8 @@
      v2.4.1 修拼读页空白（BUGS#5）：单韵母课（L1/L2）无 blends/ztlist，v2.4 起整页空白——
      补「四声读一读」模式（tones 数据逐卡点读，课本同款四声练习）+ 全空兜底文案 */
   import { playAudio, letterAudio } from '../../lib/audio'
-  import Ruby from '../Ruby.svelte'
+  import { tRaw } from '../../text/strings'
+  import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
 
   export type Blend = { ini: string; fin: string; syl: string; tone: number; display: string; char: string; file: string }
@@ -39,34 +40,34 @@
 
 <div class="blenddrill">
   {#if note}
-    <div class="magicnote"><Icon name="bulb" size={22} /> <Ruby text={note} /></div>
+    <div class="magicnote"><Icon name="bulb" size={22} /> <Speak text={note} /></div>
   {/if}
 
   {#if ztMode}
-    <div class="zthint"><Ruby text="整体认读，直接读成一个音" /></div>
+    <div class="zthint"><Speak k="ztDirect" /></div>
     <div class="ztgrid">
       {#each ztlist as z (z.k)}
-        <button class="ztcard" onclick={() => playAudio(letterAudio(z.k), { hint: '语音未准备好' })}>
+        <button class="ztcard" onclick={() => playAudio(letterAudio(z.k), { hint: tRaw('notReady') })}>
           <span class="ztu">{z.k}</span>
-          <span class="zkj"><Ruby text={z.kj} /></span>
+          <span class="zkj"><Speak text={z.kj} plain /></span>
         </button>
       {/each}
     </div>
   {:else if singleMode}
-    <div class="zthint"><Ruby text="四个声调，读一读" /></div>
+    <div class="zthint"><Speak k="fourTonesRead" /></div>
     <div class="srows">
       {#each tones as row (row.base)}
         <div class="srow">
           <span class="sbase">{row.base}</span>
           <div class="sgrid">
             {#each row.tones as t (t.t)}
-              <button class="scard" data-syl={t.display} onclick={() => playAudio(t.file, { hint: '语音未准备好' })}>{t.display}</button>
+              <button class="scard" data-syl={t.display} onclick={() => playAudio(t.file, { hint: tRaw('notReady') })}>{t.display}</button>
             {/each}
           </div>
         </div>
       {/each}
     </div>
-    <div class="stip"><Ruby text="点一点，跟读一遍" /></div>
+    <div class="stip"><Speak k="tapFollow" /></div>
   {:else if b}
     <div class="stage" class:merged={merging}>
       <div class="card inicard">{b.ini}</div>
@@ -81,7 +82,7 @@
     <div class="steps">
       <button class="navbtn" disabled={idx === 0} onclick={() => move(-1)} aria-label="上一个">‹</button>
       <button class="btn teal" onclick={merge} disabled={merging}>
-        <Icon name="play" size={22} /> <Ruby text="拼一拼" />
+        <Icon name="play" size={22} /> <Speak k="blendIt" plain />
       </button>
       <button class="navbtn" disabled={idx === blends.length - 1} onclick={() => move(1)} aria-label="下一个">›</button>
     </div>
@@ -89,13 +90,13 @@
 
     <div class="btable">
       {#each blends as x, i (x.syl + i)}
-        <button class="bchip" class:on={i === idx} onclick={() => playAudio(x.file, { hint: '语音未准备好' })}>
+        <button class="bchip" class:on={i === idx} onclick={() => playAudio(x.file, { hint: tRaw('notReady') })}>
           {x.ini}·{x.fin}→{x.display}{x.char ? ' ' + x.char : ''}
         </button>
       {/each}
     </div>
   {:else if emptyAll}
-    <div class="bempty"><Ruby text="这一课的内容在前面的步骤里，往回滑一滑吧" /></div>
+    <div class="bempty"><Speak k="emptyBlend" /></div>
   {/if}
 </div>
 

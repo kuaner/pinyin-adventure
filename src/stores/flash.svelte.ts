@@ -3,7 +3,7 @@ import { S, save, todayStr, cardRec, dueToday } from './progress.svelte'
 import { LETTERS } from '../data'
 import { say, sndOk, sndStar, tone } from '../lib/audio'
 import { toast } from './ui.svelte'
-import { T } from '../lib/ruby'
+import { t } from '../text/strings'
 import { shuffle } from '../lib/quizEngine'
 
 export const FC = $state({
@@ -38,7 +38,7 @@ export function renderFlash() {
 
 export function flip() {
   if (FC.idx >= FC.deck.length) {
-    toast('换分类继续，或明天再来')
+    toast(t('flashDoneToast'))
     return
   }
   FC.flipped = !FC.flipped
@@ -70,11 +70,11 @@ export function deckInfo(): string {
   FC.deck.forEach((k) => { if (dueToday(cardRec(k))) dueN++ })
   if (FC.idx >= FC.deck.length) {
     return dueN > 0
-      ? T('本轮翻完！还有 ' + dueN + ' 张待复习')
-      : T('今天的复习完成啦！明天再来')
+      ? t('deckRoundLeft', { n: dueN })
+      : t('deckAllDone')
   }
   return (dueN > 0
-    ? T('今天待复习 ' + dueN + ' 张 · ')
-    : T('自由翻看 · '))
-    + T('卡片 ' + (FC.idx + 1) + '/' + FC.deck.length)
+    ? t('deckDueToday', { n: dueN })
+    : t('deckFree'))
+    + t('deckCardN', { a: FC.idx + 1, b: FC.deck.length })
 }

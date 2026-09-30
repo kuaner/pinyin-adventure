@@ -5,9 +5,8 @@
   import { BT, startBolt, endBolt, boltAnswer, boltQuit, boltTitle, boltAcc, boltAvg } from '../stores/bolt.svelte'
   import { S } from '../stores/progress.svelte'
   import { say } from '../lib/audio'
-  import { show, ui } from '../stores/ui.svelte'
-  import { T } from '../lib/ruby'
-  import Ruby from './Ruby.svelte'
+  import { show } from '../stores/ui.svelte'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
   const q = $derived(BT.q as any)
@@ -17,38 +16,30 @@
     return m + ':' + (s2 < 10 ? '0' : '') + s2
   })
 
-  /* blisten 出题自动读音（300ms） */
-  $effect(() => {
-    const cur = BT.q as any
-    if (!cur || cur.type !== 'blisten') return
-    const qRef = cur
-    setTimeout(() => {
-      if (!BT.done && ui.view === 'bolt' && BT.q === qRef) say(qRef.sound)
-    }, 300)
-  })
+  /* v2.6 零自动播放：blisten 出题不再自动读音——题面 🔊 大喇叭点播，孩子控节奏 */
 
 </script>
 
 <section id="v-bolt" class="view on" data-screen="bolt">
   <div class="ltop">
-    <button class="cbtn" data-back="boltquit" onclick={boltQuit} aria-label="退出"><Icon name="close" size={20} /></button>
-    <div class="ltt"><ruby>闪电刷题<rt>shǎn diàn shuā tí</rt></ruby></div>
+    <button class="cbtn" data-back="boltquit" onclick={boltQuit} aria-label="exit"><Icon name="close" size={20} /></button>
+    <div class="ltt"><Speak k="boltSprint" /></div>
     <div class="lprog" id="bolttime" class:low={BT.left <= 10}>{timeText}</div>
   </div>
   <div class="bolthud">
-    <span id="boltans">{@html T('已答 ')}{BT.n}</span>
-    <span id="boltacc">{@html T('正确率 ')}{BT.n ? Math.round(BT.ok * 100 / BT.n) + '%' : '--'}</span>
+    <span id="boltans"><Speak k="hudAnswered" plain />{BT.n}</span>
+    <span id="boltacc"><Speak k="hudAcc" plain />{BT.n ? Math.round(BT.ok * 100 / BT.n) + '%' : '--'}</span>
     <span id="boltstreak" class={BT.streak >= 5 ? 'hot' : ''}><Icon name="flame" size={18} /> {BT.streak}</span>
   </div>
   <div class="qcard" id="boltcard" style="display:{BT.resultOn ? 'none' : 'flex'}">
-    <div class="qhint" id="bhint">{@html T(q?.hint ?? '')}</div>
+    <div class="qhint" id="bhint"><Speak text={q?.hint ?? ''} /></div>
     {#key BT.q}
       <div class="glyphbox" id="bglyph">
         {#if q?.type === 'bkj'}
-          <div class="ruletext">「{@html T(q.stmt)}」</div>
+          <div class="ruletext">「<Speak text={q.stmt} />」</div>
         {:else if q?.type === 'blisten'}
           <div style="position:relative">
-            <button class="bigsound" type="button" onclick={() => say(q.sound)}><Icon name="headphones" size={44} /><span class="bslabel">{@html T('再听一遍')}</span></button>
+            <button class="bigsound" type="button" onclick={() => say(q.sound)}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
           </div>
         {/if}
       </div>
@@ -63,24 +54,24 @@
       </div>
     {/key}
   </div>
-  <button class="btn ghost small" id="boltstop" style="margin-top:12px;display:{BT.resultOn ? 'none' : 'block'}" onclick={endBolt}>{@html T('提前结束，看成绩')}</button>
+  <button class="btn ghost small" id="boltstop" style="margin-top:12px;display:{BT.resultOn ? 'none' : 'block'}" onclick={endBolt}><Speak k="stopEarly" plain /></button>
   <div id="boltresult" style="display:{BT.resultOn ? 'flex' : 'none'}">
     {#each BT.confetti as i (i)}
       <div class="bfire" style="left:{5 + Math.random() * 90}%;top:{18 + Math.random() * 40}%;animation-delay:{i * 0.12}s"><Icon name={['star','balloon','heart','flower'][i % 4]} size={34} /></div>
     {/each}
-    <div class="btitle" id="btitle">{@html boltTitle()}</div>
+    <div class="btitle" id="btitle"><Speak text={boltTitle()} /></div>
     <div class="bstats" id="bstats">
-      <div class="bstat"><div class="bv">{BT.n}</div><div class="bk">{@html T('总题数')}</div></div>
-      <div class="bstat"><div class="bv">{boltAcc()}%</div><div class="bk">{@html T('正确率')}</div></div>
-      <div class="bstat"><div class="bv">{BT.best}</div><div class="bk">{@html T('最长连对')}</div></div>
-      <div class="bstat"><div class="bv">{boltAvg().toFixed(1)}</div><div class="bk">{@html T('秒/题')}</div></div>
+      <div class="bstat"><div class="bv">{BT.n}</div><div class="bk"><Speak k="totalQs" /></div></div>
+      <div class="bstat"><div class="bv">{boltAcc()}%</div><div class="bk"><Speak k="accLabel" /></div></div>
+      <div class="bstat"><div class="bv">{BT.best}</div><div class="bk"><Speak k="bestStreak" /></div></div>
+      <div class="bstat"><div class="bv">{boltAvg().toFixed(1)}</div><div class="bk"><Speak k="secPerQ" /></div></div>
     </div>
     <div class="brec" id="brec" style="display:{(S.bolt.acc > 0 || S.bolt.tacc > 0) ? 'block' : 'none'}">
-      {@html T('今日最佳：')}{S.bolt.tacc || 0}% · {@html T('历史最佳：')}{S.bolt.acc || 0}%{BT.record ? ' ' + T('破纪录啦！') : ''}
+      <Speak k="todayBest" plain />{S.bolt.tacc || 0}% · <Speak k="histBest" plain />{S.bolt.acc || 0}%{#if BT.record} <Speak k="newRecord" />{/if}
     </div>
     <div class="rbtns">
-      <button class="btn red" id="bagain" onclick={() => startBolt(false)}><Icon name="rocket" size={24} /> {@html T('再来一轮')}</button>
-      <button class="btn ghost" id="bhome" onclick={() => show('practice')}>{@html T('回练习场')}</button>
+      <button class="btn red" id="bagain" onclick={() => startBolt(false)}><Icon name="rocket" size={24} /> <Speak k="againRound" plain /></button>
+      <button class="btn ghost" id="bhome" onclick={() => show('practice')}><Speak k="backPractice" plain /></button>
     </div>
   </div>
 </section>

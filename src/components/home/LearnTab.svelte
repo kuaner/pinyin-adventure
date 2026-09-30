@@ -8,15 +8,16 @@
   import { openLesson, show } from '../../stores/ui.svelte'
   import { totalStars } from '../../stores/progress.svelte'
   import { say } from '../../lib/audio'
-  import Ruby from '../Ruby.svelte'
+  import Speak from '../Speak.svelte'
+  import { t, type StringKey } from '../../text/strings'
 
   const LESSONS = (lessonsData as any).lessons as { n: number; title: string; label: string; letters: { k: string; kj: string }[] }[]
-  const STEPS = ['认识', '写法', '声调', '拼读', '小测']
+  const STEPS: StringKey[] = ['stepKnow', 'stepWrite', 'stepTone', 'stepBlend', 'stepQuiz']
 
   const cur = $derived(currentLesson(LESSONS.length))
   const lesson = $derived(LESSONS[cur - 1])
   const bp = $derived(Math.min(5, LRN.step[cur] || 1))          // 五步断点
-  const bpName = $derived(STEPS[bp - 1])
+  const bpKey = $derived(STEPS[bp - 1])
   const passedCur = $derived(quizPassed(cur))
 
   let li = $state(0)                                             // 大卡当前字母
@@ -41,14 +42,14 @@
 
 <section id="v-learntab" class="view on" data-screen="learn">
   <div class="rowhead">
-    <div class="h1">拼音岛<small>PIN YIN</small></div>
+    <div class="h1"><Speak k="pinyinIsland" /><small>PIN YIN</small></div>
     <div class="chip" id="starchip"><svg viewBox="0 0 24 24" fill="#f5c31c" stroke="#dba90e" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z" /></svg>{totalStars()}</div>
   </div>
 
   <div class="card" id="hero">
     <div class="lchip">
-      <ruby>第 {cur} 课<rt>dì {cur} kè</rt></ruby> ·
-      {#if lessonShort(cur, lesson.title).zh}<Ruby text={lessonShort(cur, lesson.title).zh!} />{:else}{lessonShort(cur, lesson.title).raw}{/if}
+      <Speak k="lessonN" vars={{ n: cur }} /> ·
+      {#if lessonShort(cur, lesson.title).zh}<Speak text={lessonShort(cur, lesson.title).zh!} />{:else}{lessonShort(cur, lesson.title).raw}{/if}
     </div>
     <div id="letters" class="grid4">
       {#each letters as l, i (l.k)}
@@ -57,7 +58,7 @@
         </button>
       {/each}
     </div>
-    <div id="koujue">{#if kjParts[0]}<Ruby text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
+    <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
     <div id="steps5">
       {#each STEPS as s, i (s)}
         <i class:d={i < bp - 1 || passedCur} class:c={i === bp - 1 && !passedCur}></i>
@@ -65,25 +66,25 @@
     </div>
     <button id="cta" data-cta onclick={() => openLesson(cur)}>
       {#if passedCur}
-        <ruby>再学一遍<rt>zài xué yī biàn</rt></ruby> · <ruby>认识<rt>rèn shi</rt></ruby>
+        <Speak k="restudy" plain /> · <Speak k="stepKnow" plain />
       {:else}
-        <ruby>继续学习<rt>jì xù xué xí</rt></ruby> · <ruby>{bpName}<rt>{bp === 1 ? 'rèn shi' : bp === 2 ? 'xiě fǎ' : bp === 3 ? 'shēng diào' : bp === 4 ? 'pīn dú' : 'xiǎo cè'}</rt></ruby>
+        <Speak k="continueLearning" plain /> · <Speak k={bpKey} plain />
       {/if}
     </button>
   </div>
 
   <div id="mapbar">
-    <div class="sec-label"><b><ruby>课程地图<rt>kè chéng dì tú</rt></ruby> · 12 课</b><span><ruby>横向滑动<rt>héng xiàng huá dòng</rt></ruby></span></div>
+    <div class="sec-label"><b><Speak k="courseMapN" vars={{ n: 12 }} /></b><span><Speak k="swipeHintH" /></span></div>
     <div id="caps" bind:this={capsEl}>
       {#each LESSONS as ls (ls.n)}
         {@const done = quizPassed(ls.n)}
         {@const isCur = ls.n === cur}
         <button
-          class="cap" class:done class:cur={isCur}
+          class="cap" class:done class:cur={isCur} class:locked={ls.n > LRN.u}
           data-lesson={ls.n}
           onclick={() => { if (ls.n <= LRN.u) openLesson(ls.n) }}
         >
-          <b>{#if done}✓{:else if isCur}第 {ls.n} 课{:else}{ls.n}{/if}</b>
+          <b>{#if done}✓{:else if isCur}{t('lessonN', { n: ls.n })}{:else}{ls.n}{/if}</b>
           <i>{ls.label}</i>
         </button>
       {/each}
@@ -93,8 +94,8 @@
   <button id="radio" class="pressable" data-radio onclick={() => show('radio')}>
     <div class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0116 0" /><rect x="3" y="13" width="4" height="7" rx="2" fill="#fff" stroke="none" /><rect x="17" y="13" width="4" height="7" rx="2" fill="#fff" stroke="none" /></svg></div>
     <div class="rtx">
-      <b><ruby>口诀小广播<rt>kǒu jué xiǎo guǎng bō</rt></ruby></b>
-      <span><Ruby text="想听哪句，点哪句" /></span>
+      <b><Speak k="radioTitle" plain /></b>
+      <span><Speak k="radioSlogan" /></span>
     </div>
     <div class="rplay"><svg viewBox="0 0 24 24" fill="#dba90e"><path d="M8 5.5v13l11-6.5z" /></svg></div>
   </button>
@@ -145,6 +146,8 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border: none; font-family: inherit; padding: 0; }
   .cap b { font-size: 17px; font-weight: 900; color: var(--animal-text-dis); }
   .cap i { font-style: normal; font-size: 8.5px; font-weight: 700; color: var(--animal-text-dis); }
+  .cap.locked { background: #f3efe6; border: 2px solid #eee4d3; box-shadow: 0 2px 0 #e3d9c8; }
+  .cap.locked b, .cap.locked i { color: #b7ab97; }
   .cap.done { background: var(--animal-primary-bg); }
   .cap.done b, .cap.done i { color: var(--animal-primary-active); }
   .cap.cur { width: 96px; background: var(--animal-primary); box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }
@@ -160,7 +163,8 @@
   #radio .ric svg { width: 24px; height: 24px; }
   #radio .rtx { flex: 1; min-width: 0; text-align: left; }
   #radio .rtx b { font-size: 16px; font-weight: 900; line-height: 1.9; display: block; }
-  #radio .rtx span { display: block; font-size: 11.5px; font-weight: 700; color: var(--animal-text-2); white-space: nowrap; }
+  #radio .rtx span { display: block; font-size: 11px; font-weight: 700; color: var(--animal-text-2); }
+  #radio .rtx span :global(rt) { font-size: 8px; }
   #radio .rplay { width: 42px; height: 42px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; flex: none; }
   #radio .rplay svg { width: 18px; height: 18px; }

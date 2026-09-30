@@ -10,8 +10,8 @@
   import cardsData from '../data/pinyin-cards.json'
   import { LETTERS } from '../data'
   import { say, playAudio } from '../lib/audio'
-  import { T } from '../lib/ruby'
-  import Ruby from './Ruby.svelte'
+  import { tRaw } from '../text/strings'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import StrokeAnim from './learn/StrokeAnim.svelte'
 
@@ -54,7 +54,7 @@
   function replayStroke() { manualStroke = true; sa?.replay(); if (C.sayAudio) playAudio(C.sayAudio, { hint: '' }) }
   function mainTap() { if (onmain) onmain(); else say(k) }
   function playKj() {
-    if (C.kjAudio) playAudio(C.kjAudio, { hint: T('语音未准备好') })
+    if (C.kjAudio) playAudio(C.kjAudio, { hint: tRaw('notReady') })
     else say(k)
   }
 
@@ -80,19 +80,19 @@
         <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} play={strokeActive} bind:this={sa} ondone={strokeDone} /></div>
         <button class="pc-replay" data-pcreplay={k} onclick={replayStroke}>
           <Icon name="refresh" size={14} />
-          <span><ruby>看笔顺<rt>kàn bǐ shùn</rt></ruby></span>
+          <span><Speak k="seeStroke" plain /></span>
         </button>
       </div>
     {/if}
     {#if kjEn[0]}
       <button class="pc-kj" data-pckj={k} onclick={playKj} aria-label="口诀">
         {#if C.kjAudio}<span class="pc-kjplay"><Icon name="play" size={13} /></span>{/if}
-        <Ruby text={kjEn[0]} />
+        <Speak text={kjEn[0]} />
         {#if kjEn[1]}<b class="pc-kjen">{kjEn[1]}</b>{/if}
       </button>
     {/if}
     {#if C.word}
-      <div class="pc-word"><span class="pc-em">{C.em}</span><Ruby text={C.word} />&nbsp;<span class="pc-wp">{C.wp}</span></div>
+      <div class="pc-word"><span class="pc-em">{C.em}</span><Speak text={C.word} />&nbsp;<span class="pc-wp">{C.wp}</span></div>
     {/if}
     {#if tip}
       <div class="pc-tip"><Icon name="play" size={13} /><span>{@html tip}</span></div>
@@ -105,7 +105,7 @@
         <div class="pcc-glyph">{k}</div>
         {#if kjEn[0]}
           <div class="pcc-kj">
-            <Ruby text={kjEn[0]} />
+            <Speak text={kjEn[0]} />
             {#if kjEn[1]}<b class="pc-kjen">{kjEn[1]}</b>{/if}
           </div>
         {/if}
@@ -120,7 +120,7 @@
         <div class="pcc-row">
           <span class="pc-em">{C.em}</span>
           <b class="pcc-tts">{C.tts || k}</b>
-          <span class="pcc-word"><Ruby text={C.word} /></span>
+          <span class="pcc-word"><Speak text={C.word} /></span>
           <span class="pc-wp">{C.wp}</span>
         </div>
       </div>
@@ -133,7 +133,7 @@
       <button class="pcm-g" onclick={() => say(k)} aria-label="{k} {C.tts}">{k}</button>
       <div class="pcm-r">
         <div class="pcm-kj">
-          {#if kjEn[0]}<Ruby text={kjEn[0]} />{/if}
+          {#if kjEn[0]}<Speak text={kjEn[0]} plain />{/if}
           {#if kjEn[1]}<b class="pc-kjen">{kjEn[1]}</b>{/if}
         </div>
         <button class="pcm-say" onclick={() => say(k)}><Icon name="headphones" size={14} /> <span>{C.tts || k}</span></button>

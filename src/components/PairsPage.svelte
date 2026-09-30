@@ -3,8 +3,7 @@
   import { PAIRS, GRPS, GRPNAME } from '../data'
   import { startPairGroup } from '../stores/session.svelte'
   import { show, openPair } from '../stores/ui.svelte'
-  import { T } from '../lib/ruby'
-  import Ruby from './Ruby.svelte'
+  import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import HSteps from './HSteps.svelte'
 
@@ -13,8 +12,8 @@
 
 <section id="v-pairs" class="view on" data-screen="pairs">
   <div class="ltop">
-    <button class="cbtn" data-back="practice" onclick={() => show('practice')} aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
-    <div class="ltt"><ruby>易混对专练<rt>yì hùn duì zhuān liàn</rt></ruby></div>
+    <button class="cbtn" data-back="practice" onclick={() => show('practice')} aria-label="back"><svg viewBox="0 0 24 24" fill="none" stroke="#794f27" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 5L7.5 12l7 7" /></svg></button>
+    <div class="ltt"><Speak k="pairsDrill" /></div>
     <div class="lprog">{cur + 1}/{GRPS.length}</div>
   </div>
 
@@ -24,8 +23,8 @@
         {@const ps = PAIRS.filter((p) => p.grp === grp)}
         <div class="hspage"><div class="pcard">
           <div class="ghead">
-            <div class="gtitle"><Ruby text={GRPNAME[grp]} />&nbsp;（{ps.length}<Ruby text=" 组" />）</div>
-            <div class="gdesc"><Ruby text="点一对，学口诀；准备好了就开练" /></div>
+            <div class="gtitle"><Speak text={GRPNAME[grp]} />&nbsp;（<Speak k="groupCount" vars={{ n: ps.length }} />）</div>
+            <div class="gdesc"><Speak k="pairsGuide" /></div>
           </div>
           <div class="chips">
             {#each ps as p (p.a + '|' + p.b)}
@@ -33,7 +32,7 @@
               <button class="chip" data-pi={pi} type="button" onclick={() => openPair(pi)}>{p.a} ↔ {p.b}</button>
             {/each}
           </div>
-          <button class="btn small purple gstart" type="button" onclick={() => startPairGroup(grp)}><Icon name="play" size={20} /> {@html T('开始专练这 ')}{ps.length}{@html T(' 组')}</button>
+          <button class="btn small purple gstart" type="button" onclick={() => startPairGroup(grp)}><Icon name="play" size={20} /> <Speak k="startGroupN" vars={{ n: ps.length }} plain /></button>
         </div></div>
       {/each}
     </HSteps>
@@ -45,7 +44,7 @@
         <i class:on={cur === i}></i>
       {/each}
     </div>
-    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一组<rt>zuǒ huá xià yī zǔ</rt></ruby></div>
+    <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextGroup" /></div>
   </div>
 </section>
 

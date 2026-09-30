@@ -3,7 +3,7 @@
   import { QZ, answer } from '../../stores/session.svelte'
   import { say } from '../../lib/audio'
   import { PH } from '../../data'
-  import { T } from '../../lib/ruby'
+  import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
   import type { ListenQ as ListenQT } from '../../lib/types'
 
@@ -14,7 +14,7 @@
 
 <div class="glyphbox" id="glyphbox">
   <div style="position:relative">
-    <button class="bigsound" type="button" onclick={() => say(q.A)}><Icon name="headphones" size={44} /><span class="bslabel">{@html T('再听一遍')}</span></button>
+    <button class="bigsound" type="button" onclick={() => say(q.A)}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
   </div>
 </div>
 <div class="qextra" id="qextra"></div>

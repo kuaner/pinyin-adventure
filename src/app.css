@@ -12,9 +12,10 @@
   --animal-border:#dcd8d1; --animal-border-hover:#827157; --animal-border-light:#e8e2d6;
   --animal-bg:#f8f8f0; --animal-bg-2:#f0e8d8;
   --animal-r-sm:16px; --animal-r:18px; --animal-r-lg:24px; --animal-r-pill:50px;
-  --animal-shadow-sm:0 2px 4px rgba(61,52,40,.06);
-  --animal-shadow:0 3px 10px rgba(61,52,40,.1);
-  --animal-shadow-lg:0 8px 24px rgba(61,52,40,.14);
+  /* v2.6 阴影统一硬投影语言（卡片同按钮 0 Npx 0 实边，柔光 blur 退役） */
+  --animal-shadow-sm:0 2px 0 #e7dfd2;
+  --animal-shadow:0 3px 0 #e3d9c8;
+  --animal-shadow-lg:0 5px 0 #ddd2c0;
   /* 按钮按压影（糖果手感：底边硬色投影，:active 收短） */
   --press-teal:#129d8f; --press-blue:#5b74d6; --press-green:#57941f; --press-purple:#9a5fd4;
   --press-red:#c94444; --press-pink:#d97a9b; --press-orange:#c97749; --press-cream:#cbbfae;
@@ -33,7 +34,9 @@
   src:url('./assets/fonts/nunito-latin-900-normal.woff2') format('woff2')}
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
-html,body{height:100%}
+html,body{
+  /* v2.6 纸纹：全局 3% fractalNoise 颗粒，盖在最上层（pointer-events:none）——纸张质感 */
+  position:relative;height:100%}
 body{
   font-family:Nunito,ui-rounded,'SF Pro Rounded','Noto Sans SC','PingFang SC','HarmonyOS Sans SC','MiSans','Microsoft YaHei','YouYuan',sans-serif;
   /* 奶油波点壁纸（animal-island bg-default） */
@@ -57,7 +60,7 @@ rt{font-size:clamp(11px,.44em,12.5px);font-weight:700;color:#8a7a68;line-height:
 .mirror{display:inline-block;transform:scaleX(-1)}
 
 /* ---------- v2.4 通用卡（v2.5 对齐金标准 Card：radius 20px，去模糊阴影，轻压边） ---------- */
-.card{background:#fff;border-radius:20px;box-shadow:0 2px 0 rgba(61,52,40,.05)}
+.card{background:#fff;border-radius:20px;box-shadow:var(--animal-shadow);border:2px solid var(--animal-border-light)}
 .pressable{cursor:pointer;transition:transform .08s}
 .pressable:active{transform:scale(.97)}
 /* v2.5 动森有机异形外框（clip-path 定义见 App.svelte，animal-island-ui Modal game 变体同源） */
@@ -348,3 +351,8 @@ html,body{overflow:hidden}
 .qbubble .qbicon{display:inline-flex}
 .starempty{display:inline-flex;opacity:.85}
 /* PWA 更新提示条由组件 scoped 样式承担 */
+
+/* v2.6 全局纸纹噪点（3%）：SVG feTurbulence 平铺，纯装饰 */
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:240px 240px}

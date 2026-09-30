@@ -2,18 +2,19 @@
   /* v2.4 App 壳：底部 tab ×3 常驻（学习/练习/我的），active = 药丸底色 + 主色；
      题内/礼仪页 = 全屏专注态，TabBar 由父级 v-if 移出（打样：translateY(100%) 滑出） */
   import { ui, show, TAB_VIEWS, type View } from '../stores/ui.svelte'
-  import Ruby from './Ruby.svelte'
+  import Speak from './Speak.svelte'
+  import type { StringKey } from '../text/strings'
 
-  const TABS: { v: View; label: string; py: string }[] = [
-    { v: 'learn', label: '学习', py: 'xué xí' },
-    { v: 'practice', label: '练习', py: 'liàn xí' },
-    { v: 'mine', label: '我的', py: 'wǒ de' },
+  const TABS: { v: View; k: StringKey }[] = [
+    { v: 'learn', k: 'tabLearn' },
+    { v: 'practice', k: 'tabPractice' },
+    { v: 'mine', k: 'tabMine' },
   ]
 </script>
 
 <nav id="tabbar" data-tabbar>
   {#each TABS as t (t.v)}
-    <button class="tab" class:on={ui.view === t.v} data-tab={t.v} onclick={() => show(t.v)} aria-label={t.label}>
+    <button class="tab" class:on={ui.view === t.v} data-tab={t.v} onclick={() => show(t.v)} aria-label={t.v}>
       <span class="tic">
         {#if t.v === 'learn'}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-7" /><path d="M12 13c0-4 2.5-7 7-7 0 4.5-2.5 7-7 7z" /><path d="M12 13c0-3-2-5.5-5.5-5.5 0 3.5 2 5.5 5.5 5.5z" /></svg>
@@ -23,7 +24,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="7.5" /><path d="M9.5 12h.01M14.5 12h.01" stroke-width="3" /><path d="M10.7 15h2.6l-1.3 1.8z" fill="currentColor" stroke="none" /><path d="M5 8.5C4 5.5 5.5 3.5 8 3c.3 1.6 1.2 2.8 2.5 3.5M19 8.5c1-3-.5-5-3-5.5-.3 1.6-1.2 2.8-2.5 3.5" /></svg>
         {/if}
       </span>
-      <span class="tl"><Ruby text={t.label} py={{ [t.label]: t.py }} /></span>
+      <span class="tl"><Speak k={t.k} /></span>
     </button>
   {/each}
 </nav>
