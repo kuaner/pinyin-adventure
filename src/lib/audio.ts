@@ -96,7 +96,10 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
     if (!a) { a = new Audio(audioURL(name)); AUDIO_CACHE[name] = a }
     try { a.currentTime = 0 } catch { /* ignore */ }
     const p = a.play()
-    if (p && p.catch) p.catch(() => {
+    if (p && p.catch) p.catch((err: DOMException) => {
+      /* Bug#15: AbortError=被 stopAll 停（一次一路锁的正常操作）≠ 文件缺失；
+         NotAllowedError=iOS 手势时序 ≠ 文件缺失——都静默，只对真加载失败弹 toast */
+      if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return
       if (HYP[name] && !a.dataset.mimoFb) {
         a.dataset.mimoFb = '1'
         playMimo(name, opts)
