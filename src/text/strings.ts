@@ -5,6 +5,8 @@
    - {x} 占位：t(k, vars) 格式化； Speak 同名 prop
    - 配音清单：scripts/gen-audio.ts 扫描本文件 → public/audio/ui/{key-kebab}.mp3
      → src/text/audio-manifest.json（Speak 点击播放的唯一依据） */
+import { registerSys } from '../lib/ruby'
+
 export interface StrDef {
   zh: string
   py?: Record<string, string>
@@ -337,5 +339,6 @@ export const etiquette = {
   ] as [string, string, boolean][],
 }
 
-/* 系统消息注册（T 层不加注音） */
-registerSys([S.notReady, S.fallbackHint, S.anchorMissing])
+/* 系统消息注册（T 层不加注音）——SYS_SET 匹配的是格式化前的 zh 文本；带 {x} 占位的键格式化后不匹配，
+   仅起纯文本键的免注音作用（占位键的免注音属 Bug#14 腿设计欠账，见 BUGS#17 备注） */
+registerSys([strings.notReady, strings.fallbackHint, strings.anchorMissing].map((d) => d.zh))

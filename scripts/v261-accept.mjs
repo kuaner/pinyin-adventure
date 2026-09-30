@@ -19,6 +19,9 @@ const ok = (cond, name, detail = '') => {
 
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
+/* 页级 JS 错误门槛（Bug#14 白屏回归的教训：构建不报 ReferenceError，验收必须断言零 pageerror） */
+const pageErrors = []
+page.on('pageerror', (e) => pageErrors.push(e.message))
 const shot = (name) => page.screenshot({ path: `${OUT}/${name}.png` })
 const lprog = () => page.$eval('#lprog', (el) => el.textContent.trim())
 const chipOn = (k) => page.$eval(`[data-ler="${k}"]`, (el) => el.classList.contains('on')).catch(() => false)
@@ -119,5 +122,6 @@ await page.waitForTimeout(400)
 await shot('13c-learntab-baseline')
 
 await browser.close()
+ok(pageErrors.length === 0, '全程零 pageerror', pageErrors.slice(0, 3).join(' | '))
 console.log(fails === 0 ? '\nALL PASS' : `\n${fails} FAILURES`)
 process.exit(fails === 0 ? 0 : 1)
