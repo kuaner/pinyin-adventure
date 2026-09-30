@@ -15,10 +15,10 @@
   const UNITS = (strokesData as any).units as Record<string, string[]>
 
   let {
-    unit, cell = 116, static: staticN = -1, speed = 1, play = true,
+    unit, cell = 116, static: staticN = -1, speed = 1, play = true, showList = true,
     ondone, onstroke,
   }: {
-    unit: string; cell?: number; static?: number; speed?: number; play?: boolean
+    unit: string; cell?: number; static?: number; speed?: number; play?: boolean; showList?: boolean
     ondone?: () => void; onstroke?: (n: number, name: string) => void
   } = $props()
 
@@ -224,8 +224,9 @@
   </svg>
   </div>
 
-  <!-- 底部笔名清单：随当前笔同步高亮，完成笔定格深色 -->
-  {#if staticN < 0}
+  <!-- 底部笔名清单：随当前笔同步高亮，完成笔定格深色（showList=false 供紧凑预览位隐藏——
+     v2.9.1：认识页卡内预算装不下清单，曾把 svg 挤到 0 高、清单溢出叠上重播键） -->
+  {#if staticN < 0 && showList}
     <div class="slist" role="list" aria-label="笔顺清单">
       {#each all as st, i (unit + '-' + i)}
         <span class="sit" class:is-cur={cur === i} class:is-done={cur > i || cur >= total} role="listitem">

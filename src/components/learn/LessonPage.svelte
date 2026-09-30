@@ -221,11 +221,12 @@
   <!-- 横向翻页舞台 -->
   <div id="stagewrap">
     <HSteps n={NSTEP} cur={step - 1} onchange={(i) => goto(i + 1)}>
-      <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5） -->
+      <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5）。
+          v2.9.1：去 tip（与读音 pill 重复）+ 字模 104——卡内预算救笔顺预览（原 svg 被挤到 0 高） -->
       <div class="hspage"><div class="pcard">
         <div class="ptag"><Speak k="stepKnow" plain /> · {letter.k}</div>
         <div class="knowfit">
-          <PinyinCard mode="full" k={letter.k} tip={T(tRaw('tapHearSound'))} />
+          <PinyinCard mode="full" k={letter.k} glyphMax={104} />
         </div>
       </div></div>
 
@@ -340,7 +341,7 @@
     </HSteps>
   </div>
 
-  <!-- 页点 + 滑动提示 -->
+  <!-- 页点 + 滑动提示（v2.9.1 并排单行——纵向预算让给卡内笔顺预览） -->
   <div id="pager">
     <div id="dots">
       {#each STEPS as s, i (s.id)}
@@ -348,8 +349,7 @@
       {/each}
     </div>
     <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextStep" /></div>
-  </div>
-</section>
+  </div></section>
 
 <style>
   #v-lesson { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); gap: 0; }
@@ -361,14 +361,15 @@
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
     padding: var(--sp-2) var(--sp-3); border-radius: 999px; }
 
-  /* 步骤条：4/5 步等宽列排布；标签容器 fit-content 零截断（BUGS#18③，禁 ellipsis） */
+  /* 步骤条：4/5 步等宽列排布；标签容器 fit-content 零截断（BUGS#18③，禁 ellipsis）。
+     v2.9.1 密度回收：徽章 32→28——卡内笔顺预览的预算从壳件挤出来 */
   #rail { display: flex; align-items: flex-start; margin: var(--sp-2) 0 0; position: relative; flex: none; }
-  #rail::before { content: ''; position: absolute; top: 15px; left: 34px; right: 34px; height: 3px; background: var(--animal-border-light); border-radius: 3px; }
+  #rail::before { content: ''; position: absolute; top: 13px; left: 34px; right: 34px; height: 3px; background: var(--animal-border-light); border-radius: 3px; }
   .rstep { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); cursor: pointer;
     font-family: inherit; background: none; border: none; color: var(--animal-text-2); }
-  .rstep .rd { width: 32px; height: 32px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
+  .rstep .rd { width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; font-size:var(--fs-xs); font-weight: 900; font-style: normal; }
-  .rstep .rd svg { width: 14px; height: 14px; }
+  .rstep .rd svg { width: 13px; height: 13px; }
   .rstep .rname { min-width: fit-content; font-size:var(--fs-xs); font-weight: 800; }
   .rstep .rname :global(rt) { font-size:var(--fs-rt); }
   .rstep.done .rd { background: var(--animal-primary-bg); color: var(--animal-primary-active); }
@@ -389,7 +390,7 @@
   .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
   /* 字母 chip 条：常驻 rail 之下（Bug#12），紧凑版给舞台省纵向 */
   .lchips { display: flex; gap: var(--sp-2); margin: var(--sp-2) var(--sp-2) 0; flex: none; justify-content: center; }
-  .lchip { min-width: 44px; height: 38px; border-radius: 12px; border: 2px solid #e3d9c8; background: #fff;
+  .lchip { min-width: 40px; height: 34px; border-radius: 11px; border: 2px solid #e3d9c8; background: #fff;
     font-size:var(--fs-md); font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 var(--sp-2); }
   .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
 
@@ -467,10 +468,10 @@
   .resbtns { display: flex; gap: var(--sp-3); width: 100%; }
   .resbtns .bootbtn { flex: 1; padding: var(--sp-3) var(--sp-2); }
 
-  #pager { height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
+  #pager { min-height: 30px; flex: none; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); padding: var(--sp-1) 0; }
   #dots { display: flex; gap: var(--sp-2); }
   #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; }
   #dots i.on { width: 22px; background: var(--animal-primary); }
-  #swipehint { display: flex; align-items: center; gap: var(--sp-2); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
-  #swipehint svg { width: 16px; height: 16px; }
+  #swipehint { display: flex; align-items: center; gap: var(--sp-1); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); }
+  #swipehint svg { width: 14px; height: 14px; }
 </style>

@@ -79,7 +79,7 @@
     {#if C.stroke}
       <div class="pc-strokewrap">
         <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} play={strokeActive} bind:this={sa} ondone={strokeDone} /></div>
+        <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} showList={false} play={strokeActive} bind:this={sa} ondone={strokeDone} /></div>
         <button class="pc-replay" data-pcreplay={k} onclick={replayStroke}>
           <Icon name="refresh" size={14} />
           <span><Speak k="seeStroke" plain /></span>
