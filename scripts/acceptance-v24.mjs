@@ -171,15 +171,18 @@ async function noHScroll(page) {
   ok('题内=全屏专注态（tab 隐藏）', sync1.tabbarHidden)
   ok('初始 2/5 三方同步（rail=1·dot=1·chip=2/5）', sync1.chip === '2/5' && sync1.rail === 1 && sync1.dot === 1, JSON.stringify(sync1))
   await shot(page, '4-lesson')
-  /* 左滑翻页 → 3/5（打样屏5） */
+  /* 左滑翻页 → 3/5（打样屏5）。v2.4.1 起 HSteps 触屏走 touch 事件（pointer 仅收 mouse/pen），
+     合成 PointerEvent 的 pointerType='' 被正确忽略——这里发真机同构的 touch 序列 */
   await page.evaluate(() => {
     const stage = document.querySelector('#v-lesson .hstage')
     const r = stage.getBoundingClientRect()
     const y = r.top + r.height / 2
-    const down = new PointerEvent('pointerdown', { clientX: r.left + 300, clientY: y, bubbles: true, pointerId: 1 })
-    const mv = new PointerEvent('pointermove', { clientX: r.left + 200, clientY: y, bubbles: true, pointerId: 1 })
-    const up = new PointerEvent('pointerup', { clientX: r.left + 200, clientY: y, bubbles: true, pointerId: 1 })
-    stage.dispatchEvent(down); stage.dispatchEvent(mv); stage.dispatchEvent(up)
+    const el = document.elementFromPoint(r.left + 300, y) || stage
+    const mk = (x) => new Touch({ identifier: 1, target: el, clientX: x, clientY: y })
+    const tev = (type, x, touches) => new TouchEvent(type, { touches, changedTouches: [mk(x)], bubbles: true, cancelable: true })
+    el.dispatchEvent(tev('touchstart', r.left + 300, [mk(r.left + 300)]))
+    for (let i = 1; i <= 10; i++) el.dispatchEvent(tev('touchmove', r.left + 300 - (100 / 10) * i, [mk(r.left + 300 - (100 / 10) * i)]))
+    el.dispatchEvent(tev('touchend', r.left + 200, []))
   })
   await page.waitForTimeout(600)
   const sync2 = await page.evaluate(() => ({

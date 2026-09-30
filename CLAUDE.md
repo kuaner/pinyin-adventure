@@ -98,4 +98,4 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 - `?probe=` / `full` / `det` / `bolt` / `zi` / `flash`：动态探针（进题→作答→验证权重/计数/反馈层）
 - `?open=levels|pairs|practice|history|result|quiz|detect|dfix|bolt|zi|ziword`：直接渲染对应界面（截图用；bolt 冻结计时）
 - `window.__PJ`：会话/权重/音频缓存钩子（仅带参访问时挂载）
-- 笔顺自检 `node scripts/stroke-verify.mjs`（47 单元×2 帧截图+几何断言）；注音 lint `node scripts/check-ruby.mjs`；全量验收 `node scripts/acceptance-v24.mjs`
+- 笔顺几何自检 `node scripts/stroke-verify.mjs`（47 单元×2 帧截图+几何断言）；**笔顺动画验收 `BASE_URL=… node scripts/stroke-anim-verify.mjs`（v2.4.4：a/b/ü/üe 连拍 3 帧字节+dashoffset 双证据、真实路径进入时机、47 单元时长断言）**；注音 lint `node scripts/check-ruby.mjs`；全量验收 `node scripts/acceptance-v24.mjs`

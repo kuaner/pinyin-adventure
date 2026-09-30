@@ -195,7 +195,7 @@
       <!-- 页2 · 写法：笔顺动画 + 旁白 -->
       <div class="hspage"><div class="pcard">
         <div class="ptag hot"><ruby>写法<rt>xiě fǎ</rt></ruby> · {letter.k}</div>
-        <div class="animfit"><StrokeAnim unit={letter.k} static={staticN} bind:this={sa} /></div>
+        <div class="animfit"><StrokeAnim unit={letter.k} static={staticN} play={step === 2} bind:this={sa} /></div>
         <div class="sayline">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Ruby text={seg} />{/each}</div>
         <div class="xrow">
           <button class="rebtn" onclick={() => { sa?.replay(); if (letter.sayAudio) playAudio(letter.sayAudio, { hint: '' }) }}>

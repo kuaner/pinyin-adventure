@@ -51,7 +51,7 @@ for (const u of MUST) {
     const expLetters = u.length > 1 && u !== 'ü' ? u.length : 1
     const ok = geom && geom.ghosts === strokes && geom.inks === strokes && geom.cells === expLetters * 2
     if (tag === 'final') { if (ok) pass++; else { fail++; console.error(`✗ ${u}:`, JSON.stringify(geom), `期望 strokes=${strokes} cells=${u.length > 1 && u !== 'ü' ? u.length : 1}`) } }
-    const el = page.locator('#v-lesson .animbox')
+    const el = page.locator('#v-lesson .animfit')
     await el.screenshot({ path: `${OUT}/${key}_${tag}.png` })
   }
   process.stdout.write(`✓ ${u} (${strokes}笔) `)
