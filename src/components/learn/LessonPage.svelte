@@ -154,9 +154,9 @@
   <!-- 五步进度条 -->
   <div class="stepbar">
     {#each STEPS as s (s.id)}
-      <button class="stepdot" class:on={step === s.id} class:passed={step > s.id} onclick={() => (s.id < step ? goto(s.id) : null)}>
+      <button class="stepdot" class:on={step === s.id} class:passed={step > s.id} onclick={() => goto(s.id)}>
         <Icon name={s.icon} size={18} />
-        <span>{s.name}</span>
+        <span><Ruby text={s.name} /></span>
       </button>
     {/each}
   </div>
@@ -196,7 +196,7 @@
         <div class="say">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Ruby text={seg} />{/each}</div>
         <div class="xie"><Ruby text={letter.xie} /></div>
         <div class="stroketags">
-          {#each letter.strokes as sn, i (letter.k + i)}<span class="stag"><b>{i + 1}</b> {sn}</span>{/each}
+          {#each letter.strokes as sn, i (letter.k + i)}<span class="stag"><b>{i + 1}</b> <Ruby text={sn} /></span>{/each}
         </div>
       </div>
       <div class="xrow">
@@ -254,7 +254,7 @@
   {:else}
     <!-- 小测结算 -->
     <div class="stepwrap resultwrap">
-      <div class="resEmoji">{quiz.passed ? '🎉🌟' : '🌱💪'}</div>
+      <div class="resEmoji">{#if quiz.passed}<Icon name="rainbow" size={54} /><Icon name="star" size={54} />{:else}<Icon name="sprout" size={54} /><Icon name="dumbbell" size={54} />{/if}</div>
       {#if quiz.passed}
         <div class="resScore"><Ruby text="对了{cn(quiz.score)}题，太棒了！" /></div>
         <div class="resStars">{#each Array(quiz.score >= 5 ? 3 : 2)}<Icon name="star" size={34} />{/each}</div>

@@ -17,7 +17,7 @@ export interface Pair { a: string; b: string; grp: string; tip: string }
 
 export interface LevelDef {
   n: number
-  em: string
+  icon: string   // naive-icons 名（v2.3：关卡 emoji → 图标）
   name: string   // 带 DSL
   sub: string    // 带 DSL
   pool: string[] | null
@@ -41,30 +41,28 @@ export interface QuizScope {
 }
 
 export type QType =
-  | 'listen' | 'look' | 'll' | 'rule'      // 闯关四题型
+  | 'listen' | 'look' | 'kj'               // 闯关三题型（v2.3 铁律：ll 听看一致/rule 错句判断删除）
   | 'djudge' | 'dfix'                        // 正反小侦探
   | 'zi' | 'zword'                           // 常见字快拼
-  | 'bdjudge' | 'blisten' | 'blook'          // ⚡闪电刷题
+  | 'blisten' | 'bkj'                        // ⚡闪电刷题（听写 70% + 口诀正向回忆 30%）
 
 interface QBase { key: string; hint: string }
 
 export interface ListenQ extends QBase { type: 'listen'; A: string; B: string; opts: string[]; ans: number }
 export interface LookQ extends QBase { type: 'look'; A: string; B: string; opts: string[]; ans: number }
-export interface LlQ extends QBase { type: 'll'; A: string; B: string; same: boolean; sound: string; ans: number }
-export interface RuleQ extends QBase { type: 'rule'; A: string; B: string; true: boolean; stmt: string; ans: number }
+export interface KjQ extends QBase { type: 'kj'; A: string; B: string; stmt: string; opts: string[]; ans: number }
 export interface DjudgeQ extends QBase { type: 'djudge'; X: string; flipped: boolean; ans: number }
 export interface DfixQ extends QBase { type: 'dfix'; X: string; opts: string[]; ans: number }
 export interface ZiQ extends QBase { type: 'zi'; z: ZiItem; opts: string[]; ans: number }
 export interface ZwordQ extends QBase { type: 'zword'; z: ZWord; opts: string[]; ans: number }
-export interface BDjudgeQ extends QBase { type: 'bdjudge'; A: string; flipped: boolean; ans: number }
 export interface BListenQ extends QBase { type: 'blisten'; A: string; sound: string; opts: string[]; ans: number }
-export interface BLookQ extends QBase { type: 'blook'; A: string; opts: string[]; ans: number }
+export interface BKjQ extends QBase { type: 'bkj'; A: string; B: string; stmt: string; opts: string[]; ans: number }
 
 export type Question =
-  | ListenQ | LookQ | LlQ | RuleQ | DjudgeQ | DfixQ | ZiQ | ZwordQ
-  | BDjudgeQ | BListenQ | BLookQ
+  | ListenQ | LookQ | KjQ | DjudgeQ | DfixQ | ZiQ | ZwordQ
+  | BListenQ | BKjQ
 
-export type BoltQ = BDjudgeQ | BListenQ | BLookQ
+export type BoltQ = BListenQ | BKjQ
 
 export interface SessionCfg {
   name: string

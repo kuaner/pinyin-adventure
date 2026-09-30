@@ -1,4 +1,4 @@
-/* UI 全局状态：视图路由 + toast + 探针横幅 + 辨析卡弹窗 + 解锁层 */
+/* UI 全局状态：视图路由 + toast + 探针横幅 + 辨析卡弹窗（v2.3：解锁层已删） */
 import { T } from '../lib/ruby'
 
 export type View = 'home' | 'levels' | 'quiz' | 'result' | 'flash' | 'pairs' | 'practice' | 'history' | 'bolt' | 'learn'
@@ -10,7 +10,6 @@ export const ui = $state({
   probeText: '',
   probeOn: false,
   pairIdx: -1,   // 辨析卡弹窗（-1 关闭）
-  unlockOn: true, // 声音解锁层
 })
 
 let toastTimer: ReturnType<typeof setTimeout> | null = null

@@ -179,7 +179,7 @@ function openView(v: string) {
   else if (v === 'practice') show('practice')
   else if (v === 'history') show('history')
   else if (v === 'result') {
-    const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('🎉 解锁下一关！'), wlabel: 'b↔d', lvNo: 2 }
+    const res: ResultState = { sc: 8, stars: 2, unlockMsg: T('解锁下一关！'), wlabel: 'b↔d', lvNo: 2 }
     showResult(res)
   } else if (v === 'quiz') {
     let qs = buildQuestions(LEVELS[0])
@@ -199,7 +199,7 @@ function openView(v: string) {
     const pool = shuffle(ZI)
     const qs: Question[] = [makeZiQ(ZWORDS[0], true)]
     for (let i = 0; i < 9; i++) qs.push(makeZiQ(pool[i], false))
-    newSession({ name: '📖 ' + T('常见字快拼'), zi: true, qs })
+    newSession({ name: T('常见字快拼'), zi: true, qs })
   }
 }
 
@@ -226,12 +226,6 @@ export function initApp() {
     const mo = s.match(/open=(\w+)/)
     if (mo) {
       setTimeout(() => { openView(mo[1]) }, 400)
-      setTimeout(() => {
-        if (ui.unlockOn) {
-          /* 与 v1 一致：open 验收模式自动解锁音频 */
-          ui.unlockOn = false
-        }
-      }, 250)
     }
   }
 }

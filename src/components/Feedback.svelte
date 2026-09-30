@@ -1,5 +1,5 @@
 <script lang="ts">
-  /* 反馈层：答对=绿+🎉+星星动效，答错=红+👀/💪+正确答案展示（家长可点"继续"跳过） */
+  /* 反馈层：答对=绿+星星动效，答错=红+正确答案展示（家长可点"继续"跳过） */
   import { QZ, fbSkip } from '../stores/session.svelte'
   import { T } from '../lib/ruby'
   import Icon from './Icon.svelte'
@@ -13,7 +13,7 @@
   <div id="fbtext">{@html T(fb!.text)}</div>
   <div id="fbdetail" style="display:flex">
     <div class="glyph" id="fbglyph">{fb!.glyph}</div>
-    <div class="fdesc" id="fbdesc">{@html fb!.desc}</div>
+    <div class="fdesc" id="fbdesc">{@html T(fb!.desc)}</div>
   </div>
   {#if fb!.good}
     {#key QZ.star}

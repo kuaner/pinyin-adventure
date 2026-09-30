@@ -25,7 +25,7 @@
             <button class="chip" data-pi={pi} type="button" onclick={() => openPair(pi)}>{p.a} ↔ {p.b}</button>
           {/each}
         </div>
-        <button class="btn small purple" type="button" onclick={() => startPairGroup(grp)}>⚔️ {@html T('开始专练这 ')}{ps.length}{@html T(' 组')}</button>
+        <button class="btn small purple" type="button" onclick={() => startPairGroup(grp)}><Icon name="play" size={20} /> {@html T('开始专练这 ')}{ps.length}{@html T(' 组')}</button>
       </div>
     {/each}
   </div>

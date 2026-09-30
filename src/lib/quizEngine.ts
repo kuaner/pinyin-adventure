@@ -24,6 +24,18 @@ export function partnerOf(letter: string): string | null {
   return null
 }
 
+/* 同长度优先的同 cat 干扰项（闪电用：单韵母的干扰项不越级到复韵母） */
+export function sameCatTight(letter: string, n: number, exclude: string[]): string[] {
+  const cat = LETTERS[letter].cat
+  const pool = Object.keys(LETTERS).filter((k) => LETTERS[k].cat === cat && k.length === letter.length && exclude.indexOf(k) < 0)
+  if (pool.length < n) {
+    for (const k in LETTERS) {
+      if (LETTERS[k].cat === cat && exclude.indexOf(k) < 0 && pool.indexOf(k) < 0) pool.push(k)
+    }
+  }
+  return shuffle(pool).slice(0, n)
+}
+
 export function sameCatOthers(letter: string, n: number, exclude: string[], scope: string[] | null): string[] {
   const cat = LETTERS[letter].cat
   const pool: string[] = []
@@ -40,7 +52,9 @@ export function sameCatOthers(letter: string, n: number, exclude: string[], scop
   return shuffle(pool).slice(0, n)
 }
 
-/* ---------- 闯关出题（自适应加权：同键连续上限 2 次） ---------- */
+/* ---------- 闯关出题（自适应加权：同键连续上限 2 次）
+   v2.3 零错误信息铁律：ll 听看一致（展示错误配对）与 rule 错句判断（展示 kjf 错误口诀）
+   全面删除 → 听写 listen + 看字 look + 口诀正向回忆 kj（只出正确口诀选字母） ---------- */
 function pickKey(level: QuizScope, usedKeys: string[]): string {
   const items: { k: string; w: number }[] = []
   const covered: Record<string, 1> = {}
@@ -82,20 +96,16 @@ function makeQ(level: QuizScope, key: string, type: string): Question {
   if (type === 'listen' || type === 'look') {
     q.opts = shuffle([A, B].concat(sameCatOthers(A, 2, [A, B], level.pool)))
     q.ans = q.opts.indexOf(A)
-  } else if (type === 'll') {
-    q.same = Math.random() < 0.5
-    q.sound = q.same ? A : B
-    q.ans = q.same ? 0 : 1
-  } else { /* rule */
-    q.true = Math.random() < 0.5
-    q.stmt = q.true ? LETTERS[A].kj : LETTERS[A].kjf
-    q.ans = q.true ? 0 : 1
+  } else { /* kj 口诀正向回忆：正确口诀 → 三/四选一选字母，答案永远是正确形态 */
+    q.stmt = LETTERS[A].kj
+    q.opts = shuffle([A, B].concat(sameCatOthers(A, 2, [A, B], level.pool)))
+    q.ans = q.opts.indexOf(A)
   }
   return q as Question
 }
 
 export function buildQuestions(level: QuizScope): Question[] {
-  const mix = shuffle(['listen', 'listen', 'listen', 'look', 'look', 'll', 'll', 'll', 'rule', 'rule'])
+  const mix = shuffle(['listen', 'listen', 'listen', 'listen', 'look', 'look', 'kj', 'kj', 'kj', 'listen'])
   const qs: Question[] = []
   const keys: string[] = []
   for (let i = 0; i < 10; i++) {
@@ -264,6 +274,8 @@ export function boltPickKey(keys: string[]): string {
 }
 
 export function makeBoltQ(): BoltQ {
+  /* v2.3 听写重构（kuaner 06:21 + 07:42 铁律）：删"看大字选一样"与正反判断（归侦探、且展示
+     错误形态）→ 听写 ~70%（播真人音→二选一，干扰项=混淆搭档）+ 口诀正向回忆 ~30% */
   const key = boltPickKey(BT_KEYS)
   const r = Math.random()
   let A: string, B: string
@@ -274,19 +286,14 @@ export function makeBoltQ(): BoltQ {
     if (Math.random() < 0.5) { A = s[1]; B = s[0] }
   } else {
     A = key.slice(2)
-    B = partnerOf(A) || sameCatOthers(A, 1, [A], null)[0]
-  }
-  const canDet = DETSET.indexOf(A) >= 0
-  if (canDet && r < 0.18) {
-    const fl = Math.random() < 0.5
-    return { type: 'bdjudge', key: 'M:' + A, A, flipped: fl, ans: fl ? 1 : 0, hint: HV5.bdjudge }
+    B = partnerOf(A) || sameCatTight(A, 1, [A])[0]
   }
   const opts = shuffle([A, B])
   const ans = opts.indexOf(A)
-  if (r < 0.58) {
+  if (r < 0.7) {
     return { type: 'blisten', key: isPair ? key : 'L:' + A, A, sound: A, opts, ans, hint: HV5.blisten }
   }
-  return { type: 'blook', key: isPair ? key : 'L:' + A, A, opts, ans, hint: HV5.blook }
+  return { type: 'bkj', key: isPair ? key : 'L:' + A, A, B, stmt: LETTERS[A].kj, opts, ans, hint: HV5.bkj }
 }
 
 /* bolt 会话的已答题键序列（供连续上限判定；由 bolt store 重置） */

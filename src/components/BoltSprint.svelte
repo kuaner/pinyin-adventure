@@ -1,11 +1,12 @@
 <script lang="ts">
-  /* ⚡闪电刷题：5 分钟无限连续出题、每题 2 选项、HUD 计数、结算（今日/历史最佳+礼花） */
+  /* ⚡闪电刷题：5 分钟无限连续出题、每题 2 选项、HUD 计数、结算（今日/历史最佳+礼花）
+     v2.3 听写重构：听写 blisten ~70%（播真人音→混淆搭档二选一）+ 口诀正向回忆 bkj ~30%；
+     "看大字选一样"与正反判断删除（零错误信息铁律 + 正反归小侦探） */
   import { BT, startBolt, endBolt, boltAnswer, boltQuit, boltTitle, boltAcc, boltAvg } from '../stores/bolt.svelte'
   import { S } from '../stores/progress.svelte'
   import { say } from '../lib/audio'
   import { show, ui } from '../stores/ui.svelte'
   import { T } from '../lib/ruby'
-  import AnchorBar from './AnchorBar.svelte'
   import Ruby from './Ruby.svelte'
   import Icon from './Icon.svelte'
 
@@ -40,29 +41,19 @@
     <span id="boltstreak" class={BT.streak >= 5 ? 'hot' : ''}><Icon name="flame" size={18} /> {BT.streak}</span>
   </div>
   <div class="qcard" id="boltcard" style="display:{BT.resultOn ? 'none' : 'flex'}">
-    <div class="qhint" id="bhint">{@html q?.hint ?? ''}</div>
+    <div class="qhint" id="bhint">{@html T(q?.hint ?? '')}</div>
     {#key BT.q}
       <div class="glyphbox" id="bglyph">
-        {#if q?.type === 'bdjudge'}
-          <AnchorBar x={q.A} />
-          <div class="glyph" class:mirror={q.flipped} style="min-height:96px">{q.A}</div>
+        {#if q?.type === 'bkj'}
+          <div class="ruletext">「{@html T(q.stmt)}」</div>
         {:else if q?.type === 'blisten'}
           <div style="position:relative">
             <button class="bigsound" type="button" onclick={() => say(q.sound)}><Icon name="headphones" size={44} /><span class="bslabel">{@html T('再听一遍')}</span></button>
           </div>
-        {:else if q}
-          <div class="glyph" style="min-height:96px">{q.A}</div>
         {/if}
       </div>
       <div class="boltopts" id="bopt">
-        {#if q?.type === 'bdjudge'}
-          <button class="opt tf" class:correct={reveal && reveal.correct === 0} class:wrong={reveal && reveal.wrong.includes(0)} onclick={() => boltAnswer(0)}>
-            <div class="og"><Icon name="check" size={44} /></div><div class="ob">{@html T('写对了')}</div>
-          </button>
-          <button class="opt tf" class:correct={reveal && reveal.correct === 1} class:wrong={reveal && reveal.wrong.includes(1)} onclick={() => boltAnswer(1)}>
-            <div class="og"><Icon name="refresh" size={44} /></div><div class="ob">{@html T('写反了')}</div>
-          </button>
-        {:else if q}
+        {#if q}
           {#each q.opts as k, idx}
             <button class="opt" class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)} onclick={() => boltAnswer(idx)}>
               <div class="og">{k}</div>

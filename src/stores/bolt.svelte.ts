@@ -69,6 +69,8 @@ export function boltAnswer(idx: number) {
   } else {
     BT.streak = 0
     sndNo()
+    /* 零错误信息铁律：答错只强化正确答案——播正确字母的读音（"这是 l，l l l"） */
+    say(q.A)
   }
   const qRef = q
   setTimeout(() => {
@@ -78,7 +80,7 @@ export function boltAnswer(idx: number) {
       BT.reveal = null
       void qRef
     }
-  }, ok ? 220 : 430)
+  }, ok ? 220 : 1000)
 }
 
 export function endBolt() {

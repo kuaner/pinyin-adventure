@@ -31,12 +31,12 @@
   <section id="v-learn" class="view on">
     <div class="topbar">
       <button class="backbtn" data-back="home" onclick={() => show('home')}>‹</button>
-      <h2><Icon name="bulb" size={26} /> <Ruby text="学习岛" /></h2>
+      <h2><Icon name="map" size={26} /> <Ruby text="学习岛" /></h2>
       <div class="scorechip"><Ruby text={"已学" + CNL(doneCount) + "课，共" + CNL(12) + "课"} /></div>
     </div>
 
     <div class="island-intro">
-      <div class="island-emoji">🌱</div>
+      <div class="island-emoji"><Icon name="sprout" size={40} /></div>
       <div class="island-tip"><Ruby text="一个脚印一个脚印，从零开始学拼音" /></div>
     </div>
 

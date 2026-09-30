@@ -25,12 +25,12 @@
       <div class="og"><Icon name="check" size={44} /></div><div class="ob">{@html T('写对了')}</div>
     </button>
     <button class="opt tf no" class:correct={reveal && reveal.correct === 1} class:wrong={reveal && reveal.wrong.includes(1)} onclick={() => answer(1)}>
-      <div class="og">🔄</div><div class="ob">{@html T('写反了')}</div>
+      <div class="og"><Icon name="refresh" size={44} /></div><div class="ob">{@html T('写反了')}</div>
     </button>
   </div>
 {:else}
   <div class="glyphbox" id="glyphbox">
-    <div class="qbubble"><span>🐣</span><span>{@html T('我要写「')}{L.tts}</span><span class="bem">{L.em}</span></div>
+    <div class="qbubble"><span class="qbicon"><Icon name="bird" size={22} /></span><span>{@html T('我要写「')}{L.tts}</span><span class="bem">{L.em}</span></div>
     <div class="glyph mirror">{q.X}</div>
   </div>
   <div class="qextra" id="qextra"></div>

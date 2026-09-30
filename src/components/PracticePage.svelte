@@ -20,7 +20,7 @@
         style="flex-direction:column;gap:1px;min-height:78px"
         onclick={() => startPractice(it.kind)}
       >
-        <span>{@html T(it.btn)}</span>
+        <span><Icon name={it.icon} size={22} /> {@html T(it.btn)}</span>
         <span style="font-size:15px;font-weight:700;opacity:.92;line-height:1.8">{@html T(it.desc)}</span>
       </button>
     {/each}

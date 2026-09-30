@@ -1,5 +1,5 @@
-/* 声音三层架构（v5c 终局：纯预生成 mp3，无设备 TTS 层）
-   第一层 AudioContext 解锁与反馈音合成；第二层 mp3 播放器；第三层 🔊 自检 */
+/* 声音两层架构（v5c 终局：纯预生成 mp3，无设备 TTS 层；v2.3 删解锁层与自检：
+   AudioContext 在 playAudio/tone 内部 lazy unlock，进 app 直达首页） */
 import { LETTERS, HYP } from '../data'
 import { S } from '../stores/progress.svelte'
 import { toast } from '../stores/ui.svelte'
@@ -75,6 +75,7 @@ function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
 
 export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement | null {
   if (S.mute) { if (opts.onerror) opts.onerror(); return null }
+  ac() /* 首次任意播放即静默解锁 WebAudio（v2.3：解锁层删除后的替代路径） */
   try {
     let a = AUDIO_CACHE[name]
     if (!a) { a = new Audio(audioURL(name)); AUDIO_CACHE[name] = a }
@@ -105,7 +106,7 @@ export function say(k: string) {
 }
 
 export function preloadAudios() {
-  for (const n of ['welcome', 'right', 'wrong', 'go', 'star', 'levelup', 'next', 'timeout', 'unlock', 'byebye']) {
+  for (const n of ['right', 'wrong', 'go', 'star', 'levelup', 'next', 'timeout', 'byebye']) {
     if (!AUDIO_CACHE[n]) {
       try {
         const a = new Audio(audioURL(n))
@@ -115,20 +116,4 @@ export function preloadAudios() {
       } catch { /* ignore */ }
     }
   }
-}
-
-/* ---------- 第三层：🔊 诊断按钮 = 音频自检（依次播 welcome/right 并显示结果） ---------- */
-export function soundDiag() {
-  toast('🔊 音频自检中…')
-  playAudio('welcome', {
-    hint: '自检：welcome ✗ 缺失或无法播放（检查 audio/ 目录）',
-    onerror() { toast('🔊 音频自检失败：welcome ✗') },
-    onend() {
-      playAudio('right', {
-        hint: '自检：welcome ✓ · right ✗',
-        onerror() { toast('🔊 音频自检：welcome ✓ · right ✗ 缺失') },
-        onend() { toast('🔊 音频自检通过 ✓ welcome + right 都正常') },
-      })
-    },
-  })
 }

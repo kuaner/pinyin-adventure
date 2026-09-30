@@ -23,12 +23,12 @@
         id="lv-{L.n}"
         onclick={() => un ? startLevel(L.n) : toast(T('先通过上一关才能解锁哦！'))}
       >
-        <div class="lvnum">{#if un}{L.em}{:else}<Icon name="lock" size={30} />{/if}</div>
+        <div class="lvnum">{#if un}<Icon name={L.icon} size={32} />{:else}<Icon name="lock" size={30} />{/if}</div>
         <div class="lvinfo">
           <div class="lvname">{@html T('第')}{L.n}{@html T('关')} · {@html T(L.name)}{L.boss ? ' <span class="bosstag">' + T('毕业') + '</span>' : ''}</div>
           <div class="lvsub">{@html T(L.sub)}</div>
         </div>
-        <div class="lvstars">{#each Array(st) as _, i}<Icon name="star" size={19} />{/each}{#each Array(3 - st) as _, i}<span class="starempty">☆</span>{/each}</div>
+        <div class="lvstars">{#each Array(st) as _, i}<Icon name="star" size={19} />{/each}{#each Array(3 - st) as _, i}<span class="starempty"><Icon name="star-empty" size={19} /></span>{/each}</div>
       </button>
     {/each}
   </div>

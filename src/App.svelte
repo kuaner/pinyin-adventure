@@ -2,9 +2,8 @@
   import { onMount } from 'svelte'
   import { ui, show } from './stores/ui.svelte'
   import { QZ } from './stores/session.svelte'
-  import { ac } from './lib/audio'
   import { initApp } from './lib/probe'
-  import UnlockLayer from './components/UnlockLayer.svelte'
+  import UpdatePrompt from './components/UpdatePrompt.svelte'
   import HomePage from './components/HomePage.svelte'
   import LevelMap from './components/LevelMap.svelte'
   import QuizPage from './components/QuizPage.svelte'
@@ -22,11 +21,6 @@
     initApp()
     /* ?learn=N 深链直达学习岛（进度续学/验收截图） */
     if (new URLSearchParams(location.search).get('learn')) show('learn')
-    /* 兜底：任意首触也尝试解锁音效（部分安卓浏览器） */
-    document.addEventListener('touchstart', function once() {
-      ac()
-      document.removeEventListener('touchstart', once)
-    }, { passive: true })
   })
 </script>
 
@@ -54,7 +48,7 @@
   {/if}
 </div>
 
-<UnlockLayer />
+<UpdatePrompt />
 <PairModal />
 {#if QZ.fb}
   <Feedback />

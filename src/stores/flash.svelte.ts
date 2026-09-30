@@ -71,7 +71,7 @@ export function deckInfo(): string {
   if (FC.idx >= FC.deck.length) {
     return dueN > 0
       ? T('本轮翻完！还有 ' + dueN + ' 张待复习')
-      : T('✅ 今天的复习完成啦！明天再来')
+      : T('今天的复习完成啦！明天再来')
   }
   return (dueN > 0
     ? T('今天待复习 ' + dueN + ' 张 · ')

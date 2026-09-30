@@ -45,9 +45,9 @@ src/
   components/
     HomePage / LevelMap / QuizPage / ResultsPage / Flashcards /
     PairsPage / PracticePage / HistoryPage / BoltSprint      # 页面
-    quiz/ListenQ LookQ LlQ RuleQ                            # 闯关四题型
+    quiz/ListenQ LookQ                                      # 闯关题型（v2.3：LlQ/RuleQ 已删——零错误信息铁律）
     MirrorDetect（正反判断+修复题） ZiQuiz（看字/词选拼音）   # 题型
-    UnlockLayer AnchorBar PairModal Feedback Ruby            # 通用件
+    AnchorBar PairModal Feedback Ruby UpdatePrompt           # 通用件（v2.3：解锁层删除，新增更新提示条）
     learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 五步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
     pinyin.json           # 字母表 57 条(口诀/例词) + 锚点表 + 9 关 + 正反覆盖集
@@ -56,7 +56,7 @@ src/
     words.json            # 30 双字词
     phrases.json          # UI 短语/题型名/夸奖语/自由练习配置
     lessons.json          # 学习岛 12 课（字母/口诀/写法旁白/声调/拼读表）
-    strokes.json          # 47 单元笔顺 SVG 几何（部编版规范，scripts/stroke-verify.mjs 自检）
+    strokes.json          # 47 单元笔顺 SVG 几何（v2.3 换血：lasagoo/letter-writing 底本+部编版适配，生成器 gen-strokes-lw.mjs 勿手改；stroke-verify.mjs 自检）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
 scripts/                  # 一次性/验收脚本（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
 ```
@@ -75,6 +75,9 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 3. **行为零回退**：v1 单文件 index.html（git 历史 c3e0655 及之前）是行为正本，改交互前先对照它逐模式核对。
 4. 儿童可见文字必须带 ruby 注音；家长向文本（历史表格/诊断 toast/隐私说明）可不注音。
 5. 数据改动进 `src/data/*.json`，不在组件里内联大数组。
+6. **零错误信息铁律**（v2.3）：面向孩子的题目不得以任何形式展示错误配对/错误形态/错误口诀——ll 听看一致、rule 错句判断、"看大字选一样"已全面删除；闯关=listen/look/kj（口诀正向回忆），闪电=blisten(70%)/bkj(30%)；答错只展示正确答案+读音。
+7. **注音收口**（Bug#2）：数据层纯文本，渲染层中文一律 T()/Ruby；`node scripts/check-ruby.mjs` 是 lint 门槛（裸中文插值=warning）。
+8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
 
 ## 发布流程
 
@@ -88,3 +91,4 @@ scripts/                  # 一次性/验收脚本（extract-data 抽取留档�
 - `?probe=` / `full` / `det` / `bolt` / `zi` / `flash`：动态探针（进题→作答→验证权重/计数/反馈层）
 - `?open=levels|pairs|practice|history|result|quiz|detect|dfix|bolt|zi|ziword`：直接渲染对应界面（截图用；bolt 冻结计时）
 - `window.__PJ`：会话/权重/音频缓存钩子（仅带参访问时挂载）
+- 笔顺自检 `node scripts/stroke-verify.mjs`（47 单元×2 帧截图+几何断言）；注音 lint `node scripts/check-ruby.mjs`；全量验收 `node scripts/acceptance-v23.mjs`

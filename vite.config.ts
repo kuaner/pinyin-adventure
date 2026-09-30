@@ -14,8 +14,9 @@ export default defineConfig({
   plugins: [
     svelte(),
     VitePWA({
-      // 自动更新：部署新版本后 SW skipWaiting，下次打开生效（儿童应用不打断答题）
-      registerType: 'autoUpdate',
+      // v2.3 照 bambu-nfc：prompt 模式 + UpdatePrompt 提示条（skipWaiting 交给用户点击，
+      // App.svelte 挂 onNeedRefresh 链路 + visibilitychange 回前台主动 SW.update()）
+      registerType: 'prompt',
       workbox: {
         // mp3 不进 precache（305 条逐个预载太慢），改 CacheFirst 边播边缓存；外壳/数据全量离线可用
         globPatterns: ['**/*.{js,css,html,svg,png,json}'],

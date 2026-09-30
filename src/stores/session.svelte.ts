@@ -72,7 +72,7 @@ export function startDet() {
 
 export function startZi() {
   playAudio('go')
-  newSession({ name: '📖 ' + T('常见字快拼'), zi: true, qs: ziQs() })
+  newSession({ name: T('常见字快拼'), zi: true, qs: ziQs() })
 }
 
 export function startPractice(kind: string) {
@@ -131,33 +131,33 @@ function showFeedback(ok: boolean, q: any) {
   } else if (q.type === 'look') {
     glyph = q.A
     desc = T('第') + (q.ans + 1) + T(' 个才是它的读音「' + LETTERS[q.A].han + '」')
-  } else if (q.type === 'll') {
-    glyph = q.sound
-    desc = T('听到 ') + q.sound + T('，看到 ') + q.A + '，' + (q.same ? T('一样～') : T('不一样哦'))
   } else if (q.type === 'djudge') {
     glyph = q.X
     desc = (q.flipped
       ? T('它是写反的「' + q.X + '」！看，正确的长这样')
       : T('它写对了，就是「' + q.X + '」'))
-      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
+      + ((ANCHORS_REF[q.X]) ? ('<br>' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
   } else if (q.type === 'dfix') {
     glyph = q.X
     desc = T('写对的「' + q.X + '」长这样')
-      + ((ANCHORS_REF[q.X]) ? ('<br>💡 ' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
+      + ((ANCHORS_REF[q.X]) ? ('<br>' + ANCHORS_REF[q.X].h + '（' + ANCHORS_REF[q.X].p + '）' + T('的') + ' ' + q.X) : '')
   } else if (q.type === 'zi') {
     glyph = q.z.h
     desc = T('正确拼音：') + '<b>' + q.z.p + '</b>'
   } else if (q.type === 'zword') {
     glyph = q.z.w
     desc = T('正确拼音：') + '<b>' + q.z.p + '</b>'
+  } else if (q.type === 'kj') {
+    glyph = q.A
+    desc = T('这句口诀说的是：') + q.A + '（' + T(LETTERS[q.A].kj) + '）'
   } else {
     glyph = q.A
-    desc = T('正确口诀：') + T(LETTERS[q.A].kj)
+    desc = T('正确答案：') + q.A
   }
-  if (ok && (q.type === 'zi' || q.type === 'zword')) playAudio(q.z.f, { hint: '🔊 字音缺失：' + q.z.f })
+  if (ok && (q.type === 'zi' || q.type === 'zword')) playAudio(q.z.f, { hint: '字音缺失：' + q.z.f })
   QZ.fb = {
     good: ok,
-    icon: ok ? 'celebrate' : (q.type === 'll' || q.type === 'djudge' ? 'detect' : 'cheer'),
+    icon: ok ? 'celebrate' : (q.type === 'djudge' ? 'detect' : 'cheer'),
     text: ok ? PRAISE[Math.floor(Math.random() * PRAISE.length)] : CHEER[Math.floor(Math.random() * CHEER.length)],
     glyph,
     desc,
@@ -200,8 +200,8 @@ function endQuiz() {
   if (lvNo) {
     if (stars > (S.stars[lvNo] || 0)) S.stars[lvNo] = stars
     save(S)
-    if (stars >= 1 && lvNo === 8) unlockMsg = T('👑 毕业关「易混对大师」已解锁！')
-    else if (stars >= 1 && lvNo === 9) unlockMsg = T('🎓 恭喜毕业！你就是易混对大师！')
+    if (stars >= 1 && lvNo === 8) unlockMsg = T('毕业关「易混对大师」已解锁！')
+    else if (stars >= 1 && lvNo === 9) unlockMsg = T('恭喜毕业！你就是易混对大师！')
     else if (stars >= 1) unlockMsg = T('解锁下一关！')
   }
   let worst: string | null = null

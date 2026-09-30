@@ -102,13 +102,13 @@
       {#each MARKS as m, i (m.t)}
         <button class="topt" class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
           <svg viewBox="0 0 56 30"><path d={m.d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
-          <span>{m.name}</span>
+          <span><Ruby text={m.name} /></span>
         </button>
       {/each}
     </div>
   {:else}
     <div class="qresult">
-      <div class="qemoji">👂🎉</div>
+      <div class="qemoji"><Icon name="ear" size={46} /> <Icon name="star" size={46} /></div>
       <div class="qscore"><Ruby text="听对了 {qRight} 个" /></div>
       {#if qRight >= 3}<div class="qpraise"><Ruby text="小耳朵真灵！" /></div>{:else}<div class="qpraise"><Ruby text="再多听几遍就更棒啦" /></div>{/if}
       <div class="trow">

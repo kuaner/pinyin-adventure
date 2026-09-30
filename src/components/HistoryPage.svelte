@@ -17,13 +17,13 @@
     <h2><Ruby text="历史成绩" /></h2>
   </div>
   <div class="learnprog">
-    <div class="lptitle">🌱 学习岛课程进度（第 {LRN.u} 课已解锁）</div>
+    <div class="lptitle"><Icon name="sprout" size={18} /> 学习岛课程进度（第 {LRN.u} 课已解锁）</div>
     <div class="lpmap">
       {#each LESSONS as ls (ls.n)}
         <div class="lpcell" class:done={(LRN.stars[ls.n] || 0) > 0} class:lock={ls.n > LRN.u}>
           <span class="lpn">{ls.n}</span>
           <span class="lpl">{ls.label}</span>
-          <span class="lps">{#if LRN.stars[ls.n]}⭐{LRN.stars[ls.n]}{:else if ls.n > LRN.u}🔒{:else}▶{/if}</span>
+          <span class="lps">{#if LRN.stars[ls.n]}<Icon name="star" size={13} />{LRN.stars[ls.n]}{:else if ls.n > LRN.u}<Icon name="lock" size={13} />{:else}<Icon name="play" size={13} />{/if}</span>
         </div>
       {/each}
     </div>

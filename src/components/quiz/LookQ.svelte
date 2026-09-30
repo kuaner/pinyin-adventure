@@ -32,4 +32,4 @@
     </button>
   {/each}
 </div>
-<div class="subhint" id="subhint">{@html T('先点喇叭听一听 ➜ 再点一次选定')}</div>
+<div class="subhint" id="subhint">{@html T('先点喇叭听一听，再点一次选定')}</div>

@@ -696,7 +696,6 @@
  "levels": [
   {
    "n": 1,
-   "em": "🌈",
    "name": "单韵母乐园",
    "sub": "a o e i u ü",
    "pool": [
@@ -707,11 +706,11 @@
     "u",
     "ü"
    ],
-   "pairs": []
+   "pairs": [],
+   "icon": "rainbow"
   },
   {
    "n": 2,
-   "em": "🚂",
    "name": "声母 b p m f",
    "sub": "b p m f + d 预埋",
    "pool": [
@@ -724,11 +723,11 @@
    "pairs": [
     "b|d",
     "b|p"
-   ]
+   ],
+   "icon": "flag"
   },
   {
    "n": 3,
-   "em": "🐯",
    "name": "声母 d t n l",
    "sub": "n / l 最容易混",
    "pool": [
@@ -743,11 +742,11 @@
    ],
    "hot": [
     "n|l"
-   ]
+   ],
+   "icon": "cat"
   },
   {
    "n": 4,
-   "em": "🎈",
    "name": "声母 g k h j q x",
    "sub": "q 混入 p / q",
    "pool": [
@@ -762,11 +761,11 @@
     "g|k",
     "p|q",
     "d|q"
-   ]
+   ],
+   "icon": "balloon"
   },
   {
    "n": 5,
-   "em": "🐝",
    "name": "声母 z c s y w",
    "sub": "平舌三兄弟",
    "pool": [
@@ -779,11 +778,11 @@
    "pairs": [
     "z|c",
     "c|s"
-   ]
+   ],
+   "icon": "bee"
   },
   {
    "n": 6,
-   "em": "🌊",
    "name": "复韵母",
    "sub": "ai ei ui ao ou iu ie",
    "pool": [
@@ -798,11 +797,11 @@
    "pairs": [
     "ui|iu",
     "ie|ei"
-   ]
+   ],
+   "icon": "fish"
   },
   {
    "n": 7,
-   "em": "🏔️",
    "name": "前后鼻音家族",
    "sub": "an ang en eng in ing un ün",
    "pool": [
@@ -820,11 +819,11 @@
     "en|eng",
     "in|ing",
     "un|ün"
-   ]
+   ],
+   "icon": "cloud"
   },
   {
    "n": 8,
-   "em": "⭐",
    "name": "整体认读",
    "sub": "zhi chi shi ri zi ci si",
    "pool": [
@@ -842,11 +841,11 @@
     "zi|ci",
     "ci|si",
     "shi|ri"
-   ]
+   ],
+   "icon": "star"
   },
   {
    "n": 9,
-   "em": "👑",
    "name": "易混对大师",
    "sub": "全部 14 组易混对高压混战",
    "boss": true,
@@ -865,7 +864,8 @@
     "ui|iu",
     "ie|ei",
     "un|ün"
-   ]
+   ],
+   "icon": "trophy"
   }
  ],
  "detSet": [

@@ -52,6 +52,7 @@
           } else { cx = sx + 7.5; cy = sy - 9.5 }
         }
         while (placed.some(([px, py]) => Math.hypot(px - cx, py - cy) < 17.5)) cx += 16
+        cx = Math.min(cx, viewBoxW - 8)   /* 避让右移后越出格子则回推（防徽章被裁半圆） */
         placed.push([cx, cy])
         row.push([cx - sx, cy - sy])
       }
