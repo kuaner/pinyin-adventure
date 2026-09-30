@@ -31,8 +31,9 @@ export function openLesson(n: number) {
   show('lesson')
 }
 
-export function toast(msg: string) {
-  ui.toastMsg = T(msg)
+export function toast(msg: string, opts: { plain?: boolean } = {}) {
+  /* plain=系统状态消息不加注音（Bug#14 架构修复：toast 管道区分学习文本 vs 系统文本） */
+  ui.toastMsg = opts.plain ? msg : T(msg)
   ui.toastOn = true
   if (toastTimer) clearTimeout(toastTimer)
   toastTimer = setTimeout(() => { ui.toastOn = false }, 2600)

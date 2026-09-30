@@ -75,13 +75,13 @@ function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
     AUDIO_CACHE[name] = m
     const p = m.play()
     if (p && p.catch) p.catch(() => {
-      if (opts.hint) toast(opts.hint)
+      if (opts.hint) toast(opts.hint, { plain: true })
       if (opts.onerror) opts.onerror()
     })
     if (opts.onend) m.onended = () => { if (opts.onend) opts.onend() }
     return m
   } catch {
-    if (opts.hint) toast(opts.hint)
+    if (opts.hint) toast(opts.hint, { plain: true })
     if (opts.onerror) opts.onerror()
     return null
   }
@@ -101,7 +101,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
         a.dataset.mimoFb = '1'
         playMimo(name, opts)
       } else {
-        if (opts.hint) toast(opts.hint)
+        if (opts.hint) toast(opts.hint, { plain: true })
         if (opts.onerror) opts.onerror()
       }
     })
@@ -112,7 +112,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
     CUR = a
     return a
   } catch {
-    if (opts.hint) toast(opts.hint)
+    if (opts.hint) toast(opts.hint, { plain: true })
     if (opts.onerror) opts.onerror()
     return null
   }
