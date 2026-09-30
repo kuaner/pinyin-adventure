@@ -25,8 +25,19 @@
     })
   })
 
+  let reloading = $state(false)
   function handleUpdate() {
-    updateSW?.()
+    /* Bug#11：updateSW 只负责 skipWaiting（新 SW 就绪），必须自己监听 controllerchange 重载；
+       另加 1.8s 兜底强刷——无论 SW 接管与否，冷加载即新版 */
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (reloading) return
+      reloading = true
+      window.location.reload()
+    })
+    updateSW?.().catch(() => {})
+    setTimeout(() => {
+      if (!reloading) { reloading = true; window.location.reload() }
+    }, 1800)
   }
 </script>
 
