@@ -38,20 +38,14 @@
   aria-label={file ? zh : undefined}
   onclick={file ? tap : undefined}
   onkeydown={file ? key : undefined}
->{@html T(zh, pyMap)}{#if file}<i class="swave" aria-hidden="true"><b></b><b></b><b></b></i>{/if}</span>
+>{@html T(zh, pyMap)}{#if file}<svg class="sico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5v5h3.6L12.4 19V5L7.6 9.5H4z" fill="currentColor" /><path d="M15.5 8.6a5 5 0 010 6.8M18 6.2a8.4 8.4 0 010 11.6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" /></svg>{/if}</span>
 
 <style>
   .speak { border-radius: 6px; }
   .speak.canplay { cursor: pointer; transition: transform .12s ease; -webkit-tap-highlight-color: transparent; }
   .speak.canplay:active { transform: scale(.93); }
-  /* 小声波纹：三根跳动的细条，随文字基线，弱存在感 */
-  .swave { display: inline-flex; align-items: flex-end; gap: var(--sp-1); height: .58em; margin-left: .3em;
-    vertical-align: baseline; opacity: .5; pointer-events: none; }
-  .swave b { width: 2.5px; border-radius: 2px; background: currentColor; transform-origin: bottom;
-    animation: swv 1.1s ease-in-out infinite; }
-  .swave b:nth-child(1) { height: 46%; }
-  .swave b:nth-child(2) { height: 100%; animation-delay: .18s; }
-  .swave b:nth-child(3) { height: 68%; animation-delay: .36s; }
-  @keyframes swv { 0%, 100% { transform: scaleY(.5); } 50% { transform: scaleY(1); } }
-  @media (prefers-reduced-motion: reduce) { .swave b { animation: none; } }
+  /* 可点播示能：小喇叭图标（BUGS#22①——原三根 2.5px 竖条静态下形似省略号"…"，
+     kuaner 读作"文字未超宽仍显示截断符"；换喇叭图标后示能语义不变、不可能再误读） */
+  .sico { width: .72em; height: .72em; margin-left: .32em; vertical-align: -.06em;
+    opacity: .5; pointer-events: none; }
 </style>

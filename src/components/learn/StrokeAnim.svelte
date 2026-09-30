@@ -15,10 +15,10 @@
   const UNITS = (strokesData as any).units as Record<string, string[]>
 
   let {
-    unit, cell = 116, static: staticN = -1, speed = 1, play = true, showList = true,
+    unit, cell = 116, static: staticN = -1, speed = 1, play = true, showList = true, glyph = false,
     ondone, onstroke,
   }: {
-    unit: string; cell?: number; static?: number; speed?: number; play?: boolean; showList?: boolean
+    unit: string; cell?: number; static?: number; speed?: number; play?: boolean; showList?: boolean; glyph?: boolean
     ondone?: () => void; onstroke?: (n: number, name: string) => void
   } = $props()
 
@@ -153,6 +153,7 @@
 
   $effect(() => {
     unit, staticN, play
+    if (glyph) return   /* glyph 档=纯静态字模 SVG，无动画无副作用（四线三格坐标系与动画档同源） */
     inkEls.length = total   /* bind:this 已按新 DOM 重绑，只裁掉多余尾巴 */
     if (staticN >= 0) { stopAnim(); cur = -1 }
     else if (play) playAll()
@@ -171,6 +172,27 @@
 
 <div class="sawrap">
   <div class="svgfit">
+  {#if glyph}
+    <!-- BUGS#22②：静态大字模档——与动画档同源同坐标系（同 viewBox 76×160/字母、同四线三格背景线、
+       同 path 数据）。PinyinCard 大字模复用它之后，同一字母在任何大小/任何页面占格完全一致。 -->
+    <svg
+      class="strokeanim saglyph"
+      viewBox="0 0 {viewBoxW} 160"
+      width={cell * letters.length}
+      style="max-width:100%;max-height:100%;width:auto;height:100%"
+      role="img" aria-label="{unit} {t('ariaStroke')}">
+      {#each [20, 60, 100, 140] as gy (gy)}
+        <line x1="0" y1={gy} x2={viewBoxW} y2={gy} class="grid" class:grid2={gy === 60 || gy === 100} />
+      {/each}
+      {#each letters as l, li (l + li)}
+        <g transform="translate({li * W}, 0)">
+          {#each LETTERS[l].strokes as st, k (l + '-' + k)}
+            <path class="glink" d={st.d} />
+          {/each}
+        </g>
+      {/each}
+    </svg>
+  {:else}
   <svg
     class="strokeanim"
     viewBox="0 0 {viewBoxW} 160"
@@ -222,11 +244,12 @@
       <circle r="3.6" class="mdot" />
     </g>
   </svg>
+  {/if}
   </div>
 
   <!-- 底部笔名清单：随当前笔同步高亮，完成笔定格深色（showList=false 供紧凑预览位隐藏——
      v2.9.1：认识页卡内预算装不下清单，曾把 svg 挤到 0 高、清单溢出叠上重播键） -->
-  {#if staticN < 0 && showList}
+  {#if staticN < 0 && showList && !glyph}
     <div class="slist" role="list" aria-label="笔顺清单">
       {#each all as st, i (unit + '-' + i)}
         <span class="sit" class:is-cur={cur === i} class:is-done={cur > i || cur >= total} role="listitem">
@@ -245,6 +268,12 @@
   .strokeanim { display: block; margin: 0 auto; }
   .grid { stroke: #ded4c3; stroke-width: 1.5; }
   .grid2 { stroke: #c9bca6; stroke-width: 2.2; }
+  /* glyph 档：纯静态字模——笔画作主体色（与原 .pc-big 大字模同色系），保留玩具感投影；
+     坐标系/四线格/笔画路径与动画档逐字节同源（BUGS#22②） */
+  .saglyph { filter: drop-shadow(0 3px 0 rgba(18, 157, 143, .16)); }
+  /* dash 覆盖必须显式：全局 path:not(.ghost) 规则会把非动画路径 dashoffset 藏掉 */
+  .saglyph .glink { fill: none; stroke: var(--animal-primary); stroke-width: 8; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: none; stroke-dashoffset: 0; }
   .ghost { fill: none; stroke: #e9e1d3; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
   path:not(.ghost) {
     fill: none; stroke: #264653; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round;

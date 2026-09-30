@@ -67,9 +67,18 @@
 {#if mode === 'full'}
   <div class="pcfull" data-pc={k}>
     <button class="pc-mainbtn" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
-      <!-- 四线三格底衬（五要素之一：字模四线三格）；下限 112px/31vw 保 ≥120px 儿童字模契约 -->
-      <i class="pc-grid" aria-hidden="true"></i>
-      <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
+      {#if C.stroke}
+        <!-- BUGS#22②：大字模直接复用 StrokeAnim 的 SVG（同 viewBox 76×160/字母+四线三格背景线）——
+           废弃原"字体文本+CSS 自画格线"双坐标系（i 的竖笔曾穿破第 4 线，与笔顺卡占格不一致）。
+           glyphMax 语义=字模显示区高度上限（SVG 等比适配，笔格占比恒定） -->
+        <div class="pc-glyphfit" style="max-height:{Math.round(glyphMax * 1.3)}px">
+          <StrokeAnim unit={k} glyph={true} play={false} showList={false} />
+        </div>
+      {:else}
+        <!-- 兜底：无笔顺数据的单元退回字体字模（57 卡实测全覆盖，此分支仅为防御） -->
+        <i class="pc-grid" aria-hidden="true"></i>
+        <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
+      {/if}
     </button>
     <button class="pc-read" data-pcread={k} onclick={() => say(k)} aria-label="读音">
       <Icon name="headphones" size={17} />
@@ -147,9 +156,13 @@
 <style>
   /* ---------- full ---------- */
   .pcfull { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); width: 100%; min-height: 0; flex: 1; }
+  /* BUGS#22②：字模按钮=弹性子项（与笔顺区按 1.1:1 分卡内剩余预算），glyphfit 满高承载 SVG；
+     SVG max 约束等比缩放，零塌陷 */
   .pc-mainbtn { border: none; background: none; font-family: inherit; padding: 0; cursor: pointer; line-height: 1; position: relative;
-    width: 82%; display: flex; align-items: center; justify-content: center; }
-  /* 四线三格（与笔顺区/课本格一致的四线） */
+    width: 82%; flex: 1.1 1 0; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .pc-glyphfit { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .pc-glyphfit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
+  /* 四线三格（仅无笔顺数据的字体字模兜底用） */
   .pc-grid { position: absolute; left: 0; right: 0; top: 16%; bottom: 18%; pointer-events: none;
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .5; border-radius: 4px; }
@@ -158,12 +171,12 @@
     font-family: inherit; font-size:var(--fs-sm); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: 999px; cursor: pointer; flex: none; }
   .pc-read:active { transform: translateY(2px); }
   .pc-han { font-style: normal; font-weight: 800; opacity: .8; }
-  .pc-strokewrap { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); width: 88%; min-height: 0; flex: 1;
-    background: #fbf7ec; border-radius: 16px; padding: var(--sp-1) var(--sp-2); }
+  .pc-strokewrap { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 88%; min-height: 0; flex: 1;
+    background: #fbf7ec; border-radius: 16px; padding: 2px var(--sp-2); }
   .pc-strokefit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
   .pc-strokefit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
   .pc-replay { display: flex; align-items: center; gap: var(--sp-1); border: none; background: none; color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; cursor: pointer; padding: var(--sp-1) var(--sp-2) var(--sp-1); flex: none; }
+    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; cursor: pointer; padding: 0 var(--sp-2); flex: none; }
   .pc-replay :global(svg) { width: 13px; height: 13px; }
   /* v2.8：长口诀两行内换行（胶囊改大圆角，零溢出） */
   .pc-kj { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: var(--sp-1); column-gap: var(--sp-2); border: none; background: #eef8e2; font-family: inherit;

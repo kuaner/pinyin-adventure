@@ -103,7 +103,9 @@ import { t, tRaw } from '../text/strings'
               strokePlay={playingK === e.k}
               strokeLoop={true}
               onmain={() => play(i)}
-              tip={playingK === e.k ? T(tipText(true)) : T(tipText(false))}
+              /* BUGS#22②：空闲态去 tip（与 v2.9.1 认识页同判例——常驻 tip 占 35px 曾把字模/笔顺
+                 预览挤到塌陷）；播放中保留"听口诀，看笔顺"提示（解释笔顺联动，有真实信息量） */
+              tip={playingK === e.k ? T(tipText(true)) : ''}
             />
           </div>
         </div>
@@ -144,7 +146,8 @@ import { t, tRaw } from '../text/strings'
 
 <style>
   #v-radio { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); gap: 0; }
-  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: none; }
+  /* BUGS#22② 配套：卡外四处密度回收（ltop/rctrl/rlistbar/pager 共 +26px 给卡内字模与笔顺预览） */
+  .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 40px; flex: none; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
   .cbtn svg { width: 18px; height: 18px; }
@@ -158,7 +161,7 @@ import { t, tRaw } from '../text/strings'
     background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; z-index: 2; }
   .radfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; padding-top: var(--sp-4); }
 
-  #rctrl { display: flex; gap: var(--sp-2); margin: var(--sp-3) 0 0; flex: none; }
+  #rctrl { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 0; flex: none; }
   .rbtn { flex: 1; height: 54px; border-radius: 999px; border: none; font-family: inherit; font-size:var(--fs-md); font-weight: 900;
     display: flex; align-items: center; justify-content: center; gap: var(--sp-2); cursor: pointer;
     background: #fff; color: var(--animal-text-2); box-shadow: 0 3px 0 var(--animal-border-light), var(--animal-shadow); }
@@ -167,18 +170,18 @@ import { t, tRaw } from '../text/strings'
   .rbtn.main.live { background: #f29cb6; box-shadow: 0 4px 0 var(--press-pink), var(--animal-shadow-lg); }
   .rbtn.live2 { color: var(--animal-primary-active); background: var(--animal-primary-bg); }
 
-  #rlistbar { margin-top: var(--sp-3); flex: none; }
+  #rlistbar { margin-top: var(--sp-2); flex: none; }
   .sec-label { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); margin-bottom: var(--sp-2); }
   .sec-label b { font-size:var(--fs-xs); font-weight: 900; white-space: nowrap; }
   .sec-label span { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
   #rcaps { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); scrollbar-width: none; }
   #rcaps::-webkit-scrollbar { display: none; }
-  .cap { flex: 0 0 auto; min-width: 46px; height: 44px; border-radius: 14px; background: #fff; box-shadow: var(--animal-shadow);
+  .cap { flex: 0 0 auto; min-width: 46px; height: 40px; border-radius: 14px; background: #fff; box-shadow: var(--animal-shadow);
     display: flex; align-items: center; justify-content: center; font-size:var(--fs-md); font-weight: 900; color: var(--animal-text-dis);
     border: none; font-family: inherit; padding: 0 var(--sp-2); }
   .cap.on { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
 
-  #pager { height: 58px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
+  #pager { height: 46px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
   #dots { display: flex; gap: var(--sp-2); max-width: 100%; overflow: hidden; }
   #dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; flex: none; }
   #dots i.on { width: 20px; border-radius: 6px; background: var(--animal-primary); }
