@@ -1,18 +1,20 @@
 <script lang="ts">
-  /* 第 n 课五步流程 · v2.9 重设计（BUGS#17+#18）：步骤数跟内容走——纯韵母课 4 步（认识/写法/声调/小测），
-     有拼读内容的课 5 步（+拼读），小测=最后一步；小测只考本课所学三种题型
-     （听音选字母 / 看字母选音 / 听调辨调·仅韵母课），不再考汉字识别。
-     步骤条-页点-进度 chip 三方同步；拖拽跟手 + 阈值吸附；零纵向滚动；R1 零过场音 */
+  /* v3.0 学习流程结构反转（BUGS#28+#29+#30）：按字母分，不再按步骤分——
+     每个字母一个迷你流：学一学（合并页：字模四线三格+口诀+读音+笔顺动画同屏，BUGS#29 两个大字模合一）
+     → 声调（四声演示+辨调小练）→ 走完自动推进下一字母；全部字母走完 → 课级拼读（hasBlend 课）→ 课级小测。
+     进度指示 = 字母进度 chip 条（z✓ c✓ s · 拼读 · 小测），随时可跳（学习自由）；不再有课级步骤条。
+     页面/单元推导共享于 lib/lessonUnits.ts（学习 tab 断点 CTA 同源）。
+     声音礼仪：R1 翻页零过场音、零自动语音（读音全部点播）；零纵向滚动（#lesson-root 容器硬锁+clip）。 */
+  import { untrack } from 'svelte'
   import lessonsData from '../../data/lessons.json'
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
   import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed } from '../../stores/learn.svelte'
-  import { t, tRaw, cnNum, NUM_PY, type StringKey } from '../../text/strings'
-  import { T } from '../../lib/ruby'
+  import { lessonPages, lessonHasBlend, toneRowOf, unitIndexOf, unitCountOf, type LessonLike } from '../../lib/lessonUnits'
+  import { tRaw, cnNum, NUM_PY } from '../../text/strings'
   import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
-  import StrokeAnim from './StrokeAnim.svelte'
   import ToneDrill from './ToneDrill.svelte'
   import BlendDrill from './BlendDrill.svelte'
   import HSteps from '../HSteps.svelte'
@@ -36,42 +38,46 @@
   const short = $derived(lessonShort(n, lesson.title))
   const letters = $derived(lesson.letters as { k: string; kj: string; kjAudio?: string; xie: string; strokes: string[]; say: string; sayAudio?: string }[])
 
-  /* BUGS#17：步骤架构跟内容走——hasBlend=false 纯韵母课 4 步，true 有拼读 5 步（小测恒为最后一步） */
-  const hasBlend = $derived((lesson.hasBlend ?? !!((lesson.blends || []).length || (lesson.ztlist || []).length)) as boolean)
-  const STEPS: { id: number; k: StringKey }[] = $derived.by(() => {
-    const s: { id: number; k: StringKey }[] = [
-      { id: 1, k: 'stepKnow' },
-      { id: 2, k: 'stepWrite' },
-      { id: 3, k: 'stepTone' },
-    ]
-    if (hasBlend) s.push({ id: 4, k: 'stepBlend' })
-    s.push({ id: s.length + 1, k: 'stepQuiz' })
-    return s
-  })
-  const NSTEP = $derived(STEPS.length)          /* 4 | 5 */
-  const QUIZ_STEP = $derived(NSTEP)             /* 小测=最后一步 */
-  const BLEND_STEP = $derived(hasBlend ? 4 : 0) /* 拼读步号（无拼读课=0 不命中） */
+  /* v3.0 页面序列（扁平有序）：[学一学, 声调?]×字母 → 拼读? → 小测；单元=字母/拼读/小测（进度口径） */
+  const lessonLike = $derived(lesson as unknown as LessonLike)
+  const pages = $derived(lessonPages(lessonLike))
+  const NP = $derived(pages.length)
+  const hasBlend = $derived(lessonHasBlend(lessonLike))
+  const nL = $derived(letters.length)
+  const NL_UNIT = $derived(nL)                    /* 拼读的单元号 */
+  const QUIZ_UNIT = $derived(nL + (hasBlend ? 1 : 0))
+  const UNIT_N = $derived(unitCountOf(lessonLike))
   /* 韵母课才有听调辨调题（声调是韵母的属性；整体认读/声母课不考） */
   const isFinals = $derived(lesson.kind === 'ym' || lesson.kind === 'fu')
 
-  let sa: StrokeAnim
+  const pageIdxOfLetter = (li: number) => pages.findIndex((p) => p.t === 'learn' && p.li === li)
+  const pageIdxOfKind = (t: 'blend' | 'quiz') => pages.findIndex((p) => p.t === t)
+
   let chipsEl: HTMLDivElement
-  /* 横滑 chip 条（L12=16 个）：切字母后选中 chip 滚回视野中央（block:nearest 不动纵向） */
+  /* 当前单元 chip 居中——v3.0 只滚 chip 条自己（chipsEl.scrollTo）。
+     BUGS#30 根治：v2.6.1 起的 scrollIntoView({inline:center}) 会连带滚动 overflow:hidden 祖先
+     （#v-lesson 可滚溢出被 HSteps track 撑出 (N-1)×W）→ 选后面字母整页左移 48/96px（L7 实测复现）。
+     scrollTo 只作用于 chip 条自身；祖先另加 overflow:clip（连编程滚动都不可能）双保险 */
   $effect(() => {
-    void li
-    chipsEl?.querySelector('.lchip.on')?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+    void page
+    const el = chipsEl?.querySelector('.lchip.on') as HTMLElement | null
+    if (chipsEl && el) {
+      const target = el.offsetLeft - (chipsEl.clientWidth - el.offsetWidth) / 2
+      chipsEl.scrollTo({ left: Math.max(0, target), behavior: 'smooth' })
+    }
   })
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false,
   })
 
-  /* Bug#14 终极修复：letterStep（每字母独立步骤记忆）全删——它就是"切拼音跳步骤"的根源。
-     现在的规则只有一条：切字母 → 步骤不动。步骤切换只靠 HSteps 翻页/步骤条点击。 */
-  const initStep = quizPassed(n) ? 1 : Math.min(NSTEP, LRN.step[n] || 1)
-  const initLi = Math.max(0, Math.min(letters.length - 1, li0 || 0))
-  let step = $state(initStep)        // 1..NSTEP（= HSteps 页号 + 1）
-  let li = $state(initLi)            // 当前字母下标
-  const letter = $derived(letters[li] || letters[0])
+  /* v3.0：页为断点（1 起存 LRN.step，学习 tab CTA 同源解读）。通过课=从头复习（页0） */
+  const initPage =
+    li0 > 0 ? Math.max(0, pageIdxOfLetter(Math.min(li0, nL - 1)))
+    : quizPassed(n) ? 0
+    : Math.max(0, Math.min(NP - 1, (LRN.step[n] || 1) - 1))
+  let page = $state(initPage)        // 0..NP-1（= HSteps 页号）
+  let letterDone = $state<Record<number, boolean>>({})   // 会话内字母完成标（chip ✓）
+  const curUnit = $derived(unitIndexOf(lessonLike, page))
 
   function pickDistractors(k: string, count: number): string[] {
     const pool: string[] = []
@@ -134,7 +140,6 @@
           quiz.done = true
           quiz.passed = submitQuiz(n, quiz.score, LESSONS.length)
           sndStar()
-          /* v2.6 零自动播放：结算只留星星音（非语音），cheer 语音废除 */
         } else {
           quiz.i++
           quiz.pick = ''
@@ -147,51 +152,60 @@
     else fire()
   }
 
-  /* 旁白按逗号拆行，防尾字孤行 */
-  function sayLines(s: string): string[] {
-    const parts = s.split('，')
-    if (parts.length < 2) return [s]
-    return [parts.slice(0, -1).join('，'), parts[parts.length - 1]]
+  /* 翻页/跳单元：R1 翻页零音效；进小测页建题；记页级断点（学习 tab CTA 用） */
+  function gotoPage(p: number) {
+    page = Math.max(0, Math.min(NP - 1, p))
+    setStep(n, page + 1)
+    if (pages[page].t === 'quiz' && (!quiz.q.length || quiz.done)) buildQuiz()
   }
 
-  /* 翻页/跳步：R1 翻页零音效；进小测页建题；记课级断点（学习 tab CTA 用） */
-  function goto(s: number) {
-    step = Math.max(1, Math.min(NSTEP, s))
-    setStep(n, step)
-    if (step === QUIZ_STEP && (!quiz.q.length || quiz.done)) buildQuiz()
+  /* 声调小练「读完了」→ 本字母 ✓ + 自动推进下一字母（下一页=下一字母学一学 / 拼读 / 小测） */
+  function toneDone(li: number) {
+    letterDone[li] = true
+    const tp = pages.findIndex((pg) => pg.t === 'tone' && pg.li === li)
+    if (tp >= 0 && tp + 1 < NP) gotoPage(tp + 1)
   }
 
-  /* Bug#14 终极修复：切字母只换字母，步骤绝对不动。
-     "每字母独立记忆步骤"功能整个废弃——它就是跳步骤 bug 的根源（e 记住了上次在声调 → 切 e 就跳声调）。
-     正确交互=当前在写法 → 切任何字母都留在写法看新字母的笔顺 */
-  function pickLetter(i: number) {
-    if (i === li || !letters[i]) return
-    li = i
-  }
   function restudy() { quiz.done = false; buildQuiz() }
 
-  /* ?step=S&li=I&static=K 深链（验收截图/笔顺自检用；static=前 K 笔静态帧）。
-     注意：effect 内只读 iN 局部量、不读 li——li 一旦进依赖，切字母会重跑本 effect 被深链打回（v2.6.1 实测教训） */
+  /* 深链（验收截图/笔顺自检用）：?page=P（0 起新口径）/ ?li=I（字母 I 的学一学页）/
+     ?step=S（v2.9 旧口径兼容映射：1,2→学一学，3→声调，4→拼读，5→小测）/ ?static=K（学一学页笔顺静态帧）/
+     ?qkey（小测选项 data-qkey 验收门）。
+     注意：effect 内不读 page——page 进依赖会被深链打回（v2.6.1 实测教训） */
   let staticN = $state(-1)
   /* 验收钩子（qkey 门，probe.ts 同哲学但独立参数——URL 含 'probe' 子串会触发 probeRun 流程劫持视图）：
      仅 URL 带 ?qkey 时选项渲染 data-qkey，自动化作答可读答案；正常使用零泄漏 */
   const probeOn = typeof location !== 'undefined' && new URLSearchParams(location.search).has('qkey')
   $effect(() => {
     const q = new URLSearchParams(location.search)
-    const sN = parseInt(q.get('step') || '', 10)
     const iN = parseInt(q.get('li') || '', 10)
-    if (iN >= 0 && iN < letters.length) li = iN
-    if (sN >= 1 && sN <= NSTEP) {
-      step = sN
-      if (sN === QUIZ_STEP) buildQuiz()
+    const pN = parseInt(q.get('page') || '', 10)
+    const sN = parseInt(q.get('step') || '', 10)
+    if (iN >= 0 && iN < nL) page = Math.max(0, pageIdxOfLetter(iN))
+    if (pN >= 0 && pN < NP) page = pN
+    if (sN >= 1) {
+      const liEff = Math.max(0, Math.min(iN >= 0 ? iN : 0, nL - 1))
+      if (sN <= 2) page = pageIdxOfLetter(liEff)
+      else if (sN === 3) {
+        const tp = pages.findIndex((pg) => pg.t === 'tone' && pg.li === liEff)
+        page = tp >= 0 ? tp : pageIdxOfLetter(liEff)
+      } else if (sN === 4) page = hasBlend ? pageIdxOfKind('blend') : pageIdxOfKind('quiz')
+      else page = pageIdxOfKind('quiz')
     }
     const st = q.get('static')
     if (st !== null) staticN = Math.max(0, parseInt(st, 10))
+    /* 落在小测页 → 自动建题。必须 untrack：quiz 状态（done 在第 5 题翻转）不得进本 effect 依赖——
+       否则答完卷 effect 重跑 buildQuiz 把卷子静默重置、结算页永不出（v30-accept 抓的实锤） */
+    untrack(() => {
+      if (pages[page]?.t === 'quiz' && (!quiz.q.length || quiz.done)) buildQuiz()
+    })
   })
 </script>
 
-<!-- BUGS#24 架构根治：课页最外层容器硬锁——height 锁视口（专注态全屏，无 tabbar 让位）+ overflow:hidden
-     纵向滚动在容器级即不可能；课程/字母/步骤切换再怎么变内容，总高度也出不了这个盒子 -->
+<!-- BUGS#24 架构根治：课页最外层容器硬锁——height 锁视口（专注态全屏，无 tabbar 让位）+ overflow hidden/clip
+     纵向滚动在容器级即不可能；clip（v3.0，BUGS#30 双保险）=连编程滚动都不可能，祖先左移类 bug 根绝。
+     内部分配：固定件 flex:none（返回栏/进度 chip 条/页脚提示），舞台 flex:1 1 0 弹性吃掉剩余。
+     内容超高 → 卡内弹性区压缩/横滑消化，绝不滚动、绝不撑破容器。 -->
 <div id="lesson-root">
 <section id="v-lesson" class="view on" data-screen="lesson">
   <div class="ltop">
@@ -200,163 +214,138 @@
       <Speak k="lessonN" vars={{ n: cn(n) }} py={{ 第: 'dì', ...npy(n), 课: 'kè' }} />
       {#if short.zh}&nbsp;·&nbsp;<Speak text={short.zh} py={{ [short.zh]: short.py || '' }} />{:else}&nbsp;·&nbsp;{short.raw}{/if}
     </div>
-    <div class="lprog" id="lprog">{step}/{NSTEP}</div>
+    <div class="lprog" id="lprog">{curUnit + 1}/{UNIT_N}</div>
   </div>
 
-  <!-- 步骤条（点选可跳）——步骤数跟课内容走（4/5），标签容器 min-width:fit-content 零截断（BUGS#18③） -->
-  <div id="rail">
-    {#each STEPS as s, i (s.id)}
-      <button class="rstep" class:done={step > s.id || (s.id === QUIZ_STEP && quiz.done && quiz.passed)} class:cur={step === s.id} data-step={s.id} onclick={() => goto(s.id)}>
-        <span class="rd">
-          {#if step > s.id && s.id !== QUIZ_STEP}
-            <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>
-          {:else}{s.id}{/if}
-        </span>
-        <span class="rname"><Speak k={s.k} /></span>
-      </button>
-    {/each}
-  </div>
-
-  <!-- 字母切换器（Bug#12/Bug#14：任何步骤可直接切字母，切字母步骤绝对不动；
-     BUGS#18②：拼读/小测两步隐藏——拼读是课级内容、小测考的是整课，字母切换在这两步无意义） -->
-  {#if step !== BLEND_STEP && step !== QUIZ_STEP}
+  <!-- 进度 chip 条（v3.0）：字母进度（✓ 完成 teal / on 当前）+ 分隔线 + 课级拼读/小测。
+     随时可跳（学习自由）；声调「读完了」自动进下一字母。L12=18 chip 横滑消化；
+     touch-action:pan-x + scrollTo 只滚自己（BUGS#30：杜绝手势/滚动波及课页） -->
   <div class="lchips" data-lchips bind:this={chipsEl}>
     {#each letters as l, i (l.k)}
-      <button class="lchip" class:on={i === li} data-ler={l.k} onclick={() => pickLetter(i)}>{l.k}</button>
+      <button class="lchip" class:on={curUnit === i} class:done={!!letterDone[i]} data-ler={l.k} onclick={() => gotoPage(pageIdxOfLetter(i))}>
+        {#if letterDone[i]}<svg class="ck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11" /></svg>{/if}{l.k}
+      </button>
     {/each}
+    <i class="pdiv" aria-hidden="true"></i>
+    {#if hasBlend}
+    <button class="lchip pchip" class:on={curUnit === NL_UNIT} data-punit="blend" onclick={() => gotoPage(pageIdxOfKind('blend'))}><Speak k="stepBlend" plain /></button>
+    {/if}
+    <button class="lchip pchip" class:on={curUnit === QUIZ_UNIT} data-punit="quiz" onclick={() => gotoPage(pageIdxOfKind('quiz'))}><Speak k="stepQuiz" plain /></button>
   </div>
-  {/if}
 
-  <!-- 横向翻页舞台 -->
+  <!-- 横向翻页舞台：页序列 = 每字母（学一学 → 声调）→ 拼读? → 小测 -->
   <div id="stagewrap">
-    <HSteps n={NSTEP} cur={step - 1} onchange={(i) => goto(i + 1)}>
-      <!-- 页1 · 认识：PinyinCard full（五要素统一学习卡片 v2.5）。
-          v2.9.1：去 tip（与读音 pill 重复）+ 字模 104——卡内预算救笔顺预览（原 svg 被挤到 0 高） -->
-      <div class="hspage"><div class="pcard">
-        <div class="ptag"><Speak k="stepKnow" plain /> · {letter.k}</div>
-        <div class="knowfit">
-          <PinyinCard mode="full" k={letter.k} glyphMax={104} />
-        </div>
-      </div></div>
-
-      <!-- 页2 · 写法：笔顺动画 + 旁白 -->
-      <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><Speak k="stepWrite" plain /> · {letter.k}</div>
-        <div class="animfit"><StrokeAnim unit={letter.k} static={staticN} play={step === 2} bind:this={sa} /></div>
-        <div class="sayline">{#each sayLines(letter.say) as seg, i (i)}{#if i > 0}<br />{/if}<Speak text={seg} />{/each}</div>
-        <div class="xrow">
-          <button class="rebtn" onclick={() => { sa?.replay(); if (letter.sayAudio) playAudio(letter.sayAudio, { hint: '' }) }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#19c8b9" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-2.6-6.4" /><path d="M21 4v5h-5" /></svg>
-            <Speak k="seeAgain" plain />
-          </button>
-        </div>
-        <div class="taptip"><Speak k="watchWriteLine" /></div>
-      </div></div>
-
-      <!-- 页3 · 声调 -->
-      <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><Speak k="stepTone" plain /></div>
-        <div class="drillfit"><ToneDrill rows={lesson.tones} sel={li} /></div>
-      </div></div>
-
-      <!-- 页4 · 拼读 / 整体认读（仅 hasBlend 课：BUGS#17 纯韵母课此步整页删除） -->
-      {#if hasBlend}
-      <div class="hspage"><div class="pcard">
-        <div class="ptag hot"><Speak k="stepBlend" plain /></div>
-        <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} tones={lesson.tones || []} note={lesson.note || ''} /></div>
-      </div></div>
-      {/if}
-
-      <!-- 页{NSTEP} · 小测：三题型混编（听音选字母/看字母选音/听调辨调），不考汉字（BUGS#18①） -->
-      <div class="hspage"><div class="pcard">
-        {#if !quiz.q.length && !quiz.done}
-          <div class="quizboot"><Speak k="quizReady" /></div>
-          <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><Speak k="startQuiz" plain /></button>
-        {:else if !quiz.done}
-          {@const q = quiz.q[quiz.i]}
-          <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
-          <div class="qbody">
-            <!-- BUGS#18⑨：圆点与"第 X 题"严格同步——X-1 个已完成点 + 1 个当前点 -->
-            <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={i < quiz.i} class:cur={i === quiz.i}></span>{/each}</div>
-            {#if q.type === 'listen'}
-              <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
-              <div class="qhint"><Speak k="listenChoose" /></div>
-              <div class="opts" data-opts>
-                {#each q.opts as o (o)}
-                  <button
-                    class="opt" class:right={quiz.pick && o === q.key}
-                    class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
-                    data-qkey={probeOn ? o : null}
-                    onclick={() => { quiz.lastPick = o; answer(o) }}
-                  >{o}</button>
-                {/each}
+    <HSteps n={NP} cur={page} onchange={(i) => gotoPage(i)}>
+      {#each pages as pg, idx (idx)}
+        {#if pg.t === 'learn'}
+          <!-- 学一学（合并页，BUGS#29）：PinyinCard full 五要素同屏——大字模四线三格（视觉主角）+
+              🔊读音 + 笔顺动画（进页自动播、可重播）+ 口诀 + 例词；认识/写法两页两字模已成历史 -->
+          <div class="hspage"><div class="pcard">
+            <div class="ptag"><Speak k="stepLearn" plain /> · {letters[pg.li].k}</div>
+            <div class="knowfit">
+              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={112} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
+            </div>
+          </div></div>
+        {:else if pg.t === 'tone'}
+          <!-- 声调：四声演示 + 听调辨调；「读完了」= 本字母完成 → 自动推进下一字母 -->
+          <div class="hspage"><div class="pcard">
+            <div class="ptag hot"><Speak k="stepTone" plain /> · {letters[pg.li].k}</div>
+            <div class="drillfit"><ToneDrill rows={lesson.tones} sel={toneRowOf(lessonLike, pg.li)} ondone={() => toneDone(pg.li)} /></div>
+          </div></div>
+        {:else if pg.t === 'blend'}
+          <!-- 拼读（课级，仅 hasBlend 课）：声母+韵母合成 / 整体认读卡 -->
+          <div class="hspage"><div class="pcard">
+            <div class="ptag hot"><Speak k="stepBlend" plain /></div>
+            <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} tones={lesson.tones || []} note={lesson.note || ''} /></div>
+          </div></div>
+        {:else}
+          <!-- 小测（课级，最后一步）：三题型混编（听音选字母/看字母选音/听调辨调），不考汉字（BUGS#18①） -->
+          <div class="hspage"><div class="pcard">
+            {#if !quiz.q.length && !quiz.done}
+              <div class="quizboot"><Speak k="quizReady" /></div>
+              <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><Speak k="startQuiz" plain /></button>
+            {:else if !quiz.done}
+              {@const q = quiz.q[quiz.i]}
+              <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
+              <div class="qbody">
+                <!-- BUGS#18⑨：圆点与"第 X 题"严格同步——X-1 个已完成点 + 1 个当前点 -->
+                <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={i < quiz.i} class:cur={i === quiz.i}></span>{/each}</div>
+                {#if q.type === 'listen'}
+                  <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
+                  <div class="qhint"><Speak k="listenChoose" /></div>
+                  <div class="opts" data-opts>
+                    {#each q.opts as o (o)}
+                      <button
+                        class="opt" class:right={quiz.pick && o === q.key}
+                        class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
+                        data-qkey={probeOn ? o : null}
+                        onclick={() => { quiz.lastPick = o; answer(o) }}
+                      >{o}</button>
+                    {/each}
+                  </div>
+                {:else if q.type === 'look'}
+                  <div class="qglyph" data-qglyph>{q.k}</div>
+                  <div class="qhint"><Speak k="lookHowRead" /></div>
+                  <div class="opts" data-opts>
+                    {#each q.opts as o (o)}
+                      <button
+                        class="opt optear" class:right={quiz.pick && o === q.key}
+                        class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
+                        aria-label={o}
+                        data-qkey={probeOn ? o : null}
+                        onclick={() => { quiz.lastPick = o; playAudio(letterAudio(o), { hint: tRaw('notReady') }); answer(o) }}
+                      ><Icon name="play" size={34} /></button>
+                    {/each}
+                  </div>
+                {:else}
+                  <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
+                  <div class="qglyph" data-qglyph>{q.k}</div>
+                  <div class="qhint"><Speak k="whichTone" /></div>
+                  <div class="opts" data-opts>
+                    {#each TONE_MARKS as m, i (m.t)}
+                      <button
+                        class="opt topt" class:right={quiz.pick && m.t === q.key}
+                        class:wrong={quiz.pick === '✗' && m.t !== q.key && m.t === quiz.lastPickN}
+                        data-qkey={probeOn ? String(m.t) : null}
+                        onclick={() => { quiz.lastPickN = m.t; answer(m.t) }}
+                      >
+                        <svg viewBox="0 0 56 30"><path d={m.d} stroke={TONE_COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
+                        <span><Speak text={tRaw('toneName' + m.t)} /></span>
+                      </button>
+                    {/each}
+                  </div>
+                {/if}
               </div>
-            {:else if q.type === 'look'}
-              <div class="qglyph" data-qglyph>{q.k}</div>
-              <div class="qhint"><Speak k="lookHowRead" /></div>
-              <div class="opts" data-opts>
-                {#each q.opts as o (o)}
-                  <button
-                    class="opt optear" class:right={quiz.pick && o === q.key}
-                    class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
-                    aria-label={o}
-                    data-qkey={probeOn ? o : null}
-                    onclick={() => { quiz.lastPick = o; playAudio(letterAudio(o), { hint: tRaw('notReady') }); answer(o) }}
-                  ><Icon name="play" size={34} /></button>
-                {/each}
+            {:else if quiz.passed}
+              <div class="res">
+                <div class="resemoji"><Icon name="rainbow" size={46} /><Icon name="star" size={46} /></div>
+                <div class="resscore"><Speak k="gotNGreat" vars={{ n: cn(quiz.score) }} /></div>
+                <div class="resstars">{#each Array(quiz.score >= 5 ? 3 : 2) as _, i (i)}<Icon name="star" size={30} />{/each}</div>
+                <!-- BUGS#18⑦：结算页双按钮——回课程地图 + 再学一遍 -->
+                <div class="resbtns">
+                  <button class="bootbtn ghost" data-restudy onclick={restudy}><Speak k="restudy" plain /></button>
+                  <button class="bootbtn" data-backlearn onclick={onexit}><Speak k="backMap" plain /></button>
+                </div>
               </div>
             {:else}
-              <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
-              <div class="qglyph" data-qglyph>{q.k}</div>
-              <div class="qhint"><Speak k="whichTone" /></div>
-              <div class="opts" data-opts>
-                {#each TONE_MARKS as m, i (m.t)}
-                  <button
-                    class="opt topt" class:right={quiz.pick && m.t === q.key}
-                    class:wrong={quiz.pick === '✗' && m.t !== q.key && m.t === quiz.lastPickN}
-                    data-qkey={probeOn ? String(m.t) : null}
-                    onclick={() => { quiz.lastPickN = m.t; answer(m.t) }}
-                  >
-                    <svg viewBox="0 0 56 30"><path d={m.d} stroke={TONE_COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
-                    <span><Speak text={tRaw('toneName' + m.t)} /></span>
-                  </button>
-                {/each}
+              <div class="res">
+                <div class="resemoji"><Icon name="sprout" size={46} /><Icon name="dumbbell" size={46} /></div>
+                <div class="resscore"><Speak k="gotNScore" vars={{ n: cn(quiz.score) }} /></div>
+                <div class="resmsg"><Speak k="almostMsg" /></div>
+                <div class="resbtns">
+                  <button class="bootbtn" data-restudy onclick={restudy}><Speak k="restudy" plain /></button>
+                  <button class="bootbtn ghost" data-backlearn onclick={onexit}><Speak k="backMap" plain /></button>
+                </div>
               </div>
             {/if}
-          </div>
-        {:else if quiz.passed}
-          <div class="res">
-            <div class="resemoji"><Icon name="rainbow" size={46} /><Icon name="star" size={46} /></div>
-            <div class="resscore"><Speak k="gotNGreat" vars={{ n: cn(quiz.score) }} /></div>
-            <div class="resstars">{#each Array(quiz.score >= 5 ? 3 : 2) as _, i (i)}<Icon name="star" size={30} />{/each}</div>
-            <!-- BUGS#18⑦：结算页双按钮——回课程地图 + 再学一遍 -->
-            <div class="resbtns">
-              <button class="bootbtn ghost" data-restudy onclick={restudy}><Speak k="restudy" plain /></button>
-              <button class="bootbtn" data-backlearn onclick={onexit}><Speak k="backMap" plain /></button>
-            </div>
-          </div>
-        {:else}
-          <div class="res">
-            <div class="resemoji"><Icon name="sprout" size={46} /><Icon name="dumbbell" size={46} /></div>
-            <div class="resscore"><Speak k="gotNScore" vars={{ n: cn(quiz.score) }} /></div>
-            <div class="resmsg"><Speak k="almostMsg" /></div>
-            <div class="resbtns">
-              <button class="bootbtn" data-restudy onclick={restudy}><Speak k="restudy" plain /></button>
-              <button class="bootbtn ghost" data-backlearn onclick={onexit}><Speak k="backMap" plain /></button>
-            </div>
-          </div>
+          </div></div>
         {/if}
-      </div></div>
+      {/each}
     </HSteps>
   </div>
 
-  <!-- 页点 + 滑动提示（v2.9.1 并排单行——纵向预算让给卡内笔顺预览） -->
+  <!-- 页脚提示（v3.0：页点取消——字母进度 chip 条即进度指示，34 页课的点串只会是噪声） -->
   <div id="pager">
-    <div id="dots">
-      {#each STEPS as s, i (s.id)}
-        <i class:on={step === i + 1} data-dot={s.id}></i>
-      {/each}
-    </div>
     <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><Speak k="swipeNextStep" /></div>
   </div></section>
 </div>
@@ -364,19 +353,21 @@
   <style>
   /* ===== BUGS#24 架构根治：课页容器硬锁（不依赖祖先链，滚动禁令自己扛） =====
      height:100% 挂靠 #shell（专注态=全视口），max-height:100dvh 硬顶任何父级变化；
-     overflow:hidden + flex column——纵向滚动在容器级不可能。
-     内部分配：固定件 flex:none（返回栏/步骤条/chip 条/页点），舞台 flex:1 1 0 弹性吃掉剩余。
+     overflow:hidden+clip + flex column——纵向滚动在容器级不可能；clip（BUGS#30 双保险）
+     使 scrollIntoView/scrollTo 类调用在祖先上完全失效（hidden 仍可编程滚动，clip 不可）。
+     内部分配：固定件 flex:none（返回栏/chip 条/页脚），舞台 flex:1 1 0 弹性吃掉剩余。
      内容超高 → 卡内弹性区压缩/横滑消化，绝不滚动、绝不撑破容器。 */
   #lesson-root {
     height: 100%; height: 100dvh;
     max-height: 100%;
     overflow: hidden;
+    overflow: clip;
     display: flex;
     flex-direction: column;
     min-height: 0;
     position: relative;
   }
-  #lesson-root #v-lesson { flex: 1 1 0; min-height: 0; }
+  #lesson-root #v-lesson { flex: 1 1 0; min-height: 0; overflow: hidden; overflow: clip; }
   #v-lesson { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-2); gap: 0; }
   .ltop { display: flex; align-items: center; gap: var(--sp-2); height: 44px; flex: 0 0 auto; }
   .cbtn { width: 38px; height: 38px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow); border: none;
@@ -385,21 +376,6 @@
   .ltt { flex: 1; text-align: center; font-size:var(--fs-md); font-weight: 900; line-height: 1.8; white-space: nowrap; }    /* 课名标题零换行 */
   .lprog { font-size:var(--fs-xs); font-weight: 900; color: var(--animal-primary-active); background: var(--animal-primary-bg);
     padding: var(--sp-2) var(--sp-3); border-radius: 999px; white-space: nowrap; }
-
-  /* 步骤条：4/5 步等宽列排布；标签容器 fit-content 零截断（BUGS#18③，禁 ellipsis）。
-     v2.9.1 密度回收：徽章 32→28——卡内笔顺预览的预算从壳件挤出来 */
-  #rail { display: flex; align-items: flex-start; margin: var(--sp-2) 0 0; position: relative; flex: none; }
-  #rail::before { content: ''; position: absolute; top: 13px; left: 34px; right: 34px; height: 3px; background: var(--animal-border-light); border-radius: 3px; }
-  .rstep { position: relative; z-index: 1; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); cursor: pointer;
-    font-family: inherit; background: none; border: none; color: var(--animal-text-2); }
-  .rstep .rd { width: 28px; height: 28px; border-radius: 50%; background: #fff; box-shadow: var(--animal-shadow);
-    display: flex; align-items: center; justify-content: center; font-size:var(--fs-xs); font-weight: 900; font-style: normal; }
-  .rstep .rd svg { width: 13px; height: 13px; }
-  .rstep .rname { min-width: fit-content; font-size:var(--fs-xs); font-weight: 800; white-space: nowrap; }    /* 步骤名零换行（BUGS#27） */
-  .rstep .rname :global(rt) { font-size:var(--fs-rt); }
-  .rstep.done .rd { background: var(--animal-primary-bg); color: var(--animal-primary-active); }
-  .rstep.cur .rd { background: var(--animal-primary); color: #fff; box-shadow: 0 3px 0 var(--press-teal); }
-  .rstep.cur .rname { color: var(--animal-primary-active); }
 
   #stagewrap { flex: 1 1 0; min-height: 0; margin: var(--sp-2) 0 var(--sp-1); position: relative; }
   :global(.hswrap) { flex: 1; }
@@ -411,29 +387,27 @@
     background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; max-width: calc(100% - 28px); white-space: nowrap; }
   .pcard .ptag.hot { background: #fff8e0; color: var(--animal-warning-active); }
 
-  /* 认识：PinyinCard full 承载区 */
+  /* 学一学：PinyinCard full 承载区（rail 与 chip 条合一省下的纵向预算给了卡内） */
   .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
-  /* 字母 chip 条：常驻 rail 之下（Bug#12），紧凑版给舞台省纵向。
-     BUGS#24：L12=16 个整体认读，chip 挤压换行+右半不可达——改横滑胶囊条消化
-     （硬约束#10：横向滚动仅限胶囊条带状物）；首尾 auto margin=放得下居中、放不下可滑 */
+
+  /* 进度 chip 条（v3.0）：字母 ✓/当前/待学 + 拼读/小测；L12=18 chip 横滑消化
+     （硬约束#10：横向滚动仅限胶囊条带状物）。
+     BUGS#30 三重防线：①touch-action:pan-x 明示横向 pan 意图 ②居中只 scrollTo 自己
+     ③祖先 #lesson-root/#v-lesson overflow:clip。首尾 auto margin=放得下居中、放不下可滑 */
   .lchips { display: flex; gap: var(--sp-2); margin: var(--sp-2) 0 0; flex: none;
-    overflow-x: auto; scrollbar-width: none; padding: 2px; }
+    overflow-x: auto; scrollbar-width: none; padding: 2px; touch-action: pan-x; }
   .lchips::-webkit-scrollbar { display: none; }
   .lchips .lchip:first-child { margin-left: auto; }
-  .lchips .lchip:last-child { margin-right: auto; }
-  .lchip { min-width: 40px; height: 34px; border-radius: 11px; border: 2px solid #e3d9c8; background: #fff;
+  .lchips .pchip:last-child { margin-right: auto; }
+  .lchip { min-width: 40px; height: 36px; border-radius: 11px; border: 2px solid #e3d9c8; background: #fff;
     font-size:var(--fs-md); font-weight: 900; color: #6f6353; font-family: inherit; padding: 0 var(--sp-2);
-    white-space: nowrap; flex: 0 0 auto; }
+    white-space: nowrap; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 2px; }
   .lchip.on { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
-
-  /* 写法 */
-  .animfit { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; width: 100%; }
-  .animfit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
-  .sayline { font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); line-height: 2; text-align: center; flex: none; }    /* 写法旁白=长内容允许换行（sayLines 已按逗号分好行） */
-  .xrow { display: flex; gap: var(--sp-2); flex: none; }
-  .rebtn { display: flex; align-items: center; gap: var(--sp-2); border: none; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: 999px; cursor: pointer; white-space: nowrap; }
-  .rebtn svg { width: 15px; height: 15px; }
+  .lchip.done { border-color: #bfe8e0; background: #f2fbf9; color: var(--animal-primary-active); }
+  .lchip .ck { width: 12px; height: 12px; color: var(--animal-primary-active); }
+  .lchip.pchip { background: var(--animal-primary-bg); border-color: #bfe8e0; color: var(--animal-primary-active); }
+  .lchip.pchip :global(rt) { font-size: 9px; }
+  .pdiv { width: 2px; height: 20px; border-radius: 2px; background: var(--animal-border-light); flex: 0 0 auto; align-self: center; margin: 0 2px; }
 
   /* 声调 / 拼读 drill 卡内适配 */
   .drillfit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -500,10 +474,7 @@
   .resbtns { display: flex; gap: var(--sp-3); width: 100%; }
   .resbtns .bootbtn { flex: 1; padding: var(--sp-3) var(--sp-2); }
 
-  #pager { min-height: 30px; flex: none; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); padding: var(--sp-1) 0; }
-  #dots { display: flex; gap: var(--sp-2); }
-  #dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--animal-text-dis); transition: .2s; }
-  #dots i.on { width: 22px; background: var(--animal-primary); }
+  #pager { min-height: 26px; flex: none; display: flex; align-items: center; justify-content: center; gap: var(--sp-3); padding: var(--sp-1) 0; }
   #swipehint { display: flex; align-items: center; gap: var(--sp-1); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); white-space: nowrap; }    /* 提示文案零换行 */
   #swipehint svg { width: 14px; height: 14px; }
 </style>

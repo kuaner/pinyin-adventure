@@ -24,12 +24,13 @@
     k, mode = 'full', flipped = false,
     strokePlay = false,      /* 外部驱动的笔顺播放信号（口诀联动：音频在播=动画在跑） */
     strokeLoop = false,      /* 播完自动循环（连播/点播期间跟随音频时长） */
+    strokeStatic = -1,       /* >=0 时笔顺预览为静态帧（?static=K 深链自检用，v3.0 学一学页透传） */
     onmain,                  /* 主字模点播回调（缺省 = say(k) 呼读音；口诀广播传整条口诀点播） */
     tip = '',                /* 主字模下方提示（缺省不显示） */
     glyphMax = 132,          /* full 档字模上限字号 */
   }: {
     k: string; mode?: 'full' | 'card' | 'mini'; flipped?: boolean
-    strokePlay?: boolean; strokeLoop?: boolean
+    strokePlay?: boolean; strokeLoop?: boolean; strokeStatic?: number
     onmain?: () => void; tip?: string; glyphMax?: number
   } = $props()
 
@@ -88,7 +89,7 @@
     {#if C.stroke}
       <div class="pc-strokewrap">
         <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} showList={false} play={strokeActive} bind:this={sa} ondone={strokeDone} /></div>
+        <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} showList={false} play={strokeActive} static={strokeStatic} bind:this={sa} ondone={strokeDone} /></div>
         <button class="pc-replay" data-pcreplay={k} onclick={replayStroke}>
           <Icon name="refresh" size={14} />
           <span><Speak k="seeStroke" plain /></span>

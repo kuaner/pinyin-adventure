@@ -1,6 +1,6 @@
 {
  "generated": "scripts/gen-pinyin-cards.mjs",
- "count": 57,
+ "count": 63,
  "cards": [
   {
    "k": "b",
@@ -451,6 +451,20 @@
    "stroke": true
   },
   {
+   "k": "er",
+   "cat": "ym",
+   "tts": "er",
+   "han": "耳",
+   "kj": "耳朵耳朵 er er er",
+   "kjAudio": "lessons/kj_er",
+   "word": "耳朵",
+   "wp": "ěr duo",
+   "em": "👂",
+   "say": "从左到右，先写 e，再写 r，共 2 个字母",
+   "sayAudio": "lessons/write_er",
+   "stroke": true
+  },
+  {
    "k": "i",
    "cat": "ym",
    "tts": "i",
@@ -535,6 +549,20 @@
    "stroke": true
   },
   {
+   "k": "ong",
+   "cat": "ym",
+   "tts": "ong",
+   "han": "",
+   "kj": "ong ong ong",
+   "kjAudio": "lessons/kj_ong",
+   "word": "",
+   "wp": "",
+   "em": "",
+   "say": "从左到右，先写 o，再写 n，再写 g，共 3 个字母",
+   "sayAudio": "lessons/write_ong",
+   "stroke": true
+  },
+  {
    "k": "ou",
    "cat": "ym",
    "tts": "ōu",
@@ -574,6 +602,20 @@
    "em": "🐟",
    "say": "先写竖右弯，再写竖，再写点，最后写点，四笔写成",
    "sayAudio": "lessons/write_v",
+   "stroke": true
+  },
+  {
+   "k": "üe",
+   "cat": "ym",
+   "tts": "üe",
+   "han": "约",
+   "kj": "月亮弯弯 üe üe üe",
+   "kjAudio": "lessons/kj_ve",
+   "word": "月亮",
+   "wp": "yuè liang",
+   "em": "🌙",
+   "say": "从左到右，先写 ü，再写 e，共 2 个字母",
+   "sayAudio": "lessons/write_ve",
    "stroke": true
   },
   {
@@ -689,6 +731,20 @@
    "stroke": true
   },
   {
+   "k": "wu",
+   "cat": "zt",
+   "tts": "wu",
+   "han": "乌",
+   "kj": "乌鸦乌鸦 wū wū wū",
+   "kjAudio": "lessons/kj_wu",
+   "word": "乌鸦",
+   "wp": "wū yā",
+   "em": "🐦‍⬛",
+   "say": "从左到右，先写 w，再写 u，共 2 个字母",
+   "sayAudio": "lessons/write_wu",
+   "stroke": true
+  },
+  {
    "k": "ye",
    "cat": "zt",
    "tts": "yē",
@@ -700,6 +756,20 @@
    "em": "🌙",
    "say": "从左到右，先写 y，再写 e，共 2 个字母",
    "sayAudio": "lessons/write_ye",
+   "stroke": true
+  },
+  {
+   "k": "yi",
+   "cat": "zt",
+   "tts": "yi",
+   "han": "衣",
+   "kj": "衣服衣服 yī yī yī",
+   "kjAudio": "lessons/kj_yi",
+   "word": "衣服",
+   "wp": "yī fu",
+   "em": "👕",
+   "say": "从左到右，先写 y，再写 i，共 2 个字母",
+   "sayAudio": "lessons/write_yi",
    "stroke": true
   },
   {
@@ -728,6 +798,20 @@
    "em": "✨",
    "say": "从左到右，先写 y，再写 i，再写 n，再写 g，共 4 个字母",
    "sayAudio": "lessons/write_ying",
+   "stroke": true
+  },
+  {
+   "k": "yu",
+   "cat": "zt",
+   "tts": "yu",
+   "han": "鱼",
+   "kj": "小鱼小鱼 yú yú yú",
+   "kjAudio": "lessons/kj_yu",
+   "word": "小鱼",
+   "wp": "xiǎo yú",
+   "em": "🐟",
+   "say": "从左到右，先写 y，再写 ü，共 2 个字母",
+   "sayAudio": "lessons/write_yu",
    "stroke": true
   },
   {

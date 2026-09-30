@@ -1,6 +1,6 @@
 # 拼音闯关大冒险（pinyin-adventure）
 
-儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课（v2.9 动态步数：纯韵母课 4 步、有声母课 5 步，小测三题型=听音选字母/看字母选音/听调辨调·仅韵母课）、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3。
+儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课（**v3.0 按字母分**：每字母=学一学合并页（字模+口诀+读音+笔顺同屏）→声调页→自动进下一字母，全部走完→课级拼读（hasBlend 课）→课级小测；进度=字母 chip 条，小测三题型=听音选字母/看字母选音/听调辨调·仅韵母课）、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3。
 
 ## 技术栈
 
@@ -59,7 +59,7 @@ src/
     AnchorBar PairModal Feedback UpdatePrompt                # 通用件（v2.3：解锁层删除，新增更新提示条）
     Speak.svelte         # v2.6 Ruby 升级：注音渲染+有音频则整段可点击播放（轻按压反馈+小声波纹）；全 app 文案/题面/反馈走它
     PinyinCard（v2.5 统一学习卡片：full=学习岛认识页/口诀广播展开区，card=闪卡，mini=答错反馈；五要素=字模四线三格/真人读音/笔顺动画/口诀/例词；数据 data/pinyin-cards.json）
-    learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage 动态 4/5 步课 · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
+    learn/（v2.2 学习岛）LearnIsland 星图 · LessonPage v3.0 按字母分课（学一学合并页+声调，lib/lessonUnits.ts 页序推导） · StrokeAnim 笔顺动画 · ToneDrill/BlendDrill
   data/                   # 全部内容数据（代码里不许内联大数组）
     pinyin.json           # 字母表 57 条(口诀/例词) + 锚点表 + 9 关 + 正反覆盖集
     confusion.json        # 14 组易混对 + 组名
@@ -91,7 +91,7 @@ scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清
 7. **注音收口+文案层**（Bug#2 → v2.6）：数据层纯文本；用户可见字符串唯一真相=src/text/strings.ts（key→中文），组件/stores 禁中文字面量；渲染走 `<Speak k=…/>`（注音+点播）；`node scripts/check-ruby.mjs` 是 lint 门槛（字面量=exit 2）。
 8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
 9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来（v2.6 起全 app 零自动语音：题面音一律 🔊 大按钮点播，孩子控节奏；文案层 Speak 有音频即可点播）；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
-10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow:hidden + flex column，固定件 flex:none / 舞台 flex:1 1 0）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 16 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全步骤 × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；`node scripts/v293-accept.mjs`（219 断言）+ `v293-webkit.mjs`。
+10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow hidden/**clip** + flex column，固定件 flex:none / 舞台 flex:1 1 0；v3.0 加 clip=连编程滚动都不可能，scrollIntoView 连带滚祖先类 bug 根绝，BUGS#30）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 18 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全单元 chip × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；v3.0 起 `node scripts/v30-accept.mjs`（结构反转+零左移+零滚动+自动推进，28 断言）+ 笔顺 `stroke-verify.mjs`（47 单元）；v293 系列归档为 v2.9 历史记录。
 
 ## 发布流程
 

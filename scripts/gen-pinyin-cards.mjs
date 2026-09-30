@@ -36,6 +36,32 @@ for (const [k, L] of Object.entries(py.letters)) {
   if (!rec.stroke && L.cat !== 'zt') console.warn('WARN no stroke:', k)
   out.push(rec)
 }
+/* v3.0 补漏（BUGS#29 合并页发现）：lessons.json 里有、pinyin.json 没有的课内单元
+   （er/üe/ong/wu/yi/yu——v2.9 写法页直挂 StrokeAnim 掩盖了缺口；合并页=唯一笔顺载体，必须全覆盖）。
+   字段从 lessons.json 聚合（kj/han/say/音频/例词课程数据齐全）；tts 缺省用键名（PinyinCard 已有 C.tts||k 兜底） */
+const CAT_BY_KIND = { sm: 'sm', ym: 'ym', fu: 'ym', zt: 'zt' }
+for (const l of lessons.lessons) {
+  for (const e of l.letters) {
+    if (py.letters[e.k] || out.some((r) => r.k === e.k)) continue
+    const rec = {
+      k: e.k,
+      cat: CAT_BY_KIND[l.kind] || 'ym',
+      tts: e.k,
+      han: e.han || '',
+      kj: e.kj || '',
+      kjAudio: e.kjAudio || '',
+      word: e.word || '',
+      wp: e.wp || '',
+      em: e.em || '',
+      say: e.say || '',
+      sayAudio: e.sayAudio || '',
+      stroke: hasStroke(e.k),
+    }
+    if (!rec.kj) console.warn('WARN no kj:', e.k)
+    if (!rec.stroke) console.warn('WARN no stroke:', e.k)
+    out.push(rec)
+  }
+}
 out.sort((a, b) => CAT_ORDER[a.cat] - CAT_ORDER[b.cat] || a.k.localeCompare(b.k))
 
 const json = { generated: 'scripts/gen-pinyin-cards.mjs', count: out.length, cards: out }

@@ -28,6 +28,7 @@ export const strings = {
   /* ---------- 学习 tab ---------- */
   pinyinIsland: s('拼音岛'),
   lessonN: s('第 {n} 课', { 第: 'dì', 课: 'kè' }),
+  stepLearn: s('学一学', { 学一学: 'xué yī xué' }),
   stepKnow: s('认识', { 认识: 'rèn shi' }),
   stepWrite: s('写法', { 写法: 'xiě fǎ' }),
   stepTone: s('声调', { 声调: 'shēng diào' }),

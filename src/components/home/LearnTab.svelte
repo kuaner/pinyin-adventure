@@ -8,21 +8,21 @@
   import { openLesson, show } from '../../stores/ui.svelte'
   import { totalStars } from '../../stores/progress.svelte'
   import { say } from '../../lib/audio'
+  import { lessonHasBlend, unitCountOf, unitIndexOf, type LessonLike } from '../../lib/lessonUnits'
   import Speak from '../Speak.svelte'
-  import { t, type StringKey } from '../../text/strings'
+  import { t } from '../../text/strings'
 
   const LESSONS = (lessonsData as any).lessons as { n: number; title: string; label: string; letters: { k: string; kj: string }[] }[]
-  const ALL_STEPS: StringKey[] = ['stepKnow', 'stepWrite', 'stepTone', 'stepBlend', 'stepQuiz']
 
   const cur = $derived(currentLesson(LESSONS.length))
   const lesson = $derived(LESSONS[cur - 1])
-  /* v2.9 步骤架构跟内容走（BUGS#17）：纯韵母课 4 步无拼读，断点/CTA 步名同步适配 */
-  const steps = $derived.by(() => {
-    const hb = (lesson as any).hasBlend ?? !!((lesson as any).blends?.length || (lesson as any).ztlist?.length)
-    return hb ? ALL_STEPS : ALL_STEPS.filter((k) => k !== 'stepBlend')
-  })
-  const bp = $derived(Math.min(steps.length, LRN.step[cur] || 1))   // 动态步数断点
-  const bpKey = $derived(steps[bp - 1])
+  /* v3.0 单元模型（BUGS#28）：断点=页（LRN.step 存 1 起页号），CTA 显示断点所在单元——
+     字母页显示字母（继续学习 · z），课级显示 拼读/小测；进度点 = 单元数（字母+拼读?+小测） */
+  const hasBlend = $derived(lessonHasBlend(lesson as unknown as LessonLike))
+  const unitN = $derived(unitCountOf(lesson as unknown as LessonLike))
+  const bpPage = $derived(Math.max(0, Math.min(LRN.step[cur] || 1, 99) - 1))
+  const bpUnit = $derived(unitIndexOf(lesson as unknown as LessonLike, bpPage))
+  const bpLetter = $derived(bpUnit < lesson.letters.length ? lesson.letters[bpUnit].k : '')
   const passedCur = $derived(quizPassed(cur))
 
   let li = $state(0)                                             // 大卡当前字母
@@ -64,15 +64,15 @@
     </div>
     <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
     <div id="steps5">
-      {#each steps as s, i (s)}
-        <i class:d={i < bp - 1 || passedCur} class:c={i === bp - 1 && !passedCur}></i>
+      {#each Array(unitN) as _, i (i)}
+        <i class:d={i < bpUnit || passedCur} class:c={i === bpUnit && !passedCur}></i>
       {/each}
     </div>
     <button id="cta" data-cta onclick={() => openLesson(cur, li)}>
       {#if passedCur}
         <Speak k="restudy" plain /> · <Speak k="stepKnow" plain />
       {:else}
-        <Speak k="continueLearning" plain /> · <Speak k={bpKey} plain />
+        <Speak k="continueLearning" plain /> · {#if bpLetter}{bpLetter}{:else}<Speak k={bpUnit === lesson.letters.length && hasBlend ? 'stepBlend' : 'stepQuiz'} plain />{/if}
       {/if}
     </button>
   </div>
@@ -138,8 +138,8 @@
     width: 12px; height: 12px; border-radius: 50%; background: var(--animal-warning); box-shadow: 0 2px 0 var(--animal-warning-active); }
   #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 2.1; flex: none; }    /* 口诀全文=长内容允许换行 */
   #koujue .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size:var(--fs-md); letter-spacing: 2px; }
-  #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-3) 0 var(--sp-3); flex: none; }
-  #steps5 i { width: 34px; height: 7px; border-radius: 7px; background: var(--animal-border-light); }
+  #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-3) 0 var(--sp-3); flex: none; min-width: 0; }
+  #steps5 i { flex: 0 1 34px; min-width: 8px; max-width: 34px; height: 7px; border-radius: 7px; background: var(--animal-border-light); }    /* v3.0 单元点（L12=18 个）弹性收缩防溢出 */
   #steps5 i.d { background: var(--animal-primary); }
   #steps5 i.c { background: var(--animal-warning); }
   #cta { height: 62px; border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
