@@ -25,7 +25,7 @@
         <div class="hspage"><div class="pcard">
           <div class="ghead">
             <div class="gtitle"><Ruby text={GRPNAME[grp]} />&nbsp;（{ps.length}<Ruby text=" 组" />）</div>
-            <div class="gdesc"><Ruby text="点一对看「辨析卡」学口诀，或整组开练" /></div>
+            <div class="gdesc"><Ruby text="点一对，学口诀；准备好了就开练" /></div>
           </div>
           <div class="chips">
             {#each ps as p (p.a + '|' + p.b)}

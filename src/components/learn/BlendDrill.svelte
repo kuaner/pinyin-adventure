@@ -1,13 +1,17 @@
 <script lang="ts">
-  /* 拼读练习（五步之④）：声母卡+韵母卡靠近合成动画 + 真人音节；L12 整体认读模式=认读卡片 */
+  /* 拼读练习（五步之④）：声母卡+韵母卡靠近合成动画 + 真人音节；L12 整体认读模式=认读卡片。
+     v2.4.1 修拼读页空白（BUGS#5）：单韵母课（L1/L2）无 blends/ztlist，v2.4 起整页空白——
+     补「四声读一读」模式（tones 数据逐卡点读，课本同款四声练习）+ 全空兜底文案 */
   import { playAudio, letterAudio } from '../../lib/audio'
   import Ruby from '../Ruby.svelte'
   import Icon from '../Icon.svelte'
 
   export type Blend = { ini: string; fin: string; syl: string; tone: number; display: string; char: string; file: string }
   export type ZtItem = { k: string; kj: string }
+  export type ToneRow = { base: string; display: string; tones: { t: number; display: string; file: string }[] }
 
-  let { blends = [], ztlist = [], note = '', ondone }: { blends?: Blend[]; ztlist?: ZtItem[]; note?: string; ondone?: () => void } = $props()
+  let { blends = [], ztlist = [], tones = [], note = '', ondone }:
+    { blends?: Blend[]; ztlist?: ZtItem[]; tones?: ToneRow[]; note?: string; ondone?: () => void } = $props()
 
   let idx = $state(0)
   let merging = $state(false)     // 0 未拼 1 合成中 2 完成
@@ -15,6 +19,8 @@
 
   const b = $derived(blends[idx])
   const ztMode = $derived(ztlist.length > 0)
+  const singleMode = $derived(!ztMode && blends.length === 0 && tones.length > 0)
+  const emptyAll = $derived(!ztMode && blends.length === 0 && tones.length === 0)
 
   function merge() {
     if (!b || merging) return
@@ -46,6 +52,21 @@
         </button>
       {/each}
     </div>
+  {:else if singleMode}
+    <div class="zthint"><Ruby text="四个声调，读一读" /></div>
+    <div class="srows">
+      {#each tones as row (row.base)}
+        <div class="srow">
+          <span class="sbase">{row.base}</span>
+          <div class="sgrid">
+            {#each row.tones as t (t.t)}
+              <button class="scard" data-syl={t.display} onclick={() => playAudio(t.file, { hint: '语音未准备好' })}>{t.display}</button>
+            {/each}
+          </div>
+        </div>
+      {/each}
+    </div>
+    <div class="stip"><Ruby text="点一点，跟读一遍" /></div>
   {:else if b}
     <div class="stage" class:merged={merging}>
       <div class="card inicard">{b.ini}</div>
@@ -73,6 +94,8 @@
         </button>
       {/each}
     </div>
+  {:else if emptyAll}
+    <div class="bempty"><Ruby text="这一课的内容在前面的步骤里，往回滑一滑吧" /></div>
   {/if}
 </div>
 
@@ -106,6 +129,17 @@
     font-size: 20px; font-weight: 800; color: #6f6353; font-family: inherit; }
   .bchip.on { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
   .zthint { text-align: center; font-size: 21px; font-weight: 800; color: #264653; }
+  /* 单韵母四声读一读（v2.4.1 BUGS#5） */
+  .srows { display: flex; flex-direction: column; gap: 9px; width: 100%; }
+  .srow { display: flex; align-items: center; gap: 10px; }
+  .sbase { flex: 0 0 52px; height: 52px; border-radius: 14px; background: var(--animal-primary-bg, #e6f9f6);
+    display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 900; color: #1f7a68; }
+  .sgrid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .scard { height: 52px; border-radius: 14px; border: 2px solid #eee4d3; background: #fff; font-family: inherit;
+    font-size: 26px; font-weight: 900; color: #264653; }
+  .scard:active { border-color: #2A9D8F; background: #e6f7f2; color: #1f7a68; }
+  .stip { text-align: center; font-size: 13px; font-weight: 800; color: #8a7a68; }
+  .bempty { text-align: center; font-size: 18px; font-weight: 800; color: #8a7a68; line-height: 2; padding: 30px 10px; }
   .ztgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .ztcard { background: #fff; border: 2.5px solid #eee4d3; border-radius: 18px; padding: 12px 8px;
     display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: inherit; }

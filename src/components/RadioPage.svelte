@@ -12,10 +12,16 @@
   import HSteps from './HSteps.svelte'
 
   interface KJEntry { k: string; kj: string; audio: string }
-  const ALL: KJEntry[] = ((lessonsData as any).lessons as any[])
-    .flatMap((l) => l.letters as any[])
-    .filter((e) => e.kjAudio || e.kj)
-    .map((e) => ({ k: e.k, kj: e.kj, audio: e.kjAudio || ('lessons/kj_' + (e.k === 'ü' ? 'v' : e.k)) }))
+  /* v2.4.1 修列表空白（BUGS#7）：数据提取包兜底——任何异常转空数组，由空态兜底呈现，
+     不再整片空白无提示（真机历史 bug 的防御性收口） */
+  const ALL: KJEntry[] = (() => {
+    try {
+      return ((lessonsData as any).lessons as any[])
+        .flatMap((l) => l.letters as any[])
+        .filter((e) => e.kjAudio || e.kj)
+        .map((e) => ({ k: e.k, kj: e.kj, audio: e.kjAudio || ('lessons/kj_' + (e.k === 'ü' ? 'v' : e.k)) }))
+    } catch { return [] }
+  })()
 
   let cur = $state(0)
   let chainOn = $state(false)
@@ -81,6 +87,14 @@
     <div class="lprog">{cur + 1}/{ALL.length}</div>
   </div>
 
+  {#if ALL.length === 0}
+    <!-- 空态兜底（BUGS#7）：数据缺失时给出可见引导，不再无声空白 -->
+    <div class="kempty">
+      <div class="kempty-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#dba90e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0116 0" /><rect x="3" y="13" width="4" height="7" rx="2" fill="#dba90e" stroke="none" /><rect x="17" y="13" width="4" height="7" rx="2" fill="#dba90e" stroke="none" /></svg></div>
+      <div class="kempty-tx"><ruby>口诀还在路上，先回去学一课吧<rt>kǒu jué hái zài lù shàng xiān huí qù xué yī kè ba</rt></ruby></div>
+      <button class="kempty-btn" onclick={exit}><ruby>回学习岛<rt>huí xué xí dǎo</rt></ruby></button>
+    </div>
+  {:else}
   <HSteps n={ALL.length} bind:cur onchange={onSwipe}>
     {#each ALL as e, i (e.k + i)}
       <div class="hspage">
@@ -132,6 +146,7 @@
   <div id="pager">
     <div id="swipehint"><svg viewBox="0 0 24 24" fill="none" stroke="#9f927d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6" /></svg><ruby>左滑，下一句<rt>zuǒ huá xià yī jù</rt></ruby></div>
   </div>
+  {/if}
 </section>
 
 <style>
@@ -190,4 +205,12 @@
   #dots i.on { width: 20px; border-radius: 6px; background: var(--animal-primary); }
   #swipehint { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--animal-text-2); }
   #swipehint svg { width: 15px; height: 15px; }
+
+  /* 空态兜底（BUGS#7） */
+  .kempty { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .kempty-ic svg { width: 54px; height: 54px; }
+  .kempty-tx { font-size: 17px; font-weight: 800; color: var(--animal-text-2); line-height: 2.1; text-align: center; max-width: 260px; }
+  .kempty-btn { border: none; border-radius: 999px; background: var(--animal-primary); color: #fff; font-family: inherit;
+    font-size: 16px; font-weight: 900; padding: 12px 30px; box-shadow: 0 4px 0 var(--press-teal); cursor: pointer; }
+  .kempty-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
 </style>

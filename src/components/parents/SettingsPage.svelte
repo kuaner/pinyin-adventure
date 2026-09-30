@@ -36,7 +36,7 @@
     </div>
   </div>
 
-  <div class="ver">拼音闯关大冒险 v2.4 · 拼音岛</div>
+  <div class="ver">拼音闯关大冒险 v2.4.1 · 拼音岛</div>
 </section>
 
 <style>

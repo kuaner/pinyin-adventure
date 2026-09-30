@@ -215,7 +215,7 @@
       <!-- 页4 · 拼读 / 整体认读 -->
       <div class="hspage"><div class="pcard">
         <div class="ptag hot"><ruby>拼读<rt>pīn dú</rt></ruby></div>
-        <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} note={lesson.note || ''} /></div>
+        <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} tones={lesson.tones || []} note={lesson.note || ''} /></div>
       </div></div>
 
       <!-- 页5 · 小测 -->

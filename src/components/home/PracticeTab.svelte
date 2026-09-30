@@ -60,14 +60,14 @@
       <div class="mbadge">{#if boltBest}最佳 {boltBest}%{:else}5 分钟{/if}</div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2z" /></svg></div>
       <div class="mname"><ruby>闪电刷题<rt>shǎn diàn shuā tí</rt></ruby></div>
-      <div class="mdesc">5 分钟冲刺 · 听写二选一</div>
+      <div class="mdesc"><Ruby text="5 分钟冲刺 · 听一听选出来" /></div>
     </button>
 
     <button class="mode m-green pressable" data-go="zi" onclick={() => startZi()}>
       <div class="mbadge">{ziDone} / {ziTotal} 字</div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 016.5 3H20v15H6.5A2.5 2.5 0 004 20.5z" /><path d="M4 18a2.5 2.5 0 012.5-2.5H20" /></svg></div>
       <div class="mname"><ruby>常见字快拼<rt>cháng jiàn zì kuài pīn</rt></ruby></div>
-      <div class="mdesc">一年级识字表 · 看字选拼音</div>
+      <div class="mdesc"><Ruby text="看看字，选出拼音" /></div>
     </button>
 
     <button class="mode m-pink pressable" data-go="detect" onclick={() => startDet()}>
@@ -81,7 +81,7 @@
       <div class="mbadge">{#if weakPairs}{weakPairs} 组待加强{:else}14 组{/if}</div>
       <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="5.5" /><circle cx="15.5" cy="12" r="5.5" /></svg></div>
       <div class="mname"><ruby>易混对专练<rt>yì hùn duì zhuān liàn</rt></ruby></div>
-      <div class="mdesc">混淆搭档 · 逐对击破</div>
+      <div class="mdesc"><Ruby text="一对一对，练清楚" /></div>
     </button>
 
     <button class="mode m-purple pressable" data-go="free" onclick={() => show('free')}>

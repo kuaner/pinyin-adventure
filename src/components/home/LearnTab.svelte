@@ -11,7 +11,6 @@
   import Ruby from '../Ruby.svelte'
 
   const LESSONS = (lessonsData as any).lessons as { n: number; title: string; label: string; letters: { k: string; kj: string }[] }[]
-  const KJN = LESSONS.reduce((a, l) => a + l.letters.length, 0)
   const STEPS = ['认识', '写法', '声调', '拼读', '小测']
 
   const cur = $derived(currentLesson(LESSONS.length))
@@ -95,7 +94,7 @@
     <div class="ric"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13a8 8 0 0116 0" /><rect x="3" y="13" width="4" height="7" rx="2" fill="#fff" stroke="none" /><rect x="17" y="13" width="4" height="7" rx="2" fill="#fff" stroke="none" /></svg></div>
     <div class="rtx">
       <b><ruby>口诀小广播<rt>kǒu jué xiǎo guǎng bō</rt></ruby></b>
-      <span>全 {KJN} 条课本口诀 · 像儿歌一样连播</span>
+      <span><Ruby text="想听哪句，点哪句" /></span>
     </div>
     <div class="rplay"><svg viewBox="0 0 24 24" fill="#dba90e"><path d="M8 5.5v13l11-6.5z" /></svg></div>
   </button>
