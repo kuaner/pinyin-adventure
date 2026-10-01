@@ -2,7 +2,7 @@
    每单元截两帧——中帧（static=前半笔数）+ 完成帧（static=全部）——存 .stroke-shots/。
    另做几何断言：ghost/ink 路径数 = 笔数×2、单元格数 = 字母数。
    v3.0：写法页并入学一学合并页（BUGS#29）——断言对象=PinyinCard 笔顺预览
-   （.pc-strokefit，静态帧经 strokeStatic 透传），深链 ?li=I&static=K（?step 已废）。 */
+   （.pc-herofit=学一学页字模区，静态帧经 strokeStatic 透传），深链 ?li=I&static=K（?step 已废）。 */
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
 const require = createRequire(import.meta.url)
@@ -40,10 +40,10 @@ for (const u of MUST) {
     await page.goto(`${BASE}?learn=${n}&li=${i}&static=${st}`, { waitUntil: 'load' })
     /* 关闭声音解锁层（若在） */
     try { await page.click('#ulgo', { timeout: 1200 }) } catch { /* 不在 */ }
-    await page.waitForSelector('#v-lesson .pc-strokefit .strokeanim', { timeout: 8000 })
+    await page.waitForSelector('#v-lesson .pc-herofit .strokeanim', { timeout: 8000 })
     await page.waitForTimeout(350)
     const geom = await page.evaluate((pgi) => {
-      const svg = document.querySelector(`#v-lesson .hstage > .hspage:nth-child(${pgi + 1}) .pc-strokefit .strokeanim`)
+      const svg = document.querySelector(`#v-lesson .hstage > .hspage:nth-child(${pgi + 1}) .pc-herofit .strokeanim`)
       if (!svg) return null
       const ghosts = svg.querySelectorAll('path.ghost').length
       const inks = svg.querySelectorAll('path:not(.ghost)').length
@@ -53,7 +53,7 @@ for (const u of MUST) {
     const expLetters = u.length > 1 && u !== 'ü' ? u.length : 1
     const ok = geom && geom.ghosts === strokes && geom.inks === strokes && geom.cells === expLetters * 2
     if (tag === 'final') { if (ok) pass++; else { fail++; console.error(`✗ ${u}:`, JSON.stringify(geom), `期望 strokes=${strokes} cells=${u.length > 1 && u !== 'ü' ? u.length : 1}`) } }
-    const el = page.locator(`#v-lesson .hstage > .hspage:nth-child(${i * 2 + 1}) .pc-strokefit`)
+    const el = page.locator(`#v-lesson .hstage > .hspage:nth-child(${i * 2 + 1}) .pc-herofit`)
     await el.screenshot({ path: `${OUT}/${key}_${tag}.png` })
   }
   process.stdout.write(`✓ ${u} (${strokes}笔) `)

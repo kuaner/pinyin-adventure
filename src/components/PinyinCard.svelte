@@ -1,8 +1,9 @@
 <script lang="ts">
   /* PinyinCard v2.5 统一学习卡片（kuaner 2026-09-30 14:51："针对每个拼音都搞个组件，到处都可以复用，
      相当于是每个拼音的学习卡片，闪卡都用得上，到处统一"）。
-     一个组件 = 每个拼音的完整学习身份，五要素：大字模（四线三格）/ 真人读音 / 笔顺动画 / 口诀（文+音）/ 例词。
-     三档形态：full（学习岛认识页 · 口诀广播展开区，五要素全展示）
+     一个组件 = 每个拼音的完整学习身份，五要素：大字模（四线三格，v3.1 起=笔顺动画本体，BUGS#31①）/
+     真人读音 / 笔顺动画（与字模合体后此条即字模条目）/ 口诀（文+音）/ 例词。
+     三档形态：full（学习岛学一学页 · 口诀广播展开区，五要素全展示；字模=会自己写自己的笔顺动画）
               card（闪卡：正面字模+口诀，翻面笔顺动画+例词）
               mini（答错反馈弹层：字模+读音+口诀一行）
      数据正本 = src/data/pinyin-cards.json（scripts/gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成）。
@@ -27,7 +28,7 @@
     strokeStatic = -1,       /* >=0 时笔顺预览为静态帧（?static=K 深链自检用，v3.0 学一学页透传） */
     onmain,                  /* 主字模点播回调（缺省 = say(k) 呼读音；口诀广播传整条口诀点播） */
     tip = '',                /* 主字模下方提示（缺省不显示） */
-    glyphMax = 132,          /* full 档字模上限字号 */
+    glyphMax = 132,          /* full 档字模区高度上限（×1.3 为显示区 px，SVG 等比适配） */
   }: {
     k: string; mode?: 'full' | 'card' | 'mini'; flipped?: boolean
     strokePlay?: boolean; strokeLoop?: boolean; strokeStatic?: number
@@ -50,13 +51,33 @@
   let manualStroke = $state(false)
   const strokeActive = $derived(mode !== 'mini' && (strokePlay || manualStroke))
 
+  /* BUGS#31③：播放键按压动效反馈（短脉冲，动画结束自动熄） */
+  let readPing = $state(false)
+  let kjPing = $state(false)
+  let replayPing = $state(false)
+  let pingTimers: ReturnType<typeof setTimeout>[] = []
+  function ping(name: 'read' | 'kj' | 'replay') {
+    const flag = name === 'read' ? readPing : name === 'kj' ? kjPing : replayPing
+    pingTimers.forEach(clearTimeout)
+    readPing = kjPing = replayPing = false
+    void flag
+    requestAnimationFrame(() => {
+      if (name === 'read') readPing = true
+      else if (name === 'kj') kjPing = true
+      else replayPing = true
+      pingTimers.push(setTimeout(() => { readPing = kjPing = replayPing = false }, 700))
+    })
+  }
+
   function strokeDone() {
     if (strokePlay && strokeLoop) { setTimeout(() => sa?.replay(), 500); return }
     manualStroke = false
   }
-  function replayStroke() { manualStroke = true; sa?.replay(); if (C.sayAudio) playAudio(C.sayAudio, { hint: '' }) }
+  function replayStroke() { ping('replay'); manualStroke = true; sa?.replay(); if (C.sayAudio) playAudio(C.sayAudio, { hint: '' }) }
   function mainTap() { if (onmain) onmain(); else say(k) }
+  function readTap() { ping('read'); say(k) }
   function playKj() {
+    ping('kj')
     if (C.kjAudio) playAudio(C.kjAudio, { hint: tRaw('notReady') })
     else say(k)
   }
@@ -67,38 +88,34 @@
 
 {#if mode === 'full'}
   <div class="pcfull" data-pc={k}>
-    <button class="pc-mainbtn" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
-      {#if C.stroke}
-        <!-- BUGS#22②：大字模直接复用 StrokeAnim 的 SVG（同 viewBox 76×160/字母+四线三格背景线）——
-           废弃原"字体文本+CSS 自画格线"双坐标系（i 的竖笔曾穿破第 4 线，与笔顺卡占格不一致）。
-           glyphMax 语义=字模显示区高度上限（SVG 等比适配，笔格占比恒定） -->
-        <div class="pc-glyphfit" style="max-height:{Math.round(glyphMax * 1.3)}px">
-          <StrokeAnim unit={k} glyph={true} play={false} showList={false} />
+    {#if C.stroke}
+      <!-- BUGS#31①：笔顺动画=字模（唯一 z）——四线三格里它自己写自己：空闲=写好的字（idleDone 定格完整笔画），
+           进页自动播/点重播=再写一遍。废弃"静态大字模+下方笔顺预览"双 z 结构（kuaner："上面一个z 下面一个z"）。
+           glyphMax 语义=字模显示区高度上限（SVG 等比适配，四线三格占比恒定） -->
+      <button class="pc-hero" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
+        <div class="pc-herofit" style="max-height:{Math.round(glyphMax * 1.3)}px">
+          <StrokeAnim unit={k} idleDone cell={120} showList={false} play={strokeActive} static={strokeStatic} bind:this={sa} ondone={strokeDone} />
         </div>
-      {:else}
-        <!-- 兜底：无笔顺数据的单元退回字体字模（57 卡实测全覆盖，此分支仅为防御） -->
+      </button>
+      <button class="pc-replay" data-pcreplay={k} class:ping={replayPing} onclick={replayStroke}>
+        <Icon name="refresh" size={20} />
+        <span><Speak k="seeStroke" plain /></span>
+      </button>
+    {:else}
+      <!-- 兜底：无笔顺数据的单元退回字体字模（63 卡实测全覆盖，此分支仅为防御） -->
+      <button class="pc-hero fb" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
         <i class="pc-grid" aria-hidden="true"></i>
         <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
-      {/if}
-    </button>
-    <button class="pc-read" data-pcread={k} onclick={() => say(k)} aria-label="读音">
-      <Icon name="headphones" size={17} />
+      </button>
+    {/if}
+    <button class="pc-read" data-pcread={k} class:ping={readPing} onclick={readTap} aria-label="读音">
+      <Icon name="headphones" size={24} />
       <span>{C.tts || k}</span>
       {#if C.han}<i class="pc-han">{C.han}</i>{/if}
     </button>
-    {#if C.stroke}
-      <div class="pc-strokewrap">
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
-        <div class="pc-strokefit"><StrokeAnim unit={k} cell={64} showList={false} play={strokeActive} static={strokeStatic} bind:this={sa} ondone={strokeDone} /></div>
-        <button class="pc-replay" data-pcreplay={k} onclick={replayStroke}>
-          <Icon name="refresh" size={14} />
-          <span><Speak k="seeStroke" plain /></span>
-        </button>
-      </div>
-    {/if}
     {#if kjEn[0]}
-      <button class="pc-kj" data-pckj={k} onclick={playKj} aria-label="口诀">
-        {#if C.kjAudio}<span class="pc-kjplay"><Icon name="play" size={13} /></span>{/if}
+      <button class="pc-kj" data-pckj={k} class:ping={kjPing} onclick={playKj} aria-label="口诀">
+        {#if C.kjAudio}<span class="pc-kjplay"><Icon name="play" size={16} /></span>{/if}
         <Speak text={kjEn[0]} />
         {#if kjEn[1]}<b class="pc-kjen">{kjEn[1]}</b>{/if}
       </button>
@@ -157,34 +174,44 @@
 <style>
   /* ---------- full ---------- */
   .pcfull { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); width: 100%; min-height: 0; flex: 1; }
-  /* BUGS#22②：字模按钮=弹性子项（与笔顺区按 1.1:1 分卡内剩余预算），glyphfit 满高承载 SVG；
-     SVG max 约束等比缩放，零塌陷 */
-  .pc-mainbtn { border: none; background: none; font-family: inherit; padding: 0; cursor: pointer; line-height: 1; position: relative;
-    width: 82%; flex: 1.1 1 0; min-height: 0; display: flex; align-items: center; justify-content: center; }
-  .pc-glyphfit { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  .pc-glyphfit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
+  /* BUGS#31①：字模区=笔顺动画本体（唯一 z）——弹性主位（1.1），奶油练习本面板承载四线三格；
+     idleDone 定格=完整字模，播放中=它自己写自己。glyphMax 经 herofit max-height 封顶 */
+  .pc-hero { border: none; background: #fbf7ec; font-family: inherit; padding: var(--sp-1) var(--sp-2); cursor: pointer; line-height: 1; position: relative;
+    width: 88%; flex: 1.1 1 0; min-height: 0; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
+  .pc-herofit { width: 100%; height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .pc-herofit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
+  /* 兜底分支（无笔顺数据）：字体字模，白底回到老字模观感 */
+  .pc-hero.fb { background: none; }
   /* 四线三格（仅无笔顺数据的字体字模兜底用） */
   .pc-grid { position: absolute; left: 0; right: 0; top: 16%; bottom: 18%; pointer-events: none;
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .5; border-radius: 4px; }
   .pc-big { font-weight: 900; line-height: 1.08; color: var(--animal-primary); text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; position: relative; z-index: 1; }
-  .pc-read { display: flex; align-items: center; gap: var(--sp-2); border: 2px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-sm); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: 999px; cursor: pointer; flex: none; }
-  .pc-read:active { transform: translateY(2px); }
+  /* BUGS#31③：全部播放键 ≥48×48（Apple 儿童触控标准）+大图标+按压脉冲动效 */
+  .pc-read { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); border: 2.5px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+    font-family: inherit; font-size:var(--fs-md); font-weight: 900; min-height: 52px; min-width: 48px; padding: var(--sp-1) var(--sp-5); border-radius: 999px; cursor: pointer; flex: none;
+    box-shadow: 0 3px 0 #bce8e2; }
+  .pc-read:active { transform: translateY(2px); box-shadow: 0 1px 0 #bce8e2; }
+  .pc-read :global(svg) { width: 24px; height: 24px; }
+  .pc-read.ping { animation: pcping .65s ease-out; }
   .pc-han { font-style: normal; font-weight: 800; opacity: .8; }
-  .pc-strokewrap { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 88%; min-height: 0; flex: 1;
-    background: #fbf7ec; border-radius: 16px; padding: 2px var(--sp-2); }
-  .pc-strokefit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
-  .pc-strokefit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
-  .pc-replay { display: flex; align-items: center; gap: var(--sp-1); border: none; background: none; color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-xs); font-weight: 900; cursor: pointer; padding: 0 var(--sp-2); flex: none; }
-  .pc-replay :global(svg) { width: 13px; height: 13px; }
+  .pc-replay { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); border: none; background: #fff; color: var(--animal-primary-active);
+    font-family: inherit; font-size:var(--fs-sm); font-weight: 900; min-height: 48px; min-width: 48px; padding: var(--sp-1) var(--sp-4); border-radius: 999px; cursor: pointer; flex: none;
+    box-shadow: 0 3px 0 #e3d9c8; }
+  .pc-replay:active { transform: translateY(2px); box-shadow: 0 1px 0 #e3d9c8; }
+  .pc-replay :global(svg) { width: 20px; height: 20px; }
+  .pc-replay.ping { animation: pcping .65s ease-out; }
+  /* 按压脉冲：扩散光环+微放大（动效反馈，kuaner"动效反馈"） */
+  @keyframes pcping { 0% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 0 rgba(42,157,143,.4); } 70% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 14px rgba(42,157,143,0); } 100% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 0 rgba(42,157,143,0); } }
   /* 口诀全文=长内容允许换行（v2.9.4 换行立法豁免类；胶囊改大圆角，零溢出） */
   .pc-kj { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; row-gap: var(--sp-1); column-gap: var(--sp-2); border: none; background: #eef8e2; font-family: inherit;
-    font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text); padding: var(--sp-2) var(--sp-3); border-radius: var(--animal-r-lg); cursor: pointer; flex: none; max-width: 100%; text-align: center; line-height: 1.5; }
+    font-size:var(--fs-sm); font-weight: 800; color: var(--animal-text); min-height: 52px; min-width: 48px; padding: var(--sp-2) var(--sp-3); border-radius: var(--animal-r-lg); cursor: pointer; flex: none; max-width: 100%; text-align: center; line-height: 1.5; }
   .pc-kj:active { transform: translateY(1px); }
-  .pc-kjplay { width: 22px; height: 22px; border-radius: 50%; background: var(--animal-success); color: #fff;
+  .pc-kjplay { width: 30px; height: 30px; border-radius: 50%; background: var(--animal-success); color: #fff;
     display: inline-flex; align-items: center; justify-content: center; flex: none; }
+  .pc-kj :global(svg), .pc-kjplay :global(svg) { width: 16px; height: 16px; }
+  .pc-kj.ping .pc-kjplay { animation: kjping .65s ease-out; }
+  @keyframes kjping { 0%, 100% { transform: scale(1); } 45% { transform: scale(1.3); } }
   .pc-kjen { font-weight: 900; color: var(--animal-primary-active); letter-spacing: 2px; }
   .pc-word { display: flex; align-items: center; gap: var(--sp-2); background: #fff8e0; border-radius: 999px;
     padding: var(--sp-1) var(--sp-3); font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text); flex: none; max-width: 100%; }

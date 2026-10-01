@@ -1,6 +1,7 @@
 <script lang="ts">
-  /* v3.0 学习流程结构反转（BUGS#28+#29+#30）：按字母分，不再按步骤分——
-     每个字母一个迷你流：学一学（合并页：字模四线三格+口诀+读音+笔顺动画同屏，BUGS#29 两个大字模合一）
+  /* v3.0 学习流程结构反转（BUGS#28+#29+#30）+ v3.1 字模合体（BUGS#31）：按字母分，不再按步骤分——
+     每个字母一个迷你流：学一学（合并页：笔顺动画=字模（唯一 z，进页自动播+可重播）+口诀+读音+例词，
+     BUGS#29 两字模合一 → BUGS#31 静态字模退役）
      → 声调（四声演示+辨调小练）→ 走完自动推进下一字母；全部字母走完 → 课级拼读（hasBlend 课）→ 课级小测。
      进度指示 = 字母进度 chip 条（z✓ c✓ s · 拼读 · 小测），随时可跳（学习自由）；不再有课级步骤条。
      页面/单元推导共享于 lib/lessonUnits.ts（学习 tab 断点 CTA 同源）。
@@ -238,12 +239,12 @@
     <HSteps n={NP} cur={page} onchange={(i) => gotoPage(i)}>
       {#each pages as pg, idx (idx)}
         {#if pg.t === 'learn'}
-          <!-- 学一学（合并页，BUGS#29）：PinyinCard full 五要素同屏——大字模四线三格（视觉主角）+
-              🔊读音 + 笔顺动画（进页自动播、可重播）+ 口诀 + 例词；认识/写法两页两字模已成历史 -->
+          <!-- 学一学（合并页，BUGS#29+#31）：PinyinCard full 五要素同屏——笔顺动画=字模（四线三格里
+              唯一的 z，进页自动播、可重播）+ 🔊读音 + 口诀 + 例词；静态大字模已成历史（BUGS#31①） -->
           <div class="hspage"><div class="pcard">
             <div class="ptag"><Speak k="stepLearn" plain /> · {letters[pg.li].k}</div>
             <div class="knowfit">
-              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={112} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
+              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={150} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
             </div>
           </div></div>
         {:else if pg.t === 'tone'}
@@ -384,7 +385,7 @@
   .pcard { flex: 1; min-height: 0; background: #fff; border-radius: var(--animal-r-lg); box-shadow: var(--animal-shadow-lg);
     display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--sp-3) var(--sp-4) var(--sp-3); overflow: hidden; position: relative; gap: var(--sp-2); }
   .pcard .ptag { position: absolute; top: 12px; left: 14px; font-size:var(--fs-xs); font-weight: 900; color: var(--animal-text-dis);
-    background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; max-width: calc(100% - 28px); white-space: nowrap; }
+    background: #f4f0e4; padding: var(--sp-1) var(--sp-2); border-radius: 999px; max-width: calc(100% - 28px); white-space: nowrap; z-index: 2; }
   .pcard .ptag.hot { background: #fff8e0; color: var(--animal-warning-active); }
 
   /* 学一学：PinyinCard full 承载区（rail 与 chip 条合一省下的纵向预算给了卡内） */
@@ -432,8 +433,9 @@
   .drillfit :global(.topt svg) { width: 40px; height: 22px; }
   .drillfit :global(.topt span) { font-size:var(--fs-sm); }
   .drillfit :global(.replay) { width: 76px; height: 76px; }
-  .drillfit :global(.steps .btn), .drillfit :global(.trow .btn) { min-height: 44px; font-size:var(--fs-sm); }
-  .drillfit :global(.navbtn) { width: 44px; height: 44px; font-size:var(--fs-lg); }
+  /* BUGS#31③：声调页的跟我读/听音练等播放按钮 ≥48px 儿童触控 */
+  .drillfit :global(.steps .btn), .drillfit :global(.trow .btn) { min-height: 48px; font-size:var(--fs-sm); }
+  .drillfit :global(.navbtn) { width: 48px; height: 48px; font-size:var(--fs-lg); }
 
   /* 小测（BUGS#18④：qbody 占满卡片、space-evenly 均布——大空白/播放按钮叠压的病灶根除） */
   .qbody { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center;

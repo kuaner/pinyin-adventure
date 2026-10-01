@@ -6,6 +6,8 @@
      播放由 play 属性驱动（LessonPage 传 step===2）：只有翻到写法页才播——修复 HSteps 全量挂载下
      动画在第 1 页就偷偷播完、孩子滑到写法页只见静态编号的时机 bug（BUGS #6b）。
      static >= 0 时仍为静态帧模式（?static=K 深链自检用）。
+     idleDone（BUGS#31①）：play=false 且 static<0 时定格「完整字模」态（全部笔画深色、零编号徽章）——
+     笔顺动画本身就是字模：空闲=写好的字，进页/重播=它把自己再写一遍。不设则空闲清场只留浅描边。
      用法：<StrokeAnim unit="b" play={step === 2} bind:this={sa} /> ；sa.replay() 重播 */
   import strokesData from '../../data/strokes.json'
   import Speak from '../Speak.svelte'
@@ -16,9 +18,11 @@
 
   let {
     unit, cell = 116, static: staticN = -1, speed = 1, play = true, showList = true, glyph = false,
+    idleDone = false,
     ondone, onstroke,
   }: {
     unit: string; cell?: number; static?: number; speed?: number; play?: boolean; showList?: boolean; glyph?: boolean
+    idleDone?: boolean
     ondone?: () => void; onstroke?: (n: number, name: string) => void
   } = $props()
 
@@ -80,6 +84,7 @@
   let inkEls: (SVGPathElement | undefined)[] = []
   let markerEl: SVGGElement | undefined
   let cur = $state(-1)        // 正在画的笔（-1 未开始，total 画完）
+  let idleHold = $state(false) // BUGS#31①：空闲定格态（=完整字模；徽章/呼吸点隐藏）
   let timer: ReturnType<typeof setTimeout> | null = null
   let raf = 0
   let token = 0
@@ -108,6 +113,7 @@
     stopAnim()
     const my = ++token
     cur = -1
+    idleHold = false
     inkEls.forEach((p) => { if (p) { const L = p.getTotalLength(); p.style.transition = 'none'; p.style.strokeDasharray = L + ' ' + L; p.style.strokeDashoffset = String(L) } })
     const step = (k: number) => {
       if (my !== token) return
@@ -155,9 +161,16 @@
     unit, staticN, play
     if (glyph) return   /* glyph 档=纯静态字模 SVG，无动画无副作用（四线三格坐标系与动画档同源） */
     inkEls.length = total   /* bind:this 已按新 DOM 重绑，只裁掉多余尾巴 */
-    if (staticN >= 0) { stopAnim(); cur = -1 }
+    if (staticN >= 0) { stopAnim(); cur = -1; idleHold = false }
     else if (play) playAll()
-    else { stopAnim(); cur = -1 }
+    else {
+      /* 空闲态：idleDone=定格完整字模（全部笔画显形，BUGS#31①）；否则清场只留浅描边。
+         dashoffset 必须显式落值——默认 CSS 把笔画藏在 offset=2000，cur/p-done 只管颜色不管显形 */
+      stopAnim()
+      idleHold = idleDone
+      cur = idleDone ? total : -1
+      inkEls.forEach((p) => { if (p) { p.style.transition = 'none'; p.style.strokeDashoffset = idleDone ? '0' : '2000' } })
+    }
     return () => stopAnim()
   })
 
@@ -211,8 +224,8 @@
           <path
             bind:this={inkEls[gi]}
             d={st.d}
-            class:act={staticN < 0 && cur === gi}
-            class:p-done={staticN < 0 ? cur > gi : gi < staticN}
+            class:act={staticN < 0 && !idleHold && cur === gi}
+            class:p-done={staticN < 0 ? (idleHold || cur > gi) : gi < staticN}
           />
         {/each}
       </g>
@@ -224,10 +237,10 @@
         {#each LETTERS[l].strokes as st, k (l + '-m-' + k)}
           {@const gi = before[li] + k}
           {@const [sx, sy] = startOf(st.d)}
-          {#if staticN < 0 && cur === gi}
+          {#if staticN < 0 && !idleHold && cur === gi}
             <circle cx={sx} cy={sy} r="4.8" fill="none" stroke="#E76F51" stroke-width="2.6" class="sdot" />
           {/if}
-          {#if (staticN < 0 && cur >= gi) || (staticN >= 0 && gi < staticN)}
+          {#if (staticN < 0 && !idleHold && cur >= gi) || (staticN >= 0 && gi < staticN)}
             {@const bo = badgeOff[li]?.[k] || [7.5, -9.5]}
             {@const bx = sx + bo[0]}
             {@const by = sy + bo[1]}
