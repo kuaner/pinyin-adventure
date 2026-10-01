@@ -3,7 +3,7 @@
      v2.3：ll 听看一致 / rule 错句判断删除（零错误信息铁律），新增 kj 口诀正向回忆；
      Bug#2 收口：题面指令 hint 等中文文案渲染层一律过 T() 注音（数据层纯文本）
      v2.4：全屏专注态零纵向滚动；答完左滑 = 跳过反馈等价（下一题） */
-  import { QZ, answer, quitQuiz, fbSkip } from '../stores/session.svelte'
+  import { QZ, armOpt, quitQuiz, fbSkip } from '../stores/session.svelte'
   import { PH } from '../data'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
@@ -56,9 +56,10 @@
           {#each (q as any).opts as k, idx}
             <button
               class="opt"
+              class:armed={QZ.armed === idx}
               class:correct={reveal && idx === reveal?.correct}
               class:wrong={reveal && reveal.wrong.includes(idx)}
-              onclick={() => answer(idx)}
+              onclick={() => armOpt(idx)}
             >
               <div class="og">{k}</div>
               <div class="ob">{CIRC[idx]}</div>

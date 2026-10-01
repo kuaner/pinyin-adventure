@@ -101,6 +101,14 @@
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false,
   })
+  /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮 → 再点同项=作答（armPick=试听中的选项值） */
+  let armPick = $state<string | number>('')
+  function armQuiz(v: string | number, audioFile: string | null) {
+    if (quiz.pick) return   /* 已作答（reveal 态）不再试听 */
+    if (armPick === v) { answer(v); return }
+    armPick = v
+    if (audioFile) playAudio(audioFile, { hint: tRaw('notReady') })
+  }
 
   /* v3.0：页为断点（1 起存 LRN.step，学习 tab CTA 同源解读）。通过课=从头复习（页0） */
   const initPage =
@@ -161,7 +169,8 @@
       if (type === 'tone') {
         const row = toneRows[Math.floor(Math.random() * toneRows.length)]
         const t = 1 + Math.floor(Math.random() * 4)
-        qs.push({ type, k: row.display, file: row.tones[t - 1].file, key: t })   /* 屏显不带调字母，答案在音频里 */
+        /* tones 随题携带：两段式试听需要"点某调=播该调读音"（row.tones[t-1].file） */
+        qs.push({ type, k: row.display, file: row.tones[t - 1].file, key: t, tones: row.tones })   /* 屏显不带调字母，答案在音频里 */
       } else {
         qs.push({ type, k, opts: shuffle([k, ...pickDistractors(k, 3)]), key: k })
       }
@@ -181,6 +190,7 @@
     if (quiz.pick) return
     const q = quiz.q[quiz.i]
     const right = v === q.key
+    armPick = ''
     quiz.pick = right ? '✓' : '✗'
     if (right && q.type === 'tone') addToneCorrect()   /* v3.2 声调大师徽章计数 */
     /* look 题选项音刚起播，等读音落地再叮/嘟（R3 一次一路，反馈音会打断在播读音） */
@@ -201,6 +211,7 @@
           quiz.pick = ''
           quiz.lastPick = ''
           quiz.lastPickN = 0
+          armPick = ''
         }
       }, right ? 650 : 1400)
     }
@@ -219,6 +230,7 @@
   /* 小测残卷复位（进小测步被门拦下时回 boot 态，渲染拦截卡） */
   function resetQuiz() {
     quiz = { q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false }
+    armPick = ''
   }
   /* 参与旗采集：旗A=读音点播（主按钮/浮层键都算，PinyinCard onread）；
      旗B=声调行点读去重（ToneDrill ontone；达标线 toneNeedOf=min(3,行数)，无调行=0） */
@@ -383,10 +395,10 @@
                   <div class="opts" data-opts>
                     {#each q.opts as o (o)}
                       <button
-                        class="opt" class:right={quiz.pick && o === q.key}
+                        class="opt" class:armed={armPick === o && !quiz.pick} class:right={quiz.pick && o === q.key}
                         class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
                         data-qkey={probeOn ? o : null}
-                        onclick={() => { quiz.lastPick = o; answer(o) }}
+                        onclick={() => { quiz.lastPick = o; armQuiz(o, letterAudio(o)) }}
                       >{o}</button>
                     {/each}
                   </div>
@@ -396,11 +408,11 @@
                   <div class="opts" data-opts>
                     {#each q.opts as o (o)}
                       <button
-                        class="opt optear" class:right={quiz.pick && o === q.key}
+                        class="opt optear" class:armed={armPick === o && !quiz.pick} class:right={quiz.pick && o === q.key}
                         class:wrong={quiz.pick === '✗' && o !== q.key && o === quiz.lastPick}
                         aria-label={o}
                         data-qkey={probeOn ? o : null}
-                        onclick={() => { quiz.lastPick = o; playAudio(letterAudio(o), { hint: tRaw('notReady') }); answer(o) }}
+                        onclick={() => { quiz.lastPick = o; armQuiz(o, letterAudio(o)) }}
                       ><Icon name="play" size={34} /></button>
                     {/each}
                   </div>
@@ -411,10 +423,10 @@
                   <div class="opts" data-opts>
                     {#each TONE_MARKS as m, i (m.t)}
                       <button
-                        class="opt topt" class:right={quiz.pick && m.t === q.key}
+                        class="opt topt" class:armed={armPick === m.t && !quiz.pick} class:right={quiz.pick && m.t === q.key}
                         class:wrong={quiz.pick === '✗' && m.t !== q.key && m.t === quiz.lastPickN}
                         data-qkey={probeOn ? String(m.t) : null}
-                        onclick={() => { quiz.lastPickN = m.t; answer(m.t) }}
+                        onclick={() => { quiz.lastPickN = m.t; armQuiz(m.t, q.tones ? (q.tones[m.t - 1] as any).file : q.file) }}
                       >
                         <svg viewBox="0 0 56 30"><path d={m.d} stroke={TONE_COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
                         <span><Speak text={tRaw('toneName' + m.t)} /></span>
@@ -579,6 +591,7 @@
     font-size:var(--fs-glyph-sm); font-weight: 900; color: var(--animal-text); font-family: inherit; cursor: pointer; }
   .opt.right { border-color: var(--animal-primary); background: var(--animal-primary-bg); color: var(--animal-primary-active); }
   .opt.wrong { border-color: #e76f51; background: #fdeee7; animation: shake .3s; }
+  .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }
   .optear { color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; }
   .topt { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); }

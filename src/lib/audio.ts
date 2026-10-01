@@ -185,6 +185,27 @@ export function kjAudio(k: string): string {
   return 'lessons/kj_' + letterAudio(k)
 }
 
+/* v4.2c 两段式试听（Bug#37）：带调拼音显示串 → hyp 音节键（"bà"→ba4）。
+   ü 系沿用 ASCII 安全名（ü→v）。hyp 带调音节为部分覆盖——调用方必须 HYP[key] 在才播，
+   缺失时首点退化为仅高亮（立法明许，仍不计分） */
+const TONE_VOWELS = 'āáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ'
+const PY_INITIALS = ['zh', 'ch', 'sh', 'b', 'p', 'm', 'f', 'd', 't', 'n', 'l', 'g', 'k', 'h', 'j', 'q', 'x', 'r', 'z', 'c', 's', 'y', 'w']
+
+export function pyAudio(py: string): string {
+  let ini = ''
+  for (const c of PY_INITIALS) {
+    if (py.startsWith(c)) { ini = c; break }
+  }
+  let base = ''
+  let tone = ''
+  for (const ch of py.slice(ini.length)) {
+    const i = TONE_VOWELS.indexOf(ch)
+    if (i >= 0) { tone = String((i % 4) + 1); base += 'aeiouü'[Math.floor(i / 4)] }
+    else base += ch
+  }
+  return ini + base.replace(/ü/g, 'v') + tone
+}
+
 /* 验收钩子：脚本预置 window.__AUDIO_LOG=[] 时记录每次播音事件（play() 发起时刻），
    供时序断言（声音先于元素）。正常使用零开销（未预置=跳过） */
 function markAudio(name: string) {

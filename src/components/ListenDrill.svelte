@@ -23,6 +23,7 @@
   let a = $state('')
   let opts = $state<[string, string]>(['', ''])
   let ansIdx = $state(0)
+  let armed = $state(-1)   /* v4.2c Bug#37 两段式试听 */
   let reveal = $state<{ correct: number; wrong: number[] } | null>(null)
   let tid: ReturnType<typeof setTimeout> | null = null
 
@@ -40,6 +41,7 @@
       const b = gameDistractor(a, pool)
       opts = Math.random() < 0.5 ? [a, b] : [b, a]
       ansIdx = opts.indexOf(a)
+      armed = -1
       reveal = null
       stopAll()
       playAudio(letterAudio(a))   /* 出题自动读音（失败/静音静默） */
@@ -50,8 +52,17 @@
     if (a) playAudio(letterAudio(a))
   }
 
+  /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮（不计分不推进）→ 再点同项=作答 */
+  function arm(idx: number) {
+    if (armed === idx) { answer(idx); return }
+    if (reveal || !a) return
+    armed = idx
+    playAudio(letterAudio(opts[idx]))
+  }
+
   function answer(idx: number) {
     if (reveal || !a) return
+    armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }
     recordLetter(a, good)
@@ -101,8 +112,8 @@
     <button class="bigsound" data-listen onclick={replay}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
     <div class="optrow" data-opts>
       {#each opts as k, idx}
-        <button class="opt" class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
-          data-opt={k} onclick={() => answer(idx)}>
+        <button class="opt" class:armed={armed === idx} class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
+          data-opt={k} data-idx={idx} onclick={() => arm(idx)}>
           <div class="og">{k}</div>
         </button>
       {/each}
@@ -144,6 +155,7 @@
     background: var(--animal-bg); cursor: pointer; font-family: inherit; display: flex; align-items: center; justify-content: center;
     box-shadow: var(--animal-shadow-sm); padding: var(--sp-2); }
   .opt:active { transform: translateY(2px); box-shadow: none; }
+  .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .opt .og { font-size: var(--fs-hero); font-weight: 900; color: var(--animal-text); line-height: 1.2; }
   .opt.correct { border-color: var(--animal-success); background: #e8f5e8; }
   .opt.wrong { border-color: var(--animal-error); background: #fdeeee; animation: dshake .4s; }

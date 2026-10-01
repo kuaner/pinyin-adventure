@@ -2,7 +2,7 @@
   /* v4.0 每日挑战：10 题智能混编（错误账本加权抽样：弱项字母+镜像对+久未练+识字表看字选拼音），
      连击计分（复用全局连击：x2/x3 倍率+火焰+音阶升调），每日一换（按日期种子）。
      结算=得分+星星+今日最佳（破纪录礼花）；星星入小鸡成长体系 */
-  import { DC, dailyAnswer, quitDaily, startDaily, comboMult } from '../stores/game.svelte'
+  import { DC, dailyArm, quitDaily, startDaily, comboMult } from '../stores/game.svelte'
   import { GD } from '../stores/game.svelte'
   import { playAudio, letterAudio, kjAudio } from '../lib/audio'
   import Speak from './Speak.svelte'
@@ -57,8 +57,8 @@
           </div>
           <div class="opts two" data-opts>
             {#each q.opts as k, idx (idx)}
-              <button class="opt" class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
-                data-letter={k} onclick={() => dailyAnswer(idx)}>
+              <button class="opt" class:armed={DC.armed === idx} class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
+                data-letter={k} onclick={() => dailyArm(idx)}>
                 <div class="og">{k}</div>
               </button>
             {/each}
@@ -75,8 +75,8 @@
           </div>
           <div class="opts two" data-opts>
             {#each q.opts as k, idx (idx)}
-              <button class="opt" class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
-                data-letter={k} onclick={() => dailyAnswer(idx)}>
+              <button class="opt" class:armed={DC.armed === idx} class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
+                data-letter={k} onclick={() => dailyArm(idx)}>
                 <div class="og">{k}</div>
               </button>
             {/each}
@@ -85,8 +85,8 @@
           <div class="glyphbox"><div class="zibig">{q.z.h}</div></div>
           <div class="opts four" data-opts>
             {#each q.opts as p, idx (idx)}
-              <button class="opt" class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
-                data-letter={p} onclick={() => dailyAnswer(idx)}>
+              <button class="opt" class:armed={DC.armed === idx} class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
+                data-letter={p} onclick={() => dailyArm(idx)}>
                 <div class="og small popt">{p}</div>
               </button>
             {/each}
@@ -158,6 +158,7 @@
   .opts.two { grid-template-rows: repeat(2, minmax(96px, 136px)); }
   .opts.four { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(2, minmax(88px, 124px)); }
   .opts .opt { min-height: 0; height: 100%; max-height: 136px; }
+  .opts .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .popt { font-size: var(--fs-glyph-sm); }
   .rstats { display: flex; justify-content: center; gap: var(--sp-5); margin-top: var(--sp-2); flex-wrap: wrap; }
   .rstat .rv { font-size: var(--fs-xl); font-weight: 900; color: var(--animal-text); line-height: 1.5; min-height: 42px;

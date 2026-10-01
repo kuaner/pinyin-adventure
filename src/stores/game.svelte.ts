@@ -4,7 +4,8 @@
    每日挑战与镜像对决出题都从它加权抽样。星星产入小鸡成长体系（每游戏每日上限 10 星）。 */
 import { show } from './ui.svelte'
 import { todayStr, markDay } from './progress.svelte'
-import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
+import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList, pyAudio } from '../lib/audio'
+import { HYP } from '../data'
 import { G, saveG, checkBadges, celebrateGame } from './growth.svelte'
 import { t } from '../text/strings'
 import { buildDailyQs, learnedLetters, learnedBlends, learnedToneRows, type DailyQ } from '../lib/gameEngine'
@@ -321,6 +322,7 @@ export const DC = $state({
   combo: 0,
   maxCombo: 0,
   ok: 0,
+  armed: -1,   /* v4.2c Bug#37 两段式试听：首点=播音高亮，再点同项=作答 */
   reveal: null as null | { correct: number; wrong: number[] },
   done: false,
   record: false,
@@ -336,6 +338,7 @@ export function startDaily() {
   DC.combo = 0
   DC.maxCombo = 0
   DC.ok = 0
+  DC.armed = -1
   DC.reveal = null
   DC.done = false
   DC.record = false
@@ -360,6 +363,7 @@ export function dailyAnswer(idx: number) {
   if (DC.done || DC.reveal) return
   const q = DC.qs[DC.i]
   if (!q) return
+  DC.armed = -1
   const ok = idx === q.ans
   DC.reveal = { correct: q.ans, wrong: ok ? [] : [idx] }
   if (q.type === 'zi') {
@@ -386,8 +390,24 @@ export function dailyNext() {
   if (DC.fbt) { clearTimeout(DC.fbt); DC.fbt = null }
   if (DC.done) return
   DC.reveal = null
+  DC.armed = -1
   DC.i++
   if (DC.i >= DC.qs.length) { endDaily() } else { dailySpeak() }
+}
+
+/* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮（不计分不推进）→ 再点同项=作答；
+   点别的选项=切试听。字母选项=呼读音；zi 拼音选项=hyp 音节（缺失仅高亮，立法明许） */
+export function dailyArm(idx: number) {
+  if (DC.armed === idx) { dailyAnswer(idx); return }
+  const q = DC.qs[DC.i]
+  if (!q || DC.reveal) return
+  DC.armed = idx
+  if (q.type === 'zi') {
+    const f = pyAudio(q.opts[idx])
+    if (HYP[f]) playAudio(f)
+  } else {
+    playAudio(letterAudio(q.opts[idx]))
+  }
 }
 
 function endDaily() {

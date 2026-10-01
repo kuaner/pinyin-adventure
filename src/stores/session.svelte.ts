@@ -4,7 +4,8 @@ import { show } from './ui.svelte'
 import { S, save, addHist } from './progress.svelte'
 import { markResult, getW } from './weights.svelte'
 import { recordLetter } from './game.svelte'
-import { say, sndOk, sndNo, sndStar } from '../lib/audio'
+import { say, sndOk, sndNo, sndStar, playAudio, pyAudio } from '../lib/audio'
+import { HYP } from '../data'
 import { buildQuestions, buildDetQs, ziQs, partnerOf, practiceScope } from '../lib/quizEngine'
 import { LETTERS, PAIRS, PMAP, ZIBY, LEVELS, GRPNAME, PH, ANCHORS } from '../data'
 import { T } from '../lib/ruby'
@@ -86,17 +87,27 @@ export function startPairGroup(grp: string) {
   newSession({ name: T(GRPNAME[grp]) + T(t('specialDrill')), level: L, qs: buildQuestions(L) })
 }
 
-/* ---------- 答题 ---------- */
-export function armLook(idx: number) {
+/* ---------- 答题（v4.2c Bug#37：两段式试听回归——v1 正本行为） ----------
+   首点=播该选项读音+高亮"试听"态（不计对错不推进）→ 再点同项=作答；
+   点别的选项=切试听那项。无音频（hyp 缺失）首点退化为仅高亮，仍不计分 */
+export function armOpt(idx: number) {
   if (QZ.armed === idx) { answer(idx); return }
   QZ.armed = idx
   const q = QZ.q as any
-  say(q.opts[idx])
+  if (!q) return
+  if (q.type === 'zi' || q.type === 'zword') {
+    /* 拼音全拼选项 → hyp 音节键（部分覆盖：缺失仅高亮不播） */
+    const f = pyAudio(q.opts[idx])
+    if (HYP[f]) playAudio(f)
+  } else {
+    say(q.opts[idx])
+  }
 }
 
 export function answer(idx: number) {
   const q = QZ.q as any
   if (!q) return
+  QZ.armed = -1   /* 试听态交还给 reveal 态（correct/wrong 高亮） */
   const ok = idx === q.ans
   const wrong: number[] = []
   if (!ok) {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  /* 看字选音：锚点区 + 大字模 + 宽选项（先点喇叭听 → 再点一次确认） */
-  import { QZ, answer, armLook } from '../../stores/session.svelte'
+  /* 看字选音：锚点区 + 大字模 + 宽选项（两段式：首点=试听该选项读音 → 再点=作答，v1 正本行为） */
+  import { QZ, armOpt } from '../../stores/session.svelte'
   import { PH } from '../../data'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
@@ -25,7 +25,7 @@
       class:armed={armed === idx}
       class:correct={reveal && idx === reveal.correct}
       class:wrong={reveal && reveal.wrong.includes(idx)}
-      onclick={() => armLook(idx)}
+      onclick={() => armOpt(idx)}
     >
       <Icon name="headphones" size={34} />
       <span class="ob" class:confirm={armed === idx}>{#if armed === idx}<Speak k="confirmAgain" plain />{:else}{CIRC[idx]}{/if}</span>

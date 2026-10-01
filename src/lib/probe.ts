@@ -40,14 +40,10 @@ function probeRun() {
       setTimeout(() => {
         const q = QZ.q as any
         if (!q) { banner('PROBE-FAIL: 无题目'); return }
-        const opts = document.querySelectorAll('#optbox .opt')
-        banner('PROBE: 点击正确选项#' + (q.ans + 1) + '（题型 ' + q.type + '）')
-        if (q.type === 'look') {
-          ;(opts[q.ans] as HTMLElement).click()
-          setTimeout(() => { (document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click() }, 350)
-        } else {
-          ;(opts[q.ans] as HTMLElement).click()
-        }
+        banner('PROBE: 点击正确选项#' + (q.ans + 1) + '（题型 ' + q.type + '，两段式=点两次）')
+        /* v4.2c Bug#37：全题型两段式——首点=试听，再点=作答 */
+        ;(document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click()
+        setTimeout(() => { (document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click() }, 350)
         const fbOn = !!QZ.fb /* 与 v1 一致：点击后同步读反馈层状态 */
         setTimeout(() => {
           banner('PROBE-OK JS存活 ✓ 反馈层即时弹出=' + fbOn
@@ -75,19 +71,13 @@ function probeFull() {
     if (QZ.fb) { setTimeout(tick, 300); return }
     if (ui.view !== 'quiz') { setTimeout(tick, 300); return }
     const q = QZ.q as any
-    const opts = document.querySelectorAll('#optbox .opt')
     banner('PROBE-FULL: 第' + (QZ.i + 1) + '题 ' + q.type)
-    if (q.type === 'look') {
-      ;(opts[q.ans] as HTMLElement).click()
-      setTimeout(() => {
-        const os = document.querySelectorAll('#optbox .opt')
-        ;(os[q.ans] as HTMLElement)?.click()
-        setTimeout(tick, 700)
-      }, 350)
-    } else {
-      ;(opts[q.ans] as HTMLElement).click()
+    /* v4.2c Bug#37：全题型两段式——首点=试听，再点=作答 */
+    ;(document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click()
+    setTimeout(() => {
+      ;(document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click()
       setTimeout(tick, 700)
-    }
+    }, 350)
   }
 }
 
@@ -150,7 +140,9 @@ function probeZi() {
       setTimeout(() => {
         const q = QZ.q as any
         banner('PROBE-ZI: 首题 ' + q.type + ' 题面=' + (q.z.h || q.z.w) + ' 选项数=' + document.querySelectorAll('#optbox .opt').length)
+        /* v4.2c Bug#37：两段式——首点试听再点作答 */
         ;(document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click()
+        setTimeout(() => { (document.querySelectorAll('#optbox .opt')[q.ans] as HTMLElement)?.click() }, 350)
         setTimeout(() => {
           const rec = S.weights[q.key]
           banner('PROBE-ZI-OK ✓ 权重[' + q.key + ']=' + (rec ? rec.w : 'MISS')

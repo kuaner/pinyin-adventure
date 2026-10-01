@@ -24,6 +24,7 @@
   let a = $state<Blend | null>(null)
   let opts = $state<string[]>([])
   let ansIdx = $state(0)
+  let armed = $state(-1)   /* v4.2c Bug#37 两段式试听 */
   let reveal = $state<{ correct: number; wrong: number[] } | null>(null)
   let done = $state(false)
   let tid: ReturnType<typeof setTimeout> | null = null
@@ -62,6 +63,7 @@
       const all = shuffle([correct, ...ds])
       opts = all
       ansIdx = all.indexOf(correct)
+      armed = -1
       reveal = null
       if (qtype === 'l2s') {
         stopAll()
@@ -74,8 +76,19 @@
     if (a && qtype === 'l2s') playAudio(a.file)
   }
 
+  /* v4.2c Bug#37 两段式试听：首点=播该选项拼出的音节（hyp，缺失仅高亮）→ 再点同项=作答 */
+  function arm(idx: number) {
+    if (armed === idx) { answer(idx); return }
+    if (reveal || !a) return
+    armed = idx
+    const o = opts[idx]
+    const b = pool.find((x) => (qtype === 'l2s' ? split(x) === o : x.display === o))
+    if (b) playAudio(b.file)
+  }
+
   function answer(idx: number) {
     if (reveal || !a) return
+    armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }
     recordItem(a.syl, good)                       /* 条目账本：拼错的对子下次多出 */
@@ -138,8 +151,8 @@
     {/if}
     <div class="optgrid" data-opts>
       {#each opts as o, idx}
-        <button class="opt" class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
-          data-opt={o} data-idx={idx} onclick={() => answer(idx)}>
+        <button class="opt" class:armed={armed === idx} class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
+          data-opt={o} data-idx={idx} onclick={() => arm(idx)}>
           <span class="og">{o}</span>
         </button>
       {/each}
@@ -195,6 +208,7 @@
     background: var(--animal-bg); cursor: pointer; font-family: inherit; display: flex; align-items: center;
     justify-content: center; box-shadow: var(--animal-shadow-sm); padding: var(--sp-2); }
   .opt:active { transform: translateY(2px); box-shadow: none; }
+  .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .opt .og { font-size: 30px; font-weight: 900; color: var(--animal-text); line-height: 1.25; white-space: nowrap; }
   .opt.correct { border-color: var(--animal-success); background: #e8f5e8; }
   .opt.wrong { border-color: var(--animal-error); background: #fdeeee; animation: dshake .4s; }

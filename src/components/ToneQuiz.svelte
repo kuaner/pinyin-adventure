@@ -26,6 +26,7 @@
   let qtype = $state<QType>('l2t')
   let a = $state<TItem | null>(null)
   let ansIdx = $state(0)
+  let armed = $state(-1)   /* v4.2c Bug#37 两段式试听 */
   let reveal = $state<{ correct: number; wrong: number[] } | null>(null)
   let done = $state(false)
   let tid: ReturnType<typeof setTimeout> | null = null
@@ -38,6 +39,7 @@
       const it = pickWeighted(flat, (x) => itemWeight(x.file), Math.random)
       a = it
       ansIdx = it.t - 1                 /* 选项固定=四个调类本体（ˉ´ˇ`），答案位=调号-1 */
+      armed = -1
       reveal = null
       if (qtype === 'l2t') {
         stopAll()
@@ -50,8 +52,18 @@
     if (a && qtype === 'l2t') playAudio(a.file)
   }
 
+  /* v4.2c Bug#37 两段式试听：首点=播当前音节该调的读音（孩子对比听到的调）→ 再点同项=作答 */
+  function arm(idx: number) {
+    if (armed === idx) { answer(idx); return }
+    if (reveal || !a) return
+    const toneFile = a.row.tones.find((x) => x.t === idx + 1)
+    armed = idx
+    if (toneFile) playAudio(toneFile.file)
+  }
+
   function answer(idx: number) {
     if (reveal || !a) return
+    armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }
     recordItem(a.file, good)            /* 条目账本：听错的调下次多出 */
@@ -113,8 +125,8 @@
     {/if}
     <div class="topts" data-opts>
       {#each TONE_MARKS as m, idx}
-        <button class="topt" class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
-          data-toneopt={idx + 1} onclick={() => answer(idx)}>
+        <button class="topt" class:armed={armed === idx} class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
+          data-toneopt={idx + 1} onclick={() => arm(idx)}>
           <svg viewBox="0 0 56 30"><path d={m.d} stroke={TONE_COLORS[idx]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
           <span>{MARK_NAMES[idx]}</span>
         </button>
@@ -171,6 +183,7 @@
     background: var(--animal-bg); cursor: pointer; font-family: inherit; display: flex; align-items: center;
     justify-content: center; gap: var(--sp-2); box-shadow: var(--animal-shadow-sm); }
   .topt:active { transform: translateY(2px); box-shadow: none; }
+  .topt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .topt svg { width: 46px; height: 26px; flex: none; }
   .topt span { font-size: var(--fs-md); font-weight: 800; color: var(--animal-text); white-space: nowrap; }
   .topt span :global(rt) { font-size: var(--fs-rt); }
