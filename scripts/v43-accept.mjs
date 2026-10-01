@@ -250,6 +250,9 @@ const readHud = (page) => page.evaluate(() => ({
     const ans = await page.evaluate(() => +document.querySelector('#v-bquiz [data-q]').getAttribute('data-ans'))
     const wrongIdx = (ans + 1) % 4
     const key = await page.evaluate(() => document.querySelector('#v-bquiz [data-q]').getAttribute('data-target'))
+    /* v4.2c Bug#37 两段式：首点=试听，再点同项=作答 */
+    await page.tap(`#v-bquiz [data-opt][data-idx="${wrongIdx}"]`)
+    await page.waitForTimeout(350)
     await page.tap(`#v-bquiz [data-opt][data-idx="${wrongIdx}"]`)
     await page.waitForTimeout(1400)
     return key
@@ -276,6 +279,8 @@ const readHud = (page) => page.evaluate(() => ({
   for (let i = 0; i < 5; i++) {
     await page.waitForFunction(() => document.querySelector('#v-bquiz [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
     const ans = await page.evaluate(() => document.querySelector('#v-bquiz [data-q]').getAttribute('data-ans'))
+    await page.tap(`#v-bquiz [data-opt][data-idx="${ans}"]`)
+    await page.waitForTimeout(350)
     await page.tap(`#v-bquiz [data-opt][data-idx="${ans}"]`)
     await page.waitForTimeout(750)
   }
@@ -308,9 +313,12 @@ const readHud = (page) => page.evaluate(() => ({
 
   const wrongOnce = async () => {
     await page.waitForFunction(() => document.querySelector('#v-tquiz [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
-    const ans = await page.evaluate(() => document.querySelector('#v-tquiz [data-q]').getAttribute('data-ans'))
+    const ans = await page.evaluate(() => +document.querySelector('#v-tquiz [data-q]').getAttribute('data-ans'))
     const wrongIdx = (ans + 1) % 4
     const key = await page.evaluate(() => document.querySelector('#v-tquiz [data-q]').getAttribute('data-target'))
+    /* v4.2c Bug#37 两段式：首点=试听，再点同项=作答 */
+    await page.tap(`#v-tquiz [data-toneopt="${wrongIdx + 1}"]`)
+    await page.waitForTimeout(350)
     await page.tap(`#v-tquiz [data-toneopt="${wrongIdx + 1}"]`)
     await page.waitForTimeout(1400)
     return key
@@ -336,6 +344,8 @@ const readHud = (page) => page.evaluate(() => ({
   for (let i = 0; i < 5; i++) {
     await page.waitForFunction(() => document.querySelector('#v-tquiz [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
     const ans = await page.evaluate(() => document.querySelector('#v-tquiz [data-q]').getAttribute('data-ans'))
+    await page.tap(`#v-tquiz [data-toneopt="${+ans + 1}"]`)
+    await page.waitForTimeout(350)
     await page.tap(`#v-tquiz [data-toneopt="${+ans + 1}"]`)
     await page.waitForTimeout(750)
   }

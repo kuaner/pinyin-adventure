@@ -189,9 +189,11 @@ async function enterDrill(page) {
   for (let i = 0; i < 3; i++) {
     await page.waitForFunction(() => document.querySelector('#v-ldrill [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
     const t = await page.evaluate(() => document.querySelector('#v-ldrill [data-q]').getAttribute('data-target'))
+    /* v4.2c Bug#37 两段式：首点=试听，再点同项=作答 */
     await page.evaluate((t) => {
       const opt = Array.from(document.querySelectorAll('#v-ldrill [data-opt]')).find((e) => e.getAttribute('data-opt') === t)
       opt?.click()
+      setTimeout(() => opt?.click(), 350)
     }, t)
     await page.waitForTimeout(1500)
   }
@@ -215,7 +217,9 @@ async function enterDrill(page) {
     const q = document.querySelector('#v-ldrill [data-q]')
     const t = q.getAttribute('data-target')
     const opt = Array.from(document.querySelectorAll('#v-ldrill [data-opt]')).find((e) => e.getAttribute('data-opt') === t)
+    /* v4.2c Bug#37 两段式：首点=试听，再点同项=作答 */
     opt?.click()
+    setTimeout(() => opt?.click(), 350)
   })
   await page.waitForTimeout(1500)
   const t1 = await page.evaluate(() => document.querySelector('#v-ldrill [data-q]').getAttribute('data-target'))
@@ -251,10 +255,9 @@ async function enterDrill(page) {
     await page.evaluate(() => {
       const q = window.__PJ.Q().q
       const el = document.querySelectorAll('#optbox .opt')[q.ans]
+      /* v4.2c Bug#37：全题型两段式——首点=试听，再点同项=作答 */
       el?.click()
-      if (q.type === 'look') setTimeout(() => {   /* look 题=两击确认（arm→confirm） */
-        document.querySelectorAll('#optbox .opt')[q.ans]?.click()
-      }, 400)
+      setTimeout(() => { document.querySelectorAll('#optbox .opt')[q.ans]?.click() }, 400)
     })
     await page.waitForTimeout(1300)
   }
@@ -327,7 +330,9 @@ async function enterDrill(page) {
       const zq = window.__PJ.ziQ()
       const py = zq.opts[zq.ans]
       const opt = Array.from(document.querySelectorAll('#v-zihall [data-opt]')).find((e) => e.getAttribute('data-opt') === py)
+      /* v4.2c Bug#37 两段式：首点=试听，再点同项=作答 */
       opt?.click()
+      setTimeout(() => opt?.click(), 350)
     })
     await page.waitForTimeout(1300)
   }
