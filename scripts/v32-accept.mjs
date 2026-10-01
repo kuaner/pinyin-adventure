@@ -50,6 +50,14 @@ const mk = async (seed) => {
       const hit = opts.find((e) => e.getAttribute('data-qkey') === ans) || opts[0]
       hit.click()
     })
+    /* v4.2c 两段式适配（验收腿，只改脚本）：首点=试听高亮不判分，再点同项才作答 */
+    await page.waitForTimeout(400)
+    await page.evaluate(() => {
+      const ans = document.querySelector('#v-lesson .qbody').getAttribute('data-qkey')
+      const opts = Array.from(document.querySelectorAll('#v-lesson [data-opts] .opt'))
+      const hit = opts.find((e) => e.getAttribute('data-qkey') === ans) || opts[0]
+      hit.click()
+    })
     await page.waitForTimeout(2300)
   }
   await page.waitForSelector('#celebrate[data-ce="quiz"]', { timeout: 6000 })

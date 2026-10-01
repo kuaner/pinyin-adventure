@@ -38,6 +38,21 @@ const ck = (page, sel) => page.evaluate((s) => {
 }, sel)
 /* 连击计分：c1,c2=x1；c3-c5=x2；c6+=x3 → n 连对的累计分 */
 const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (c >= 6 ? 3 : c >= 3 ? 2 : 1); return s }
+/* v4.2c 适配（验收腿，只改脚本）：波次制下目标元素飘走=miss 会自动换目标（v4.1 声音先行立法）——
+   等待期间跟踪"当前目标"：目标切走即跟随新目标，绝不死等旧字母（旧写法读一次 target 死等该字母，与换目标机制竞态） */
+const waitCurTarget = (page, qsel, timeout) =>
+  page.waitForFunction((qs) => {
+    const t = window.__PJ.GS().target
+    return document.querySelector(qs.replaceAll('{t}', t)) ? t : false
+  }, qsel, { timeout }).then((h) => h.jsonValue()).catch(() => null)
+/* 派发前复核目标未变（防陈旧派发误打干扰项）；返回是否真的派发 */
+const tapIfTarget = (page, qsel, letter) => page.evaluate(({ qs, k }) => {
+  if (window.__PJ.GS().target !== k) return false
+  const el = document.querySelector(qs.replaceAll('{t}', k))
+  if (!el) return false
+  el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
+  return true
+}, { qs: qsel, k: letter })
 
 /* ---------- ① hub：结构断言 ---------- */
 {
@@ -81,27 +96,21 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
   await page.waitForSelector('#gstage', { timeout: 8000 })
   await pd(page, '[data-listen]')
   await page.waitForTimeout(300)
-  /* 等目标球出现，点爆它 ×3（真实 pointerdown 序列） */
-  for (let i = 0; i < 3; i++) {
-    const t = await page.evaluate(() => window.__PJ.GS().target)
-    await page.waitForSelector(`#gstage .balloon[data-letter="${t}"]`, { timeout: 6000 })
-    await page.evaluate((letter) => {
-      const hit = Array.from(document.querySelectorAll('#gstage .balloon')).find((e) => e.getAttribute('data-letter') === letter)
-      hit?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-    }, t)
+  /* 等目标球出现，点爆它 ×3（真实 pointerdown 序列；v4.2c 适配=跟踪当前目标） */
+  let popped = 0
+  for (let i = 0; i < 10 && popped < 3; i++) {
+    const t = await waitCurTarget(page, '#gstage .balloon[data-letter="{t}"]', 8000)
+    if (t && await tapIfTarget(page, '#gstage .balloon[data-letter="{t}"]', t)) popped++
     await page.waitForTimeout(900)
   }
   const s1 = await page.evaluate(() => ({ score: window.__PJ.GS().score, combo: window.__PJ.GS().combo }))
   ok(s1.score === streakScore(3) && s1.score === 40, '气球：连点 3 球 得分=40（c3 起 x2）', 'score=' + s1.score)
   ok(s1.combo === 3, '气球：连击=3')
   /* 连击倍率：再点 3 球到连击 6 → x3 倍率，得分跳变 */
-  for (let i = 0; i < 3; i++) {
-    const t = await page.evaluate(() => window.__PJ.GS().target)
-    await page.waitForSelector(`#gstage .balloon[data-letter="${t}"]`, { timeout: 6000 })
-    await page.evaluate((letter) => {
-      const hit = Array.from(document.querySelectorAll('#gstage .balloon')).find((e) => e.getAttribute('data-letter') === letter)
-      hit?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-    }, t)
+  popped = 0
+  for (let i = 0; i < 10 && popped < 3; i++) {
+    const t = await waitCurTarget(page, '#gstage .balloon[data-letter="{t}"]', 8000)
+    if (t && await tapIfTarget(page, '#gstage .balloon[data-letter="{t}"]', t)) popped++
     await page.waitForTimeout(900)
   }
   const s2 = await page.evaluate(() => ({ score: window.__PJ.GS().score, combo: window.__PJ.GS().combo, mult: document.getElementById('gmult')?.getAttribute('data-mult') }))
@@ -152,14 +161,14 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
   let hitOk = 0, trapSeen = false
   let lastScore = 0
   for (let i = 0; i < 12 && !(hitOk >= 3 && trapSeen); i++) {
-    const t = await page.evaluate(() => window.__PJ.GS().target)
-    /* 等地鼠探头 */
-    const appeared = await page.waitForSelector(`#gstage .mole[data-letter="${t}"].up`, { timeout: 5000 }).then(() => true).catch(() => false)
-    if (!appeared) continue
+    /* v4.2c 适配：等待时跟踪当前目标（地鼠缩回=miss 会换目标） */
+    const t = await waitCurTarget(page, '#gstage .mole[data-letter="{t}"].up', 5000)
+    if (!t) continue
     const round = await page.evaluate(() => Array.from(document.querySelectorAll('#gstage .mole.up')).map((e) => e.getAttribute('data-letter')))
     const mirror = { b: 'd', d: 'b', p: 'q', q: 'p' }[t]
     if (mirror && round.includes(mirror)) trapSeen = true
     const hit = await page.evaluate((letter) => {
+      if (window.__PJ.GS().target !== letter) return false
       const m = Array.from(document.querySelectorAll('#gstage .mole.up')).find((e) => e.getAttribute('data-letter') === letter)
       if (!m) return false
       m.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
@@ -238,15 +247,10 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
   await pd(page, '[data-listen]')
   await page.waitForTimeout(300)
   let caught = 0
-  for (let i = 0; i < 4; i++) {
-    const t = await page.evaluate(() => window.__PJ.GS().target)
-    const appeared = await page.waitForSelector(`#gstage .fishwrap[data-letter="${t}"]`, { timeout: 6000 }).then(() => true).catch(() => false)
-    if (!appeared) continue
-    await page.evaluate((letter) => {
-      const f = Array.from(document.querySelectorAll('#gstage .fishwrap')).find((e) => e.getAttribute('data-letter') === letter)
-      f?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-    }, t)
-    caught++
+  for (let i = 0; i < 8 && caught < 4; i++) {
+    /* v4.2c 适配：等待时跟踪当前目标（鱼游走=miss 会换目标）；派发前复核防陈旧派发 */
+    const t = await waitCurTarget(page, '#gstage .fishwrap[data-letter="{t}"]', 6000)
+    if (t && await tapIfTarget(page, '#gstage .fishwrap[data-letter="{t}"]', t)) caught++
     await page.waitForTimeout(900)
   }
   const fs2 = await page.evaluate(() => ({ score: window.__PJ.GS().score, combo: window.__PJ.GS().combo }))
@@ -260,14 +264,11 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
   const { page, errs } = await mk()
   await page.goto(`${BASE}/?open=game&g=balloon&st=play`, { waitUntil: 'networkidle' })
   await page.waitForSelector('#gstage', { timeout: 8000 })
-  /* 先攒分（5 连=80 分 → 1 星档） */
-  for (let i = 0; i < 5; i++) {
-    const t = await page.evaluate(() => window.__PJ.GS().target)
-    await page.waitForSelector(`#gstage .balloon[data-letter="${t}"]`, { timeout: 6000 })
-    await page.evaluate((letter) => {
-      const hit = Array.from(document.querySelectorAll('#gstage .balloon')).find((e) => e.getAttribute('data-letter') === letter)
-      hit?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
-    }, t)
+  /* 先攒分（5 连=80 分 → 1 星档；v4.2c 适配=跟踪当前目标） */
+  let popped6 = 0
+  for (let i = 0; i < 12 && popped6 < 5; i++) {
+    const t = await waitCurTarget(page, '#gstage .balloon[data-letter="{t}"]', 8000)
+    if (t && await tapIfTarget(page, '#gstage .balloon[data-letter="{t}"]', t)) popped6++
     await page.waitForTimeout(900)
   }
   const g0 = await page.evaluate(() => JSON.parse(localStorage.getItem('pinyin_growth_v1')).stars)
@@ -330,9 +331,15 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
       const ans = wrong ? (q.ans + 1) % q.opts.length : q.ans
       const opts = Array.from(document.querySelectorAll('#dqcard [data-opts] .opt'))
       opts[ans]?.click()
-      return { wrong, i: dc.i }
+      return { wrong, i: dc.i, ans }
     }, answered)
     if (!st) { await page.waitForTimeout(300); continue }
+    /* v4.2c 两段式适配（验收腿，只改脚本）：首点=试听高亮不判分，再点同项才作答 */
+    await page.waitForTimeout(400)
+    await page.evaluate((ans) => {
+      const opts = Array.from(document.querySelectorAll('#dqcard [data-opts] .opt'))
+      opts[ans]?.click()
+    }, st.ans)
     answered++
     await page.waitForTimeout(st.wrong ? 1700 : 1000)
   }

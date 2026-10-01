@@ -137,16 +137,18 @@ const waitVisible = (page, sel, timeout = 6000) =>
   ok(grew, '换目标：新目标音自动播（无操作也播音）')
   const tgt2 = await page.getAttribute('[data-prompt]', 'data-target')
 
-  /* 🔊=重听：点后当前目标名的音频事件再发（v4.2=重听口诀；回合周期间隔 ≥1.3s，400ms 窗内事件=本次点击触发） */
+  /* 🔊=重听：点后当前目标名的音频事件再发（v4.2=重听口诀）。
+     v4.2c 适配（验收腿，只改脚本）：配对"tap 时刻目标"——400ms 窗内若回合到期 miss 换目标，
+     新目标音会接在重听后面，拿窗末目标配对第一条音频会错位 */
   const beforeCnt = await page.evaluate(() => window.__AUDIO_LOG.length)
+  const tgtAtTap = await page.evaluate(() => document.querySelector('[data-prompt]').getAttribute('data-target'))
   await page.tap('[data-listen]')
   await page.waitForTimeout(400)
   const now2 = await page.evaluate(() => ({
     n: window.__AUDIO_LOG.length,
     names: window.__AUDIO_LOG.map((e) => e.name),
-    tgt: document.querySelector('[data-prompt]').getAttribute('data-target'),
   }))
-  ok(now2.n > beforeCnt && now2.names[beforeCnt] === 'lessons/kj_' + letterAudioName(now2.tgt), '🔊 重听可用：点击后音频再发（v4.2=口诀）', `now=${now2.names.join(',')}`)
+  ok(now2.n > beforeCnt && now2.names[beforeCnt] === 'lessons/kj_' + letterAudioName(tgtAtTap), '🔊 重听可用：点击后音频再发（v4.2=口诀）', `now=${now2.names.slice(beforeCnt).join(',')} tgtAtTap=${tgtAtTap}`)
   ok(errs.length === 0, '零 pageerror', errs.join('|') || 'clean')
   await page.close()
 }
@@ -215,10 +217,14 @@ const waitVisible = (page, sel, timeout = 6000) =>
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
   const qel = await page.waitForSelector('[data-q]', { timeout: 5000 })
   const target = await qel.getAttribute('data-target')
+  /* v4.2 起对决题面两型（验收腿适配，只改脚本）：字母题播呼读/口诀题播 kj（gameEngine duelQ 35% 掷币）——
+     断言接受"当前题型对应音频"，两型都验"出题即读音" */
   const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, letterAudioName(target))
+  const akj = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, 'lessons/kj_' + letterAudioName(target))
+  const qaudio = a || akj
   const el = await page.evaluate(() => window.__DOM_LOG.filter((e) => e.kind === 'qwrap')[0] || null)
-  ok(!!a, '出题即自动读音', `target=${target}`)
-  ok(!!a && !!el && a.t <= el.t + 30, '时序：读音与题面同步出现（题面出现即读）', `audio=${Math.round(a.t)} q=${el ? Math.round(el.t) : '-'}`)
+  ok(!!qaudio, '出题即自动读音', `target=${target} audio=${qaudio ? qaudio.name : 'none'}`)
+  ok(!!qaudio && !!el && qaudio.t <= el.t + 30, '时序：读音与题面同步出现（题面出现即读）', `audio=${qaudio ? Math.round(qaudio.t) : '-'} q=${el ? Math.round(el.t) : '-'}`)
   /* 进行中截图（题面+选项+目标可见） */
   await page.screenshot({ path: `${OUT}/shot-duel.png` })
 
@@ -257,6 +263,20 @@ const waitVisible = (page, sel, timeout = 6000) =>
   await page.waitForSelector('#v-island', { timeout: 8000 })
   await page.tap('#dailycard')
   await page.waitForSelector('#v-daily', { timeout: 5000 })
+  /* 脚本适配：每日挑战=日期种子（重掷同序），首题类型每日一抽——zi 看字题设计上不自动读音
+     （播了=报答案）。顺序作答推进到听音题成为当前题，再断言其自动读音+重听键（只改脚本） */
+  let qt = await page.getAttribute('#v-daily [data-qtype]', 'data-qtype').catch(() => null)
+  let tries = 0
+  while (qt === 'zi' && tries++ < 11) {
+    /* 故意答错推进：错题不加分不触发结算，反馈后照常换题 */
+    const w = await page.evaluate(() => {
+      const D = window.__PJ.DC()
+      return (D.qs[D.i].ans + 1) % D.qs[D.i].opts.length
+    })
+    await page.tap(`#v-daily [data-opts] .opt:nth-of-type(${w + 1})`)
+    await page.waitForTimeout(1900)   /* 错反馈 1500ms + 换题 */
+    qt = await page.getAttribute('#v-daily [data-qtype]', 'data-qtype').catch(() => null)
+  }
   const fired = await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 }).then(() => true).catch(() => false)
   ok(fired, '每日挑战出题自动读音（游戏/挑战场景推翻零自动播放）')
   const qtypes = await page.evaluate(() => Array.from(document.querySelectorAll('#dqcard, #v-daily [data-qtype]')).map((e) => e.getAttribute('data-qtype')))

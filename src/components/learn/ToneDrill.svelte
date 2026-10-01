@@ -20,6 +20,7 @@
   let qRight = $state(0)
   let qDone = $state(false)
   let lastPickTone = $state(0)
+  let qArm = $state(0)              /* v4.2c Bug#37 两段式试听：0=无，1..4=试听中的声调 */
   let timer: ReturnType<typeof setTimeout> | null = null
 
   /* 四声符号几何走共享模块（lib/toneMarks，与课内小测听调题同一套图形） */
@@ -43,16 +44,24 @@
   }
 
   function startQuiz() {
-    quizOn = true; qIdx = 0; qRight = 0; qDone = false; qPick = 0
+    quizOn = true; qIdx = 0; qRight = 0; qDone = false; qPick = 0; qArm = 0
     nextQ()
   }
   function nextQ() {
-    qPick = 0; lastPickTone = 0
+    qPick = 0; qArm = 0; lastPickTone = 0
     qTone = 1 + Math.floor(Math.random() * 4)
     /* v2.6 零自动播放：出题不自动播音，孩子点 🔊 replay 听题 */
   }
+  /* v4.2c Bug#37 两段式试听（与课内小测听调题同一模式）：首点=播当前音节该调读音（hyp 库）
+     +试听高亮（不计对错不推进）→ 再点同项=作答；点别项=切试听那调 */
   function pick(t: number) {
-    if (qPick) return
+    if (qPick) return   /* 已作答（reveal 态）不再试听 */
+    if (qArm === t) { answerTone(t); return }
+    qArm = t
+    playAudio(row.tones[t - 1].file, { hint: tRaw('notReady') })
+  }
+  function answerTone(t: number) {
+    qArm = 0   /* 试听态交还给 reveal 态（right/wrong 高亮） */
     qPick = 1; lastPickTone = t
     if (t === qTone) { qRight++; sndOk() } else { sndNo() /* v2.6 零自动播放：答错只留嘟声，重听走 replay 键 */ }
     setTimeout(() => {
@@ -92,7 +101,7 @@
     </button>
     <div class="topts">
       {#each MARKS as m, i (m.t)}
-        <button class="topt" class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
+        <button class="topt" class:armed={qArm === i + 1 && !qPick} class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
           <svg viewBox="0 0 56 30"><path d={m.d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
           <span><Speak text={m.name} /></span>
         </button>
@@ -143,6 +152,7 @@
     display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-family: inherit; }
   .topt svg { width: 52px; height: 28px; }
   .topt span { font-size:var(--fs-lg); font-weight: 800; color: #6f6353; }
+  .topt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .topt.right { border-color: #2A9D8F; background: #e6f7f2; }
   .topt.wrong { border-color: #E76F51; background: #fdeee7; animation: shake .3s; }
   @keyframes shake { 25% { transform: translateX(-4px) } 75% { transform: translateX(4px) } }

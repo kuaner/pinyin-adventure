@@ -413,16 +413,17 @@ async function enterDrill(page) {
     await page.waitForTimeout(800)
   }
   ok(cleared, '敲错：清连击（data-combo=0）')
-  /* 🔊=重听口诀 */
+  /* 🔊=重听口诀。v4.2c 适配（验收腿，只改脚本）：配对"tap 时刻目标"——400ms 窗内若回合到期
+     miss 换目标，新目标音会接在重听后面，拿窗末目标配对第一条音频会错位（实录 kj_t,kj_b） */
   const cnt0 = await page.evaluate(() => window.__AUDIO_LOG.length)
+  const tgtAtTap = await page.evaluate(() => document.querySelector('[data-prompt]').getAttribute('data-target'))
   await page.tap('[data-listen]')
   await page.waitForTimeout(400)
   const now2 = await page.evaluate(() => ({
     n: window.__AUDIO_LOG.length,
     names: window.__AUDIO_LOG.map((e) => e.name),
-    tgt: document.querySelector('[data-prompt]').getAttribute('data-target'),
   }))
-  ok(now2.n > cnt0 && now2.names[cnt0] === kjAudioName(now2.tgt), '🔊 重听=口诀音频再发', now2.names.slice(cnt0).join(','))
+  ok(now2.n > cnt0 && now2.names[cnt0] === kjAudioName(tgtAtTap), '🔊 重听=口诀音频再发', now2.names.slice(cnt0).join(',') + ` tgtAtTap=${tgtAtTap}`)
   ok(errs.length === 0, '口诀地鼠：零 pageerror', errs[0] || '')
   await page.context().close()
 }

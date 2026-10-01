@@ -98,7 +98,10 @@ async function curScope(page) {
   }
   await page.locator(`${sc} .tonedrill .trow .btn.green`).click()
   await page.waitForTimeout(400)
+  /* v4.2c 两段式适配（验收腿，只改脚本）：声调小练首点=试听高亮不判分，再点同项才作答——4 题×双击 */
   for (let i = 0; i < 4; i++) {
+    await page.locator(`${sc} .tonedrill .topt`).first().click()
+    await page.waitForTimeout(350)
     await page.locator(`${sc} .tonedrill .topt`).first().click()
     await page.waitForTimeout(2000)
   }
@@ -171,16 +174,21 @@ async function curScope(page) {
      快超时（3s）防选择器空等拖爆总时长 */
   for (let i = 0; i < 7; i++) {
     if (await page.$('.res')) break
+    let sel = null
     if (await page.$('.optear')) {
       const glyph = await page.$eval('[data-qglyph]', (el) => el.textContent.trim())
-      await page.click(`.opts .optear[data-qkey="${glyph}"]`, { timeout: 3000 }).catch(() => page.click('.opts .optear', { timeout: 3000 }))
+      sel = (await page.$(`.opts .optear[data-qkey="${glyph}"]`)) ? `.opts .optear[data-qkey="${glyph}"]` : '.opts .optear'
     } else if (await page.$('.opts .topt')) {
-      await page.click('.opts .topt', { timeout: 3000 })
+      sel = '.opts .topt'
     } else {
       await page.click('[data-qplay]', { timeout: 2000 }).catch(() => {})
       await page.waitForTimeout(250)
-      await page.click('.opts .opt:not(.topt):not(.optear)', { timeout: 3000 })
+      sel = '.opts .opt:not(.topt):not(.optear)'
     }
+    /* v4.2c 两段式适配（验收腿，只改脚本）：首点=试听高亮不判分，再点同项才作答 */
+    await page.click(sel, { timeout: 3000 })
+    await page.waitForTimeout(400)
+    await page.click(sel, { timeout: 3000 })
     await page.waitForTimeout(3200)
   }
   await page.waitForTimeout(400)
