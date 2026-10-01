@@ -133,22 +133,30 @@ async function noHScroll(page) {
   const z = await zeroScroll(page)
   ok('我的 tab 零纵向滚动', z.ok, JSON.stringify(z))
   const mine = await page.evaluate(() => ({
-    chick: !!document.querySelector('#chick'),
-    streak: document.querySelector('.rowhead .chip')?.textContent?.trim(),
+    chick: !!document.querySelector('.herochick svg'),
+    stage: document.querySelector('.herochick')?.getAttribute('data-chick-stage'),
     level: document.querySelector('#mname')?.textContent?.trim(),
-    chips: [...document.querySelectorAll('#mmeta .chip')].map((c) => c.textContent.trim()),
-    flash: !!document.querySelector('#flash-entry'),
-    due: document.querySelector('#flash-entry .due')?.textContent?.trim(),
+    starChip: document.querySelector('.starchip')?.textContent?.trim(),
+    prog: !!document.querySelector('#mprog .pbar i'),
+    flash: !!document.querySelector('.entry[data-go="flash"]'),
+    due: document.querySelector('.entry[data-go="flash"] .ftx > span')?.textContent?.trim(),
+    albumDue: document.querySelector('.entry[data-go="album"] .ftx > span')?.textContent?.trim(),
+    streak: document.querySelector('[data-streak]')?.textContent?.trim(),
     wdays: document.querySelectorAll('#wrow .wday').length,
     hits: document.querySelectorAll('#wrow .wday.hit').length,
-    prows: [...document.querySelectorAll('#parent .prow b')].map((b) => b.textContent.trim()),
-    newBadge: !!document.querySelector('#parent .new'),
+    badges: document.querySelectorAll('#badgewall .bd').length,
+    prows: [...document.querySelectorAll('#parent .pbtn b')].map((b) => b.textContent.trim()),
   }))
-  ok('小鸡形象区（SVG+等级+星星+通关）', mine.chick && /级/.test(mine.level || '') && mine.chips.length === 2, JSON.stringify(mine))
-  ok('连续天数 chip（本周一~今 = 3 天连击）', /3/.test(mine.streak || ''), mine.streak || '')
+  /* v3.2 我的 tab：hero=小鸡成长线（种子 9 星=阶段0 蛋宝宝，迁移自练习关星）+ 双入口 + 签到连击 + 徽章墙 + 家长区单行 */
+  const isoDow = now2 => { const d = now2.getDay(); return d === 0 ? 7 : d }
+  const expectStreak = Math.min(isoDow(new Date()), 5)   /* 种子=本周一~五：连击=今天在本周五之前的序位 */
+  ok('小鸡形象区（成长hero：SVG+阶段名+星星chip+进度条）', mine.chick && /级/.test(mine.level || '') && !!mine.starChip && mine.prog && mine.stage === '0', JSON.stringify(mine))
+  ok('连击火焰（本周一~今 = ' + expectStreak + ' 天）', new RegExp(String(expectStreak)).test(mine.streak || ''), mine.streak || '')
   ok('闪卡入口（到期数）', mine.flash && /1 张/.test(mine.due || ''), mine.due || '')
-  ok('周历 7 格 + 5 天已学', mine.wdays === 7 && mine.hits === 5, JSON.stringify({ wdays: mine.wdays, hits: mine.hits }))
-  ok('家长区三行（历史/声音礼仪 v2.4 新/设置）', mine.prows.join(',') === '学习历史,声音礼仪,设置' && mine.newBadge, JSON.stringify(mine.prows))
+  ok('我的卡片入口（0/63 张）', /0\s*\/\s*63/.test(mine.albumDue || ''), mine.albumDue || '')
+  ok('签到周历 7 格 + 5 天已学', mine.wdays === 7 && mine.hits === 5, JSON.stringify({ wdays: mine.wdays, hits: mine.hits }))
+  ok('成就徽章墙 10 格（新号全灰）', mine.badges === 10, String(mine.badges))
+  ok('家长区单行三钮（历史/声音礼仪/设置）', mine.prows.join(',') === '学习历史,声音礼仪,设置', JSON.stringify(mine.prows))
   await shot(page, '3-mine')
   await page.context().close()
 }

@@ -11,6 +11,7 @@
   import { LETTERS, PAIRS } from '../../data'
   import { letterAudio, playAudio, sndOk, sndNo, sndStar, preloadAudioList } from '../../lib/audio'
   import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed } from '../../stores/learn.svelte'
+  import { onLearnQuizPass, addToneCorrect, celebrateLetter, allLessonsPassed } from '../../stores/growth.svelte'
   import { lessonPages, lessonHasBlend, toneRowOf, unitIndexOf, unitCountOf, type LessonLike } from '../../lib/lessonUnits'
   import { tRaw, cnNum, NUM_PY } from '../../text/strings'
   import { manifest } from '../../text/manifest'
@@ -162,14 +163,20 @@
     const q = quiz.q[quiz.i]
     const right = v === q.key
     quiz.pick = right ? '✓' : '✗'
+    if (right && q.type === 'tone') addToneCorrect()   /* v3.2 声调大师徽章计数 */
     /* look 题选项音刚起播，等读音落地再叮/嘟（R3 一次一路，反馈音会打断在播读音） */
     const fire = () => {
       if (right) { quiz.score++; sndOk() } else { sndNo() }
       setTimeout(() => {
         if (quiz.i + 1 >= quiz.q.length) {
           quiz.done = true
+          /* v3.2：过关前的状态先取证（submitQuiz 会写 learn store）——
+             首过+5星/复玩+2、解锁本课字母卡、全屏庆祝（12课全通=毕业典礼），结算屏出现后再播 */
+          const wasPassed = quizPassed(n)
+          const wasAll = allLessonsPassed()
           quiz.passed = submitQuiz(n, quiz.score, LESSONS.length)
           sndStar()
+          if (quiz.passed) setTimeout(() => { onLearnQuizPass(wasPassed, wasAll) }, 750)
         } else {
           quiz.i++
           quiz.pick = ''
@@ -182,16 +189,28 @@
     else fire()
   }
 
-  /* 翻页/跳单元：R1 翻页零音效；进小测页建题；记页级断点（学习 tab CTA 用） */
+  /* 翻页/跳单元：R1 翻页零音效；进小测页建题；记页级断点（学习 tab CTA 用）。
+     v3.2：单步前进跨出字母单元=字母学完 → chip ✓ + 迷你庆祝（半屏，一次性；
+     跳页/chip 快进不算——跳过的字母没"学完"的仪式） */
   function gotoPage(p: number) {
+    const prev = page
     page = Math.max(0, Math.min(NP - 1, p))
     setStep(n, page + 1)
     if (pages[page].t === 'quiz' && (!quiz.q.length || quiz.done)) buildQuiz()
+    if (page === prev + 1) {
+      const pg = pages[prev]
+      if ((pg.t === 'learn' || pg.t === 'tone') && !letterDone[pg.li]) {
+        if (unitIndexOf(lessonLike, page) > pg.li) {
+          letterDone[pg.li] = true
+          celebrateLetter(letters[pg.li].k)
+        }
+      }
+    }
   }
 
-  /* 声调小练「读完了」→ 本字母 ✓ + 自动推进下一字母（下一页=下一字母学一学 / 拼读 / 小测） */
+  /* 声调小练「读完了」→ 本字母 ✓ + 迷你庆祝 + 自动推进下一字母（下一页=下一字母学一学 / 拼读 / 小测） */
   function toneDone(li: number) {
-    letterDone[li] = true
+    if (!letterDone[li]) { letterDone[li] = true; celebrateLetter(letters[li].k) }
     const tp = pages.findIndex((pg) => pg.t === 'tone' && pg.li === li)
     if (tp >= 0 && tp + 1 < NP) gotoPage(tp + 1)
   }
@@ -299,7 +318,7 @@
             {:else if !quiz.done}
               {@const q = quiz.q[quiz.i]}
               <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
-              <div class="qbody">
+              <div class="qbody" data-qkey={probeOn ? String(q.key) : null}>
                 <!-- BUGS#18⑨：圆点与"第 X 题"严格同步——X-1 个已完成点 + 1 个当前点 -->
                 <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={i < quiz.i} class:cur={i === quiz.i}></span>{/each}</div>
                 {#if q.type === 'listen'}

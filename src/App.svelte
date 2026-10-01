@@ -22,6 +22,8 @@
   import SoundEtiquette from './components/parents/SoundEtiquette.svelte'
   import SettingsPage from './components/parents/SettingsPage.svelte'
   import LessonPage from './components/learn/LessonPage.svelte'
+  import CardAlbum from './components/growth/CardAlbum.svelte'
+  import CelebrationOverlay from './components/growth/CelebrationOverlay.svelte'
   import PairModal from './components/PairModal.svelte'
   import Feedback from './components/Feedback.svelte'
 
@@ -81,6 +83,8 @@
       <SoundEtiquette />
     {:else if ui.view === 'settings'}
       <SettingsPage />
+    {:else if ui.view === 'album'}
+      <CardAlbum />
     {/if}
   </div>
 
@@ -91,6 +95,8 @@
 
 <UpdatePrompt />
 <PairModal />
+<!-- v3.2 庆祝仪式（z 最高，自动散场可跳过——App 级单例，触发点在 growth store） -->
+<CelebrationOverlay />
 {#if QZ.fb}
   <Feedback />
 {/if}

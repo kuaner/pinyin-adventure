@@ -12,6 +12,7 @@ import { startLevel } from '../stores/session.svelte'
 import { BT, startBolt } from '../stores/bolt.svelte'
 import { FC, renderFlash, flip } from '../stores/flash.svelte'
 import { S } from '../stores/progress.svelte'
+import { celebrateQuiz, celebrateLetter, celebrateGrad, celebrateEvolve } from '../stores/growth.svelte'
 import { AUDIO_CACHE } from './audio'
 import { buildQuestions, buildDetQs, makeDfix, makeZiQ, shuffle } from './quizEngine'
 import { LEVELS, ZWORDS, ZI, PH } from '../data'
@@ -207,6 +208,16 @@ function openView(v: string) {
     const qs: Question[] = [makeZiQ(ZWORDS[0], true)]
     for (let i = 0; i < 9; i++) qs.push(makeZiQ(pool[i], false))
     newSession({ name: T('常见字快拼'), zi: true, qs })
+  } else if (v === 'album') {
+    show('album')
+  } else if (v === 'celebquiz') {
+    celebrateQuiz(5)   /* v3.2 庆祝仪式视觉验收（真实组件+store，与线上行为同一路径） */
+  } else if (v === 'celebletter') {
+    celebrateLetter('a')
+  } else if (v === 'celebgrad') {
+    celebrateGrad()
+  } else if (v === 'evolve') {
+    celebrateEvolve(2)
   }
 }
 

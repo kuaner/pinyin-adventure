@@ -54,6 +54,38 @@ export function sndOk() { tone(784, 0, 0.12); tone(1046, 0.1, 0.22) }
 export function sndNo() { tone(196, 0, 0.16, 'square', 0.09); tone(147, 0.14, 0.24, 'square', 0.09) }
 export function sndStar() { tone(659, 0, 0.1); tone(784, 0.09, 0.1); tone(1046, 0.18, 0.3) }
 
+/* ---------- v3.2 庆祝音（WebAudio 合成，非语音；静音总开关 tone() 内自检） ---------- */
+/* 小测过关：叮咚上行琶音（C5-E5-G5-C6-E6） */
+export function sndFanfare() {
+  tone(523, 0, 0.12, 'triangle', 0.14)
+  tone(659, 0.1, 0.12, 'triangle', 0.14)
+  tone(784, 0.2, 0.12, 'triangle', 0.14)
+  tone(1046, 0.3, 0.28, 'triangle', 0.16)
+  tone(1319, 0.42, 0.34, 'sine', 0.12)
+}
+/* 字母学完（迷你庆祝）：三音小上行 */
+export function sndMini() { tone(659, 0, 0.09); tone(880, 0.09, 0.09); tone(1175, 0.18, 0.22) }
+/* 进化：加速上行 + 高音亮相 */
+export function sndEvolve() {
+  tone(392, 0, 0.1, 'triangle', 0.13)
+  tone(523, 0.09, 0.1, 'triangle', 0.13)
+  tone(659, 0.18, 0.1, 'triangle', 0.13)
+  tone(784, 0.27, 0.1, 'triangle', 0.14)
+  tone(1046, 0.36, 0.16, 'triangle', 0.15)
+  tone(1319, 0.52, 0.42, 'sine', 0.15)
+}
+/* 毕业典礼：号角式长琶音（两段上行 + 长尾音） */
+export function sndGrad() {
+  tone(523, 0, 0.14, 'triangle', 0.14)
+  tone(659, 0.12, 0.14, 'triangle', 0.14)
+  tone(784, 0.24, 0.14, 'triangle', 0.14)
+  tone(1046, 0.36, 0.14, 'triangle', 0.15)
+  tone(784, 0.52, 0.12, 'triangle', 0.13)
+  tone(1046, 0.64, 0.12, 'triangle', 0.13)
+  tone(1319, 0.76, 0.5, 'triangle', 0.16)
+  tone(1568, 0.98, 0.7, 'sine', 0.12)
+}
+
 /* ---------- 第二层：mp3 播放器（缺文件 → 文字兜底，绝不走设备 TTS） ---------- */
 export const AUDIO_CACHE: Record<string, HTMLAudioElement> = {}
 

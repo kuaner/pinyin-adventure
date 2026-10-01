@@ -9,6 +9,7 @@ import { LETTERS, PAIRS, PMAP, ZIBY, LEVELS, GRPNAME, PH, ANCHORS } from '../dat
 import { T } from '../lib/ruby'
 import { t } from '../text/strings'
 import { stamp, type HistEntry } from '../lib/storage'
+import { addDetCorrect, checkBadges } from './growth.svelte'
 import type { Question, SessionCfg } from '../lib/types'
 
 const ANCHORS_REF = ANCHORS as Record<string, { h: string; p: string; em: string }>
@@ -103,6 +104,7 @@ export function answer(idx: number) {
   }
   QZ.reveal = { correct: q.ans, wrong }
   markResult(q.key, ok)
+  if (ok && QZ.cfg!.det) addDetCorrect()   /* v3.2 小侦探徽章计数 */
   /* 镜像错误联动：小侦探里写反判错 → 对应易混对也加权（闯关会多练它） */
   if (!ok && (q.type === 'djudge' || q.type === 'dfix')) {
     const pp = partnerOf(q.X)
@@ -221,6 +223,7 @@ function endQuiz() {
   }
   const entry: HistEntry = { d: stamp(), lv: QZ.cfg!.name, sc, st: lvNo ? stars : -1, wp: wlabel }
   addHist(entry)
+  checkBadges()   /* v3.2：练习关星入账后统一查徽章（初次通关/连击/坚持天数在各类触发点都汇到这里查） */
   QZ.result = { sc, stars, unlockMsg, wlabel, lvNo: lvNo || null }
   show('result')
   if (stars > 0) sndStar()

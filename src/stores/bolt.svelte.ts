@@ -5,6 +5,7 @@ import { markResult } from './weights.svelte'
 import { sndOk, sndNo, sndStar } from '../lib/audio'
 import { makeBoltQ, BT_KEYS } from '../lib/quizEngine'
 import { t } from '../text/strings'
+import { onBoltEnd } from './growth.svelte'
 import type { BoltQ } from '../lib/types'
 
 export const BT = $state({
@@ -102,6 +103,7 @@ export function endBolt() {
   }
   BT.record = record
   BT.resultOn = true
+  onBoltEnd(BT.n, BT.ok)   /* v3.2：签到记账（≥10 题）+ 闪电满分/速读王徽章判定 */
   if (record) {
     sndStar() /* v2.6 零自动播放：破纪录庆祝从 star 语音改为星星音（非语音） */
     BT.confetti = Array.from({ length: 14 }, (_, i) => i)

@@ -5,7 +5,8 @@ import { T } from '../lib/ruby'
 export type View =
   | 'learn' | 'practice' | 'mine'                       /* 三个 tab */
   | 'lesson' | 'levels' | 'quiz' | 'result' | 'flash' | 'pairs' | 'free'
-  | 'history' | 'bolt' | 'sound' | 'settings' | 'radio' /* 专注态 */
+  | 'history' | 'bolt' | 'sound' | 'settings' | 'radio'
+  | 'album'                                             /* v3.2 卡片图鉴（专注态） */
 
 export const TAB_VIEWS: View[] = ['learn', 'practice', 'mine']
 
