@@ -129,7 +129,7 @@ const PH_ID: [string, string][] = [
   ...Object.keys(phrases.kindNames || {}).map((k) => [`kind-${k}`, (phrases.kindNames as any)[k]] as [string, string]),
   ...(phrases.praise || []).map((z: string, i: number) => [`praise-${i}`, z] as [string, string]),
   ...(phrases.cheer || []).map((z: string, i: number) => [`cheer-${i}`, z] as [string, string]),
-  ...(phrases.practice || []).flatMap((p: any) => [[`prac-${p.kind}-btn`, p.btn], [`prac-${p.kind}-desc`, p.desc]] as [string, string][]),
+  ...(phrases.practice || []).map((p: any) => [`prac-${p.kind}-btn`, p.btn] as [string, string]),
 ]
 for (const [id, zh] of PH_ID) {
   if (!zh) continue

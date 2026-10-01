@@ -21,7 +21,6 @@
         onclick={() => startPractice(it.kind)}
       >
         <span><Icon name={it.icon} size={22} /> <Speak text={it.btn} plain /></span>
-        <span style="font-size:var(--fs-sm);font-weight:700;opacity:.92;line-height:1.6"><Speak text={it.desc} plain /></span>
       </button>
     {/each}
   </div>

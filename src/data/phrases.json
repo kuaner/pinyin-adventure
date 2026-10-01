@@ -44,7 +44,6 @@
    "kind": "sm",
    "name": "练习 · 声母",
    "btn": "声母练习",
-   "desc": "23个声母 · 含全部易混声母",
    "cat": "sm",
    "pairs": [
     "b|d",
@@ -64,7 +63,6 @@
    "kind": "ym",
    "name": "练习 · 韵母",
    "btn": "韵母练习",
-   "desc": "单韵母 复韵母 鼻韵母",
    "cat": "ym",
    "pairs": [
     "an|ang",
@@ -80,7 +78,6 @@
    "kind": "zt",
    "name": "练习 · 整体认读",
    "btn": "整体认读",
-   "desc": "zhi chi shi ri zi ci si",
    "cat": "zt",
    "pairs": [
     "zhi|chi",
@@ -95,7 +92,6 @@
    "kind": "all",
    "name": "练习 · 全部大混战",
    "btn": "全部大混战",
-   "desc": "所有拼音随机出题",
    "cat": null,
    "pairs": null,
    "icon": "flame"

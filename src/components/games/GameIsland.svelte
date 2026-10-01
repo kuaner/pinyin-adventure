@@ -84,13 +84,9 @@
       <div class="dico"><Icon name="trophy" size={40} /></div>
       <div class="dinfo">
         <div class="dtitle"><Speak k="dailyTitle" /></div>
-        <div class="ddesc">
-          {#if daily.done}
-            <span data-dailydone><Speak k="dailyDone" /> · <Speak k="dailyBestN" vars={{ n: daily.best }} /></span>
-          {:else}
-              <span><Speak k="dailyDesc" /></span>
-          {/if}
-        </div>
+        {#if daily.done}
+          <div class="dsub" data-dailydone><Speak k="dailyDone" /> · <Speak k="dailyBestN" vars={{ n: daily.best }} /></div>
+        {/if}
       </div>
       <div class="dgo"><Icon name={daily.done ? 'check' : 'arrow-right'} size={26} /></div>
     </button>
@@ -189,7 +185,6 @@
         </div>
         <div class="mic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2z" /></svg></div>
         <div class="dname"><Speak k="boltSprint" /></div>
-        <div class="ddesc"><Speak k="boltDesc" /></div>
       </button>
 
       <button class="dcard d-listen pressable" data-drill="listen" onclick={() => show('listendrill')}>
@@ -198,7 +193,6 @@
         </div>
         <div class="mic"><Icon name="ear" size={24} /></div>
         <div class="dname"><Speak k="drillListen" /></div>
-        <div class="ddesc"><Speak k="drillListenDesc" /></div>
       </button>
 
       <button class="dcard d-pairs pressable" data-drill="pairs" onclick={() => show('pairs')}>
@@ -207,27 +201,23 @@
         </div>
         <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="5.5" /><circle cx="15.5" cy="12" r="5.5" /></svg></div>
         <div class="dname"><Speak k="pairsDrill" /></div>
-        <div class="ddesc"><Speak k="pairsDesc" /></div>
       </button>
 
       <button class="dcard d-zi pressable" data-drill="zi" onclick={() => show('zihall')}>
         <div class="dbadge"><Speak k="ziBadge" vars={{ a: ziProg.length, b: ZI.length }} plain /></div>
         <div class="mic"><Icon name="book" size={24} /></div>
         <div class="dname"><Speak k="drillZi" /></div>
-        <div class="ddesc"><Speak k="drillZiDesc" /></div>
       </button>
 
       <!-- v4.3 增两件专练：拼读/声调（纯题目高密度，条目账本加权） -->
       <button class="dcard d-blend pressable" data-drill="blend" onclick={() => show('blendquiz')}>
         <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="6" ry="8" /><ellipse cx="16.5" cy="12" rx="4.5" ry="6.5" /></svg></div>
         <div class="dname"><Speak k="hallBlend" /></div>
-        <div class="ddesc"><Speak k="hallBlendDesc" /></div>
       </button>
 
       <button class="dcard d-tone pressable" data-drill="tone" onclick={() => show('tonequiz')}>
         <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 L9 5 L19 3 L19 16" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="16.5" cy="16" r="2.5" /></svg></div>
         <div class="dname"><Speak k="hallTone" /></div>
-        <div class="ddesc"><Speak k="hallToneDesc" /></div>
       </button>
     </div>
   {/if}
@@ -270,8 +260,8 @@
     align-items: center; justify-content: center; box-shadow: 0 3px 0 rgba(61, 52, 40, .12); }
   .dinfo { flex: 1 1 0; min-width: 0; }
   .dtitle { font-size: var(--fs-sm); font-weight: 900; color: #b07a1f; white-space: nowrap; line-height: 1.7; }
-  .ddesc { font-size: var(--fs-xs); font-weight: 700; color: #a3874f; line-height: 1.6; }
-  .ddesc :global(rt) { font-size: var(--fs-rt); }
+  .dsub { font-size: var(--fs-xs); font-weight: 700; color: #a3874f; line-height: 1.6; }
+  .dsub :global(rt) { font-size: var(--fs-rt); }
   .dgo { flex: none; color: #c77800; }
 
   /* v4.3：6 摊位 2×3 网格（终态）——插画全卡铺底（slice 裁切）+ 底部信息浮层（名字+最佳），零纵向滚动 */
@@ -306,9 +296,6 @@
   .dcard .mic :global(svg) { width: 20px; height: 20px; }
   .dcard .dname { font-size: var(--fs-sm); font-weight: 900; line-height: 1.5; white-space: nowrap; max-width: 100%; }
   .dcard .dname :global(rt) { font-size: var(--fs-rt); }
-  .dcard .ddesc { font-size: var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.4;
-    max-width: 100%; white-space: nowrap; }
-  .dcard .ddesc :global(rt) { font-size: 10px; }
   .dbadge { position: absolute; top: 6px; right: 6px; font-size: 10px; font-weight: 900;
     padding: 1px 7px; white-space: nowrap; border-radius: 999px; background: rgba(255, 255, 255, .85);
     color: var(--animal-text); box-shadow: 0 1px 4px rgba(61, 52, 40, .12); max-width: calc(100% - 12px); }
