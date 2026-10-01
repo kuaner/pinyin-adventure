@@ -29,12 +29,13 @@
     strokeLoop = false,      /* 播完自动循环（连播/点播期间跟随音频时长） */
     strokeStatic = -1,       /* >=0 时笔顺预览为静态帧（?static=K 深链自检用，v3.0 学一学页透传） */
     onmain,                  /* 主字模点播回调（缺省 = say(k) 呼读音；口诀广播传整条口诀点播） */
+    onread,                  /* BUGS#33 读音点播回调（主字模/浮层 🔊 任一点按即触发；学习岛集参与旗A用） */
     tip = '',                /* 主字模下方提示（缺省不显示） */
     glyphMax = 132,          /* full 档字模区高度上限（×1.3 为显示区 px，SVG 等比适配） */
   }: {
     k: string; mode?: 'full' | 'card' | 'mini'; flipped?: boolean
     strokePlay?: boolean; strokeLoop?: boolean; strokeStatic?: number
-    onmain?: () => void; tip?: string; glyphMax?: number
+    onmain?: () => void; onread?: () => void; tip?: string; glyphMax?: number
   } = $props()
 
   /* v2.8：字模长度适配——Nunito ≈0.55em/字母，250px 内容宽反推字号上限（yuan/zhi/zh 这类长单元零溢出） */
@@ -76,8 +77,8 @@
     manualStroke = false
   }
   function replayStroke() { ping('replay'); manualStroke = true; sa?.replay(); if (C.sayAudio) playAudio(C.sayAudio, { hint: '' }) }
-  function mainTap() { if (onmain) onmain(); else say(k) }
-  function readTap() { ping('read'); say(k) }
+  function mainTap() { onread?.(); if (onmain) onmain(); else say(k) }
+  function readTap() { ping('read'); onread?.(); say(k) }
   function playKj() {
     ping('kj')
     if (C.kjAudio) playAudio(C.kjAudio, { hint: tRaw('notReady') })

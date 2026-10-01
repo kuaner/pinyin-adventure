@@ -153,7 +153,10 @@ const ge48 = (b) => !!b && b.w >= 48 && b.h >= 48
 /* ---------- A3 · L7 z 合并页 + 按钮特写 ---------- */
 {
   console.log('\n== L7 z 合并页 + 🔊特写 ==')
-  const page = await (await ctx()).newPage()
+  const c = await ctx()
+  /* BUGS#33：小测段断言走「已过关课重学不拦」路径（预置 L7 记星），未学拦截归 v401-accept */
+  await c.addInitScript(() => localStorage.setItem('pinyin_learn', JSON.stringify({ u: 8, stars: { 7: 3 }, best: {}, step: {} })))
+  const page = await c.newPage()
   page.on('pageerror', (e) => errors.push('L7:' + e.message))
   await openLesson(page, 7, '&qkey=1')   /* qkey 门：look 题可确定性作答翻题 */
   let s = await state(page)

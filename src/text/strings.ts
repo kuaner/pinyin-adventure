@@ -190,6 +190,9 @@ export const strings = {
   backMap: s('回课程地图', { 回课程地图: 'huí kè chéng dì tú' }),
   gotNScore: s('对了{n}题', { 对了: 'duì le' }),
   almostMsg: s('差一点点！再学一遍，你一定可以的', { 差一点点: 'chà yī diǎn diǎn' }),
+  gateNotDone: s('还有 {n} 个拼音没学完，先学完再来吧', { 还有: 'hái yǒu', 个: 'gè', 拼音: 'pīn yīn', 没学完: 'méi xué wán', 先学完: 'xiān xué wán', 再来吧: 'zài lái ba' }),
+  gateGoLearn: s('跳回去学', { 跳回去学: 'tiào huí qù xué' }),
+  gateForce: s('我还要试试', { 我还要试试: 'wǒ hái yào shì shi' }),
   swipeNextStep: s('左滑，下一步', { 左滑: 'zuǒ huá', 下一步: 'xià yī bù' }),
   seeStroke: s('看笔顺', { 看笔顺: 'kàn bǐ shùn' }),
 

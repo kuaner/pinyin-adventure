@@ -40,7 +40,7 @@ const mk = async (seed) => {
   await page.waitForSelector('#v-lesson', { timeout: 8000 })
   await page.evaluate(() => { const q = new URLSearchParams(location.search); q.set('page', '6'); history.replaceState(null, '', '?' + q.toString()) })
   await page.waitForTimeout(800)
-  await page.evaluate(() => { document.querySelector('[data-bootquiz]')?.click() })
+  await page.evaluate(() => { document.querySelector('[data-bootquiz],[data-forcequiz]')?.click() })   /* BUGS#33：未集旗课=拦截卡（forcequiz=「我还要试试」放行） */
   await page.waitForTimeout(400)
   for (let i = 0; i < 5; i++) {
     await page.waitForSelector('#v-lesson .qbody[data-qkey]', { timeout: 5000 })

@@ -9,7 +9,7 @@
 
   export type ToneRow = { base: string; display: string; tones: { t: number; display: string; file: string }[] }
 
-  let { rows, sel: selProp, ondone }: { rows: ToneRow[]; sel?: number; ondone?: () => void } = $props()
+  let { rows, sel: selProp, ondone, ontone }: { rows: ToneRow[]; sel?: number; ondone?: () => void; ontone?: (ti: number) => void } = $props()
 
   const sel = $derived(selProp !== undefined ? Math.min(selProp, rows.length - 1) : 0)
   let playing = $state(-1)          // 正在演示第几声
@@ -30,6 +30,7 @@
 
   function playTone(i: number) {
     playing = i
+    ontone?.(i)   /* BUGS#33：逐声调点读证据（声调页点读/跟我读都走 playTone；辨调答题不算点读） */
     playAudio(row.tones[i].file, { hint: '语音未准备好' })
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => (playing = -1), 1400)

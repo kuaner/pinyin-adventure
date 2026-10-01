@@ -18,6 +18,7 @@
   import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
+  import ChickGrowth from '../growth/ChickGrowth.svelte'
   import ToneDrill from './ToneDrill.svelte'
   import BlendDrill from './BlendDrill.svelte'
   import HSteps from '../HSteps.svelte'
@@ -108,6 +109,24 @@
     : Math.max(0, Math.min(NP - 1, (LRN.step[n] || 1) - 1))
   let page = $state(initPage)        // 0..NP-1（= HSteps 页号）
   let letterDone = $state<Record<number, boolean>>({})   // 会话内字母完成标（chip ✓）
+  /* BUGS#33 互动证据制：完成判定不再是"翻页推进本身"，每字母两个参与旗（课内会话级，重进课重计）——
+     旗A 学一学：该字母 🔊读音点过 ≥1 次（PinyinCard 主按钮/v3.1.1 浮层读音键，onread 回调，两处都算）
+     旗B 声调：ToneDrill 逐声调点读过（点读/跟我读覆盖声调行；行少的至少点过 3 个不同声调；
+         无声调页的字母（L12 十个单页字母）豁免旗B，旗A 即可）。
+     两旗齐才 letterDone ✓（chip ✓=已学会/当前=高亮/待学=灰三态沿用）；
+     小测前置检查：进小测步时本课有未集旗字母 → 温和拦截卡（已过关课重学不拦=自由复习）。 */
+  let flagRead = $state<Record<number, boolean>>({})
+  let flagTone = $state<Record<number, number[]>>({})
+  const toneNeedOf = (li: number) => {
+    const ri = toneRowOf(lessonLike, li)
+    const row = ri >= 0 ? ((lesson.tones || []) as { tones?: unknown[] }[])[ri] : null
+    return row?.tones?.length ? Math.min(3, row.tones.length) : 0
+  }
+  const letterReady = (li: number) => !!flagRead[li] && (flagTone[li]?.length || 0) >= toneNeedOf(li)
+  const unreadyCount = $derived.by(() => { let c = 0; for (let i = 0; i < nL; i++) if (!letterReady(i)) c++; return c })
+  const unreadyIdx = $derived.by(() => { for (let i = 0; i < nL; i++) if (!letterReady(i)) return i; return -1 })
+  /* 小测前置门（证据未齐即拦；quizPassed=已过关课重学自由复习不拦） */
+  const gateOn = $derived(unreadyCount > 0 && !quizPassed(n))
   const curUnit = $derived(unitIndexOf(lessonLike, page))
 
   function pickDistractors(k: string, count: number): string[] {
@@ -189,28 +208,48 @@
     else fire()
   }
 
-  /* 翻页/跳单元：R1 翻页零音效；进小测页建题；记页级断点（学习 tab CTA 用）。
-     v3.2：单步前进跨出字母单元=字母学完 → chip ✓ + 迷你庆祝（半屏，一次性；
-     跳页/chip 快进不算——跳过的字母没"学完"的仪式） */
+  /* BUGS#33：✓ 记账=证据制——离开字母单元（前进向：单步滑/自动推进/切字母跳出，凡新单元号更大）时
+     查两旗：齐 → chip ✓ + 迷你庆祝（一次性）；不齐 → chip 留「待学」灰态，不打 ✓ */
+  function settleLetter(li: number) {
+    if (!letterDone[li] && letterReady(li)) {
+      letterDone[li] = true
+      celebrateLetter(letters[li].k)
+    }
+  }
+  /* 小测残卷复位（进小测步被门拦下时回 boot 态，渲染拦截卡） */
+  function resetQuiz() {
+    quiz = { q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false }
+  }
+  /* 参与旗采集：旗A=读音点播（主按钮/浮层键都算，PinyinCard onread）；
+     旗B=声调行点读去重（ToneDrill ontone；达标线 toneNeedOf=min(3,行数)，无调行=0） */
+  function markRead(li: number) { flagRead[li] = true }
+  function markTone(li: number, ti: number) {
+    /* 整组赋值走 $state 代理（Svelte 5：`(flagTone[li] = []).push()` 的表达式值是未代理的裸数组，
+       首个 push 会绕过代理静默丢失——实测三个声调只记到两个） */
+    const cur = flagTone[li] || []
+    if (!cur.includes(ti)) flagTone[li] = [...cur, ti]
+  }
+
+  /* 翻页/跳单元：R1 翻页零音效；记页级断点（学习 tab CTA 用）。
+     BUGS#33 小测前置检查：进小测步（翻页/chip/深链进入）且本课有未集旗字母 → 复位残卷出拦截卡，
+     不自动建题（「我还要试试」放行 / 已过关课重学不拦）；放行或旗齐才建题。
+     v3.2：前进跨出字母单元 → 证据结算（settleLetter，见上） */
   function gotoPage(p: number) {
     const prev = page
     page = Math.max(0, Math.min(NP - 1, p))
     setStep(n, page + 1)
-    if (pages[page].t === 'quiz' && (!quiz.q.length || quiz.done)) buildQuiz()
-    if (page === prev + 1) {
-      const pg = pages[prev]
-      if ((pg.t === 'learn' || pg.t === 'tone') && !letterDone[pg.li]) {
-        if (unitIndexOf(lessonLike, page) > pg.li) {
-          letterDone[pg.li] = true
-          celebrateLetter(letters[pg.li].k)
-        }
-      }
+    if (pages[page].t === 'quiz' && (!quiz.q.length || quiz.done)) {
+      if (gateOn) resetQuiz()
+      else buildQuiz()
+    }
+    const pg = pages[prev]
+    if ((pg.t === 'learn' || pg.t === 'tone') && !letterDone[pg.li]) {
+      if (unitIndexOf(lessonLike, page) > pg.li) settleLetter(pg.li)
     }
   }
 
-  /* 声调小练「读完了」→ 本字母 ✓ + 迷你庆祝 + 自动推进下一字母（下一页=下一字母学一学 / 拼读 / 小测） */
+  /* 声调小练「读完了」→ 自动推进下一字母（v3.0 推进结构不动；本字母 ✓ 由 gotoPage 的证据结算记账） */
   function toneDone(li: number) {
-    if (!letterDone[li]) { letterDone[li] = true; celebrateLetter(letters[li].k) }
     const tp = pages.findIndex((pg) => pg.t === 'tone' && pg.li === li)
     if (tp >= 0 && tp + 1 < NP) gotoPage(tp + 1)
   }
@@ -243,10 +282,14 @@
     }
     const st = q.get('static')
     if (st !== null) staticN = Math.max(0, parseInt(st, 10))
-    /* 落在小测页 → 自动建题。必须 untrack：quiz 状态（done 在第 5 题翻转）不得进本 effect 依赖——
+    /* 落在小测页 → 自动建题（BUGS#33：证据门同 gotoPage——未集旗时出拦截卡不建题）。
+       必须 untrack：quiz 状态（done 在第 5 题翻转）不得进本 effect 依赖——
        否则答完卷 effect 重跑 buildQuiz 把卷子静默重置、结算页永不出（v30-accept 抓的实锤） */
     untrack(() => {
-      if (pages[page]?.t === 'quiz' && (!quiz.q.length || quiz.done)) buildQuiz()
+      if (pages[page]?.t === 'quiz' && (!quiz.q.length || quiz.done)) {
+        if (gateOn) resetQuiz()
+        else buildQuiz()
+      }
     })
   })
 </script>
@@ -294,14 +337,14 @@
             <div class="knowfit">
               <!-- BUGS#26③：glyphMax 420（字模框上限 546px）——上限抬到高于一切手机视口的 hero 实际高度，
                   字模 svg 吃满面板（不再小字模居中漂在 92px×2 的奶油空白里）；上限仅防超高分屏失真 -->
-              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={420} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
+              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={420} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} onread={() => markRead(pg.li)} />
             </div>
           </div></div>
         {:else if pg.t === 'tone'}
           <!-- 声调：四声演示 + 听调辨调；「读完了」= 本字母完成 → 自动推进下一字母 -->
           <div class="hspage"><div class="pcard">
             <div class="ptag hot"><Speak k="stepTone" plain /> · {letters[pg.li].k}</div>
-            <div class="drillfit"><ToneDrill rows={lesson.tones} sel={toneRowOf(lessonLike, pg.li)} ondone={() => toneDone(pg.li)} /></div>
+            <div class="drillfit"><ToneDrill rows={lesson.tones} sel={toneRowOf(lessonLike, pg.li)} ondone={() => toneDone(pg.li)} ontone={(ti) => markTone(pg.li, ti)} /></div>
           </div></div>
         {:else if pg.t === 'blend'}
           <!-- 拼读（课级，仅 hasBlend 课）：声母+韵母合成 / 整体认读卡 -->
@@ -310,11 +353,24 @@
             <div class="drillfit"><BlendDrill blends={lesson.blends || []} ztlist={lesson.ztlist || []} tones={lesson.tones || []} note={lesson.note || ''} /></div>
           </div></div>
         {:else}
-          <!-- 小测（课级，最后一步）：三题型混编（听音选字母/看字母选音/听调辨调），不考汉字（BUGS#18①） -->
+          <!-- 小测（课级，最后一步）：三题型混编（听音选字母/看字母选音/听调辨调），不考汉字（BUGS#18①）。
+              BUGS#33：进小测步先过互动证据门——有未集旗字母出温和拦截卡（吉祥物+儿童语气文案），
+              跳回去学=跳到第一个未学字母；我还要试试=家长通道式弱化放行（不锁死） -->
           <div class="hspage"><div class="pcard">
             {#if !quiz.q.length && !quiz.done}
-              <div class="quizboot"><Speak k="quizReady" /></div>
-              <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><Speak k="startQuiz" plain /></button>
+              {#if gateOn}
+                <div class="gate" data-gate>
+                  <div class="gatemascot"><ChickGrowth stage={1} /></div>
+                  <div class="gatemsg"><Speak k="gateNotDone" vars={{ n: cn(unreadyCount) }} py={{ 还有: 'hái yǒu', [cn(unreadyCount)]: NUM_PY[cn(unreadyCount)] || '', 个: 'gè', 拼音: 'pīn yīn', 没学完: 'méi xué wán', 先学完: 'xiān xué wán', 再来吧: 'zài lái ba' }} /></div>
+                  <div class="gatebtns">
+                    <button class="bootbtn" data-goback onclick={() => gotoPage(pageIdxOfLetter(unreadyIdx))}><Speak k="gateGoLearn" plain /></button>
+                    <button class="bootbtn ghost sm" data-forcequiz onclick={() => buildQuiz()}><Speak k="gateForce" plain /></button>
+                  </div>
+                </div>
+              {:else}
+                <div class="quizboot"><Speak k="quizReady" /></div>
+                <button class="bootbtn" data-bootquiz onclick={() => buildQuiz()}><Speak k="startQuiz" plain /></button>
+              {/if}
             {:else if !quiz.done}
               {@const q = quiz.q[quiz.i]}
               <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
@@ -499,6 +555,16 @@
   .bootbtn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--press-teal); }
   .bootbtn.ghost { background: #fff; color: var(--animal-primary-active); box-shadow: 0 4px 0 #e3d9c8; }
   .bootbtn.ghost:active { box-shadow: 0 1px 0 #e3d9c8; }
+  /* BUGS#33 拦截卡（进小测步的互动证据门）：吉祥物+友好文案+双按钮（flex 均布，卡内消化零滚动）。
+     「我还要试试」=家长通道式弱化（.sm 缩一号、ghost 灰底），主行动永远是「跳回去学」 */
+  .gate { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center;
+    justify-content: space-evenly; gap: var(--sp-2); padding-top: 42px; }
+  .gatemascot { width: 118px; flex: 0 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .gatemascot :global(svg.chickgrow) { width: 100%; height: auto; }
+  .gatemsg { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); text-align: center; line-height: 2; max-width: 280px; }
+  .gatebtns { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); width: 100%; max-width: 300px; flex: none; }
+  .gatebtns .bootbtn { width: 100%; }
+  .gatebtns .bootbtn.sm { font-size:var(--fs-xs); font-weight: 800; color: var(--animal-text-2); padding: var(--sp-2) var(--sp-4); width: auto; }
   .qprog { display: flex; gap: var(--sp-2); }
   .qdot { width: 11px; height: 11px; border-radius: 50%; background: var(--animal-border-light); transition: background .2s, box-shadow .2s; }
   .qdot.ok { background: var(--animal-primary); }

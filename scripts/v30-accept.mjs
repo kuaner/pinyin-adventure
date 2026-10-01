@@ -81,12 +81,21 @@ async function curScope(page) {
   ok(s.npages === 7, `L1 页数=7（3字母×2+小测）`, `实得 ${s.npages}`)
   ok(s.transform === 0 && s.chipOn === 'a', `初始=字母a合并页`, `chip=${s.chipOn}`)
   await page.screenshot({ path: `${OUT}/01-L1-a-learn.png` })
+  /* BUGS#33 互动证据制：✓=证据制（旗A 读音点播+旗B 声调点读）——本流程先集齐 a 的两旗再走声调小练 */
+  let sc0 = await curScope(page)
+  await page.locator(`${sc0} [data-pcread]`).click()
+  await page.waitForTimeout(300)
   await swipeLeft(page)
   s = await state(page)
   ok(s.transform === -358 && s.chipOn === 'a', `触摸左滑→a声调页`, `transform=${s.transform} chip=${s.chipOn}`)
   await page.screenshot({ path: `${OUT}/02-L1-a-tone.png` })
-  /* 声调小练真实走通 → 读完了 → 自动推进 o + chip a ✓（ruby 在文本里，用 class 定位；作用域=当前页） */
+  /* 声调小练真实走通 → 读完了 → 自动推进 o + chip a ✓（ruby 在文本里，用 class 定位；作用域=当前页）。
+     点读 3 个声调行先集旗B（BUGS#33：≥3 个不同声调） */
   let sc = await curScope(page)
+  for (let i = 0; i < 3; i++) {
+    await page.locator(`${sc} .tonedrill .tonerow`).nth(i).click()
+    await page.waitForTimeout(250)
+  }
   await page.locator(`${sc} .tonedrill .trow .btn.green`).click()
   await page.waitForTimeout(400)
   for (let i = 0; i < 4; i++) {
@@ -140,7 +149,11 @@ async function curScope(page) {
 /* ---------- A6+A7+A8 · 小测 boot/答题/结算 + L3 拼读页 ---------- */
 {
   console.log('\n== L7 · 小测链 + L3 拼读页 ==')
-  const page = await (await ctx()).newPage()
+  const c = await ctx()
+  /* BUGS#33：chip 进小测自动建题的断言走「已过关课重学不拦」路径（预置 L7 记星）——
+     未学过的拦截路径归 v401-accept 正/反例 */
+  await c.addInitScript(() => localStorage.setItem('pinyin_learn', JSON.stringify({ u: 8, stars: { 7: 3 }, best: {}, step: {} })))
+  const page = await c.newPage()
   page.on('pageerror', (e) => errors.push('quiz:' + e.message))
   await openLesson(page, 7, '&qkey=1')   /* qkey 门：look 题选项带 data-qkey，确定性作答 */
   await page.locator('[data-punit="quiz"]').click()
