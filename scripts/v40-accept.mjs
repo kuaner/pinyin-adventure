@@ -54,18 +54,18 @@ const streakScore = (n) => { let s = 0; for (let c = 1; c <= n; c++) s += 10 * (
     scrollV: document.getElementById('tab-view-root').scrollHeight <= document.getElementById('tab-view-root').clientHeight,
   }))
   ok(hub.daily, 'hub：每日挑战卡在')
-  ok(hub.stalls.join(',') === 'balloon,mole,duel,fish', 'hub：4 游戏摊位实装', hub.stalls.join(','))
-  ok(hub.coming.join(',') === 'egg,tone,race,memory', 'hub：占位摊位（v4.2 起 4 张：蛋/声调/赛跑/翻牌）', hub.coming.join(','))
+  /* v4.3 终态：6 摊位全部实装，零占位残留（裁定 2026-10-01：赛跑/翻牌不上） */
+  ok(hub.stalls.join(',') === 'balloon,mole,duel,fish,egg,tone', 'hub：6 游戏摊位实装（v4.3 终态）', hub.stalls.join(','))
+  ok(hub.coming.length === 0, 'hub：零占位残留（敬请期待灰卡清零）', hub.coming.join(','))
   ok(hub.more.join(',') === 'levels,free', 'hub：闯关/自由练习保留入口', hub.more.join(','))
   ok(hub.artVisible, 'hub：摊位插画可辨识（宽>40px）')
   ok(hub.scrollV, 'hub：零纵向滚动（容器级）')
-  /* 占位卡不可误触 */
-  const comingTap = await page.evaluate(() => {
-    const c = document.querySelector('[data-coming="egg"]')
-    const btn = c.querySelector('button')
-    return !btn
+  /* 新摊位可开局：点拼音蛋 → 进游戏倒计时 */
+  const eggTap = await page.evaluate(() => {
+    const c = document.querySelector('[data-stall="egg"]')
+    return !!c && c.tagName === 'BUTTON'
   })
-  ok(comingTap, 'hub：敬请期待灰卡无按钮不误触')
+  ok(eggTap, 'hub：蛋/音乐会摊位为实装按钮（可开局）')
   /* 点气球摊位 → 进游戏倒计时 */
   await ck(page, '[data-stall="balloon"]')
   await page.waitForSelector('#gcount', { timeout: 6000 })

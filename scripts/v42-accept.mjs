@@ -89,10 +89,10 @@ async function enterDrill(page) {
     scrollV: document.getElementById('tab-view-root').scrollHeight <= document.getElementById('tab-view-root').clientHeight + 1,
   }))
   ok(hub.hall === 'game' && hub.gameOn && !hub.drillOn, '默认分段=游戏岛（hallbtn-game 高亮）')
-  ok(hub.stalls.join(',') === 'balloon,mole,duel,fish', 'hub：4 游戏摊位实装', hub.stalls.join(','))
-  ok(hub.coming.join(',') === 'egg,tone,race,memory', 'hub：8 摊位（蛋/声调/赛跑/翻牌 4 占位）', hub.coming.join(','))
-  ok(hub.comingBtn === 0, 'hub：占位灰卡无按钮不误触')
-  ok(hub.scrollV, 'hub：零纵向滚动（2×4 网格 664 视口）')
+  /* v4.3 终态：6 摊位全实装，零占位（裁定 2026-10-01：蛋/音乐会上，赛跑/翻牌删除） */
+  ok(hub.stalls.join(',') === 'balloon,mole,duel,fish,egg,tone', 'hub：6 游戏摊位实装（v4.3 终态）', hub.stalls.join(','))
+  ok(hub.coming.length === 0, 'hub：零占位残留（敬请期待灰卡清零）', hub.coming.join(','))
+  ok(hub.scrollV, 'hub：零纵向滚动（2×3 网格 664 视口）')
   /* 往返切换：game→drill→game，摊位/挑战卡都在（状态保持） */
   await ck(page, '[data-hallbtn="drill"]')
   await page.waitForSelector('#drillgrid', { timeout: 5000 })
@@ -101,7 +101,7 @@ async function enterDrill(page) {
     cards: Array.from(document.querySelectorAll('#drillgrid [data-drill]')).map((e) => e.getAttribute('data-drill')),
     scrollV: document.getElementById('tab-view-root').scrollHeight <= document.getElementById('tab-view-root').clientHeight + 1,
   }))
-  ok(drill.hall === 'drill' && drill.cards.join(',') === 'bolt,listen,pairs,zi', '练习馆：四入口卡（闪电/听写/易混对/识字表）', drill.cards.join(','))
+  ok(drill.hall === 'drill' && drill.cards.join(',') === 'bolt,listen,pairs,zi,blend,tone', '练习馆：六入口卡（闪电/听写/易混对/识字表/拼读/声调）', drill.cards.join(','))
   ok(drill.scrollV, '练习馆：零纵向滚动')
   await ck(page, '[data-hallbtn="game"]')
   await page.waitForSelector('#stalls', { timeout: 5000 })
@@ -110,7 +110,7 @@ async function enterDrill(page) {
     daily: !!document.getElementById('dailycard'),
     stalls: document.querySelectorAll('#stalls [data-stall]').length,
   }))
-  ok(back.hall === 'game' && back.daily && back.stalls === 4, '往返切回游戏岛：挑战卡+4 摊位原样')
+  ok(back.hall === 'game' && back.daily && back.stalls === 6, '往返切回游戏岛：挑战卡+6 摊位原样')
   /* 跨视图保持：drill → pairs 页 → 返回练习 tab 仍在练习馆 */
   await ck(page, '[data-hallbtn="drill"]')
   await page.waitForSelector('#drillgrid', { timeout: 5000 })

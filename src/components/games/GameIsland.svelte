@@ -1,9 +1,9 @@
 <script lang="ts">
-  /* v4.2 练习 tab：🎪游戏岛 / 📚练习馆 分段切换（大号胶囊 toggle，默认游戏岛）。
-     游戏岛 = 每日挑战卡 + 8 游戏摊位（4 实装：气球/口诀地鼠/镜像对决/钓鱼；
-     4 占位：拼音蛋/声调音乐会/字母赛跑/记忆翻牌"敬请期待"灰卡不误触），2×4 网格零纵向滚动。
-     练习馆 = 四入口正经练习回归（Bug#35：反复巩固记忆的需要保留）：
-     ⚡闪电刷题 / ✍️听写专练 / 🔄易混对特训 / 📖识字表闯关。
+  /* v4.3 练习 tab：🎪游戏岛 / 📚练习馆 分段切换（大号胶囊 toggle，默认游戏岛）。
+     游戏岛 = 每日挑战卡 + 6 游戏摊位全部实装（气球/口诀地鼠/镜像对决/钓鱼/拼音蛋/声调音乐会），
+     2×3 网格零纵向滚动（v4.3 裁定终版：蛋/音乐会换实装，赛跑/翻牌占位删除）。
+     练习馆 = 六入口正经练习：⚡闪电刷题 / ✍️听写专练 / 🔄易混对特训 / 📖识字表闯关
+     / ✍️拼读专练 / 🎵声调专练（v4.3 增两件）。
      hall 状态存 ui.hall（跨 tab/跨视图往返保持）。闯关冒险/自由练习保留为底部紧凑入口 */
   import { ui, show } from '../../stores/ui.svelte'
   import { startGame, startDaily, dailyView, gameBest } from '../../stores/game.svelte'
@@ -20,26 +20,26 @@
   const moleBest = $derived(gameBest('mole'))
   const duelBest = $derived(gameBest('duel'))
   const fishBest = $derived(gameBest('fish'))
+  const eggBest = $derived(gameBest('egg'))
+  const toneBest = $derived(gameBest('tone'))
 
+  /* v4.3 终态 6 摊位（裁定 2026-10-01：赛跑/翻牌不上，占位删除） */
   const STALLS = [
     { id: 'balloon', nameKey: 'stallBalloon', cls: 's-sky' },
     { id: 'mole', nameKey: 'stallMoleKj', cls: 's-grass' },
     { id: 'duel', nameKey: 'stallDuel', cls: 's-sun' },
     { id: 'fish', nameKey: 'stallFish', cls: 's-sea' },
-  ] as const
-
-  const COMING = [
-    { id: 'egg', nameKey: 'stallEgg' },
-    { id: 'tone', nameKey: 'stallTone' },
-    { id: 'race', nameKey: 'stallRace' },
-    { id: 'memory', nameKey: 'stallMemory' },
+    { id: 'egg', nameKey: 'stallEgg', cls: 's-nest' },
+    { id: 'tone', nameKey: 'stallTone', cls: 's-note' },
   ] as const
 
   function bestOf(id: string): number {
     if (id === 'balloon') return balloonBest
     if (id === 'mole') return moleBest
     if (id === 'duel') return duelBest
-    return fishBest
+    if (id === 'fish') return fishBest
+    if (id === 'egg') return eggBest
+    return toneBest
   }
 
   function openDaily() {
@@ -134,6 +134,30 @@
                 <rect x="98" y="24" width="10" height="26" rx="4" fill="#e76f51" />
                 <rect x="0" y="58" width="120" height="8" rx="4" fill="#f3dfae" />
               </svg>
+            {:else if s.id === 'egg'}
+              <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect x="0" y="0" width="120" height="66" rx="10" fill="#fdf3e0" />
+                <ellipse cx="60" cy="52" rx="34" ry="10" fill="#e8d9b0" />
+                <path d="M48 18 C 36 18 30 30 30 40 C 30 50 38 56 48 56 L48 18 Z" fill="#f4a6a4" transform="scale(-1 1) translate(-96 0)" />
+                <path d="M72 18 C 84 18 90 30 90 40 C 90 50 82 56 72 56 L72 18 Z" fill="#889df0" />
+                <text x="56" y="34" font-size="13" font-weight="900" fill="#3d3428" text-anchor="middle">bā</text>
+                <circle cx="58" cy="16" r="7" fill="#ffd94d" stroke="#e9b64f" stroke-width="1.6" />
+                <circle cx="55.8" cy="14.8" r="1.2" fill="#3d3428" />
+                <circle cx="60.2" cy="14.8" r="1.2" fill="#3d3428" />
+                <rect x="0" y="58" width="120" height="8" rx="4" fill="#f3e2b8" />
+              </svg>
+            {:else if s.id === 'tone'}
+              <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <rect x="0" y="0" width="120" height="66" rx="10" fill="#eef6ff" />
+                <path d="M40 46 L40 22 L62 16 L62 40" stroke="#6c86e8" stroke-width="4" fill="none" stroke-linecap="round" />
+                <ellipse cx="34" cy="47" rx="8" ry="6" fill="#6c86e8" />
+                <ellipse cx="56" cy="41" rx="8" ry="6" fill="#6c86e8" />
+                <circle cx="88" cy="22" r="8" fill="#f5c31c" />
+                <path d="M82 22 L94 22" stroke="#fff" stroke-width="3" stroke-linecap="round" />
+                <circle cx="97" cy="44" r="8" fill="#b58cff" />
+                <path d="M91 40 L97 46 L103 40" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" />
+                <rect x="0" y="58" width="120" height="8" rx="4" fill="#cfe3f7" />
+              </svg>
             {:else}
               <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
                 <rect x="0" y="0" width="120" height="66" rx="10" fill="#d8f0fb" />
@@ -155,73 +179,6 @@
           </div>
         </button>
       {/each}
-
-      <div class="stall coming" data-coming="egg" aria-disabled="true">
-        <div class="scene">
-          <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect x="0" y="0" width="120" height="66" rx="10" fill="#efece4" />
-            <ellipse cx="60" cy="38" rx="20" ry="25" fill="#e3ded2" />
-            <path d="M46 34 L 60 30 L 74 34 L 66 44 L 52 44 Z" fill="#d6d0c2" stroke="#c4bda9" stroke-width="2" stroke-dasharray="4 3" />
-            <rect x="0" y="58" width="120" height="8" rx="4" fill="#dcd6c8" />
-          </svg>
-        </div>
-        <div class="sinfo">
-          <div class="sname"><Speak k="stallEgg" /></div>
-          <div class="sbest"><Speak k="comingSoon" /></div>
-        </div>
-      </div>
-
-      <div class="stall coming" data-coming="tone" aria-disabled="true">
-        <div class="scene">
-          <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect x="0" y="0" width="120" height="66" rx="10" fill="#efece4" />
-            <path d="M40 46 L40 22 L62 16 L62 40" stroke="#c4bda9" stroke-width="4" fill="none" stroke-linecap="round" />
-            <ellipse cx="34" cy="47" rx="8" ry="6" fill="#d6d0c2" />
-            <ellipse cx="56" cy="41" rx="8" ry="6" fill="#d6d0c2" />
-            <rect x="0" y="58" width="120" height="8" rx="4" fill="#dcd6c8" />
-          </svg>
-        </div>
-        <div class="sinfo">
-          <div class="sname"><Speak k="stallTone" /></div>
-          <div class="sbest"><Speak k="comingSoon" /></div>
-        </div>
-      </div>
-
-      <div class="stall coming" data-coming="race" aria-disabled="true">
-        <div class="scene">
-          <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect x="0" y="0" width="120" height="66" rx="10" fill="#efece4" />
-            <path d="M8 52 L112 52" stroke="#c4bda9" stroke-width="3" stroke-dasharray="8 6" />
-            <path d="M22 50 C 20 40 26 36 34 36 C 42 36 46 42 44 50 Z" fill="#e9b64f" />
-            <circle cx="30" cy="43" r="1.8" fill="#3d3428" />
-            <path d="M70 50 C 70 40 78 38 84 40 C 90 42 92 48 88 50 Z" fill="#d6d0c2" />
-            <rect x="102" y="30" width="4" height="24" rx="2" fill="#c4bda9" />
-            <path d="M106 32 L 116 35 L 106 38 Z" fill="#d6d0c2" />
-            <rect x="0" y="58" width="120" height="8" rx="4" fill="#dcd6c8" />
-          </svg>
-        </div>
-        <div class="sinfo">
-          <div class="sname"><Speak k="stallRace" /></div>
-          <div class="sbest"><Speak k="comingSoon" /></div>
-        </div>
-      </div>
-
-      <div class="stall coming" data-coming="memory" aria-disabled="true">
-        <div class="scene">
-          <svg viewBox="0 0 120 66" class="art" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect x="0" y="0" width="120" height="66" rx="10" fill="#efece4" />
-            <rect x="30" y="16" width="26" height="34" rx="5" fill="#e3ded2" stroke="#c4bda9" stroke-width="2" />
-            <rect x="64" y="16" width="26" height="34" rx="5" fill="#e3ded2" stroke="#c4bda9" stroke-width="2" />
-            <circle cx="43" cy="33" r="7" fill="#d6d0c2" />
-            <path d="M72 40 L 82 24 L 86 33 L 90 26" stroke="#c4bda9" stroke-width="2.4" fill="none" stroke-linecap="round" />
-            <rect x="0" y="58" width="120" height="8" rx="4" fill="#dcd6c8" />
-          </svg>
-        </div>
-        <div class="sinfo">
-          <div class="sname"><Speak k="stallMemory" /></div>
-          <div class="sbest"><Speak k="comingSoon" /></div>
-        </div>
-      </div>
     </div>
   {:else}
     <!-- 📚 练习馆：四入口正经练习（老机制回归+错误账本加权） -->
@@ -258,6 +215,19 @@
         <div class="mic"><Icon name="book" size={24} /></div>
         <div class="dname"><Speak k="drillZi" /></div>
         <div class="ddesc"><Speak k="drillZiDesc" /></div>
+      </button>
+
+      <!-- v4.3 增两件专练：拼读/声调（纯题目高密度，条目账本加权） -->
+      <button class="dcard d-blend pressable" data-drill="blend" onclick={() => show('blendquiz')}>
+        <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="9" cy="12" rx="6" ry="8" /><ellipse cx="16.5" cy="12" rx="4.5" ry="6.5" /></svg></div>
+        <div class="dname"><Speak k="hallBlend" /></div>
+        <div class="ddesc"><Speak k="hallBlendDesc" /></div>
+      </button>
+
+      <button class="dcard d-tone pressable" data-drill="tone" onclick={() => show('tonequiz')}>
+        <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18 L9 5 L19 3 L19 16" /><circle cx="6.5" cy="18" r="2.5" /><circle cx="16.5" cy="16" r="2.5" /></svg></div>
+        <div class="dname"><Speak k="hallTone" /></div>
+        <div class="ddesc"><Speak k="hallToneDesc" /></div>
       </button>
     </div>
   {/if}
@@ -304,15 +274,13 @@
   .ddesc :global(rt) { font-size: var(--fs-rt); }
   .dgo { flex: none; color: #c77800; }
 
-  /* v4.2：8 摊位 2×4 网格——插画全卡铺底（slice 裁切）+ 底部信息浮层（名字+最佳），零纵向滚动 */
-  #stalls { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr);
+  /* v4.3：6 摊位 2×3 网格（终态）——插画全卡铺底（slice 裁切）+ 底部信息浮层（名字+最佳），零纵向滚动 */
+  #stalls { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr);
     gap: var(--sp-1); margin-top: var(--sp-2); }
   .stall { position: relative; border: none; border-radius: var(--animal-r-lg); background: #fff;
     box-shadow: var(--animal-shadow); cursor: pointer; overflow: hidden; font-family: inherit;
     display: flex; flex-direction: column; align-items: stretch; padding: 0; min-height: 0; min-width: 0; }
   .stall:active { transform: scale(.97); }
-  .stall.coming { background: #f4f1ea; cursor: default; box-shadow: var(--animal-shadow-sm); }
-  .stall.coming .sname { color: var(--animal-text-2); }
   .scene { position: absolute; inset: 0; display: block; }
   .art { width: 100%; height: 100%; min-height: 0; display: block; }
   .sinfo { position: absolute; left: 5px; right: 5px; bottom: 4px; background: rgba(255, 255, 255, .88);
@@ -323,27 +291,28 @@
   .sbest { font-size: 10px; font-weight: 800; color: var(--animal-primary-active);
     white-space: nowrap; line-height: 1.3; }
   .sbest :global(rt) { font-size: 10px; }
-  .stall.coming .sbest { color: #a89e8d; }
 
-  /* ---- 练习馆 ---- */
-  #drillgrid { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-    gap: var(--sp-2); margin-top: var(--sp-2); }
+  /* ---- 练习馆（v4.3 六入口 2×3） ---- */
+  #drillgrid { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr);
+    gap: var(--sp-1); margin-top: var(--sp-2); }
   .dcard { position: relative; border: none; border-radius: var(--animal-r-lg); cursor: pointer; overflow: hidden;
     font-family: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; gap: var(--sp-1); padding: var(--sp-2); min-height: 0; min-width: 0;
+    text-align: center; gap: var(--sp-1); padding: var(--sp-1); min-height: 0; min-width: 0;
     box-shadow: var(--animal-shadow); }
   .dcard:active { transform: scale(.97); }
-  .dcard .mic { width: 48px; height: 48px; border-radius: 16px; display: flex; align-items: center; justify-content: center;
+  /* v4.3 六入口 2×3：卡高约砍 1/3——mic 40px+名称单行+描述≤6 字单行（放不下=压缩，绝不截断丢失） */
+  .dcard .mic { width: 40px; height: 40px; border-radius: 13px; display: flex; align-items: center; justify-content: center;
     box-shadow: 0 3px 0 rgba(61, 52, 40, .14); flex: none; }
-  .dcard .mic :global(svg) { width: 24px; height: 24px; }
-  .dcard .dname { font-size: var(--fs-md); font-weight: 900; line-height: 1.6; white-space: nowrap; max-width: 100%; }
+  .dcard .mic :global(svg) { width: 20px; height: 20px; }
+  .dcard .dname { font-size: var(--fs-sm); font-weight: 900; line-height: 1.5; white-space: nowrap; max-width: 100%; }
   .dcard .dname :global(rt) { font-size: var(--fs-rt); }
-  .dcard .ddesc { font-size: var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.6; max-width: 100%; }
-  .dcard .ddesc :global(rt) { font-size: var(--fs-rt); }
-  .dbadge { position: absolute; top: var(--sp-2); right: var(--sp-2); font-size: var(--fs-xs); font-weight: 900;
-    padding: 2px var(--sp-2); white-space: nowrap; border-radius: 999px; background: rgba(255, 255, 255, .85);
-    color: var(--animal-text); box-shadow: 0 1px 4px rgba(61, 52, 40, .12); max-width: calc(100% - var(--sp-4)); }
-  .dbadge :global(rt) { font-size: var(--fs-rt); }
+  .dcard .ddesc { font-size: var(--fs-xs); font-weight: 700; color: var(--animal-text-2); line-height: 1.4;
+    max-width: 100%; white-space: nowrap; }
+  .dcard .ddesc :global(rt) { font-size: 10px; }
+  .dbadge { position: absolute; top: 6px; right: 6px; font-size: 10px; font-weight: 900;
+    padding: 1px 7px; white-space: nowrap; border-radius: 999px; background: rgba(255, 255, 255, .85);
+    color: var(--animal-text); box-shadow: 0 1px 4px rgba(61, 52, 40, .12); max-width: calc(100% - 12px); }
+  .dbadge :global(rt) { font-size: 10px; }
   .d-bolt { background: linear-gradient(160deg, #e8edff, #dbe3fb); }
   .d-bolt .mic { background: #889df0; }
   .d-listen { background: linear-gradient(160deg, #e6f9f6, #d2f1ec); }
@@ -352,6 +321,10 @@
   .d-pairs .mic { background: #f5a35c; }
   .d-zi { background: linear-gradient(160deg, #efe9ff, #e5dbfb); }
   .d-zi .mic { background: #b58cff; }
+  .d-blend { background: linear-gradient(160deg, #fdeef0, #f9dde1); }
+  .d-blend .mic { background: #e8899b; }
+  .d-tone { background: linear-gradient(160deg, #e9f3ff, #d8e9fb); }
+  .d-tone .mic { background: #6c86e8; }
 
   #morerow { flex: none; display: flex; gap: var(--sp-2); margin-top: var(--sp-2); }
   .morelink { flex: 1; min-height: 48px; border: 2px solid var(--animal-border-light); border-radius: 999px;

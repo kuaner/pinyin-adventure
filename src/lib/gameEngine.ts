@@ -98,6 +98,67 @@ export function pickGameTarget(pool: string[], exclude: string[]): string {
   return ledgerPick(src, Math.random)
 }
 
+/* ---------- v4.3 拼读/声调题源：已学课的 blends 与四声表（lessons.json 派生，绝不超纲） ----------
+   blends：{ini,fin,syl,tone,display,char,file}——file=hyp 真人合成音节（ba1.mp3），拼读铁律音频源。
+   tones：{base,display,tones:[{t,display,file}]}——同字母四声（ma1..ma4），声调游戏/专练题源。
+   全空回落：blends→第 3 课（首个拼读课）、tones→第 1 课（与 learnedLetters 全空回落同款）。 */
+export interface Blend { ini: string; fin: string; syl: string; tone: number; display: string; char: string; file: string }
+export interface ToneRow { base: string; display: string; tones: { t: number; display: string; file: string }[] }
+
+const BLEND_LESSONS: { n: number; blends: Blend[] }[] = []
+const TONE_LESSONS: { n: number; rows: ToneRow[] }[] = []
+for (const l of LESSONS as any[]) {
+  if (l.blends && l.blends.length) BLEND_LESSONS.push({ n: l.n, blends: l.blends })
+  if (l.tones && l.tones.length) TONE_LESSONS.push({ n: l.n, rows: l.tones })
+}
+
+export function learnedBlends(): Blend[] {
+  const out: Blend[] = []
+  for (const l of BLEND_LESSONS) {
+    if (quizPassed(l.n)) out.push(...l.blends)
+  }
+  if (!out.length) {
+    /* 全空回落首个拼读课（与 learnedLetters 回落第 1 课同款；成品都是正确拼读——零错误信息） */
+    if (BLEND_LESSONS.length) out.push(...BLEND_LESSONS[0].blends)
+  }
+  return out
+}
+
+export function learnedToneRows(): ToneRow[] {
+  const out: ToneRow[] = []
+  for (const l of TONE_LESSONS) {
+    if (quizPassed(l.n)) out.push(...l.rows)
+  }
+  if (!out.length) {
+    const l1 = TONE_LESSONS.find((x) => x.n === 1)
+    if (l1) out.push(...l1.rows)
+  }
+  return out
+}
+
+/* ---------- v4.3 条目账本加权（拼读对/声调音节级：GD.items 键=syl 或 file） ----------
+   与 ledgerWeight 同构：错多加权 + 高错误率再加成 + 久未练回火。 */
+export function itemWeight(k: string): number {
+  const r = GD.items[k]
+  let w = 1
+  if (r) {
+    w += Math.min(r.err, 6) * 1.8
+    if (r.ok + r.err >= 3 && r.err / (r.ok + r.err) >= 0.4) w += 2
+    const stale = dayNum() - r.last
+    if (stale >= 3) w += 1.5
+  }
+  return w
+}
+
+/* 泛化加权抽样（键数组 + 权重函数 + rng）——蛋合并/音乐会/两专练共用 */
+export function pickWeighted<T>(items: T[], weight: (x: T) => number, rng: () => number): T {
+  let tot = 0
+  for (const it of items) tot += weight(it)
+  let r = rng() * tot
+  for (const it of items) { r -= weight(it); if (r <= 0) return it }
+  return items[items.length - 1]
+}
+
 /* ---------- 每日挑战 10 题：弱项字母听写 + 镜像对 + 口诀回忆 + 识字表看字选拼音 ---------- */
 export interface DailyQ {
   type: 'blisten' | 'bkj' | 'zi'

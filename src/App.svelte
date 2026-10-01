@@ -30,6 +30,8 @@
   import DailyChallenge from './components/DailyChallenge.svelte'
   import ListenDrill from './components/ListenDrill.svelte'
   import ZiHall from './components/ZiHall.svelte'
+  import BlendQuiz from './components/BlendQuiz.svelte'
+  import ToneQuiz from './components/ToneQuiz.svelte'
 
   const isTab = $derived(TAB_VIEWS.includes(ui.view))
 
@@ -97,6 +99,10 @@
       <ListenDrill />
     {:else if ui.view === 'zihall'}
       <ZiHall />
+    {:else if ui.view === 'blendquiz'}
+      <BlendQuiz />
+    {:else if ui.view === 'tonequiz'}
+      <ToneQuiz />
     {/if}
   </div>
 

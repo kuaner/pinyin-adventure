@@ -9,6 +9,7 @@ export type View =
   | 'album'                                             /* v3.2 卡片图鉴（专注态） */
   | 'game' | 'daily'                                    /* v4.0 游戏岛：游戏进行态 / 每日挑战 */
   | 'listendrill' | 'zihall'                            /* v4.2 练习馆：听写专练 / 识字表闯关 */
+  | 'blendquiz' | 'tonequiz'                            /* v4.3 练习馆：拼读专练 / 声调专练 */
 
 export const TAB_VIEWS: View[] = ['learn', 'practice', 'mine']
 

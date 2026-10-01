@@ -15,6 +15,7 @@ import { S } from '../stores/progress.svelte'
 import { celebrateQuiz, celebrateLetter, celebrateGrad, celebrateEvolve, celebrateGame } from '../stores/growth.svelte'
 import { AUDIO_CACHE } from './audio'
 import { buildQuestions, buildDetQs, makeDfix, makeZiQ, shuffle } from './quizEngine'
+import { itemWeight, pickWeighted, mulberry32, learnedBlends, learnedToneRows } from './gameEngine'
 import { LEVELS, ZWORDS, ZI, PH } from '../data'
 import { tRaw } from '../text/strings'
 import { T } from './ruby'
@@ -216,6 +217,10 @@ function openView(v: string) {
     show('listendrill')          /* v4.2 听写专练（自动读音首题即播） */
   } else if (v === 'zihall') {
     show('zihall')               /* v4.2 识字表闯关（解锁网格） */
+  } else if (v === 'blenddrill') {
+    show('blendquiz')            /* v4.3 拼读专练（听音题首题自动读音） */
+  } else if (v === 'tonedrill') {
+    show('tonequiz')             /* v4.3 声调专练 */
   } else if (v === 'island') {
     show('practice')
   } else if (v === 'game') {
@@ -261,6 +266,18 @@ export function initApp() {
       hall: (h: 'game' | 'drill') => { ui.hall = h; show('practice') },
       ldrill: () => show('listendrill'),
       zihall: () => show('zihall'),
+      /* v4.3 钩子：两专练直达 + 条目账本/加权抽样断言（itemWeight 纯函数可种子复算） */
+      bdrill: () => show('blendquiz'),
+      tdrill: () => show('tonequiz'),
+      itemW: (k: string) => itemWeight(k),
+      blendPool: () => learnedBlends().map((b) => b.syl),
+      tonePool: () => learnedToneRows().flatMap((r) => r.tones.map((x) => x.file)),
+      wpick: (keys: string[], seed: number) => {
+        const rng = mulberry32(seed)
+        const out: string[] = []
+        for (let i = 0; i < 200; i++) out.push(pickWeighted(keys, (k) => itemWeight(k), rng))
+        return out
+      },
     }
   }
   if (s.indexOf('probe') >= 0 && s.indexOf('det') >= 0) setTimeout(probeDet, 500)

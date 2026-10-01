@@ -7,7 +7,7 @@ import { todayStr, markDay } from './progress.svelte'
 import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
 import { G, saveG, checkBadges, celebrateGame } from './growth.svelte'
 import { t } from '../text/strings'
-import { buildDailyQs, learnedLetters, type DailyQ } from '../lib/gameEngine'
+import { buildDailyQs, learnedLetters, learnedBlends, learnedToneRows, type DailyQ } from '../lib/gameEngine'
 import { markResult } from './weights.svelte'
 
 const KEY = 'pinyin_game_v1'
@@ -20,6 +20,7 @@ export interface GameLedger {
   letters: Record<string, LetterStat>
   games: Record<string, GameRec>
   daily: { day: string; best: number; done: boolean }
+  items: Record<string, LetterStat>   /* v4.3 条目账本：拼读对（键=syl 如 ba）/声调音节（键=file 如 ma2） */
 }
 
 export function dayNum(d = new Date()): number {
@@ -27,12 +28,19 @@ export function dayNum(d = new Date()): number {
 }
 
 function normalize(o: any): GameLedger {
-  const out: GameLedger = { v: 1, letters: {}, games: {}, daily: { day: '', best: 0, done: false } }
+  const out: GameLedger = { v: 1, letters: {}, games: {}, daily: { day: '', best: 0, done: false }, items: {} }
   if (o && typeof o === 'object' && o.v === 1) {
     if (o.letters && typeof o.letters === 'object') {
       for (const k in o.letters) {
         const r = o.letters[k]
         if (r && typeof r === 'object') out.letters[k] = { ok: +r.ok || 0, err: +r.err || 0, last: +r.last || 0 }
+      }
+    }
+    if (o.items && typeof o.items === 'object') {
+      /* v4.3 增量字段：旧数据无 items → 默认空表，向后兼容 */
+      for (const k in o.items) {
+        const r = o.items[k]
+        if (r && typeof r === 'object') out.items[k] = { ok: +r.ok || 0, err: +r.err || 0, last: +r.last || 0 }
       }
     }
     if (o.games && typeof o.games === 'object') {
@@ -100,6 +108,17 @@ export function recordLetter(k: string, ok: boolean) {
   saveGD()
 }
 
+/* v4.3 条目账本记一笔（拼读对/声调音节级）——错过的对子加权多出（itemWeight 消费） */
+export function recordItem(k: string, ok: boolean) {
+  if (!k) return
+  let r = GD.items[k]
+  if (!r) { r = GD.items[k] = { ok: 0, err: 0, last: 0 } }
+  if (ok) r.ok++
+  else r.err++
+  r.last = dayNum()
+  saveGD()
+}
+
 /* ---------- 游戏定义 ---------- */
 export interface GameDef { id: string; nameKey: any; hintKey: any }
 export const GAME_DEFS: Record<string, GameDef> = {
@@ -107,6 +126,8 @@ export const GAME_DEFS: Record<string, GameDef> = {
   mole: { id: 'mole', nameKey: 'stallMoleKj', hintKey: 'hintMoleKj' },
   duel: { id: 'duel', nameKey: 'stallDuel', hintKey: 'hintDuel' },
   fish: { id: 'fish', nameKey: 'stallFish', hintKey: 'hintFish' },
+  egg: { id: 'egg', nameKey: 'stallEgg', hintKey: 'hintEgg' },
+  tone: { id: 'tone', nameKey: 'stallTone', hintKey: 'hintTone' },
 }
 
 /* ---------- 游戏会话状态 ---------- */
@@ -122,7 +143,8 @@ export const GS = $state({
   stars: 0,
   record: false,
   win: 0,                         /* 拔河终局：1 推过线赢 / -1 被推过线 / 0 超时自然结算 */
-  target: '',                     /* 当前听音目标字母 */
+  target: '',                     /* 当前听音目标字母（蛋合并=syl/音乐会=音节文件名） */
+  afile: '',                      /* v4.3 目标音频文件直通（蛋=blend file、音乐会=tone file）：非空时播它 */
   kj: false,                      /* v4.2 口诀地鼠：true=目标音播口诀朗读（kj_{k}），false=呼读音 */
   listened: false,                /* 本目标是否已点听过（未听过时漏掉不罚——孩子还没听到题） */
   frozen: false,                  /* 探针冻结计时（?open= 截图/自动化用） */
@@ -154,6 +176,7 @@ export function startGame(id: string, frozen = false) {
   GS.record = false
   GS.win = 0
   GS.target = ''
+  GS.afile = ''
   GS.kj = id === 'mole' /* v4.2 口诀地鼠：认知路径=口诀→形（气球/钓鱼仍=呼读音→形） */
   GS.listened = false
   GS.frozen = frozen
@@ -161,10 +184,13 @@ export function startGame(id: string, frozen = false) {
   gameRec(id) /* 跨天滚存先行（结算产星上限依赖今天的空账） */
   if (frozen) return
   /* v4.1 声音先行：开局点击的手势栈内统一解锁一次（媒体元素+AudioContext），
-     3-2-1 期间并行预载本局音频（地鼠=口诀、对决=呼读+口诀、其余=呼读）——首播零网络等待 */
+     3-2-1 期间并行预载本局音频（地鼠=口诀、对决=呼读+口诀、蛋=拼读合成音、音乐会=四声音节、其余=呼读）——首播零网络等待 */
   unlockMedia()
   try {
-    const names = learnedLetters().flatMap((k) =>
+    let names: string[] = []
+    if (id === 'egg') names = learnedBlends().map((b) => b.file)
+    else if (id === 'tone') names = learnedToneRows().flatMap((r) => r.tones.map((x) => x.file))
+    else names = learnedLetters().flatMap((k) =>
       id === 'mole' ? [kjAudio(k)]
       : id === 'duel' ? [letterAudio(k), kjAudio(k)]
       : [letterAudio(k)])
@@ -202,10 +228,12 @@ function stopTimers() {
   if (GS.tid) { clearInterval(GS.tid); GS.tid = null }
 }
 
-/* ---------- 连击判定（全部游戏入口） ---------- */
-export function gameHit(letter: string, ok: boolean) {
+/* ---------- 连击判定（全部游戏入口） ----------
+   ledger='letter'（默认）记字母账本；ledger='item' 记 v4.3 条目账本（拼读对/声调音节） */
+export function gameHit(letter: string, ok: boolean, ledger: 'letter' | 'item' = 'letter') {
   if (GS.phase !== 'play') return
-  recordLetter(letter, ok)
+  if (ledger === 'item') recordItem(letter, ok)
+  else recordLetter(letter, ok)
   if (ok) {
     GS.combo++
     GS.tries++
@@ -271,17 +299,18 @@ export function quitGame() {
    自动播即算"已听过"——等待窗超时未击一律 miss 清连击，绝不静默推进。
    v4.2 口诀地鼠：GS.kj=true 时播口诀朗读（kj_{k} 真人库）而非呼读音——认知路径=口诀→形。
    播放失败/静音静默降级（hint 置空不弹 toast），游戏照常不阻塞。 */
-export function askTarget(k: string) {
+export function askTarget(k: string, file = '') {
   GS.target = k
+  GS.afile = file
   GS.listened = true
   stopAll()                          /* 连续自动播防重叠：新目标音开播前停旧音频 */
-  playAudio(GS.kj ? kjAudio(k) : letterAudio(k))   /* hyp 真人库，失败静默 */
+  playAudio(file || (GS.kj ? kjAudio(k) : letterAudio(k)))   /* hyp 真人库，失败静默 */
 }
 
 export function listenTarget() {
   if (!GS.target) return
   GS.listened = true
-  playAudio(GS.kj ? kjAudio(GS.target) : letterAudio(GS.target))  /* 🔊=重听当前目标音 */
+  playAudio(GS.afile || (GS.kj ? kjAudio(GS.target) : letterAudio(GS.target)))  /* 🔊=重听当前目标音 */
 }
 
 /* ---------- 每日挑战会话 ---------- */
