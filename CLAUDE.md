@@ -1,6 +1,6 @@
 # 拼音闯关大冒险（pinyin-adventure）
 
-儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课（**v3.0 按字母分**：每字母=学一学合并页→声调页→自动进下一字母，全部走完→课级拼读（hasBlend 课）→课级小测；**v3.1 字模=笔顺动画**：学一学页唯一 z 即笔顺动画本体（idleDone 空闲定格完整字/进页自动播/可重播），全部播放键 ≥48px 儿童触控；进度=字母 chip 条，小测三题型=听音选字母/看字母选音/听调辨调·仅韵母课）、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3；**v3.2 升级体系**=小鸡成长线（五阶段 0/50/150/300/500 星进阶+进化动画）+卡片图鉴（63 张课级解锁）+庆祝仪式（过关/字母/毕业/进化四模式，可跳过）+签到连击+10 枚成就徽章。
+儿童拼音闯关 PWA：**v2.4 App 壳 = 底部 tab×3（学习/练习/我的）+ 全屏专注态**，一屏一事零纵向滚动、题内横向翻页、声音礼仪三规则（入口过场音清零/点了才说/一次一路）。内容：学习岛 12 课（**v3.0 按字母分**：每字母=学一学合并页→声调页→自动进下一字母，全部走完→课级拼读（hasBlend 课）→课级小测；**v3.1 字模=笔顺动画**：学一学页唯一 z 即笔顺动画本体（idleDone 空闲定格完整字/进页自动播/可重播），全部播放键 ≥48px 儿童触控；进度=字母 chip 条，小测三题型=听音选字母/看字母选音/听调辨调·仅韵母课）、8 关冒险 + 易混对大师毕业关、正反小侦探、⚡闪电刷题、📖常见字快拼、🎧口诀小广播（63 条连播/循环）、闪卡三盒复习、全量 ruby 注音、纯预生成 mp3；**v3.2 升级体系**=小鸡成长线（五阶段 0/50/150/300/500 星进阶+进化动画）+卡片图鉴（63 张课级解锁）+庆祝仪式（过关/字母/毕业/进化四模式，可跳过）+签到连击+10 枚成就徽章；**v4.0 嘉年华游戏岛**：练习 tab 整体重造=游戏岛 hub（顶部每日挑战卡 + 6 游戏摊位：🎈气球大作战/🔨打地鼠/⚔️镜像大对决/🎣小猫钓鱼实装，🥚拼音蛋/🎵声调音乐会敬请期待）+ 每日挑战（10 题智能混编，日期种子每日一换）+ 全局连击（x2/x3 倍率+火焰+音阶升调）+ 错误账本 game_stats_v1（per-letter ok/err/last + per-game best/starsToday，加权出题），游戏只用已学字母（课级小测通过派生）、星星入小鸡成长体系（每游戏每日上限 10 星），旧练习四入口（闪电/快拼/专练/侦探）删除（机制吸收进游戏），闯关冒险/自由练习保留为 hub 底部紧凑入口。
 
 ## 技术栈
 
@@ -26,13 +26,14 @@ node scripts/visual-check.mjs # 视觉度量校验
 src/
   main.ts                 # 入口：mount App
   app.css                 # 全局样式（v1 单文件 CSS 逐字移植，类名/id 不变）
-  App.svelte              # v2.4 壳路由：tab×3（LearnTab/PracticeTab/MineTab）+ 专注态视图 + TabBar
+  App.svelte              # v2.4 壳路由：tab×3（LearnTab/GameIsland/MineTab）+ 专注态视图（含 v4.0 game/daily）+ TabBar
   components/
     TabBar / HSteps（横向翻页容器：拖拽+阈值吸附+页点）   # v2.4 壳件
-    home/LearnTab（大卡+12课胶囊条+广播入口） PracticeTab（6模式卡阵） MineTab（小鸡+周历+家长区）
+    home/LearnTab（大卡+12课胶囊条+广播入口） MineTab（小鸡+周历+家长区）
+    games/（v4.0 嘉年华游戏岛）GameIsland（练习 tab=hub：每日挑战卡+6 摊位[④实装+②敬请期待]+闯关/自由练习保留入口） GameView+GameShell（3-2-1 倒计时/60 秒计时/连击 HUD/结算层共用骨架） BalloonPop（气球听音 pop） MoleWhack（3×3 地鼠+镜像陷阱） MirrorDuel（b/d/p/q 拔河） FishCatch（双泳道钓鱼） DailyChallenge（每日 10 题混编页）
     RadioPage（口诀小广播） parents/SoundEtiquette + SettingsPage   # v2.4 新页
     HomePage.svelte / learn/LearnIsland.svelte             # v2.4 删除（模块入口页作废）
-  stores/                 # runes 模块 store
+  stores/                 # runes 模块 store（v4.0 增 game.svelte.ts：连击/错误账本 pinyin_game_v1/游戏会话/每日挑战）
     ui.svelte.ts          # 视图路由 show()/toast()/探针横幅/辨析卡弹窗/解锁层
     progress.svelte.ts    # 星星/历史/闪卡盒/闪电纪录（S 单例）
     growth.svelte.ts      # v3.2 升级体系（成长星星/徽章/庆祝状态机；pinyin_growth_v1 带版本号；卡片=课级进度派生、日历=S.days 派生）
@@ -50,6 +51,7 @@ src/
     icons.ts              # naive-icons 手绘 SVG 内联（MIT 48 枚，Icon.svelte 渲染）
     storage.ts            # localStorage pinyin_v2 读写
     quizEngine.ts         # 出题引擎（闯关混编/侦探/快拼干扰项/闪电抽样）
+    gameEngine.ts         # v4.0 已学字母派生/错误账本加权抽样/日期种子每日挑战/对决出题
     probe.ts              # ?probe=/?open= 验收自动化钩子（正常使用零开销）
     types.ts              # 数据结构与题目类型
   components/
@@ -93,7 +95,7 @@ scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清
 7. **注音收口+文案层**（Bug#2 → v2.6）：数据层纯文本；用户可见字符串唯一真相=src/text/strings.ts（key→中文），组件/stores 禁中文字面量；渲染走 `<Speak k=…/>`（注音+点播）；`node scripts/check-ruby.mjs` 是 lint 门槛（字面量=exit 2）。
 8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
 9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来（v2.6 起全 app 零自动语音：题面音一律 🔊 大按钮点播，孩子控节奏；文案层 Speak 有音频即可点播）；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
-10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow hidden/**clip** + flex column，固定件 flex:none / 舞台 flex:1 1 0；v3.0 加 clip=连编程滚动都不可能，scrollIntoView 连带滚祖先类 bug 根绝，BUGS#30）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 18 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全单元 chip × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；v3.0 起 `node scripts/v30-accept.mjs`（结构反转+零左移+零滚动+自动推进，28 断言）+ `node scripts/v31-accept.mjs`（v3.1 字模合体：单 z 断言+idleDone 定格+全部播放键 ≥48px 几何实测，27 断言）+ `node scripts/v312-accept.mjs`（v3.1.2 音频智能预载+四线格：预载集进 pinyin-audio 缓存+点击→可播 <100ms+ui 短语元素级在播+格线加深/字模占满几何，16 断言；BASE_URL 可指线上直接验生产预载）+ 笔顺 `stroke-verify.mjs`（47 单元）+ 升级体系 `node scripts/v32-accept.mjs`（触发点接线 16 断言：过关庆祝/星星+5/卡片解锁/进化记账/签到阈值/徽章兑现）+ 截图 `node scripts/v32-shots.mjs`（我的tab/图鉴/三种庆祝/五阶段）；v293 系列归档为 v2.9 历史记录。
+10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow hidden/**clip** + flex column，固定件 flex:none / 舞台 flex:1 1 0；v3.0 加 clip=连编程滚动都不可能，scrollIntoView 连带滚祖先类 bug 根绝，BUGS#30）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 18 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全单元 chip × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；v3.0 起 `node scripts/v30-accept.mjs`（结构反转+零左移+零滚动+自动推进，28 断言）+ `node scripts/v31-accept.mjs`（v3.1 字模合体：单 z 断言+idleDone 定格+全部播放键 ≥48px 几何实测，27 断言）+ `node scripts/v312-accept.mjs`（v3.1.2 音频智能预载+四线格：预载集进 pinyin-audio 缓存+点击→可播 <100ms+ui 短语元素级在播+格线加深/字模占满几何，16 断言；BASE_URL 可指线上直接验生产预载）+ 笔顺 `stroke-verify.mjs`（47 单元）+ 升级体系 `node scripts/v32-accept.mjs`（触发点接线 16 断言：过关庆祝/星星+5/卡片解锁/进化记账/签到阈值/徽章兑现）+ 截图 `node scripts/v32-shots.mjs`（我的tab/图鉴/三种庆祝/五阶段）+ 游戏岛 `node scripts/v40-accept.mjs`（42 断言：hub 结构+四游戏真实输入试玩+连击倍率+错误账本+星星入成长+每日挑战抽样/种子稳定）+ 截图 `node scripts/v40-shots.mjs`（hub/每日挑战×2/四游戏×3 态=14 张）；v293 系列归档为 v2.9 历史记录。
 
 ## 发布流程
 

@@ -38,14 +38,14 @@
 
 {#if CE.mode}
 <div id="celebrate" data-ce={CE.mode} onclick={dismissCe}>
-  {#if CE.mode === 'quiz'}
+  {#if CE.mode === 'quiz' || CE.mode === 'game'}
     <div class="veil quizveil"></div>
     <div class="confetti">
       {#each quizPc as p, i (i)}<i class="cf" style="left:{p.x}%; background:{p.c}; width:{p.w}px; height:{p.h}px; animation-duration:{p.d}s; animation-delay:{p.dl}s; --r:{p.r}deg"></i>{/each}
     </div>
     <div class="stack">
       <div class="herochick"><ChickGrowth stage={stageOf(G.stars)} cheer /></div>
-      <div class="msg"><Speak k="celebQuiz" /></div>
+      <div class="msg"><Speak k={CE.mode === 'game' ? 'celebGame' : 'celebQuiz'} /></div>
       <div class="gainchip" data-gain>
         <svg viewBox="0 0 24 24" class="gstar"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9z" /></svg>
         <Speak k="celebStarsN" vars={{ n: CE.gain }} />

@@ -12,13 +12,15 @@ import { startLevel } from '../stores/session.svelte'
 import { BT, startBolt } from '../stores/bolt.svelte'
 import { FC, renderFlash, flip } from '../stores/flash.svelte'
 import { S } from '../stores/progress.svelte'
-import { celebrateQuiz, celebrateLetter, celebrateGrad, celebrateEvolve } from '../stores/growth.svelte'
+import { celebrateQuiz, celebrateLetter, celebrateGrad, celebrateEvolve, celebrateGame } from '../stores/growth.svelte'
 import { AUDIO_CACHE } from './audio'
 import { buildQuestions, buildDetQs, makeDfix, makeZiQ, shuffle } from './quizEngine'
 import { LEVELS, ZWORDS, ZI, PH } from '../data'
 import { tRaw } from '../text/strings'
 import { T } from './ruby'
 import type { Question } from './types'
+import { GS, GD, DC, startGame, quitGame, gameRec, dailyRec, recordLetter } from '../stores/game.svelte'
+import { toPlay, fakeResult, startDaily, endGame } from '../stores/game.svelte'
 
 declare global {
   interface Window { __PJ?: any }
@@ -210,6 +212,20 @@ function openView(v: string) {
     newSession({ name: T('常见字快拼'), zi: true, qs })
   } else if (v === 'album') {
     show('album')
+  } else if (v === 'island') {
+    show('practice')
+  } else if (v === 'game') {
+    /* v4.0 游戏验收：?open=game&g=balloon&st=count|play|result（count/play=冻结计时） */
+    const qp = new URLSearchParams(location.search)
+    const g = qp.get('g') || 'balloon'
+    const st = qp.get('st') || 'count'
+    if (st === 'result') { startGame(g, true); fakeResult(g) }
+    else if (st === 'play') { startGame(g, true); toPlay(true) }
+    else startGame(g, true)
+  } else if (v === 'daily') {
+    startDaily()
+  } else if (v === 'celebgame') {
+    celebrateGame(3)   /* v4.0 游戏结算庆祝（星星飞入 overlay）视觉验收 */
   } else if (v === 'celebquiz') {
     celebrateQuiz(5)   /* v3.2 庆祝仪式视觉验收（真实组件+store，与线上行为同一路径） */
   } else if (v === 'celebletter') {
@@ -232,6 +248,11 @@ export function initApp() {
       FC, S,
       AUDIO: AUDIO_CACHE,
       show, startLevel,
+      /* v4.0 游戏岛自动化钩子 */
+      GS: () => GS,
+      GD: () => GD,
+      DC: () => DC,
+      startGame, quitGame, gameRec, dailyRec, recordLetter, toPlay, fakeResult, startDaily, endGame,
     }
   }
   if (s.indexOf('probe') >= 0 && s.indexOf('det') >= 0) setTimeout(probeDet, 500)

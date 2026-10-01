@@ -8,7 +8,7 @@
   import UpdatePrompt from './components/UpdatePrompt.svelte'
   import TabBar from './components/TabBar.svelte'
   import LearnTab from './components/home/LearnTab.svelte'
-  import PracticeTab from './components/home/PracticeTab.svelte'
+  import GameIsland from './components/games/GameIsland.svelte'
   import MineTab from './components/home/MineTab.svelte'
   import LevelMap from './components/LevelMap.svelte'
   import QuizPage from './components/QuizPage.svelte'
@@ -26,6 +26,8 @@
   import CelebrationOverlay from './components/growth/CelebrationOverlay.svelte'
   import PairModal from './components/PairModal.svelte'
   import Feedback from './components/Feedback.svelte'
+  import GameView from './components/games/GameView.svelte'
+  import DailyChallenge from './components/DailyChallenge.svelte'
 
   const isTab = $derived(TAB_VIEWS.includes(ui.view))
 
@@ -54,7 +56,7 @@
         {#if ui.view === 'learn'}
           <LearnTab />
         {:else if ui.view === 'practice'}
-          <PracticeTab />
+          <GameIsland />
         {:else if ui.view === 'mine'}
           <MineTab />
         {/if}
@@ -85,6 +87,10 @@
       <SettingsPage />
     {:else if ui.view === 'album'}
       <CardAlbum />
+    {:else if ui.view === 'game'}
+      <GameView />
+    {:else if ui.view === 'daily'}
+      <DailyChallenge />
     {/if}
   </div>
 

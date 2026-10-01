@@ -7,6 +7,7 @@ export type View =
   | 'lesson' | 'levels' | 'quiz' | 'result' | 'flash' | 'pairs' | 'free'
   | 'history' | 'bolt' | 'sound' | 'settings' | 'radio'
   | 'album'                                             /* v3.2 卡片图鉴（专注态） */
+  | 'game' | 'daily'                                    /* v4.0 游戏岛：游戏进行态 / 每日挑战 */
 
 export const TAB_VIEWS: View[] = ['learn', 'practice', 'mine']
 
@@ -14,6 +15,7 @@ export const ui = $state({
   view: 'learn' as View,
   lessonN: 1,     /* 题内课号（?learn=N 深链 / 学习 tab CTA 直达） */
   lessonLi: 0,    /* 题内初始字母下标（Bug#12：hero 卡选中的字母带入课内，不再永远从第一个字母起） */
+  gameId: '',     /* v4.0 游戏岛：进行中游戏 id（balloon/mole/duel/fish） */
   toastMsg: '',
   toastOn: false,
   probeText: '',

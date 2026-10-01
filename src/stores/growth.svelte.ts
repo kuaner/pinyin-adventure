@@ -154,7 +154,7 @@ export function checkBadges() {
 }
 
 /* ---------- 庆祝仪式状态机（overlay 组件渲染；z 最高、2.5s 自动散场、可点击跳过） ---------- */
-export type CeMode = '' | 'quiz' | 'letter' | 'grad' | 'evolve'
+export type CeMode = '' | 'quiz' | 'letter' | 'grad' | 'evolve' | 'game'
 export const CE = $state({
   mode: '' as CeMode,
   letter: '',       /* letter 模式：学会的字母 */
@@ -181,6 +181,14 @@ export function celebrateQuiz(gain: number) {
   CE.mode = 'quiz'
   sndFanfare()
   startCe('quiz', 2600)
+}
+
+/* v4.0 游戏结算庆祝：星星飞入 overlay（比小测过关轻一档的音效） */
+export function celebrateGame(gain: number) {
+  CE.gain = gain
+  CE.mode = 'game'
+  sndMini()
+  startCe('game', 2200)
 }
 
 export function celebrateLetter(k: string) {
