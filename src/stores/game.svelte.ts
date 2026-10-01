@@ -104,7 +104,7 @@ export function recordLetter(k: string, ok: boolean) {
 export interface GameDef { id: string; nameKey: any; hintKey: any }
 export const GAME_DEFS: Record<string, GameDef> = {
   balloon: { id: 'balloon', nameKey: 'stallBalloon', hintKey: 'hintBalloon' },
-  mole: { id: 'mole', nameKey: 'stallMole', hintKey: 'hintMole' },
+  mole: { id: 'mole', nameKey: 'stallMoleKj', hintKey: 'hintMoleKj' },
   duel: { id: 'duel', nameKey: 'stallDuel', hintKey: 'hintDuel' },
   fish: { id: 'fish', nameKey: 'stallFish', hintKey: 'hintFish' },
 }
@@ -123,6 +123,7 @@ export const GS = $state({
   record: false,
   win: 0,                         /* 拔河终局：1 推过线赢 / -1 被推过线 / 0 超时自然结算 */
   target: '',                     /* 当前听音目标字母 */
+  kj: false,                      /* v4.2 口诀地鼠：true=目标音播口诀朗读（kj_{k}），false=呼读音 */
   listened: false,                /* 本目标是否已点听过（未听过时漏掉不罚——孩子还没听到题） */
   frozen: false,                  /* 探针冻结计时（?open= 截图/自动化用） */
   tid: null as ReturnType<typeof setInterval> | null,
@@ -153,16 +154,20 @@ export function startGame(id: string, frozen = false) {
   GS.record = false
   GS.win = 0
   GS.target = ''
+  GS.kj = id === 'mole' /* v4.2 口诀地鼠：认知路径=口诀→形（气球/钓鱼仍=呼读音→形） */
   GS.listened = false
   GS.frozen = frozen
   show('game')
   gameRec(id) /* 跨天滚存先行（结算产星上限依赖今天的空账） */
   if (frozen) return
   /* v4.1 声音先行：开局点击的手势栈内统一解锁一次（媒体元素+AudioContext），
-     3-2-1 期间并行预载本局字母池读音（对决加口诀）——首播零网络等待 */
+     3-2-1 期间并行预载本局音频（地鼠=口诀、对决=呼读+口诀、其余=呼读）——首播零网络等待 */
   unlockMedia()
   try {
-    const names = learnedLetters().flatMap((k) => (id === 'duel' ? [letterAudio(k), kjAudio(k)] : [letterAudio(k)]))
+    const names = learnedLetters().flatMap((k) =>
+      id === 'mole' ? [kjAudio(k)]
+      : id === 'duel' ? [letterAudio(k), kjAudio(k)]
+      : [letterAudio(k)])
     preloadAudioList(names)
   } catch { /* 预载失败静默，首播走网络 */ }
   const e = GS.epoch
@@ -264,18 +269,19 @@ export function quitGame() {
    每换目标自动播目标音（游戏场景推翻 v2.6 零自动播放，kuaner 2026-10-01 定）：
    声音开播 300ms 后元素才出现（各游戏挂 this 之后），🔊=随时重听不是唯一来源。
    自动播即算"已听过"——等待窗超时未击一律 miss 清连击，绝不静默推进。
+   v4.2 口诀地鼠：GS.kj=true 时播口诀朗读（kj_{k} 真人库）而非呼读音——认知路径=口诀→形。
    播放失败/静音静默降级（hint 置空不弹 toast），游戏照常不阻塞。 */
 export function askTarget(k: string) {
   GS.target = k
   GS.listened = true
   stopAll()                          /* 连续自动播防重叠：新目标音开播前停旧音频 */
-  playAudio(letterAudio(k))          /* hyp 真人库，失败静默 */
+  playAudio(GS.kj ? kjAudio(k) : letterAudio(k))   /* hyp 真人库，失败静默 */
 }
 
 export function listenTarget() {
   if (!GS.target) return
   GS.listened = true
-  playAudio(letterAudio(GS.target))  /* 🔊=重听当前目标音 */
+  playAudio(GS.kj ? kjAudio(GS.target) : letterAudio(GS.target))  /* 🔊=重听当前目标音 */
 }
 
 /* ---------- 每日挑战会话 ---------- */

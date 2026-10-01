@@ -1,8 +1,21 @@
-/* 出题引擎：闯关混编 / 正反小侦探 / 常见字快拼 / ⚡闪电刷题（与 v1 行为正本逐行对照移植） */
+/* 出题引擎：闯关混编 / 正反小侦探 / 常见字快拼 / ⚡闪电刷题（与 v1 行为正本逐行对照移植）
+   v4.2 练习馆：字母题出题叠加 pinyin_game_v1 错误账本加权（GD.letters err 高/久未练
+   的字母更高频——四练习模式全部接游戏账本） */
 import { LETTERS, PAIRS, LEVELS, DETSET, ZI, ZWORDS, PH, keysOf } from '../data'
 import { getW, wpick, pairW, pickDet } from '../stores/weights.svelte'
 import { levelUnlocked } from '../stores/progress.svelte'
+import { GD } from '../stores/game.svelte'
 import type { QuizScope, Question, BoltQ, DfixQ, ZiQ, ZwordQ } from './types'
+
+/* 错误账本加成（对键 a|b 两字母各自计；单字母键直接计） */
+function ledgerBoost(key: string): number {
+  let b = 1
+  for (const part of key.split('|')) {
+    const r = GD.letters[part]
+    if (r) b += Math.min(r.err, 6) * 0.8
+  }
+  return b
+}
 
 const H = PH.hints as Record<string, string>
 const HV5 = PH.hintsV5 as Record<string, string>
@@ -62,12 +75,13 @@ function pickKey(level: QuizScope, usedKeys: string[]): string {
     for (const k of level.pairs) {
       covered[k.split('|')[0]] = 1
       covered[k.split('|')[1]] = 1
-      items.push({ k, w: pairW(k, level) })
+      /* v4.2：基础对权重 × 游戏账本加成（对内错误率加权出题） */
+      items.push({ k, w: pairW(k, level) * ledgerBoost(k) })
     }
   }
   if (level.pool) {
     for (const l of level.pool) {
-      if (!covered[l]) items.push({ k: 'L:' + l, w: getW('L:' + l) })
+      if (!covered[l]) items.push({ k: 'L:' + l, w: getW('L:' + l) * ledgerBoost('L:' + l) })
     }
   }
   if (!items.length) items.push({ k: 'L:' + level.pool![0], w: 1 })
@@ -246,8 +260,8 @@ export function ziQs(): Question[] {
 function boltPoolItems(): { k: string; w: number }[] {
   const seen: Record<string, 1> = {}
   const items: { k: string; w: number }[] = []
-  const addP = (k: string) => { if (!seen[k]) { seen[k] = 1; items.push({ k, w: pairW(k, null) }) } }
-  const addL = (x: string) => { const k = 'L:' + x; if (!seen[k]) { seen[k] = 1; items.push({ k, w: getW(k) }) } }
+  const addP = (k: string) => { if (!seen[k]) { seen[k] = 1; items.push({ k, w: pairW(k, null) * ledgerBoost(k) }) } }
+  const addL = (x: string) => { const k = 'L:' + x; if (!seen[k]) { seen[k] = 1; items.push({ k, w: getW(k) * ledgerBoost(k) }) } }
   let any = false
   for (let i = 1; i <= 8; i++) {
     if (levelUnlocked(i)) {

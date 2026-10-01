@@ -8,6 +8,7 @@ export type View =
   | 'history' | 'bolt' | 'sound' | 'settings' | 'radio'
   | 'album'                                             /* v3.2 卡片图鉴（专注态） */
   | 'game' | 'daily'                                    /* v4.0 游戏岛：游戏进行态 / 每日挑战 */
+  | 'listendrill' | 'zihall'                            /* v4.2 练习馆：听写专练 / 识字表闯关 */
 
 export const TAB_VIEWS: View[] = ['learn', 'practice', 'mine']
 
@@ -16,6 +17,7 @@ export const ui = $state({
   lessonN: 1,     /* 题内课号（?learn=N 深链 / 学习 tab CTA 直达） */
   lessonLi: 0,    /* 题内初始字母下标（Bug#12：hero 卡选中的字母带入课内，不再永远从第一个字母起） */
   gameId: '',     /* v4.0 游戏岛：进行中游戏 id（balloon/mole/duel/fish） */
+  hall: 'game' as 'game' | 'drill',  /* v4.2 练习场分段：🎪游戏岛 / 📚练习馆（跨 tab/跨视图保持） */
   toastMsg: '',
   toastOn: false,
   probeText: '',

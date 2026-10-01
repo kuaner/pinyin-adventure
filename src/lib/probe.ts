@@ -212,6 +212,10 @@ function openView(v: string) {
     newSession({ name: T('常见字快拼'), zi: true, qs })
   } else if (v === 'album') {
     show('album')
+  } else if (v === 'ldrill') {
+    show('listendrill')          /* v4.2 听写专练（自动读音首题即播） */
+  } else if (v === 'zihall') {
+    show('zihall')               /* v4.2 识字表闯关（解锁网格） */
   } else if (v === 'island') {
     show('practice')
   } else if (v === 'game') {
@@ -253,6 +257,10 @@ export function initApp() {
       GD: () => GD,
       DC: () => DC,
       startGame, quitGame, gameRec, dailyRec, recordLetter, toPlay, fakeResult, startDaily, endGame,
+      /* v4.2 练习馆钩子：hall 分段切换 + 两新视图直达 */
+      hall: (h: 'game' | 'drill') => { ui.hall = h; show('practice') },
+      ldrill: () => show('listendrill'),
+      zihall: () => show('zihall'),
     }
   }
   if (s.indexOf('probe') >= 0 && s.indexOf('det') >= 0) setTimeout(probeDet, 500)

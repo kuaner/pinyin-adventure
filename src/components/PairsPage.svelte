@@ -1,6 +1,9 @@
 <script lang="ts">
-  /* 易混对专练 v2.4：四组横向翻页（一组一页，一屏一事），点对看辨析卡或整组开练；零纵向滚动 */
+  /* 易混对专练 v2.4：四组横向翻页（一组一页，一屏一事），点对看辨析卡或整组开练；零纵向滚动
+     v4.2：每对小进度（错误账本 pinyin_game_v1 派生——有错=多练标、双字母 ok≥4 零错=很棒标）；
+     整组开练出题已接对内错误率加权（quizEngine ledgerBoost） */
   import { PAIRS, GRPS, GRPNAME } from '../data'
+  import { GD } from '../stores/game.svelte'
   import { startPairGroup } from '../stores/session.svelte'
   import { show, openPair } from '../stores/ui.svelte'
   import Speak from './Speak.svelte'
@@ -8,6 +11,16 @@
   import HSteps from './HSteps.svelte'
 
   let cur = $state(0)
+
+  function pairStat(p: { a: string; b: string }): '' | 'weak' | 'good' {
+    const ra = GD.letters[p.a]
+    const rb = GD.letters[p.b]
+    const err = (ra?.err || 0) + (rb?.err || 0)
+    const ok = (ra?.ok || 0) + (rb?.ok || 0)
+    if (err > 0) return 'weak'
+    if (ok >= 4) return 'good'
+    return ''
+  }
 </script>
 
 <section id="v-pairs" class="view on" data-screen="pairs">
@@ -29,7 +42,12 @@
           <div class="chips">
             {#each ps as p (p.a + '|' + p.b)}
               {@const pi = PAIRS.indexOf(p)}
-              <button class="chip" data-pi={pi} type="button" onclick={() => openPair(pi)}>{p.a} ↔ {p.b}</button>
+              {@const st = pairStat(p)}
+              <button class="chip" class:weak={st === 'weak'} class:good={st === 'good'} data-pi={pi} type="button" onclick={() => openPair(pi)}>
+                {p.a} ↔ {p.b}
+                {#if st === 'weak'}<span class="ptag" data-ptag="weak"><Speak k="pairWeakTag" plain /></span>
+                {:else if st === 'good'}<span class="ptag" data-ptag="good"><Speak k="pairGoodTag" plain /></span>{/if}
+              </button>
             {/each}
           </div>
           <button class="btn small purple gstart" type="button" onclick={() => startPairGroup(grp)}><Icon name="play" size={20} /> <Speak k="startGroupN" vars={{ n: ps.length }} plain /></button>
@@ -66,8 +84,15 @@
   /* v2.8：组chip纵向均匀分布（内容不足时填满中段，不留成片空白） */
   .chips { flex: 1; min-height: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-content: space-evenly; justify-content: center; margin: var(--sp-2) 0; }    /* 易混对卡阵=内容网格允许换行（flex:1 弹性区消化） */
   .chip { border: 2px solid var(--animal-border-light); background: var(--animal-bg); color: var(--animal-text); font-family: inherit;
-    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: var(--animal-r-pill); cursor: pointer; min-height: 52px; }
+    font-size:var(--fs-md); font-weight: 900; padding: var(--sp-2) var(--sp-4); border-radius: var(--animal-r-pill); cursor: pointer; min-height: 52px;
+    display: inline-flex; align-items: center; gap: var(--sp-2); }
   .chip:active { transform: translateY(2px); }
+  .chip.weak { border-color: #f0a35c; background: #fff3dd; }
+  .chip.good { border-color: var(--animal-success); background: #e8f5e8; }
+  .ptag { font-size: var(--fs-rt); font-weight: 900; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
+  .ptag :global(rt) { font-size: 10px; }
+  .chip.weak .ptag { background: #f5a35c; color: #fff; }
+  .chip.good .ptag { background: var(--animal-success); color: #fff; }
   .gstart { flex: none; width: 100%; max-width: 280px; }
   #pager { height: 56px; flex: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-2); }
   #dots { display: flex; gap: var(--sp-2); }

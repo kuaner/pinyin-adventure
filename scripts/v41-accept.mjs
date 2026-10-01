@@ -98,17 +98,20 @@ const waitVisible = (page, sel, timeout = 6000) =>
     return r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight
   }, sel, { timeout }).then(() => true).catch(() => false)
 
-/* ================= ① 打地鼠：时序 + 正例 + 重听 ================= */
+/* ================= ① 打地鼠：时序 + 正例 + 重听 =================
+   v4.2 起地鼠=口诀打地鼠：目标音=口诀朗读（lessons/kj_*，声音先行制不变——
+   呼读音断言移交 v42-accept 气球段）。 */
 {
   console.log('\n— 打地鼠 mole —')
+  const kjName = (k) => 'lessons/kj_' + letterAudioName(k)
   const { page, errs } = await mk()
   await enterGame(page, 'mole')
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
   const target = await page.getAttribute('[data-prompt]', 'data-target')
-  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, letterAudioName(target))
+  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, kjName(target))
   const upReady = await waitDom(page, 'mole-up')
   const up = await page.evaluate(() => window.__DOM_LOG.filter((e) => e.kind === 'mole-up')[0] || null)
-  ok(!!a, '开局自动播第一轮目标音（3-2-1 后零操作即播音）', `target=${target} audio@${a ? Math.round(a.t) : '-'}ms`)
+  ok(!!a, '开局自动播第一轮目标音（v4.2=口诀朗读 kj_*；3-2-1 后零操作即播音）', `target=${target} audio@${a ? Math.round(a.t) : '-'}ms`)
   ok(upReady && !!a && !!up && a.t < up.t, '时序：目标音先于地鼠探头', `audio=${Math.round(a.t)} < up=${up ? Math.round(up.t) : '-'}`)
   ok(upReady && !!a && !!up && up.t - a.t >= 250, '时序：探头挂在声音开播 300ms 闸门后', `gap=${up && a ? Math.round(up.t - a.t) : '-'}ms`)
   const preNet = await page.evaluate(() => performance.getEntriesByType('resource').filter((r) => /audio\/.*(hyp|lessons)/.test(r.name)).length)
@@ -134,7 +137,7 @@ const waitVisible = (page, sel, timeout = 6000) =>
   ok(grew, '换目标：新目标音自动播（无操作也播音）')
   const tgt2 = await page.getAttribute('[data-prompt]', 'data-target')
 
-  /* 🔊=重听：点后当前目标名的音频事件再发（回合周期间隔 ≥1.3s，400ms 窗内事件=本次点击触发） */
+  /* 🔊=重听：点后当前目标名的音频事件再发（v4.2=重听口诀；回合周期间隔 ≥1.3s，400ms 窗内事件=本次点击触发） */
   const beforeCnt = await page.evaluate(() => window.__AUDIO_LOG.length)
   await page.tap('[data-listen]')
   await page.waitForTimeout(400)
@@ -143,7 +146,7 @@ const waitVisible = (page, sel, timeout = 6000) =>
     names: window.__AUDIO_LOG.map((e) => e.name),
     tgt: document.querySelector('[data-prompt]').getAttribute('data-target'),
   }))
-  ok(now2.n > beforeCnt && now2.names[beforeCnt] === letterAudioName(now2.tgt), '🔊 重听可用：点击后音频再发', `now=${now2.names.join(',')}`)
+  ok(now2.n > beforeCnt && now2.names[beforeCnt] === 'lessons/kj_' + letterAudioName(now2.tgt), '🔊 重听可用：点击后音频再发（v4.2=口诀）', `now=${now2.names.join(',')}`)
   ok(errs.length === 0, '零 pageerror', errs.join('|') || 'clean')
   await page.close()
 }
@@ -219,11 +222,12 @@ const waitVisible = (page, sel, timeout = 6000) =>
   /* 进行中截图（题面+选项+目标可见） */
   await page.screenshot({ path: `${OUT}/shot-duel.png` })
 
-  /* 正例：点正确选项（data-qkey=答案字母）→ 得分+连击；新题自动读音（答错会换题，未中重读题再点） */
+  /* 正例：点正确选项（data-qkey=答案字母；错误选项 data-qkey="" 也带属性名——必须排除空串，
+     否则点的是 DOM 第一个选项=抛硬币 flake）→ 得分+连击；新题自动读音（答错会换题，未中重读题再点） */
   let scored = false
   for (let i = 0; i < 3 && !scored; i++) {
-    await page.waitForSelector('[data-opts] .duelopt[data-qkey]', { timeout: 6000 })
-    await page.tap('[data-opts] .duelopt[data-qkey]')
+    await page.waitForSelector('[data-opts] .duelopt[data-qkey]:not([data-qkey=""])', { timeout: 6000 })
+    await page.tap('[data-opts] .duelopt[data-qkey]:not([data-qkey=""])')
     await page.waitForTimeout(250)
     scored = await page.evaluate(() => document.querySelector('#gscore').textContent === '10')
   }

@@ -1,11 +1,15 @@
-/* ⚡闪电刷题 store：5 分钟无限连续出题、每题 2 选项、今日/历史最佳（v1 行为正本移植） */
+/* ⚡闪电刷题 store：5 分钟无限连续出题、每题 2 选项、今日/历史最佳（v1 行为正本移植）
+   v4.2 练习馆：出题自动读音（v4.1 声音先行制同样适用——听写播呼读音、口诀题播口诀
+   朗读）；答题双记账 markResult + recordLetter（pinyin_game_v1 游戏账本，弱项加权数据源） */
 import { show, ui } from './ui.svelte'
 import { S, save, todayStr } from './progress.svelte'
 import { markResult } from './weights.svelte'
-import { sndOk, sndNo, sndStar } from '../lib/audio'
+import { recordLetter } from './game.svelte'
+import { sndOk, sndNo, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
 import { makeBoltQ, BT_KEYS } from '../lib/quizEngine'
 import { t } from '../text/strings'
 import { onBoltEnd } from './growth.svelte'
+import { learnedLetters } from '../lib/gameEngine'
 import type { BoltQ } from '../lib/types'
 
 export const BT = $state({
@@ -48,8 +52,23 @@ export function startBolt(freeze: boolean) {
   show('bolt')
   BT.q = makeBoltQ()
   BT.q0 = Date.now()
-  /* v2.4 声音礼仪 R1：安静进入，无过场音 */
+  /* v2.4 声音礼仪 R1：安静进入无过场音；v4.2 练习馆出题自动读音（首题即播）——
+     进入动作的手势栈内解锁媒体+并行预载字母池读音，首播零网络等待 */
+  unlockMedia()
+  try {
+    preloadAudioList(learnedLetters().flatMap((k) => [letterAudio(k), kjAudio(k)]))
+  } catch { /* 预载失败静默 */ }
+  boltSpeak()
   if (!freeze) BT.tid = setInterval(boltTick, 1000)
+}
+
+/* v4.2 出题自动读音：听写 blisten=呼读音、口诀 bkj=口诀朗读（🔊 重听保留） */
+function boltSpeak() {
+  const q = BT.q
+  if (!q) return
+  stopAll()
+  if (q.type === 'bkj') playAudio(kjAudio(q.A))
+  else playAudio(letterAudio(q.sound))
 }
 
 export function boltAnswer(idx: number) {
@@ -60,6 +79,7 @@ export function boltAnswer(idx: number) {
   if (!ok) wrong.push(idx)
   BT.reveal = { correct: q.ans, wrong }
   markResult(q.key, ok)
+  recordLetter(q.A, ok)   /* v4.2：游戏错误账本双记（听写/口诀专练弱项加权数据源） */
   BT.n++
   BT.durs.push(Date.now() - BT.q0)
   if (ok) {
@@ -79,6 +99,7 @@ export function boltAnswer(idx: number) {
       BT.q = makeBoltQ()
       BT.q0 = Date.now()
       BT.reveal = null
+      boltSpeak()   /* v4.2：出题自动读音 */
       void qRef
     }
   }, ok ? 220 : 1000)

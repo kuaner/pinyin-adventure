@@ -1,8 +1,8 @@
 <script lang="ts">
-  /* 🔨 打地鼠：地鼠举字母探头（3×3 洞口），打到听到的那只；镜像对当陷阱
-     （目标有镜像搭档时搭档必探头）。v4.1 声音先行制：每轮目标音自动播，
-     播声 320ms 后地鼠才探头（先听再看再动手）；超时未击=miss 清连击绝不静默推进；
-     🔊=随时重听。回合链 setTimeout 全部带会话代数守卫，phase 退出/unmount 全清 */
+  /* 🔨 口诀打地鼠（v4.2 Bug#35 上半）：认知路径=口诀→形——每轮自动播口诀音频
+     （"右下半圆 b b b"，kj 真人库 63 条），播完 320ms 后地鼠举字母探头，打口诀说的那只；
+     与气球（呼读音→形）真正区分。镜像对当陷阱（目标有镜像搭档时搭档必探头）。
+     超时未击=miss 清连击绝不静默推进；🔊=随时重听口诀。回合链 setTimeout 全部带会话代数守卫 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
   import Icon from '../Icon.svelte'
@@ -82,10 +82,11 @@
 </script>
 
 <div class="fill" id="v-mole">
-  <div class="prompt" data-prompt data-target={GS.target}>
+  <div class="prompt" data-prompt data-kj={GS.kj ? '1' : '0'} data-target={GS.target}>
     <button class="bigsound small" class:live={GS.listened} data-listen onclick={listenTarget}>
       <Icon name="headphones" size={34} />
     </button>
+    {#if GS.kj}<span class="kjchip" data-kjchip><Icon name="music" size={16} /><Speak k="kjTag" plain /></span>{/if}
     <div class="ptip"><Speak k="listenThenAct" plain={GS.listened} /></div>
   </div>
   <div class="lawn">
@@ -128,6 +129,10 @@
   .prompt { flex: none; display: flex; align-items: center; justify-content: center; gap: var(--sp-3);
     padding: var(--sp-2) 0 0; min-height: 64px; }
   .ptip { font-size: var(--fs-xs); font-weight: 700; color: var(--animal-text-2); white-space: nowrap; }
+  .kjchip { display: inline-flex; align-items: center; gap: 3px; font-size: var(--fs-xs); font-weight: 900;
+    color: #b07a1f; background: #fff3d6; border: 2px solid #ffd98e; border-radius: 999px;
+    padding: 2px 10px; white-space: nowrap; }
+  .kjchip :global(rt) { font-size: var(--fs-rt); }
   .bigsound.live { border-color: #7fc8a9; background: #eaf9f0; }
   .lawn { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr;
     gap: var(--sp-1); padding: var(--sp-2) var(--sp-2) var(--sp-3); }

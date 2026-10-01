@@ -3,6 +3,7 @@
 import { show } from './ui.svelte'
 import { S, save, addHist } from './progress.svelte'
 import { markResult, getW } from './weights.svelte'
+import { recordLetter } from './game.svelte'
 import { say, sndOk, sndNo, sndStar } from '../lib/audio'
 import { buildQuestions, buildDetQs, ziQs, partnerOf, practiceScope } from '../lib/quizEngine'
 import { LETTERS, PAIRS, PMAP, ZIBY, LEVELS, GRPNAME, PH, ANCHORS } from '../data'
@@ -104,6 +105,7 @@ export function answer(idx: number) {
   }
   QZ.reveal = { correct: q.ans, wrong }
   markResult(q.key, ok)
+  if (q.A && LETTERS[q.A]) recordLetter(q.A, ok)   /* v4.2：字母题同步记游戏错误账本（练习馆出题加权数据源） */
   if (ok && QZ.cfg!.det) addDetCorrect()   /* v3.2 小侦探徽章计数 */
   /* 镜像错误联动：小侦探里写反判错 → 对应易混对也加权（闯关会多练它） */
   if (!ok && (q.type === 'djudge' || q.type === 'dfix')) {
