@@ -9,10 +9,11 @@
   import { untrack } from 'svelte'
   import lessonsData from '../../data/lessons.json'
   import { LETTERS, PAIRS } from '../../data'
-  import { letterAudio, playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
+  import { letterAudio, playAudio, sndOk, sndNo, sndStar, preloadAudioList } from '../../lib/audio'
   import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed } from '../../stores/learn.svelte'
   import { lessonPages, lessonHasBlend, toneRowOf, unitIndexOf, unitCountOf, type LessonLike } from '../../lib/lessonUnits'
   import { tRaw, cnNum, NUM_PY } from '../../text/strings'
+  import { manifest } from '../../text/manifest'
   import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
@@ -22,6 +23,15 @@
   import PinyinCard from '../PinyinCard.svelte'
 
   let { n, li0 = 0, onexit }: { n: number; li0?: number; onexit: () => void } = $props()
+
+  /* 课页可点播的 UI 短语键（本页模板 + ToneDrill/BlendDrill 子件；manifest 无值的键查表即跳过） */
+  const LESSON_UI_KEYS = [
+    'stepLearn', 'stepTone', 'stepBlend', 'stepQuiz', 'quizReady', 'startQuiz',
+    'listenChoose', 'lookHowRead', 'whichTone', 'toneName1', 'toneName2', 'toneName3', 'toneName4',
+    'almostMsg', 'restudy', 'backMap', 'swipeNextStep',
+    'followMe', 'earPractice', 'heardN', 'goodEars', 'listenMore', 'tonePracticeAgain', 'tonePracticeDone',
+    'ztDirect', 'fourTonesRead', 'tapFollow',
+  ]
 
   const LESSONS = (lessonsData as any).lessons as any[]
   const cn = cnNum
@@ -50,6 +60,25 @@
   const UNIT_N = $derived(unitCountOf(lessonLike))
   /* 韵母课才有听调辨调题（声调是韵母的属性；整体认读/声母课不考） */
   const isFinals = $derived(lesson.kind === 'ym' || lesson.kind === 'fu')
+
+  /* BUGS#23 音频智能预载：进课（含课间换课）即并行预取本课全部音频——
+     每字母呼读音(hyp) + 口诀(kjAudio) + 写法旁白(sayAudio) + 声调四声(hyp) + 课页/小测/声调/拼读 UI 短语(manifest)。
+     fetch→写入 SW 的 pinyin-audio 运行时缓存（CacheFirst），首次点播即命中零网络等待；
+     allSettled 单条失败静默、不阻塞渲染。预载≠自动播放（声音礼仪 R2 不变：语音仍全部点播触发）。
+     GitHub Pages 冷请求 ~1.2s 的病灶在预载完成后消失——孩子点 🔊 时文件已在本地缓存。 */
+  $effect(() => {
+    const names: string[] = []
+    for (const l of letters) {
+      names.push(letterAudio(l.k))
+      if (l.kjAudio) names.push(l.kjAudio)
+      if (l.sayAudio) names.push(l.sayAudio)
+    }
+    for (const row of (lesson.tones || []) as { tones?: { file: string }[] }[]) {
+      for (const tn of row.tones || []) names.push(tn.file)
+    }
+    for (const k of LESSON_UI_KEYS) { const f = manifest[k]; if (f) names.push(f) }
+    void preloadAudioList(names)
+  })
 
   const pageIdxOfLetter = (li: number) => pages.findIndex((p) => p.t === 'learn' && p.li === li)
   const pageIdxOfKind = (t: 'blend' | 'quiz') => pages.findIndex((p) => p.t === t)
@@ -244,7 +273,9 @@
           <div class="hspage"><div class="pcard">
             <div class="ptag"><Speak k="stepLearn" plain /> · {letters[pg.li].k}</div>
             <div class="knowfit">
-              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={150} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
+              <!-- BUGS#26③：glyphMax 420（字模框上限 546px）——上限抬到高于一切手机视口的 hero 实际高度，
+                  字模 svg 吃满面板（不再小字模居中漂在 92px×2 的奶油空白里）；上限仅防超高分屏失真 -->
+              <PinyinCard mode="full" k={letters[pg.li].k} glyphMax={420} strokePlay={page === idx} strokeStatic={staticN >= 0 ? staticN : undefined} />
             </div>
           </div></div>
         {:else if pg.t === 'tone'}
@@ -390,6 +421,9 @@
 
   /* 学一学：PinyinCard full 承载区（rail 与 chip 条合一省下的纵向预算给了卡内） */
   .knowfit { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; }
+  /* BUGS#26③：字模 svg 吃满面板后，顶部格线会贴到左上"学一学"角标——面板给角标让出顶肩位，
+     格线整体下移（radio 展开区无角标不受影响，故只在课页 scope 覆写） */
+  .knowfit :global(.pc-hero) { padding-top: 30px; }
 
   /* 进度 chip 条（v3.0）：字母 ✓/当前/待学 + 拼读/小测；L12=18 chip 横滑消化
      （硬约束#10：横向滚动仅限胶囊条带状物）。

@@ -27,6 +27,11 @@
   } = $props()
 
   const W = 76
+  /* BUGS#26②③：四线格坐标系收紧——grid 线在 y=20/60/100/140，viewBox 原本 0..160（上下各 20 单位死边
+     =字模区 ~25% 高度的"额外留白"）。裁到 y∈[12,148]：四线格占 svg 高度 75%→88%，格线区域吃满字模框；
+     [12,148] 由几何实测圈定（笔画 y 20..141.6 + 描边半径 4 + 徽章圆顶 12.6 + 呼吸圈顶 13.9 全在内）。
+     glyph 档与动画档同改，两档坐标系逐字节同源不变（BUGS#22② 的构造保证保持） */
+  const VB_Y = 12, VB_H = 136
   const letters = $derived(unit in LETTERS ? [unit] : (UNITS[unit] || []))
   /* 全局笔索引：第 li 个字母之前有多少笔 */
   const before = $derived.by(() => {
@@ -117,7 +122,10 @@
     inkEls.forEach((p) => { if (p) { const L = p.getTotalLength(); p.style.transition = 'none'; p.style.strokeDasharray = L + ' ' + L; p.style.strokeDashoffset = String(L) } })
     const step = (k: number) => {
       if (my !== token) return
-      if (k >= total) { cur = total; hideMarker(); ondone?.(); return }
+      /* 播完=回到 BUGS#31 定格语义（完整字模+零徽章）：置 idleHold 收掉全部编号徽章——
+         否则 cur=total 而 idleHold=false，徽章在动画结束后常驻字模（v3.1.1 存量，本腿 #26 截图顺带修）。
+         重播 replay() 会重置 idleHold=false，不影响再写一遍 */
+      if (k >= total) { cur = total; idleHold = true; hideMarker(); ondone?.(); return }
       const p = inkEls[k]
       if (!p) return
       cur = k
@@ -186,11 +194,11 @@
 <div class="sawrap">
   <div class="svgfit">
   {#if glyph}
-    <!-- BUGS#22②：静态大字模档——与动画档同源同坐标系（同 viewBox 76×160/字母、同四线三格背景线、
-       同 path 数据）。PinyinCard 大字模复用它之后，同一字母在任何大小/任何页面占格完全一致。 -->
+    <!-- BUGS#22②：静态大字模档——与动画档同源同坐标系（同 viewBox 76×136/字母、同四线三格背景线、
+       同 path 数据。BUGS#26② 裁掉上下死边后 76×136，两档同步）。PinyinCard 大字模复用它之后，同一字母在任何大小/任何页面占格完全一致。 -->
     <svg
       class="strokeanim saglyph"
-      viewBox="0 0 {viewBoxW} 160"
+      viewBox="0 {VB_Y} {viewBoxW} {VB_H}"
       width={cell * letters.length}
       style="max-width:100%;max-height:100%;width:auto;height:100%"
       role="img" aria-label="{unit} {t('ariaStroke')}">
@@ -208,7 +216,7 @@
   {:else}
   <svg
     class="strokeanim"
-    viewBox="0 0 {viewBoxW} 160"
+    viewBox="0 {VB_Y} {viewBoxW} {VB_H}"
     width={cell * letters.length}
     style="max-width:100%;max-height:100%;width:auto;height:100%"
     role="img" aria-label="{unit} {t('ariaStroke')}">
@@ -279,8 +287,11 @@
     gap: var(--sp-1); width: 100%; height: 100%; min-height: 0; }
   .svgfit { flex: 1; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
   .strokeanim { display: block; margin: 0 auto; }
-  .grid { stroke: #ded4c3; stroke-width: 1.5; }
-  .grid2 { stroke: #c9bca6; stroke-width: 2.2; }
+  /* BUGS#26①：格线加深——原 #ded4c3/#c9bca6 在白卡/奶油面板上几乎不可见（"只有两条淡线"的病灶）。
+     上/下线=--animal-border（#dcd8d1，任务指定下限）；中间两线直接框住字模=再深一档 #b3a48a，
+     线宽同步加粗，"练习本格线"视觉成立 */
+  .grid { stroke: var(--animal-border); stroke-width: 2; }
+  .grid2 { stroke: #b3a48a; stroke-width: 2.4; }
   /* glyph 档：纯静态字模——笔画作主体色（与原 .pc-big 大字模同色系），保留玩具感投影；
      坐标系/四线格/笔画路径与动画档逐字节同源（BUGS#22②） */
   .saglyph { filter: drop-shadow(0 3px 0 rgba(18, 157, 143, .16)); }

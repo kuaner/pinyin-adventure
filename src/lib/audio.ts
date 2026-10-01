@@ -67,7 +67,10 @@ export function letterAudio(k: string): string {
 
 export function audioURL(name: string): string {
   const h = HYP[name]
-  return import.meta.env.BASE_URL + 'audio/' + (h ? 'hyp/' + h : name) + '.mp3'
+  /* BUGS#23 顺带修：audio-manifest.json 的值自带 .mp3 后缀（ui/step-tone.mp3），
+     无条件追加曾拼出 .mp3.mp3 → 服务器 SPA fallback 回 HTML（200 但非音频）→ UI 短语点播全哑 */
+  const n = name.replace(/\.mp3$/, '')
+  return import.meta.env.BASE_URL + 'audio/' + (h ? 'hyp/' + h : n) + '.mp3'
 }
 
 export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => void; nobreak?: boolean }
@@ -75,7 +78,7 @@ export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => v
 function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
   /* hyp 播放失败 → 回落现有 mimo 同名文件（audio/{name}.mp3，只回落一次） */
   try {
-    const m = new Audio(import.meta.env.BASE_URL + 'audio/' + name + '.mp3')
+    const m = new Audio(audioURL(name))
     AUDIO_CACHE[name] = m
     const p = m.play()
     if (p && p.catch) p.catch(() => {
@@ -145,4 +148,50 @@ export function preloadAudios() {
       } catch { /* ignore */ }
     }
   }
+}
+
+/* ---------- BUGS#23 智能预载：进课时并行预取本课音频集 ----------
+   根因：GitHub Pages 冷请求延迟 ~1.2s（4KB 文件也要等网络往返），SW CacheFirst 只帮第二次。
+   修法：进课即 fetch → 直接写入 SW 的运行时缓存 pinyin-audio（vite.config.ts runtimeCaching 同名），
+   后续 playAudio 的 Audio 请求 = CacheFirst 命中，首次点击即播零网络等待。
+   直接 Cache API 写入比等 SW active 更确定（首访 SW 还在安装时预载照样生效）。
+   Promise.allSettled 语义：单条失败静默、绝不阻塞页面渲染；重复调用按名字幂等跳过。 */
+const PRELOADED = new Set<string>()
+/* 与 vite.config.ts workbox runtimeCaching.cacheName 同源——改名时两处同步 */
+const AUDIO_SW_CACHE = 'pinyin-audio'
+
+async function preloadOne(name: string): Promise<void> {
+  const url = audioURL(name)
+  /* ① 元素预热：按 preloadAudios 同款把 Audio 元素灌进 AUDIO_CACHE——首次点击不再新建/装载，
+     play() 直接命中已就绪元素（cache.put 只暖 SW 缓存时，首播仍要 ~150ms 媒体管线开销，实测 177ms） */
+  if (!AUDIO_CACHE[name]) {
+    try {
+      const el = new Audio(url)
+      el.preload = 'auto'
+      el.load()
+      AUDIO_CACHE[name] = el
+    } catch { /* ignore */ }
+  }
+  /* ② Cache API 直写 SW 运行时缓存（CacheFirst 的读取源）——元素被浏览器回收后重载也零网络 */
+  if (typeof caches !== 'undefined' && caches.open) {
+    const cache = await caches.open(AUDIO_SW_CACHE)
+    if (await cache.match(url)) return
+    const resp = await fetch(url)
+    if (resp.ok) await cache.put(url, resp)
+    else throw new Error(String(resp.status))
+  } else {
+    /* 无 Cache API 的环境退回纯 fetch（至少暖 HTTP 缓存） */
+    const r = await fetch(url)
+    if (!r.ok) throw new Error(String(r.status))
+  }
+}
+
+export function preloadAudioList(names: string[]): Promise<PromiseSettledResult<void>[]> {
+  const jobs: Promise<void>[] = []
+  for (const n of names) {
+    if (!n || PRELOADED.has(n)) continue
+    PRELOADED.add(n)
+    jobs.push(preloadOne(n))
+  }
+  return Promise.allSettled(jobs)
 }
