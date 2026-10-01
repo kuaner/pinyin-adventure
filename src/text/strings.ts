@@ -338,7 +338,7 @@ export const strings = {
   hintMole: s('听读音，打到对的地鼠', { 听读音: 'tīng dú yīn', 打: 'dǎ', 地鼠: 'dì shǔ' }),
   hintDuel: s('答对推绳，答错被推', { 答对: 'dá duì', 推绳: 'tuī shéng', 答错: 'dá cuò' }),
   hintFish: s('听读音，钓对的鱼', { 听读音: 'tīng dú yīn', 钓: 'diào', 鱼: 'yú' }),
-  listenThenAct: s('先点喇叭听一听', { 先: 'xiān', 点: 'diǎn', 喇叭: 'lǎ ba', 听一听: 'tīng yī tīng' }),
+  listenThenAct: s('听一听，再动手', { 听一听: 'tīng yī tīng', 再: 'zài', 动手: 'dòng shǒu' }),
   maxCombo: s('最高连对', { 最高: 'zuì gāo', 连对: 'lián duì' }),
   starsGot: s('星星', { 星星: 'xīng xing' }),
   playAgainGame: s('再玩一次', { 再玩一次: 'zài wán yī cì' }),

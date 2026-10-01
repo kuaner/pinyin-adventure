@@ -4,10 +4,10 @@
    每日挑战与镜像对决出题都从它加权抽样。星星产入小鸡成长体系（每游戏每日上限 10 星）。 */
 import { show } from './ui.svelte'
 import { todayStr, markDay } from './progress.svelte'
-import { sndNo, tone, sndStar, say } from '../lib/audio'
+import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
 import { G, saveG, checkBadges, celebrateGame } from './growth.svelte'
 import { t } from '../text/strings'
-import { buildDailyQs, type DailyQ } from '../lib/gameEngine'
+import { buildDailyQs, learnedLetters, type DailyQ } from '../lib/gameEngine'
 import { markResult } from './weights.svelte'
 
 const KEY = 'pinyin_game_v1'
@@ -158,6 +158,13 @@ export function startGame(id: string, frozen = false) {
   show('game')
   gameRec(id) /* 跨天滚存先行（结算产星上限依赖今天的空账） */
   if (frozen) return
+  /* v4.1 声音先行：开局点击的手势栈内统一解锁一次（媒体元素+AudioContext），
+     3-2-1 期间并行预载本局字母池读音（对决加口诀）——首播零网络等待 */
+  unlockMedia()
+  try {
+    const names = learnedLetters().flatMap((k) => (id === 'duel' ? [letterAudio(k), kjAudio(k)] : [letterAudio(k)]))
+    preloadAudioList(names)
+  } catch { /* 预载失败静默，首播走网络 */ }
   const e = GS.epoch
   let n = 3
   GS.countN = 3
@@ -253,16 +260,22 @@ export function quitGame() {
   show('practice')
 }
 
-/* ---------- 听音目标（气球/地鼠/钓鱼共用） ---------- */
+/* ---------- 听音目标（气球/地鼠/钓鱼共用；v4.1 声音先行制 Bug#34） ----------
+   每换目标自动播目标音（游戏场景推翻 v2.6 零自动播放，kuaner 2026-10-01 定）：
+   声音开播 300ms 后元素才出现（各游戏挂 this 之后），🔊=随时重听不是唯一来源。
+   自动播即算"已听过"——等待窗超时未击一律 miss 清连击，绝不静默推进。
+   播放失败/静音静默降级（hint 置空不弹 toast），游戏照常不阻塞。 */
 export function askTarget(k: string) {
   GS.target = k
-  GS.listened = false
+  GS.listened = true
+  stopAll()                          /* 连续自动播防重叠：新目标音开播前停旧音频 */
+  playAudio(letterAudio(k))          /* hyp 真人库，失败静默 */
 }
 
 export function listenTarget() {
   if (!GS.target) return
   GS.listened = true
-  say(GS.target)
+  playAudio(letterAudio(GS.target))  /* 🔊=重听当前目标音 */
 }
 
 /* ---------- 每日挑战会话 ---------- */
@@ -294,6 +307,18 @@ export function startDaily() {
   DC.stars = 0
   dailyRec()
   show('daily')
+  dailySpeak()
+}
+
+/* v4.1 每日挑战出题自动读音（游戏/挑战场景推翻 v2.6 零自动播放）：听写题=呼读音、
+   口诀题=口诀朗读；zi 题是"看字选拼音"视觉识字通道，播读音=直接报答案，不自动播；
+   🔊 重听保留。静音/失败静默降级不阻塞。 */
+function dailySpeak() {
+  const q = DC.qs[DC.i]
+  if (!q || q.type === 'zi' || !q.A) return
+  stopAll()
+  if (q.type === 'bkj') playAudio(kjAudio(q.A))
+  else playAudio(letterAudio(q.sound))
 }
 
 export function dailyAnswer(idx: number) {
@@ -327,7 +352,7 @@ export function dailyNext() {
   if (DC.done) return
   DC.reveal = null
   DC.i++
-  if (DC.i >= DC.qs.length) { endDaily() }
+  if (DC.i >= DC.qs.length) { endDaily() } else { dailySpeak() }
 }
 
 function endDaily() {

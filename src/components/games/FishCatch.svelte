@@ -1,7 +1,8 @@
 <script lang="ts">
   /* 🎣 小猫钓鱼：鱼带字母横向游过（双泳道双向），钓"指定读音"的鱼。
-     听音辨形：🔊 点播；钓错鱼溜走（清连击）；漏掉已听过的目标鱼清连击。
-     rAF 循环 + spawn 计时 phase 退出/unmount 全清 */
+     v4.1 声音先行制：目标音自动播，鱼在声音开播 300ms 后才入场（先听再看再动手）；
+     漏掉目标/钓错鱼 → miss 清连击，漏掉即换新目标（自动播新音）绝不静默推进；
+     🔊=随时重听。rAF 循环 + spawn 计时 phase 退出/unmount 全清 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
   import { untrack } from 'svelte'
@@ -16,7 +17,7 @@
   let raf = 0
   let last = 0
   let spawnAt = 0
-  let spawnTid: ReturnType<typeof setTimeout> | null = null
+  let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出元素 */
   const pool = learnedLetters()
   const playing = $derived(GS.phase === 'play')
 
@@ -26,15 +27,15 @@
     const e = GS.epoch
     untrack(() => {
       fish = []
-      askTarget(pickGameTarget(pool, []))
-      spawnAt = performance.now() + 400
-      last = performance.now()
-      spawn(true)   /* 开局先游来一条目标鱼 */
+      askTarget(pickGameTarget(pool, []))   /* 开局自动播第一轮目标音（声音先行） */
+      const t0 = performance.now()
+      noSpawnBefore = t0 + 300
+      spawnAt = t0 + 300
+      last = t0
     })
     raf = requestAnimationFrame(tick)
     return () => {
       cancelAnimationFrame(raf)
-      if (spawnTid) { clearTimeout(spawnTid); spawnTid = null }
       void e
     }
   })
@@ -45,16 +46,24 @@
     last = now
     const speed = SWIM + Math.min(GS.combo, 8) * 0.012
     const gone: number[] = []
+    let missedTarget = false
     for (const f of fish) {
       if (f.caught || f.scare) continue
       f.x += speed * dt * 100 * f.dir * (f.id % 2 ? 1.1 : 0.9)
       if (f.x > 118 || f.x < -18) {
         gone.push(f.id)
-        if (f.k === GS.target && GS.listened) gameHit(GS.target, false)
+        if (f.k === GS.target) missedTarget = true
       }
     }
     if (gone.length) fish = fish.filter((f) => !gone.includes(f.id))
-    if (now >= spawnAt) {
+    if (missedTarget) {
+      /* v4.1：目标鱼游走=miss（清连击记错题）→ 换新目标自动播新音，绝不静默推进 */
+      gameHit(GS.target, false)
+      askTarget(pickGameTarget(pool, [GS.target]))
+      purgeStale(GS.target)
+      noSpawnBefore = performance.now() + 300
+    }
+    if (now >= spawnAt && now >= noSpawnBefore) {
       spawnAt = now + Math.max(750, 1250 - Math.min(GS.combo, 8) * 55)
       if (fish.length < 5) spawn()
     }
@@ -76,13 +85,21 @@
     })
   }
 
+  /* v4.1 声音先行：换目标后清掉与新目标同字母的在场鱼（陈旧干扰鱼）——
+     保证新目标鱼必在新声音开播 300ms 后才入场 */
+  function purgeStale(k: string) {
+    fish = fish.filter((f) => f.caught || f.scare || f.k !== k)
+  }
+
   function hook(f: Fish) {
     if (!playing || f.caught || f.scare) return
     if (f.k === GS.target) {
       f.caught = true
       gameHit(GS.target, true)
       setTimeout(() => { fish = fish.filter((x) => x.id !== f.id) }, 450)
-      askTarget(pickGameTarget(pool, [GS.target]))
+      askTarget(pickGameTarget(pool, [GS.target]))   /* 换目标自动播新音 */
+      purgeStale(GS.target)
+      noSpawnBefore = performance.now() + 300        /* 新目标鱼等声音开播 300ms 后才入场 */
     } else {
       f.scare = true
       gameHit(f.k, false)

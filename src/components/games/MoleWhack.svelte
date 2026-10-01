@@ -1,7 +1,8 @@
 <script lang="ts">
   /* 🔨 打地鼠：地鼠举字母探头（3×3 洞口），打到听到的那只；镜像对当陷阱
-     （目标有镜像搭档时搭档必探头）。听音辨形：🔊 点播目标音，敲错清连击。
-     回合链 setTimeout 全部带会话代数守卫，phase 退出/unmount 全清 */
+     （目标有镜像搭档时搭档必探头）。v4.1 声音先行制：每轮目标音自动播，
+     播声 320ms 后地鼠才探头（先听再看再动手）；超时未击=miss 清连击绝不静默推进；
+     🔊=随时重听。回合链 setTimeout 全部带会话代数守卫，phase 退出/unmount 全清 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
   import Icon from '../Icon.svelte'
@@ -21,7 +22,7 @@
     return () => { if (roundTid) { clearTimeout(roundTid); roundTid = null } }
   })
 
-  /* 一个回合：目标 + 陷阱（镜像搭档）+ 干扰鼠探头，限时敲 */
+  /* 一个回合：目标音自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头，限时敲 */
   function round() {
     if (GS.phase !== 'play') return
     const target = pickGameTarget(pool, moles.length ? [GS.target] : [])
@@ -40,16 +41,16 @@
     const e = GS.epoch
     roundTid = setTimeout(() => {
       if (GS.epoch !== e) return
-      for (const m of moles) m.up = true
+      for (const m of moles) m.up = true   /* 声音开播 320ms 后才探头——元素挂在声音之后 */
       const upMs = Math.max(950, 1550 - Math.min(GS.combo, 8) * 65)
       roundTid = setTimeout(() => {
         if (GS.epoch !== e) return
         let escaped = false
         for (const m of moles) {
           m.up = false
-          if (m.k === target && !m.hit && GS.listened) escaped = true
+          if (m.k === target && !m.hit) escaped = true
         }
-        if (escaped) gameHit(target, false)   /* 漏掉已听过的目标鼠 → 清连击 */
+        if (escaped) gameHit(target, false)   /* v4.1：超时未击=miss（清连击记错题），绝不静默推进 */
         roundTid = setTimeout(() => { if (GS.epoch === e) round() }, 420)
       }, upMs)
     }, 320)

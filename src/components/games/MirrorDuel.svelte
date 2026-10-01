@@ -1,10 +1,11 @@
 <script lang="ts">
   /* ⚔️ 镜像大对决：b/d/p/q 快问快答拔河——答对推绳、答错被推，绳过中线判负。
      出题加权错误账本（弱项字母高频重现）；听写+口诀正向回忆混出（零错误信息：选项全为正确形态）。
+     v4.1 声音先行制：题面出现即自动读音（听写=呼读音/口诀题=口诀朗读），🔊=随时重听。
      敌方定时拉绳制造时间压力；推绳过敌方线=提前胜利；rAF/interval unmount 全清 */
   import { GS, gameHit, endGame } from '../../stores/game.svelte'
   import { learnedLetters, duelQ } from '../../lib/gameEngine'
-  import { playAudio, letterAudio } from '../../lib/audio'
+  import { playAudio, letterAudio, kjAudio, stopAll } from '../../lib/audio'
   import { stageOf, G } from '../../stores/growth.svelte'
   import { untrack } from 'svelte'
   import Icon from '../Icon.svelte'
@@ -45,8 +46,13 @@
 
   function newQ() {
     reveal = false
-    if (pool.length >= 2) q = duelQ(pool)
-    else q = null
+    if (pool.length >= 2) {
+      q = duelQ(pool)
+      /* v4.1 声音先行：题面出现即自动读音（stopAll 防连播重叠），🔊=重听 */
+      stopAll()
+      if (q.kj) playAudio(kjAudio(q.A))
+      else playAudio(letterAudio(q.A))
+    } else q = null
   }
 
   function checkEnd() {
@@ -69,7 +75,7 @@
     }
   }
 
-  function hear() { if (q) playAudio(letterAudio(q.A), { hint: '' }) }
+  function hear() { if (q) playAudio(q.kj ? kjAudio(q.A) : letterAudio(q.A), { hint: '' }) }
 </script>
 
 <div class="fill" id="v-duel">
@@ -92,6 +98,10 @@
     <div class="qwrap" data-q data-target={q.A}>
       {#if q.kj}
         <div class="kjline">「<Speak text={q.stmt} />」</div>
+        <button class="kjreplay" data-listen onclick={hear}>
+          <Icon name="headphones" size={26} />
+          <span class="bslabel"><Speak k="listenAgain" plain /></span>
+        </button>
       {:else}
         <button class="bigsound" data-listen onclick={hear}>
           <Icon name="headphones" size={44} />
@@ -134,6 +144,9 @@
   .kjline { font-size: var(--fs-lg); font-weight: 900; color: var(--animal-text); text-align: center;
     line-height: 2; max-width: 92%; }
   .kjline :global(rt) { font-size: var(--fs-rt); }
+  .kjreplay { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 48px; padding: 0 var(--sp-4);
+    border-radius: 999px; background: #fff; border: 2px solid var(--animal-border-light); box-shadow: var(--animal-shadow-sm);
+    font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .bslabel { font-size: var(--fs-sm); font-weight: 900; color: var(--animal-primary-active); white-space: nowrap; }
   .opts { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); width: min(100%, 360px); }
   .duelopt { min-height: 96px; border: 3px solid var(--animal-border-light); border-radius: 20px; background: #fff;

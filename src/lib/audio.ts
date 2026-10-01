@@ -134,6 +134,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
     let a = AUDIO_CACHE[name]
     if (!a) { a = new Audio(audioURL(name)); AUDIO_CACHE[name] = a }
     try { a.currentTime = 0 } catch { /* ignore */ }
+    markAudio(name)
     const p = a.play()
     if (p && p.catch) p.catch((err: DOMException) => {
       /* Bug#15: AbortError=被 stopAll 停（一次一路锁的正常操作）≠ 文件缺失；
@@ -162,6 +163,36 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
 
 /* 当前是否在播（口诀连播 UI 态用） */
 export function isPlaying(): boolean { return !!CUR }
+
+/* v4.1 声音先行·开局解锁：在开局点击（点摊位/开始）的手势调用栈内统一解锁一次——
+   AudioContext resume + 媒体元素 sticky activation；此后 3-2-1 倒计时结束的 setTimeout
+   链里自动播目标音合法（用户已与页面交互）。静音/失败静默，绝不阻塞开局。 */
+let UNLOCKED = false
+export function unlockMedia() {
+  if (UNLOCKED) { ac(); return }
+  try {
+    const a = new Audio()
+    a.muted = true
+    const p = a.play()
+    if (p && p.catch) p.catch(() => { /* 无声源被拒无妨——sticky activation 已随点击建立 */ })
+  } catch { /* ignore */ }
+  ac()
+  UNLOCKED = true
+}
+
+/* 口诀朗读音频（v4.1 镜像对决/每日挑战 bkj 题自动读音用）：audio/lessons/kj_{k}.mp3，63 条全覆盖 */
+export function kjAudio(k: string): string {
+  return 'lessons/kj_' + letterAudio(k)
+}
+
+/* 验收钩子：脚本预置 window.__AUDIO_LOG=[] 时记录每次播音事件（play() 发起时刻），
+   供时序断言（声音先于元素）。正常使用零开销（未预置=跳过） */
+function markAudio(name: string) {
+  try {
+    const L = (window as any).__AUDIO_LOG
+    if (Array.isArray(L)) L.push({ name, t: performance.now() })
+  } catch { /* ignore */ }
+}
 
 export function say(k: string) {
   const L = LETTERS[k]

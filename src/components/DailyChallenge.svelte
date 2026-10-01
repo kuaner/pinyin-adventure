@@ -4,7 +4,7 @@
      结算=得分+星星+今日最佳（破纪录礼花）；星星入小鸡成长体系 */
   import { DC, dailyAnswer, quitDaily, startDaily, comboMult } from '../stores/game.svelte'
   import { GD } from '../stores/game.svelte'
-  import { say } from '../lib/audio'
+  import { playAudio, letterAudio, kjAudio } from '../lib/audio'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
@@ -13,7 +13,11 @@
   const rec = $derived(GD.daily)
   const acc = $derived(DC.ok * 10)
 
-  function hear() { if (q && q.type !== 'zi') say(q.sound) }
+  /* 🔊=重听当前题读音（v4.1：出题已自动播，这里只做重听；zi 题无读音可重听） */
+  function hear() {
+    if (!q || q.type === 'zi') return
+    playAudio(q.type === 'bkj' ? kjAudio(q.A) : letterAudio(q.sound))
+  }
 </script>
 
 <section id="v-daily" class="view on" data-screen="daily">
@@ -60,7 +64,15 @@
             {/each}
           </div>
         {:else if q.type === 'bkj'}
-          <div class="glyphbox"><div class="kjbig">「<Speak text={q.stmt} />」</div></div>
+          <div class="glyphbox">
+            <div class="kjcol">
+              <div class="kjbig">「<Speak text={q.stmt} />」</div>
+              <button class="kjreplay" data-listen onclick={hear}>
+                <Icon name="headphones" size={22} />
+                <span class="bslabel"><Speak k="listenAgain" plain /></span>
+              </button>
+            </div>
+          </div>
           <div class="opts two" data-opts>
             {#each q.opts as k, idx (idx)}
               <button class="opt" class:correct={DC.reveal && idx === DC.reveal.correct} class:wrong={DC.reveal && DC.reveal.wrong.includes(idx)}
@@ -132,8 +144,12 @@
   .qcard { flex: 1 1 0; min-height: 0; margin-top: var(--sp-2); display: flex; flex-direction: column; gap: var(--sp-2); }
   .qhint { font-size: var(--fs-lg); font-weight: 800; color: var(--animal-text); text-align: center; line-height: 2; flex: none; }
   .glyphbox { flex: none; display: flex; align-items: center; justify-content: center; min-height: 0; }
+  .kjcol { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); }
   .kjbig { font-size: var(--fs-lg); font-weight: 900; color: var(--animal-text); text-align: center; line-height: 2;
     max-width: 92%; }
+  .kjreplay { display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 48px; padding: 0 var(--sp-4);
+    border-radius: 999px; background: #fff; border: 2px solid var(--animal-border-light); box-shadow: var(--animal-shadow-sm);
+    font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .kjbig :global(rt) { font-size: var(--fs-rt); }
   .zibig { font-size: 96px; font-weight: 900; color: var(--animal-text); line-height: 1.2; }
   .bslabel { font-size: var(--fs-sm); font-weight: 900; color: var(--animal-primary-active); white-space: nowrap; }
