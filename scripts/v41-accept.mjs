@@ -219,11 +219,16 @@ const waitVisible = (page, sel, timeout = 6000) =>
   /* 进行中截图（题面+选项+目标可见） */
   await page.screenshot({ path: `${OUT}/shot-duel.png` })
 
-  /* 正例：点正确选项（data-qkey=答案字母）→ 得分+连击；新题自动读音 */
-  await page.tap('[data-opts] .duelopt[data-qkey]')
-  await page.waitForTimeout(250)
+  /* 正例：点正确选项（data-qkey=答案字母）→ 得分+连击；新题自动读音（答错会换题，未中重读题再点） */
+  let scored = false
+  for (let i = 0; i < 3 && !scored; i++) {
+    await page.waitForSelector('[data-opts] .duelopt[data-qkey]', { timeout: 6000 })
+    await page.tap('[data-opts] .duelopt[data-qkey]')
+    await page.waitForTimeout(250)
+    scored = await page.evaluate(() => document.querySelector('#gscore').textContent === '10')
+  }
   const after = await page.evaluate(() => ({ score: document.querySelector('#gscore').textContent, combo: document.querySelector('#gcombo').getAttribute('data-combo') }))
-  ok(after.score === '10' && after.combo === '1', '正例：答对推绳 → 得分10+连击1', JSON.stringify(after))
+  ok(scored && after.score === '10' && after.combo === '1', '正例：答对推绳 → 得分10+连击1', JSON.stringify(after))
   const grew = await page.waitForFunction(() => window.__AUDIO_LOG.length >= 2, null, { timeout: 6000 }).then(() => true).catch(() => false)
   ok(grew, '下一题自动读音（换目标自动播）')
   /* 🔊 重听（当前题可能是口诀题=口诀朗读音频） */
