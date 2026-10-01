@@ -3,6 +3,8 @@
      相当于是每个拼音的学习卡片，闪卡都用得上，到处统一"）。
      一个组件 = 每个拼音的完整学习身份，五要素：大字模（四线三格，v3.1 起=笔顺动画本体，BUGS#31①）/
      真人读音 / 笔顺动画（与字模合体后此条即字模条目）/ 口诀（文+音）/ 例词。
+     v3.1.1（BUGS#32）：full 档控制键（🔊读音/▶重播）从下方独立行改为浮层锚字模框右下角——
+     动画与控制在同一个视觉单元。
      三档形态：full（学习岛学一学页 · 口诀广播展开区，五要素全展示；字模=会自己写自己的笔顺动画）
               card（闪卡：正面字模+口诀，翻面笔顺动画+例词）
               mini（答错反馈弹层：字模+读音+口诀一行）
@@ -88,31 +90,34 @@
 
 {#if mode === 'full'}
   <div class="pcfull" data-pc={k}>
-    {#if C.stroke}
-      <!-- BUGS#31①：笔顺动画=字模（唯一 z）——四线三格里它自己写自己：空闲=写好的字（idleDone 定格完整笔画），
-           进页自动播/点重播=再写一遍。废弃"静态大字模+下方笔顺预览"双 z 结构（kuaner："上面一个z 下面一个z"）。
-           glyphMax 语义=字模显示区高度上限（SVG 等比适配，四线三格占比恒定） -->
-      <button class="pc-hero" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
-        <div class="pc-herofit" style="max-height:{Math.round(glyphMax * 1.3)}px">
-          <StrokeAnim unit={k} idleDone cell={120} showList={false} play={strokeActive} static={strokeStatic} bind:this={sa} ondone={strokeDone} />
+    <!-- BUGS#31①：笔顺动画=字模（唯一 z）——四线三格里它自己写自己：空闲=写好的字（idleDone 定格完整笔画），
+         进页自动播/点重播=再写一遍。glyphMax 语义=字模显示区高度上限（SVG 等比适配，四线三格占比恒定）。
+         BUGS#32：控制键上墙——🔊读音+▶重播不再独立成行堆在下方，改为浮层锚在字模框（herofit）右下角，
+         与笔顺动画同一个视觉单元："看"和"控制看"视线/手指都不用跳区（kuaner 2026-10-01"看笔顺读音是不是可以放在上面的笔顺上"）。
+         垂直叠放而非横排：字模 svg 宽≈高×0.475 居中，横排键组会压到四线格右端，纵叠在一切屏宽下零遮挡。 -->
+    <div class="pc-hero">
+      <div class="pc-herofit" style="max-height:{Math.round(glyphMax * 1.3)}px">
+        <button class="pc-glyphbtn" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
+          {#if C.stroke}
+            <StrokeAnim unit={k} idleDone cell={120} showList={false} play={strokeActive} static={strokeStatic} bind:this={sa} ondone={strokeDone} />
+          {:else}
+            <!-- 兜底：无笔顺数据的单元退回字体字模（63 卡实测全覆盖，此分支仅为防御） -->
+            <i class="pc-grid" aria-hidden="true"></i>
+            <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
+          {/if}
+        </button>
+        <div class="pc-ctrls">
+          <button class="pc-read" data-pcread={k} class:ping={readPing} onclick={readTap} aria-label="读音">
+            <Icon name="headphones" size={24} />
+          </button>
+          {#if C.stroke}
+            <button class="pc-replay" data-pcreplay={k} class:ping={replayPing} onclick={replayStroke} aria-label="看笔顺">
+              <Icon name="refresh" size={22} />
+            </button>
+          {/if}
         </div>
-      </button>
-      <button class="pc-replay" data-pcreplay={k} class:ping={replayPing} onclick={replayStroke}>
-        <Icon name="refresh" size={20} />
-        <span><Speak k="seeStroke" plain /></span>
-      </button>
-    {:else}
-      <!-- 兜底：无笔顺数据的单元退回字体字模（63 卡实测全覆盖，此分支仅为防御） -->
-      <button class="pc-hero fb" data-pcmain={k} onclick={mainTap} aria-label="{k} {C.tts}">
-        <i class="pc-grid" aria-hidden="true"></i>
-        <span class="pc-big" style="font-size:min(var(--fs-hero),{glyphMax}px,{fitMax}px)">{k}</span>
-      </button>
-    {/if}
-    <button class="pc-read" data-pcread={k} class:ping={readPing} onclick={readTap} aria-label="读音">
-      <Icon name="headphones" size={24} />
-      <span>{C.tts || k}</span>
-      {#if C.han}<i class="pc-han">{C.han}</i>{/if}
-    </button>
+      </div>
+    </div>
     {#if kjEn[0]}
       <button class="pc-kj" data-pckj={k} class:ping={kjPing} onclick={playKj} aria-label="口诀">
         {#if C.kjAudio}<span class="pc-kjplay"><Icon name="play" size={16} /></span>{/if}
@@ -176,10 +181,15 @@
   .pcfull { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); width: 100%; min-height: 0; flex: 1; }
   /* BUGS#31①：字模区=笔顺动画本体（唯一 z）——弹性主位（1.1），奶油练习本面板承载四线三格；
      idleDone 定格=完整字模，播放中=它自己写自己。glyphMax 经 herofit max-height 封顶 */
-  .pc-hero { border: none; background: #fbf7ec; font-family: inherit; padding: var(--sp-1) var(--sp-2); cursor: pointer; line-height: 1; position: relative;
+  .pc-hero { border: none; background: #fbf7ec; font-family: inherit; padding: var(--sp-1) var(--sp-2); line-height: 1; position: relative;
     width: 88%; flex: 1.1 1 0; min-height: 0; display: flex; align-items: center; justify-content: center; border-radius: 16px; }
-  .pc-herofit { width: 100%; height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  /* BUGS#32：herofit=字模框，浮层控制键的定位锚（按钮永远贴着动画框右下角，面板再高也不远离） */
+  .pc-herofit { position: relative; width: 100%; height: 100%; min-height: 0; display: flex; align-items: center; justify-content: center; }
   .pc-herofit :global(svg.strokeanim) { max-width: 100%; max-height: 100%; }
+  /* BUGS#32：字模主按钮=占满字模框（点字模读呼读音，原 pc-hero 整面板点按行为不变） */
+  .pc-glyphbtn { position: absolute; inset: 0; width: 100%; border: none; background: none; padding: 0; margin: 0; font-family: inherit; line-height: 1;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; min-height: 48px; }
+  .pc-glyphbtn:active { transform: scale(.98); }
   /* 兜底分支（无笔顺数据）：字体字模，白底回到老字模观感 */
   .pc-hero.fb { background: none; }
   /* 四线三格（仅无笔顺数据的字体字模兜底用） */
@@ -187,19 +197,22 @@
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .5; border-radius: 4px; }
   .pc-big { font-weight: 900; line-height: 1.08; color: var(--animal-primary); text-shadow: 0 6px 0 rgba(18,157,143,.16); display: block; position: relative; z-index: 1; }
-  /* BUGS#31③：全部播放键 ≥48×48（Apple 儿童触控标准）+大图标+按压脉冲动效 */
-  .pc-read { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); border: 2.5px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-md); font-weight: 900; min-height: 52px; min-width: 48px; padding: var(--sp-1) var(--sp-5); border-radius: 999px; cursor: pointer; flex: none;
-    box-shadow: 0 3px 0 #bce8e2; }
+  /* BUGS#32：控制键浮层=字模框右下角垂直叠放——字模 svg 宽≈高×0.475 居中，右缘净空 390 屏 ≈35px+、
+     320 窄屏仍 ≥7px，纵叠在任何屏宽零遮挡；圆钮 50×50（≥48 Apple 儿童触控标准）；
+     容器 pointer-events:none 使钮间空隙点穿到字模按钮（热区不冲突、无死区） */
+  .pc-ctrls { position: absolute; right: 6px; bottom: 6px; display: flex; flex-direction: column; gap: 6px; z-index: 2; pointer-events: none; }
+  /* BUGS#31③：全部播放键 ≥48×48 +按压脉冲动效（沿用） */
+  .pc-read { width: 50px; height: 50px; min-width: 50px; min-height: 50px; padding: 0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; border: 2.5px solid #bce8e2; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+    font-family: inherit; cursor: pointer; flex: none; pointer-events: auto; box-shadow: 0 3px 0 #bce8e2; }
   .pc-read:active { transform: translateY(2px); box-shadow: 0 1px 0 #bce8e2; }
   .pc-read :global(svg) { width: 24px; height: 24px; }
   .pc-read.ping { animation: pcping .65s ease-out; }
-  .pc-han { font-style: normal; font-weight: 800; opacity: .8; }
-  .pc-replay { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); border: none; background: #fff; color: var(--animal-primary-active);
-    font-family: inherit; font-size:var(--fs-sm); font-weight: 900; min-height: 48px; min-width: 48px; padding: var(--sp-1) var(--sp-4); border-radius: 999px; cursor: pointer; flex: none;
-    box-shadow: 0 3px 0 #e3d9c8; }
+  .pc-replay { width: 50px; height: 50px; min-width: 50px; min-height: 50px; padding: 0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; border: none; background: #fff; color: var(--animal-primary-active);
+    font-family: inherit; cursor: pointer; flex: none; pointer-events: auto; box-shadow: 0 3px 0 #e3d9c8; }
   .pc-replay:active { transform: translateY(2px); box-shadow: 0 1px 0 #e3d9c8; }
-  .pc-replay :global(svg) { width: 20px; height: 20px; }
+  .pc-replay :global(svg) { width: 22px; height: 22px; }
   .pc-replay.ping { animation: pcping .65s ease-out; }
   /* 按压脉冲：扩散光环+微放大（动效反馈，kuaner"动效反馈"） */
   @keyframes pcping { 0% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 0 rgba(42,157,143,.4); } 70% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 14px rgba(42,157,143,0); } 100% { box-shadow: 0 3px 0 #bce8e2, 0 0 0 0 rgba(42,157,143,0); } }
