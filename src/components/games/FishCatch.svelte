@@ -21,6 +21,7 @@
   let last = 0
   let waveAt = 0
   let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出新目标元素 */
+  let pending: { ks: string[]; idx: number; nextAt: number } | null = null   /* 群内游入队列 */
   const pool = learnedLetters()
   const playing = $derived(GS.phase === 'play')
 
@@ -30,6 +31,7 @@
     const e = GS.epoch
     untrack(() => {
       fish = []
+      pending = null
       askTarget(pickGameTarget(pool, []))   /* 开局自动播第一轮目标音（声音先行） */
       const t0 = performance.now()
       noSpawnBefore = t0 + 300
@@ -53,7 +55,7 @@
     for (const f of fish) {
       if (f.caught || f.scare) continue
       f.x += speed * dt * 100 * f.dir * (f.id % 2 ? 1.1 : 0.9)
-      if (f.x > 118 || f.x < -18) {
+      if (f.x > 160 || f.x < -50) {
         gone.push(f.id)
         if (f.k === GS.target) missedTarget = true
       }
@@ -66,7 +68,14 @@
       askTarget(pickGameTarget(pool, [GS.target]))
       noSpawnBefore = performance.now() + 300
     }
-    if (now >= noSpawnBefore && (now >= waveAt || !targetInPond()) && fish.length < 9) {
+    if (pending && now >= pending.nextAt && fish.length < 9) {
+      /* 群内游入：每 170ms 一条（鱼贯入场，起点都在场内边线） */
+      pushFish(pending.ks[pending.idx])
+      pending.idx++
+      pending.nextAt = now + 170
+      if (pending.idx >= pending.ks.length) pending = null
+    }
+    if (!pending && now >= noSpawnBefore && (now >= waveAt || !targetInPond()) && fish.length < 9) {
       waveAt = now + Math.max(2100, 2900 - Math.min(GS.combo, 8) * 100)
       spawnWave()
     }
@@ -78,7 +87,26 @@
     return fish.some((f) => !f.caught && !f.scare && f.k === GS.target)
   }
 
-  /* v4.2c 多鱼并发：目标+已学干扰成群入场（镜像搭档优先、账本加权），同泳道错位排队 */
+  function pushFish(k: string) {
+    let dir: 1 | -1 = uid % 2 ? 1 : -1
+    const live = () => fish.filter((f) => !f.caught && !f.scare)
+    /* 同速同泳道的鱼会完全重叠（后画盖前画=点目标偷命中干扰，验收实锤教训）——
+       同向已有活鱼且对向空闲 → 换对向进场；两向都占 → 保持向、起点向外错一个鱼身
+       （起点差=全程差：同速永不追平，24%≈一个鱼身宽度） */
+    if (live().some((f) => f.dir === dir) && !live().some((f) => f.dir !== dir)) {
+      dir = dir === 1 ? -1 : 1
+    }
+    const n = live().filter((f) => f.dir === dir).length
+    const off = n * 24
+    fish.push({
+      id: ++uid, k, lane: dir === 1 ? 0 : 1, dir,
+      x: dir === 1 ? -14 - off : 114 + off,
+      hue: HUES[uid % HUES.length], caught: false, scare: false,
+    })
+  }
+
+  /* v4.2c 多鱼并发：目标+已学干扰成群（镜像搭档优先、账本加权），
+     群内鱼贯游入（170ms 间隔）——同泳道重叠与场外出生点都规避 */
   function spawnWave() {
     const n = 3 + Math.floor(Math.random() * 2)
     const ks: string[] = []
@@ -90,14 +118,7 @@
       const k = ledgerPick(pool, Math.random)
       if (!ks.includes(k)) ks.push(k)
     }
-    ks.forEach((k, i) => {
-      const dir: 1 | -1 = (uid + i) % 2 ? 1 : -1
-      fish.push({
-        id: ++uid, k, lane: dir === 1 ? 0 : 1, dir,
-        x: dir === 1 ? -14 - i * 9 : 114 + i * 9,
-        hue: HUES[uid % HUES.length], caught: false, scare: false,
-      })
-    })
+    pending = { ks, idx: 0, nextAt: performance.now() }
   }
 
   function hook(f: Fish) {
@@ -131,6 +152,7 @@
         class:caught={f.caught}
         class:scare={f.scare}
         data-letter={f.k}
+        data-fid={f.id}
         style="left:{f.x}%; top:{18 + f.lane * 40}%; --hue:{f.hue}; --flip:{f.dir === 1 ? -1 : 1}; --lx:{f.dir === 1 ? 36 : 2}px"
         onpointerdown={() => hook(f)}
         aria-label="fish"

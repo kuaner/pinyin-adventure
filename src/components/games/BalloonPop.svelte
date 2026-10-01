@@ -134,6 +134,7 @@
         class:popped={b.popped}
         class:wrong={b.wrong}
         data-letter={b.k}
+        data-bid={b.id}
         style="left:{b.x}%; top:{b.y * 100}%; --hue:{b.hue}"
         onpointerdown={() => pop(b)}
         aria-label="balloon"

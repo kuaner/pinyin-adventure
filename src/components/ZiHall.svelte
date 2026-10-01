@@ -9,7 +9,8 @@
   import { ziUnlocked, ziDrillOrder } from '../lib/ziGate'
   import { markResult } from '../stores/weights.svelte'
   import { show, toast } from '../stores/ui.svelte'
-  import { playAudio, sndOk, sndNo } from '../lib/audio'
+  import { playAudio, sndOk, sndNo, pyAudio } from '../lib/audio'
+  import { HYP } from '../data'
   import { makeZiQ } from '../lib/quizEngine'
   import { t } from '../text/strings'
   import Speak from './Speak.svelte'
@@ -42,6 +43,7 @@
   let okN = $state(0)
   let streak = $state(0)
   let best = $state(0)
+  let armed = $state(-1)   /* v4.2c Bug#37 两段式试听 */
   let reveal = $state<{ correct: number; wrong: number[] } | null>(null)
   let order: ZiItem[] = []
   let oi = 0
@@ -62,11 +64,22 @@
   function nextQ() {
     zitem = order[oi % order.length]
     q = makeZiQ(zitem!, false)
+    armed = -1
     reveal = null
+  }
+
+  /* v4.2c Bug#37 两段式试听：首点=播该选项拼音（hyp 音节，缺失仅高亮）→ 再点同项=作答 */
+  function arm(idx: number) {
+    if (armed === idx) { answer(idx); return }
+    if (reveal || !q) return
+    armed = idx
+    const f = pyAudio(q.opts[idx])
+    if (HYP[f]) playAudio(f)
   }
 
   function answer(idx: number) {
     if (reveal || !q) return
+    armed = -1
     const good = idx === q.ans
     reveal = { correct: q.ans, wrong: good ? [] : [idx] }
     markResult(q.key, good)   /* 字级账本 Z: 权重——下次弱字先出 */
@@ -154,8 +167,8 @@
         </div>
         <div class="optgrid" data-opts>
           {#each q.opts as py, idx}
-            <button class="opt" class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
-              data-opt={py} onclick={() => answer(idx)}>
+            <button class="opt" class:armed={armed === idx} class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
+              data-opt={py} data-idx={idx} onclick={() => arm(idx)}>
               <span class="og">{py}</span>
             </button>
           {/each}
@@ -218,6 +231,7 @@
     box-shadow: var(--animal-shadow-sm); cursor: pointer; font-family: inherit; display: flex; align-items: center;
     justify-content: center; min-height: 104px; padding: var(--sp-1); }
   .opt:active { transform: translateY(2px); box-shadow: none; }
+  .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
   .opt .og { font-size: var(--fs-xl); font-weight: 900; color: var(--animal-text); line-height: 1.4; }
   .opt.correct { border-color: var(--animal-success); background: #e8f5e8; }
   .opt.wrong { border-color: var(--animal-error); background: #fdeeee; animation: zshake .4s; }
