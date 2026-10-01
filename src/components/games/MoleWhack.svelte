@@ -22,13 +22,16 @@
     return () => { if (roundTid) { clearTimeout(roundTid); roundTid = null } }
   })
 
-  /* 一个回合：目标音自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头，限时敲 */
+  /* 一个回合：目标音自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头，限时敲。
+     v4.2c 共存立法（Bug#36）：禁止单鼠出场轮——已学池 ≥3 时干扰鼠保底 2 只 */
   function round() {
     if (GS.phase !== 'play') return
     const target = pickGameTarget(pool, moles.length ? [GS.target] : [])
     askTarget(target)
-    /* 干扰鼠：镜像陷阱必上，其余从池里随机补（有限次——gameDistractor 镜像优先会重复返回搭档，禁无限循环） */
-    const want = 2 + Math.floor(Math.random() * 2)
+    /* 干扰鼠：镜像陷阱必上，其余从池里随机补（有限次——gameDistractor 镜像优先会重复返回搭档，禁无限循环）；
+       保底 2 只（池允许时）——目标永远与 ≥2 干扰同探，正确答案只能由"口诀↔字母"匹配得出 */
+    const maxDecoys = Math.min(4, pool.length - 1)
+    const want = Math.min(maxDecoys, 2 + Math.floor(Math.random() * 2))
     const decoys: string[] = []
     const mirror = { b: 'd', d: 'b', p: 'q', q: 'p' }[target]
     if (mirror && pool.includes(mirror)) decoys.push(mirror)

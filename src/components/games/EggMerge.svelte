@@ -8,6 +8,7 @@
   import { untrack } from 'svelte'
   import { GS, askTarget, listenTarget, gameHit, recordLetter, recordItem } from '../../stores/game.svelte'
   import { learnedBlends, pickWeighted, itemWeight, type Blend } from '../../lib/gameEngine'
+  import { LETTERS } from '../../data'
   import { sndStar } from '../../lib/audio'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
@@ -70,13 +71,20 @@
     }, GATE)
   }
 
-  /* 蛋半阵容：目标声母/韵母各 1 + 干扰各 3（全部正确形态——零错误信息铁律） */
+  /* 蛋半阵容：目标声母/韵母各 1 + 干扰各 3（全部正确形态——零错误信息铁律）。
+     v4.2c 共存立法（Bug#36）：半堆必含错半块（不能只给对的两块）——
+     已学池唯一声母/韵母时从全字母表同 cat 借正确形态干扰（gameDistractor 回落同款） */
+  function decoyKeys(kind: 'ini' | 'fin', exclude: string, n: number): string[] {
+    const src = [...new Set(pool.map((x) => (kind === 'ini' ? x.ini : x.fin)))].filter((k) => k !== exclude)
+    if (src.length >= n) return src
+    const cat = kind === 'ini' ? 'sm' : 'ym'
+    const all = Object.keys(LETTERS).filter((k) => k !== exclude && !src.includes(k) && (LETTERS as any)[k] && (LETTERS as any)[k].cat === cat)
+    return src.concat(all.slice(0, n - src.length))
+  }
+
   function buildHalves(b: Blend) {
-    const inis = [...new Set(pool.map((x) => x.ini))].filter((k) => k !== b.ini)
-    const fins = [...new Set(pool.map((x) => x.fin))].filter((k) => k !== b.fin)
-    shuffle(inis); shuffle(fins)
-    const pickI = [b.ini, ...inis.slice(0, 3)]
-    const pickF = [b.fin, ...fins.slice(0, 3)]
+    const pickI = [b.ini, ...decoyKeys('ini', b.ini, 3)]
+    const pickF = [b.fin, ...decoyKeys('fin', b.fin, 3)]
     shuffle(pickI); shuffle(pickF)
     const out: Half[] = []
     for (const k of pickI) out.push({ id: ++uid, kind: 'ini', k, hue: HUES[uid % HUES.length] })

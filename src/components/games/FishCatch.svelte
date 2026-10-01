@@ -2,9 +2,12 @@
   /* 🎣 小猫钓鱼：鱼带字母横向游过（双泳道双向），钓"指定读音"的鱼。
      v4.1 声音先行制：目标音自动播，鱼在声音开播 300ms 后才入场（先听再看再动手）；
      漏掉目标/钓错鱼 → miss 清连击，漏掉即换新目标（自动播新音）绝不静默推进；
-     🔊=随时重听。rAF 循环 + spawn 计时 phase 退出/unmount 全清 */
+     🔊=随时重听。rAF 循环 + spawn 计时 phase 退出/unmount 全清。
+     v4.2c 共存立法（Bug#36）：多鱼并发——成群入场（每群 3-4 条=目标+已学干扰[镜像优先
+     账本加权]），群间重叠水里常驻 ≥3 条；换目标不清场（旧鱼全转为新目标的合法干扰），
+     正确答案只能由"听到的音↔字母内容"匹配得出 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
-  import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
+  import { learnedLetters, pickGameTarget, mirrorOf, ledgerPick } from '../../lib/gameEngine'
   import { untrack } from 'svelte'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
@@ -16,8 +19,8 @@
   let uid = 0
   let raf = 0
   let last = 0
-  let spawnAt = 0
-  let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出元素 */
+  let waveAt = 0
+  let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出新目标元素 */
   const pool = learnedLetters()
   const playing = $derived(GS.phase === 'play')
 
@@ -30,7 +33,7 @@
       askTarget(pickGameTarget(pool, []))   /* 开局自动播第一轮目标音（声音先行） */
       const t0 = performance.now()
       noSpawnBefore = t0 + 300
-      spawnAt = t0 + 300
+      waveAt = t0 + 300
       last = t0
     })
     raf = requestAnimationFrame(tick)
@@ -57,38 +60,44 @@
     }
     if (gone.length) fish = fish.filter((f) => !gone.includes(f.id))
     if (missedTarget) {
-      /* v4.1：目标鱼游走=miss（清连击记错题）→ 换新目标自动播新音，绝不静默推进 */
+      /* v4.1：目标鱼游走=miss（清连击记错题）→ 换新目标自动播新音，绝不静默推进；
+         v4.2c：不清场——在场鱼群全部转为新目标的干扰（共存立法） */
       gameHit(GS.target, false)
       askTarget(pickGameTarget(pool, [GS.target]))
-      purgeStale(GS.target)
       noSpawnBefore = performance.now() + 300
     }
-    if (now >= spawnAt && now >= noSpawnBefore) {
-      spawnAt = now + Math.max(750, 1250 - Math.min(GS.combo, 8) * 55)
-      if (fish.length < 5) spawn()
+    if (now >= noSpawnBefore && (now >= waveAt || !targetInPond()) && fish.length < 9) {
+      waveAt = now + Math.max(2100, 2900 - Math.min(GS.combo, 8) * 100)
+      spawnWave()
     }
     raf = requestAnimationFrame(tick)
   }
 
-  /* 水里始终保底一条目标鱼（听过音就一定有得钓） */
+  /* 水里始终保底目标鱼（听过音就一定有得钓）——由鱼群生成保证 */
   function targetInPond(): boolean {
     return fish.some((f) => !f.caught && !f.scare && f.k === GS.target)
   }
 
-  function spawn(forceTarget = false) {
-    const dir: 1 | -1 = uid % 2 ? 1 : -1
-    const k = forceTarget || (GS.target && !targetInPond()) || Math.random() < 0.4 ? GS.target : pickGameTarget(pool, [])
-    fish.push({
-      id: ++uid, k, lane: uid % 2, dir,
-      x: dir === 1 ? -14 : 114,
-      hue: HUES[uid % HUES.length], caught: false, scare: false,
+  /* v4.2c 多鱼并发：目标+已学干扰成群入场（镜像搭档优先、账本加权），同泳道错位排队 */
+  function spawnWave() {
+    const n = 3 + Math.floor(Math.random() * 2)
+    const ks: string[] = []
+    if (!targetInPond() || Math.random() < 0.5) ks.push(GS.target)
+    const mirror = mirrorOf(GS.target)
+    if (mirror && pool.includes(mirror) && !ks.includes(mirror) && Math.random() < 0.8) ks.push(mirror)
+    let guard = 0
+    while (ks.length < n && guard++ < 30) {
+      const k = ledgerPick(pool, Math.random)
+      if (!ks.includes(k)) ks.push(k)
+    }
+    ks.forEach((k, i) => {
+      const dir: 1 | -1 = (uid + i) % 2 ? 1 : -1
+      fish.push({
+        id: ++uid, k, lane: dir === 1 ? 0 : 1, dir,
+        x: dir === 1 ? -14 - i * 9 : 114 + i * 9,
+        hue: HUES[uid % HUES.length], caught: false, scare: false,
+      })
     })
-  }
-
-  /* v4.1 声音先行：换目标后清掉与新目标同字母的在场鱼（陈旧干扰鱼）——
-     保证新目标鱼必在新声音开播 300ms 后才入场 */
-  function purgeStale(k: string) {
-    fish = fish.filter((f) => f.caught || f.scare || f.k !== k)
   }
 
   function hook(f: Fish) {
@@ -98,7 +107,6 @@
       gameHit(GS.target, true)
       setTimeout(() => { fish = fish.filter((x) => x.id !== f.id) }, 450)
       askTarget(pickGameTarget(pool, [GS.target]))   /* 换目标自动播新音 */
-      purgeStale(GS.target)
       noSpawnBefore = performance.now() + 300        /* 新目标鱼等声音开播 300ms 后才入场 */
     } else {
       f.scare = true

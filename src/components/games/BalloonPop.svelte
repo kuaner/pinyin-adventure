@@ -2,9 +2,13 @@
   /* 🎈 气球大作战：气球带字母升空，听音 pop 对的（DOM+CSS transform+rAF）。
      v4.1 声音先行制：目标音自动播，气球在声音开播 300ms 后才升空（先听再看再动手）；
      漏掉目标/错 pop → miss 清连击，漏掉即换新目标（自动播新音）绝不静默推进；
-     🔊=随时重听。rAF 循环与 spawn 计时在 phase!=='play' 或 unmount 时全清 */
+     🔊=随时重听。rAF 循环与 spawn 计时在 phase!=='play' 或 unmount 时全清。
+     v4.2c 共存立法（Bug#36）：成波生成——每波 3-4 只同时升空（目标+已学干扰[镜像/近音
+     优先、账本加权]），波间重叠空中常驻 ≥3 只、可多目标同时在空；旧球换目标后不清场
+     （全部转为新目标的合法干扰），purgeStale"清到只剩目标"的退化策略废除——正确答案
+     只能由"听到的音↔字母内容"匹配得出，绝不能由出现时机/位置/唯一性推出 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
-  import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
+  import { learnedLetters, pickGameTarget, mirrorOf, ledgerPick } from '../../lib/gameEngine'
   import { untrack } from 'svelte'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
@@ -16,8 +20,8 @@
   let uid = 0
   let raf = 0
   let last = 0
-  let spawnAt = 0
-  let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出元素 */
+  let waveAt = 0
+  let noSpawnBefore = 0       /* 声音先行闸门：目标音开播 300ms 内不出新目标元素 */
   const pool = learnedLetters()
 
   const playing = $derived(GS.phase === 'play')
@@ -33,7 +37,7 @@
       askTarget(pickGameTarget(pool, []))      /* 开局自动播第一轮目标音（声音先行） */
       const t0 = performance.now()
       noSpawnBefore = t0 + 300
-      spawnAt = t0 + 300
+      waveAt = t0 + 300
       last = t0
     })
     raf = requestAnimationFrame(tick)
@@ -60,33 +64,44 @@
     }
     if (gone.length) balloons = balloons.filter((b) => !gone.includes(b.id))
     if (missedTarget) {
-      /* v4.1：目标球飘走=miss（清连击记错题）→ 换新目标自动播新音，绝不静默推进 */
+      /* v4.1：目标球飘走=miss（清连击记错题）→ 换新目标自动播新音，绝不静默推进；
+         v4.2c：不清场——在场旧球全部转为新目标的干扰（共存立法） */
       gameHit(GS.target, false)
       askTarget(pickGameTarget(pool, [GS.target]))
-      purgeStale(GS.target)
       noSpawnBefore = performance.now() + 300
     }
-    if (now >= spawnAt && now >= noSpawnBefore) {
-      spawnAt = now + Math.max(640, 1150 - Math.min(GS.combo, 8) * 55)
-      if (balloons.length < 6) spawn()
+    if (now >= noSpawnBefore && (now >= waveAt || !targetOnStage()) && balloons.length < 9) {
+      waveAt = now + Math.max(1900, 2600 - Math.min(GS.combo, 8) * 90)
+      spawnWave()
     }
     raf = requestAnimationFrame(tick)
   }
 
-  /* 舞台上始终保底一个目标球（孩子听过音就一定有得拍） */
+  /* 空中始终保底目标球（孩子听过音就一定有得拍）——由波次生成保证 */
   function targetOnStage(): boolean {
     return balloons.some((b) => !b.popped && !b.wrong && b.k === GS.target)
   }
 
-  function spawn(forceTarget = false) {
-    const k = forceTarget || (GS.target && !targetOnStage()) || Math.random() < 0.4 ? GS.target : pickGameTarget(pool, [])
-    balloons.push({ id: ++uid, k, x: 7 + Math.random() * 72, y: 1.06, hue: HUES[uid % HUES.length], popped: false, wrong: false })
-  }
-
-  /* v4.1 声音先行：换目标后清掉与新目标同字母的在场气球（陈旧干扰球）——
-     保证新目标球必在新声音开播 300ms 后才出现，绝不元素先于声音 */
-  function purgeStale(k: string) {
-    balloons = balloons.filter((b) => b.popped || b.wrong || b.k !== k)
+  /* v4.2c 成波生成：目标+已学干扰同时升空（镜像搭档优先、账本加权），x 分段错开 */
+  function spawnWave() {
+    const n = 3 + Math.floor(Math.random() * 2)
+    const ks: string[] = []
+    /* 目标球：空中没有就必给；已有也可再给一只（多目标同时在空合法） */
+    if (!targetOnStage() || Math.random() < 0.5) ks.push(GS.target)
+    const mirror = mirrorOf(GS.target)
+    if (mirror && pool.includes(mirror) && !ks.includes(mirror) && Math.random() < 0.8) ks.push(mirror)
+    let guard = 0
+    while (ks.length < n && guard++ < 30) {
+      const k = ledgerPick(pool, Math.random)
+      if (!ks.includes(k)) ks.push(k)
+    }
+    const slots: number[] = []
+    for (let i = 0; i < ks.length; i++) slots.push(i)
+    for (let i = slots.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = slots[i]; slots[i] = slots[j]; slots[j] = t }
+    const segW = 84 / ks.length
+    ks.forEach((k, i) => {
+      balloons.push({ id: ++uid, k, x: 6 + slots[i] * segW + Math.random() * segW * 0.55, y: 1.04 + Math.random() * 0.08, hue: HUES[uid % HUES.length], popped: false, wrong: false })
+    })
   }
 
   function pop(b: Balloon) {
@@ -96,7 +111,6 @@
       gameHit(GS.target, true)
       setTimeout(() => { balloons = balloons.filter((x) => x.id !== b.id) }, 320)
       askTarget(pickGameTarget(pool, [GS.target]))   /* 换目标自动播新音 */
-      purgeStale(GS.target)
       noSpawnBefore = performance.now() + 300        /* 新目标球等声音开播 300ms 后才升空 */
     } else {
       b.wrong = true

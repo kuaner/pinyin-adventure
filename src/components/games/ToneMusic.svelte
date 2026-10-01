@@ -68,7 +68,11 @@
     tid = setTimeout(() => {
       if (!alive || GS.phase !== 'play') return
       ready = true
+      /* v4.2c 共存立法（Bug#36）：目标符与 ≥2 干扰符同发（3 轨齐落：1 目标+2 同音节异调）——
+         目标出现时刻干扰已在同屏，正确答案只能由"听到的调↔符上调号"匹配得出 */
       spawnTargetNote()
+      spawnDistractor()
+      spawnDistractor()
     }, GATE)
   }
 
