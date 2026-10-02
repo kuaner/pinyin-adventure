@@ -16,9 +16,19 @@ npm install
 npm run dev          # 开发服务器
 npm run build        # 生产构建 → dist/（CI 加 GITHUB_PAGES=1 时 base=/pinyin-adventure/）
 npm run preview      # 预览生产构建
-node scripts/acceptance.mjs   # 验收链（需 preview 在 4173 端口）
+npm test             # 单测（vitest run，jsdom）
+npm run test:coverage # 单测+覆盖率 → coverage/
+npm run e2e          # 统一回归包：自起 preview 4173 → 串行跑 tests/e2e/ 全部验收脚本（CI 同款）
+node scripts/acceptance.mjs   # v1 时代验收链（历史档案，现行回归在 tests/e2e/）
 node scripts/visual-check.mjs # 视觉度量校验
 ```
+
+## 测试体系（T1 基建，2026-10-02 起）
+
+- `tests/unit/`：Vitest 单测（jsdom+runes 直测）——账本/连击/每日挑战/出题引擎/权重/成长/学习进度；核心逻辑模块行覆盖 92-100%（`npm run test:coverage` 看全表）
+- `tests/e2e/`：存量 v*-accept 收编的统一回归包（断言原样+独立可跑）+ `run-all.mjs` runner + Bug#36/37 命名回归样例
+- **CI 测试门**：deploy.yml `test`+`e2e` job 前置，`build.needs:[test,e2e]`——红灯阻断 tag 部署；PR/push main 也跑
+- 规矩见 `tests/README.md`：修 bug 先写失败测试；新功能腿必带单测+e2e；覆盖率只升不降
 
 ## 结构
 
@@ -75,7 +85,8 @@ src/
     strokes.json          # 47 单元笔顺 SVG 几何（v2.3 换血：lasagoo/letter-writing 底本+部编版适配，生成器 gen-strokes-lw.mjs 勿手改；stroke-verify.mjs 自检）
     pinyin-cards.json     # v2.5 PinyinCard 数据正本（一拼音一条记录，gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成，勿手改）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
-scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清单生成器：扫描 strings+数据→diff→补生成，mimo 冰糖/hyp 拼接铁律）（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）
+scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清单生成器：扫描 strings+数据→diff→补生成，mimo 冰糖/hyp 拼接铁律）（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）；v30-v431 现行验收已收编 tests/e2e/（T1），scripts/ 里 acceptance-v2x/v29x 系列为历史档案
+tests/                    # T1 测试基建（2026-10-02）：unit/ vitest 单测 + e2e/ 统一回归包（run-all.mjs+存量收编+命名回归样例），见 tests/README.md
 ```
 
 ## 数据格式
@@ -96,7 +107,7 @@ scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清
 7. **注音收口+文案层**（Bug#2 → v2.6）：数据层纯文本；用户可见字符串唯一真相=src/text/strings.ts（key→中文），组件/stores 禁中文字面量；渲染走 `<Speak k=…/>`（注音+点播）；`node scripts/check-ruby.mjs` 是 lint 门槛（字面量=exit 2）。
 8. **PWA 更新**（v2.3 照 bambu-nfc）：registerType 'prompt' + UpdatePrompt（onNeedRefresh 提示条 + visibilitychange 主动 SW.update()）；改回 autoUpdate 前先想清楚儿童场景。
 9. **声音礼仪三规则**（v2.4）：R1 零过场音（入口/切tab/翻页静音，grep 验收 `lessons/open_|lessons/step_|playAudio('go')`=0）；R2 声音只从点读/听题/对错反馈三处来（v2.6 起全 app 零自动语音：题面音一律 🔊 大按钮点播，孩子控节奏；文案层 Speak 有音频即可点播；**v4.1 例外=游戏/挑战场景自动播目标音**——声音先行制 BUGS#34，学习流仍零自动播放）；R3 一次一路（audio.ts 单通道锁 stopAll()，新声音停旧声）；R4 静音总开关只在家长区设置页；R5 唯一例外=口诀连播（手动开启）。
-10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow hidden/**clip** + flex column，固定件 flex:none / 舞台 flex:1 1 0；v3.0 加 clip=连编程滚动都不可能，scrollIntoView 连带滚祖先类 bug 根绝，BUGS#30）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 18 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全单元 chip × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；v3.0 起 `node scripts/v30-accept.mjs`（结构反转+零左移+零滚动+自动推进，28 断言）+ `node scripts/v31-accept.mjs`（v3.1 字模合体：单 z 断言+idleDone 定格+全部播放键 ≥48px 几何实测，27 断言）+ `node scripts/v312-accept.mjs`（v3.1.2 音频智能预载+四线格：预载集进 pinyin-audio 缓存+点击→可播 <100ms+ui 短语元素级在播+格线加深/字模占满几何，16 断言；BASE_URL 可指线上直接验生产预载）+ 笔顺 `stroke-verify.mjs`（47 单元）+ 升级体系 `node scripts/v32-accept.mjs`（触发点接线 16 断言：过关庆祝/星星+5/卡片解锁/进化记账/签到阈值/徽章兑现）+ 截图 `node scripts/v32-shots.mjs`（我的tab/图鉴/三种庆祝/五阶段）+ 游戏岛 `node scripts/v40-accept.mjs`（42 断言：hub 结构+四游戏真实输入试玩+连击倍率+错误账本+星星入成长+每日挑战抽样/种子稳定）+ 截图 `node scripts/v40-shots.mjs`（hub/每日挑战×2/四游戏×3 态=14 张）+ 互动证据制 `node scripts/v401-accept.mjs`（BUGS#33：反例纯滑动拦截+正例两旗放行+重学不拦+家长通道放行，22 断言）+ 声音先行制 `node scripts/v41-accept.mjs`（BUGS#34：__AUDIO_LOG×MutationObserver 时序断言[音频先于元素+300ms 闸门]+反例四游戏零操作 60s 零分零星+miss 记账+正例真实触摸得分+🔊重听再发，42 断言；v4.2 起地鼠段=kj 口诀音频）+ 练习馆/口诀地鼠 `node scripts/v42-accept.mjs`（BUGS#35 上半：hub 6 摊位终态+零占位+hall 分段往返保持+六入口+四模式真实试玩[闪电 5 题结算/听写弱项开关/易混对 weak 标+3 题/识字表解锁态+3 题+零自动播边界]+口诀地鼠 kj 时序/敲对得分/敲错清连击+气球呼读对照，52 断言）+ 截图 `node scripts/v42-shots.mjs`（双厅/四模式/口诀地鼠=9 张）+ 蛋合并/音乐会/两专练 `node scripts/v43-accept.mjs`（BUGS#35 下半：蛋=拼对 3 题+拼错清连击+拼读音频请求断言+hhalf 时序；音乐会=接住 3 音+接错清连击+音频先于音符 300ms 闸门时序；两专练=各真实答 5 题+错 1 题+GD.items 账本写入+itemW/wpick 种子复算加权复现+结算断言；hub 6 摊位零占位，40 断言+7 图目验）；v293 系列归档为 v2.9 历史记录。
+10. **零纵向滚动**（v2.4 立，v2.9.3 架构根治 BUGS#24 两次复发）：滚动禁令容器级自扛，不靠祖先链继承——课页最外层 `#lesson-root`（height:100dvh + overflow hidden/**clip** + flex column，固定件 flex:none / 舞台 flex:1 1 0；v3.0 加 clip=连编程滚动都不可能，scrollIntoView 连带滚祖先类 bug 根绝，BUGS#30）、三 tab 屏 `#tab-view-root`（height:calc(100dvh - var(--tabbar-h)) + overflow:hidden）各自硬锁；内容放不下=卡内压缩/横滑胶囊条消化（L12 18 chip 条、整体认读 zt 分页 2×2），绝不出现纵向滚动。**验收必须真实切换流**（tab→进课→返回→换课 × 12 课 × 全单元 chip × 切字母 × 3 档视口），只验初始状态=BUGS#24 同款复发；v3.0 起 `node tests/e2e/v30-accept.mjs`（结构反转+零左移+零滚动+自动推进，28 断言）+ `node tests/e2e/v31-accept.mjs`（v3.1 字模合体：单 z 断言+idleDone 定格+全部播放键 ≥48px 几何实测，27 断言）+ `node tests/e2e/v312-accept.mjs`（v3.1.2 音频智能预载+四线格：预载集进 pinyin-audio 缓存+点击→可播 <100ms+ui 短语元素级在播+格线加深/字模占满几何，16 断言；BASE_URL 可指线上直接验生产预载）+ 笔顺 `stroke-verify.mjs`（47 单元）+ 升级体系 `node tests/e2e/v32-accept.mjs`（触发点接线 16 断言：过关庆祝/星星+5/卡片解锁/进化记账/签到阈值/徽章兑现）+ 截图 `node scripts/v32-shots.mjs`（我的tab/图鉴/三种庆祝/五阶段）+ 游戏岛 `node tests/e2e/v40-accept.mjs`（42 断言：hub 结构+四游戏真实输入试玩+连击倍率+错误账本+星星入成长+每日挑战抽样/种子稳定）+ 截图 `node scripts/v40-shots.mjs`（hub/每日挑战×2/四游戏×3 态=14 张）+ 互动证据制 `node tests/e2e/v401-accept.mjs`（BUGS#33：反例纯滑动拦截+正例两旗放行+重学不拦+家长通道放行，22 断言）+ 声音先行制 `node tests/e2e/v41-accept.mjs`（BUGS#34：__AUDIO_LOG×MutationObserver 时序断言[音频先于元素+300ms 闸门]+反例四游戏零操作 60s 零分零星+miss 记账+正例真实触摸得分+🔊重听再发，42 断言；v4.2 起地鼠段=kj 口诀音频）+ 练习馆/口诀地鼠 `node tests/e2e/v42-accept.mjs`（BUGS#35 上半：hub 6 摊位终态+零占位+hall 分段往返保持+六入口+四模式真实试玩[闪电 5 题结算/听写弱项开关/易混对 weak 标+3 题/识字表解锁态+3 题+零自动播边界]+口诀地鼠 kj 时序/敲对得分/敲错清连击+气球呼读对照，52 断言）+ 截图 `node scripts/v42-shots.mjs`（双厅/四模式/口诀地鼠=9 张）+ 蛋合并/音乐会/两专练 `node tests/e2e/v43-accept.mjs`（BUGS#35 下半：蛋=拼对 3 题+拼错清连击+拼读音频请求断言+hhalf 时序；音乐会=接住 3 音+接错清连击+音频先于音符 300ms 闸门时序；两专练=各真实答 5 题+错 1 题+GD.items 账本写入+itemW/wpick 种子复算加权复现+结算断言；hub 6 摊位零占位，40 断言+7 图目验）；v293 系列归档为 v2.9 历史记录。
 
 ## 发布流程
 

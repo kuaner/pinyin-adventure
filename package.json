@@ -1,20 +1,29 @@
 {
   "name": "pinyin-adventure",
   "private": true,
-  "version": "4.3.1",
+  "version": "4.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit --skipLibCheck"
+    "typecheck": "tsc --noEmit --skipLibCheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "e2e": "node tests/e2e/run-all.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@testing-library/svelte": "^5.4.2",
+    "@vitest/coverage-v8": "^3.2.7",
+    "jsdom": "^30.1.1",
+    "playwright": "^1.63.0",
     "svelte": "^5.0.0",
     "typescript": "^6.0.3",
     "vite": "^6.0.0",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "vitest": "^3.2.7"
   },
   "dependencies": {
     "pinyin-pro": "^3.29.4"

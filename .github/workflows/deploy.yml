@@ -1,9 +1,17 @@
 name: Build & Deploy to Pages
 
+# T1 测试门（2026-10-02）：test（单测+coverage）与 e2e（回归包）前置；
+# build needs 两个测试 job——npm test 或回归包红灯 = tag 部署被阻断。
+# PR / push main 只跑测试不部署；部署仍仅 v* tag / 手动触发。
 on:
   push:
     tags:
       - 'v*'
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -14,7 +22,79 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  test:
+    name: Unit tests (vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit tests + coverage
+        run: npm run test:coverage
+
+      - name: Coverage → job summary
+        if: always()
+        run: |
+          node -e "
+          const s=require('./coverage/coverage-summary.json');
+          const rows=Object.keys(s).filter(k=>k!=='total');
+          const short=(k)=>k.replace(/^.*\/src\//,'src/');
+          const r=(k)=>s[k].lines.pct.toFixed(2)+'%';
+          console.log('### Coverage（行覆盖）\n');
+          console.log('| 模块 | 行覆盖 |');
+          console.log('|---|---|');
+          for(const k of rows.sort()) console.log('| '+short(k)+' | '+r(k)+' |');
+          console.log('| **总计** | **'+r('total')+'** |');
+          " >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  e2e:
+    name: E2E regression pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Build (base=/)
+        run: npx vite build
+
+      - name: Run regression pack (12 scripts)
+        run: npm run e2e
+
+      - name: Upload acceptance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-artifacts
+          path: .acceptance-*/
+          retention-days: 14
+
   build:
+    needs: [test, e2e]
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
