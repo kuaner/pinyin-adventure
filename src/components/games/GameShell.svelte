@@ -18,7 +18,7 @@
   })
   const mult = $derived(comboMult(GS.combo))
   const best = $derived(GD.games[id]?.best ?? 0)
-  const title: StringKey = $derived(GS.win === 1 ? 'duelWinTitle' : GS.win === -1 ? 'duelLoseTitle' : 'timeUp')
+  const title: StringKey = $derived(GS.win === 1 ? 'duelWinTitle' : GS.win === -1 ? 'duelLoseTitle' : GS.practice ? 'practiceDone' : 'timeUp')
 
   function noop() { /* 舞台层吃掉手势，防误触穿透 */ }
 </script>
@@ -27,7 +27,10 @@
   <div class="ltop">
     <button class="cbtn" data-back="gamequit" onclick={quitGame} aria-label="exit"><Icon name="close" size={20} /></button>
     <div class="ltt"><Speak text={gameTitle()} /></div>
-    <div class="lprog" id="gtime" class:low={GS.left <= 10 && phase === 'play'}>{timeText}</div>
+    <div class="lprog" id="gtime" class:low={!GS.practice && GS.left <= 10 && phase === 'play'}>
+      {#if GS.practice}<span id="gok" data-ok={GS.tries}><Speak k="okCountN" vars={{ n: GS.tries }} /></span>
+      {:else}{timeText}{/if}
+    </div>
   </div>
   <div class="gamehud">
     <span id="gscore" data-score>{GS.score}</span>

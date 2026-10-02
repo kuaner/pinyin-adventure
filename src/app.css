@@ -406,3 +406,7 @@ html,body{overflow:hidden;overscroll-behavior:none}    /* overscroll-behavior:�
 body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:240px 240px}
+/* v4.5 Bug#38 切题过渡反馈：题目卡滑入（连续出题面通用，{#key} 重挂触发）+进度点同步由各面既有索引派生承担 */
+.qslide{animation:qslidein .26s cubic-bezier(.25,1.2,.4,1)}
+@keyframes qslidein{from{transform:translateX(26px);opacity:0}}
+@media (prefers-reduced-motion: reduce){.qslide{animation-duration:.01s}}

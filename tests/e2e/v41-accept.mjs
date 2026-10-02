@@ -99,19 +99,19 @@ const waitVisible = (page, sel, timeout = 6000) =>
   }, sel, { timeout }).then(() => true).catch(() => false)
 
 /* ================= ① 打地鼠：时序 + 正例 + 重听 =================
-   v4.2 起地鼠=口诀打地鼠：目标音=口诀朗读（lessons/kj_*，声音先行制不变——
-   呼读音断言移交 v42-accept 气球段）。 */
+   v4.5 起地鼠=谜面制（Bug#39）：目标音=谜面朗读（riddle/*，口诀剥离字母零答案读音，声音先行制不变——
+   敲对后播整句口诀奖励）。 */
 {
   console.log('\n— 打地鼠 mole —')
-  const kjName = (k) => 'lessons/kj_' + letterAudioName(k)
+  const riddleName = (k) => 'riddle/' + letterAudioName(k)
   const { page, errs } = await mk()
   await enterGame(page, 'mole')
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
   const target = await page.getAttribute('[data-prompt]', 'data-target')
-  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, kjName(target))
+  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, riddleName(target))
   const upReady = await waitDom(page, 'mole-up')
   const up = await page.evaluate(() => window.__DOM_LOG.filter((e) => e.kind === 'mole-up')[0] || null)
-  ok(!!a, '开局自动播第一轮目标音（v4.2=口诀朗读 kj_*；3-2-1 后零操作即播音）', `target=${target} audio@${a ? Math.round(a.t) : '-'}ms`)
+  ok(!!a, '开局自动播第一轮谜面音（v4.5=riddle/* 谜面制；3-2-1 后零操作即播音）', `target=${target} audio@${a ? Math.round(a.t) : '-'}ms`)
   ok(upReady && !!a && !!up && a.t < up.t, '时序：目标音先于地鼠探头', `audio=${Math.round(a.t)} < up=${up ? Math.round(up.t) : '-'}`)
   ok(upReady && !!a && !!up && up.t - a.t >= 250, '时序：探头挂在声音开播 300ms 闸门后', `gap=${up && a ? Math.round(up.t - a.t) : '-'}ms`)
   const preNet = await page.evaluate(() => performance.getEntriesByType('resource').filter((r) => /audio\/.*(hyp|lessons)/.test(r.name)).length)
@@ -148,7 +148,7 @@ const waitVisible = (page, sel, timeout = 6000) =>
     n: window.__AUDIO_LOG.length,
     names: window.__AUDIO_LOG.map((e) => e.name),
   }))
-  ok(now2.n > beforeCnt && now2.names[beforeCnt] === 'lessons/kj_' + letterAudioName(tgtAtTap), '🔊 重听可用：点击后音频再发（v4.2=口诀）', `now=${now2.names.slice(beforeCnt).join(',')} tgtAtTap=${tgtAtTap}`)
+  ok(now2.n > beforeCnt && now2.names[beforeCnt] === 'riddle/' + letterAudioName(tgtAtTap), '🔊 重听可用：点击后音频再发（v4.5=谜面）', `now=${now2.names.slice(beforeCnt).join(',')} tgtAtTap=${tgtAtTap}`)
   ok(errs.length === 0, '零 pageerror', errs.join('|') || 'clean')
   await page.close()
 }
@@ -217,10 +217,11 @@ const waitVisible = (page, sel, timeout = 6000) =>
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
   const qel = await page.waitForSelector('[data-q]', { timeout: 5000 })
   const target = await qel.getAttribute('data-target')
-  /* v4.2 起对决题面两型（验收腿适配，只改脚本）：字母题播呼读/口诀题播 kj（gameEngine duelQ 35% 掷币）——
+  /* v4.2 起对决题面两型（验收腿适配，只改脚本）：字母题播呼读/口诀题播谜面
+     （v4.5 Bug#41 审计：kj 题音频改谜面制，整句口诀含答案读音不作题面）——
      断言接受"当前题型对应音频"，两型都验"出题即读音" */
   const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, letterAudioName(target))
-  const akj = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, 'lessons/kj_' + letterAudioName(target))
+  const akj = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, 'riddle/' + letterAudioName(target))
   const qaudio = a || akj
   const el = await page.evaluate(() => window.__DOM_LOG.filter((e) => e.kind === 'qwrap')[0] || null)
   ok(!!qaudio, '出题即自动读音', `target=${target} audio=${qaudio ? qaudio.name : 'none'}`)
@@ -286,8 +287,30 @@ const waitVisible = (page, sel, timeout = 6000) =>
   await page.close()
 }
 
-/* ================= ⑥ 反例路径：完全不操作 60 秒 → 0 分 / 无过关 ================= */
-for (const id of ['mole', 'balloon', 'fish', 'duel']) {
+/* ================= ⑥ 反例路径：完全不操作 → 0 分 / 无过关 =================
+   v4.5 地鼠练习制特例（Bug#39）：无 60s 计时+点对才换题——零操作=永远等在那（不结束不出新题
+   不计 miss），断言改为"无输入零推进"：对局不结束+音频计数冻结（无自动换题）+零分零星 */
+{
+  console.log('\n— 反例 idle mole（练习制：无输入零推进） —')
+  const { page, errs } = await mk()
+  await enterGame(page, 'mole')
+  await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
+  await page.waitForTimeout(1500)   /* 等第一轮谜面播完进入稳态 */
+  const s0 = await page.evaluate(() => ({ n: window.__AUDIO_LOG.length, up: document.querySelectorAll('#gstage .mole.up').length }))
+  await page.waitForTimeout(7000)   /* 7 秒完全不动（旧法此地鼠早已超时 miss 换题） */
+  const s1 = await page.evaluate(() => ({
+    n: window.__AUDIO_LOG.length,
+    up: document.querySelectorAll('#gstage .mole.up').length,
+    score: document.querySelector('#gscore')?.textContent,
+    result: !!document.querySelector('#gresult'),
+  }))
+  ok(s1.result === false, '反例mole：练习制零操作对局不结束（无超时强制推进）')
+  ok(s1.n === s0.n, '反例mole：7 秒零输入零新题（音频计数冻结=绝不自动换题）', `${s0.n}→${s1.n}`)
+  ok(s1.up > 0 && s1.score === '0', '反例mole：地鼠常驻待击+零分', `up=${s1.up} score=${s1.score}`)
+  ok(errs.length === 0, '反例mole：零 pageerror', errs.join('|') || 'clean')
+  await page.close()
+}
+for (const id of ['balloon', 'fish', 'duel']) {
   console.log(`\n— 反例 idle ${id} —`)
   const { page, errs } = await mk()
   await enterGame(page, id)

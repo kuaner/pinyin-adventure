@@ -14,7 +14,7 @@
 </script>
 
 <AnchorBar x={q.A} />
-<div class="glyphbox" id="glyphbox">
+<div class="glyphbox qslide" id="glyphbox">
   <div class="glyph">{q.A}</div>
 </div>
 <div class="qextra" id="qextra"></div>

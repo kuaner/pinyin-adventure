@@ -48,7 +48,7 @@
       {:else if (q as any).type === 'look'}
         <LookQ q={(q as any)} />
       {:else if (q as any).type === 'kj'}
-        <div class="glyphbox" id="glyphbox">
+        <div class="glyphbox qslide" id="glyphbox">
           <div class="ruletext">「<Speak text={(q as any).stmt} />」</div>
         </div>
         <div class="qextra" id="qextra"></div>

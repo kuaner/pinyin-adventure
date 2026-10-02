@@ -120,26 +120,40 @@ describe('每日挑战流程', () => {
   })
 })
 
-describe('Bug#37 两段式试听（dailyArm）——单测级回归样例', () => {
-  it('首点=高亮试听不判分不推进；再点同项才作答', () => {
+describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#38）', () => {
+  it('字母选项题（blisten/bkj）一点即答：首点即判分', () => {
     vi.useFakeTimers()
     m.startDaily()
     const q = m.DC.qs[0]
+    expect(q.type).not.toBe('zi')   /* 本种子首题为字母题——矩阵：一点即答 */
     m.dailyArm(q.ans)
-    expect(m.DC.armed).toBe(q.ans)
-    expect(m.DC.reveal).toBeNull()      // 未判分
-    expect(m.DC.score).toBe(0)          // 未计分
-    expect(m.DC.i).toBe(0)              // 未推进
-    m.dailyArm(q.ans)                    // 再点同项 → 判分
-    expect(m.DC.reveal).not.toBeNull()
+    expect(m.DC.reveal).not.toBeNull()  /* 一点即判分（不再有试听段） */
     expect(m.DC.reveal!.correct).toBe(q.ans)
     expect(m.DC.ok).toBe(1)
   })
 
-  it('切点别项=切试听（armed 换位），仍不判分', () => {
+  it('zi 题两段式保留：首点=高亮试听不判分；再点同项才作答', () => {
     vi.useFakeTimers()
     m.startDaily()
-    const q = m.DC.qs[0]
+    const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
+    expect(ziIdx).toBeGreaterThanOrEqual(0)
+    m.DC.i = ziIdx
+    const q = m.DC.qs[ziIdx]
+    m.dailyArm(q.ans)
+    expect(m.DC.armed).toBe(q.ans)
+    expect(m.DC.reveal).toBeNull()      /* 未判分 */
+    expect(m.DC.score).toBe(0)          /* 未计分 */
+    m.dailyArm(q.ans)                    /* 再点同项 → 判分 */
+    expect(m.DC.reveal).not.toBeNull()
+    expect(m.DC.reveal!.correct).toBe(q.ans)
+  })
+
+  it('zi 题切点别项=切试听（armed 换位），仍不判分', () => {
+    vi.useFakeTimers()
+    m.startDaily()
+    const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
+    m.DC.i = ziIdx
+    const q = m.DC.qs[ziIdx]
     expect(q.opts.length).toBeGreaterThan(1)
     m.dailyArm(q.ans)
     const other = (q.ans + 1) % q.opts.length
@@ -151,7 +165,7 @@ describe('Bug#37 两段式试听（dailyArm）——单测级回归样例', () =
   it('zi 题两段式：试听走拼音音节路径（无音频仅高亮不炸）', () => {
     vi.useFakeTimers()
     m.startDaily()
-    const ziIdx = m.DC.qs.findIndex((q) => q.type === 'zi')
+    const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
     expect(ziIdx).toBeGreaterThanOrEqual(0)
     // 直达该题
     m.DC.i = ziIdx

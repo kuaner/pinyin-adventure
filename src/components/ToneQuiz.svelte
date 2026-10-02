@@ -115,7 +115,8 @@
     <span data-streak class:hot={streak >= 5}><Icon name="flame" size={18} /> {streak}</span>
   </div>
 
-  <div class="qcard" data-q data-target={a ? a.file : ''} data-qtype={qtype} data-ans={ansIdx} data-reveal={reveal ? '1' : '0'}>
+  {#key a?.file}<!-- v4.5 Bug#38：切题滑入过渡（题目键重挂触发） -->
+  <div class="qcard qslide" data-q data-target={a ? a.file : ''} data-qtype={qtype} data-ans={ansIdx} data-reveal={reveal ? '1' : '0'}>
     {#if qtype === 'l2t'}
       <button class="bigsound" data-listen onclick={replay}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
       <div class="qtip"><Speak k="whichTone" /></div>
@@ -133,6 +134,7 @@
       {/each}
     </div>
   </div>
+  {/key}
 
   {#if done}
     <div class="reslay" data-done="1">

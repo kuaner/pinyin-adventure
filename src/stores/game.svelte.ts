@@ -4,7 +4,7 @@
    每日挑战与镜像对决出题都从它加权抽样。星星产入小鸡成长体系（每游戏每日上限 10 星）。 */
 import { show } from './ui.svelte'
 import { todayStr, markDay } from './progress.svelte'
-import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList, pyAudio } from '../lib/audio'
+import { sndNo, tone, sndStar, playAudio, letterAudio, kjAudio, hasRiddle, riddleAudio, stopAll, unlockMedia, preloadAudioList, pyAudio } from '../lib/audio'
 import { HYP } from '../data'
 import { G, saveG, checkBadges, celebrateGame } from './growth.svelte'
 import { t } from '../text/strings'
@@ -72,11 +72,14 @@ export function saveGD() {
 }
 
 /* 跨天滚存：starsToday 与 daily.done 按日重置（读侧归零，写侧覆盖）。
-   注意：本函数有写副作用——只在事件链（开局/结算）里调，禁止进 $derived */
+   注意：本函数有写副作用——只在事件链（开局/结算）里调，禁止进 $derived。
+   Bug#39（T2 单测红出）：首建分支 `r = GD.games[id] = {...}` 的局部引用是孤儿原对象，
+   且 saveGD 的 stringify 之后对它的续写不回传存内（Svelte5 $state 首建 raw 视图坑）——
+   创建后必须二次读取存内记录再续写/返回（fakeResult 抬 best、endGame 记 best/stars 全走这条）。 */
 export function gameRec(id: string): GameRec {
   const td = todayStr()
-  let r = GD.games[id]
-  if (!r) { r = GD.games[id] = { best: 0, starsToday: 0, lastPlayDay: '' }; saveGD() }
+  if (!GD.games[id]) { GD.games[id] = { best: 0, starsToday: 0, lastPlayDay: '' }; saveGD() }
+  const r = GD.games[id]!   /* 二次读取=代理视图：此后读写都落在存内状态 */
   if (r.lastPlayDay !== td) { r.starsToday = 0; r.lastPlayDay = td; saveGD() }
   return r
 }
@@ -124,7 +127,7 @@ export function recordItem(k: string, ok: boolean) {
 export interface GameDef { id: string; nameKey: any; hintKey: any }
 export const GAME_DEFS: Record<string, GameDef> = {
   balloon: { id: 'balloon', nameKey: 'stallBalloon', hintKey: 'hintBalloon' },
-  mole: { id: 'mole', nameKey: 'stallMoleKj', hintKey: 'hintMoleKj' },
+  mole: { id: 'mole', nameKey: 'stallMoleKj', hintKey: 'hintRiddleMole' },
   duel: { id: 'duel', nameKey: 'stallDuel', hintKey: 'hintDuel' },
   fish: { id: 'fish', nameKey: 'stallFish', hintKey: 'hintFish' },
   egg: { id: 'egg', nameKey: 'stallEgg', hintKey: 'hintEgg' },
@@ -144,6 +147,7 @@ export const GS = $state({
   stars: 0,
   record: false,
   win: 0,                         /* 拔河终局：1 推过线赢 / -1 被推过线 / 0 超时自然结算 */
+  practice: false,                /* v4.5 Bug#39 练习制：true=无 60s 计时（✕=结算计答对数），点对才换题 */
   target: '',                     /* 当前听音目标字母（蛋合并=syl/音乐会=音节文件名） */
   afile: '',                      /* v4.3 目标音频文件直通（蛋=blend file、音乐会=tone file）：非空时播它 */
   kj: false,                      /* v4.2 口诀地鼠：true=目标音播口诀朗读（kj_{k}），false=呼读音 */
@@ -170,6 +174,7 @@ export function startGame(id: string, frozen = false) {
   GS.game = id
   GS.phase = 'count'
   GS.left = 60
+  GS.practice = id === 'mole' /* v4.5 Bug#39：口诀地鼠退街机计时→练习制（点对才换题，✕=结算答对数） */
   GS.score = 0
   GS.combo = 0
   GS.maxCombo = 0
@@ -192,7 +197,7 @@ export function startGame(id: string, frozen = false) {
     if (id === 'egg') names = learnedBlends().map((b) => b.file)
     else if (id === 'tone') names = learnedToneRows().flatMap((r) => r.tones.map((x) => x.file))
     else names = learnedLetters().flatMap((k) =>
-      id === 'mole' ? [kjAudio(k)]
+      id === 'mole' ? (hasRiddle(k) ? [riddleAudio(k), kjAudio(k)] : [])   /* v4.5 谜面制：谜面+点对奖励整句口诀 */
       : id === 'duel' ? [letterAudio(k), kjAudio(k)]
       : [letterAudio(k)])
     preloadAudioList(names)
@@ -218,6 +223,7 @@ export function toPlay(frozen = false) {
   GS.frozen = frozen
   if (frozen) return
   stopTimers()
+  if (GS.practice) return   /* v4.5 Bug#39 练习制（口诀地鼠）：无倒计时，点对才换题，✕=结算 */
   GS.tid = setInterval(() => {
     if (GS.phase !== 'play') return
     GS.left--
@@ -285,8 +291,10 @@ export function endGame(win = 0) {
   checkBadges()
 }
 
-/* 退出：rAF/setInterval 由游戏组件 effect 清理；这里停会话层计时 */
+/* 退出：rAF/setInterval 由游戏组件 effect 清理；这里停会话层计时。
+   v4.5 练习制（口诀地鼠）：✕=结束练习走结算（答对数/星/最佳照常），而非静默退出 */
 export function quitGame() {
+  if (GS.practice && GS.phase === 'play') { endGame(); return }
   stopTimers()
   GS.epoch++
   GS.phase = ''
@@ -349,13 +357,13 @@ export function startDaily() {
 }
 
 /* v4.1 每日挑战出题自动读音（游戏/挑战场景推翻 v2.6 零自动播放）：听写题=呼读音、
-   口诀题=口诀朗读；zi 题是"看字选拼音"视觉识字通道，播读音=直接报答案，不自动播；
-   🔊 重听保留。静音/失败静默降级不阻塞。 */
+   口诀题=谜面朗读（v4.5 Bug#41 审计：整句口诀含答案读音不作题面通道）；zi 题是"看字选拼音"
+   视觉识字通道，播读音=直接报答案，不自动播；🔊 重听保留。静音/失败静默降级不阻塞。 */
 function dailySpeak() {
   const q = DC.qs[DC.i]
   if (!q || q.type === 'zi' || !q.A) return
   stopAll()
-  if (q.type === 'bkj') playAudio(kjAudio(q.A))
+  if (q.type === 'bkj') playAudio(riddleAudio(q.A))
   else playAudio(letterAudio(q.sound))
 }
 
@@ -396,9 +404,11 @@ export function dailyNext() {
 }
 
 /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮（不计分不推进）→ 再点同项=作答；
-   点别的选项=切试听。字母选项=呼读音；zi 拼音选项=hyp 音节（缺失仅高亮，立法明许） */
+   点别的选项=切试听。字母选项=呼读音；zi 拼音选项=hyp 音节（缺失仅高亮，立法明许）。
+   v4.5 两段式适用矩阵（Bug#38）：字母选项题（blisten/bkj）一点即答；zi（带调拼音，读不出）保留两段式 */
 export function dailyArm(idx: number) {
-  if (DC.armed === idx) { dailyAnswer(idx); return }
+  const q0 = DC.qs[DC.i]
+  if ((q0 && q0.type !== 'zi') || DC.armed === idx) { dailyAnswer(idx); return }
   const q = DC.qs[DC.i]
   if (!q || DC.reveal) return
   DC.armed = idx

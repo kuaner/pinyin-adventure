@@ -185,6 +185,26 @@ export function kjAudio(k: string): string {
   return 'lessons/kj_' + letterAudio(k)
 }
 
+/* Bug#39 口诀地鼠谜面制（v4.5）：谜面音频 audio/riddle/{安全名}.mp3——
+   mimo 合成纯中文形状描述（口诀剥离全部字母），播报内容不含答案读音，孩子听谜语→回忆→点对。
+   组合式口诀（"a 和 i 挨在一起 ai"类：字母词元去重 >1 种）谜面本身构成答案读音 → 无谜面，
+   出题侧按 hasRiddle 过滤跳过（gen-riddles.mjs 同款规则，与清单生成同源） */
+export function hasRiddle(k: string): boolean {
+  const kj = LETTERS[k]?.kj
+  if (!kj) return false
+  const toks = kj.match(/[a-zü]+/gi) || []
+  return new Set(toks.map((t) => t.toLowerCase())).size <= 1
+}
+export function riddleAudio(k: string): string {
+  return 'riddle/' + letterAudio(k)
+}
+/* 谜面文字（v4.5 Bug#41 全游戏出题泄漏审计）：口诀剥离全部字母——题面文字展示与
+   音频同一原则：目标侧任何通道（文字/图标/颜色）不得标出答案。组合式口诀剥完为空 */
+export function riddleText(k: string): string {
+  const kj = LETTERS[k]?.kj || ''
+  return kj.replace(/[a-zü]+/gi, ' ').replace(/\s+/g, ' ').trim()
+}
+
 /* v4.2c 两段式试听（Bug#37）：带调拼音显示串 → hyp 音节键（"bà"→ba4）。
    ü 系沿用 ASCII 安全名（ü→v）。hyp 带调音节为部分覆盖——调用方必须 HYP[key] 在才播，
    缺失时首点退化为仅高亮（立法明许，仍不计分） */
@@ -200,7 +220,9 @@ export function pyAudio(py: string): string {
   let tone = ''
   for (const ch of py.slice(ini.length)) {
     const i = TONE_VOWELS.indexOf(ch)
-    if (i >= 0) { tone = String((i % 4) + 1); base += 'aeiouü'[Math.floor(i / 4)] }
+    /* Bug#41（T2 单测红出）：基母串必须与 TONE_VOWELS 同序（a,o,e,i,u,ü——与 ziGate BASEV 同款）。
+       原串 'aeiouü' 是 a,e,i,o,u 序 → e/i/o 调族整体错位（shí→sho4，两段式试听播错键/哑音） */
+    if (i >= 0) { tone = String((i % 4) + 1); base += 'aoeiuv'[Math.floor(i / 4)] }
     else base += ch
   }
   return ini + base.replace(/ü/g, 'v') + tone

@@ -1,7 +1,7 @@
 /* v4.2 练习馆+口诀地鼠验收（Bug#35 上半）：
    ① hub 8 摊位+占位不误触 ② hall 分段切换往返状态保持 ③ 闪电刷题真实试玩 5 题+结算+账本双记
    ④ 听写专练自动读音+只练弱项开关 ⑤ 易混对特训 weak 标+对内加权开练 ⑥ 识字表闯关解锁态+答 3 题+零自动播边界
-   ⑦ 口诀地鼠：kj 音频先于地鼠探头时序+敲对得分+敲错清连击+🔊重听口诀 ⑧ 气球仍=呼读音（认知路径区分）。
+   ⑦ 口诀地鼠：谜面音频先于地鼠探头时序+敲对得分+敲错清连击+🔊重听谜面（v4.5 谜面制适配） ⑧ 气球仍=呼读音（认知路径区分）。
    前置：preview 在 4173。时序证据 __AUDIO_LOG/__DOM_LOG（同 v41）。 */
 import { createRequire } from 'node:module'
 import fs from 'node:fs'
@@ -131,10 +131,10 @@ async function enterDrill(page) {
   await ck(page, '[data-drill="bolt"]')
   await page.waitForSelector('#v-bolt', { timeout: 5000 })
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
-  /* 首题自动读音与题型一致（blisten=呼读音 / bkj=口诀朗读） */
+  /* 首题自动读音与题型一致（blisten=呼读音 / bkj=谜面朗读——v4.5 谜面制） */
   const q0 = await page.evaluate(() => { const q = window.__PJ.BT().q; return { type: q.type, a: q.A, snd: q.sound } })
   const a0 = await page.evaluate(() => window.__AUDIO_LOG[0].name)
-  const exp0 = q0.type === 'bkj' ? kjAudioName(q0.a) : letterAudioName(q0.snd)
+  const exp0 = q0.type === 'bkj' ? 'riddle/' + letterAudioName(q0.a) : letterAudioName(q0.snd)
   ok(a0 === exp0, '闪电：出题自动读音（题型匹配 ' + q0.type + '）', `log=${a0} exp=${exp0}`)
   /* 真实连答 5 题（读 BT 答案 → 点对应选项） */
   for (let i = 0; i < 5; i++) {
@@ -367,21 +367,23 @@ async function enterDrill(page) {
   await page.waitForSelector('#gcount', { state: 'detached', timeout: 9000 })
   await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
   const target = await page.getAttribute('[data-prompt]', 'data-target')
-  /* 核心断言：播的是口诀音频（lessons/kj_*），不是呼读音——认知路径=口诀→形 */
+  /* 核心断言（v4.5 Bug#39 谜面制）：播的是谜面音频（riddle/*，口诀剥离字母零答案读音），不是呼读音 */
+  const riddleAudioName = (k) => 'riddle/' + letterAudioName(k)
   const names0 = await page.evaluate(() => window.__AUDIO_LOG.map((e) => e.name))
-  ok(names0.some((n) => n.startsWith('lessons/kj_')), '口诀先行：开局自动播口诀音频（lessons/kj_*）', names0.join(','))
+  ok(names0.some((n) => n.startsWith('riddle/')), '谜面先行：开局自动播谜面音频（riddle/*）', names0.join(','))
   ok(!names0.includes(letterAudioName(target)), '认知路径区分：目标呼读音未播（气球才播呼读音）')
-  ok(names0[0] === kjAudioName(target), '口诀先行：首播=kj_目标字母', names0[0])
-  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, kjAudioName(target))
+  ok(!names0.some((n) => n.startsWith('lessons/kj_')), '谜面制：出题侧零口诀原声（ kj 只在点对后作奖励）', names0.join(','))
+  ok(names0[0] === riddleAudioName(target), '谜面先行：首播=riddle_目标字母', names0[0])
+  const a = await page.evaluate((n) => window.__AUDIO_LOG.filter((e) => e.name === n)[0] || null, riddleAudioName(target))
   const upReady = await page.waitForFunction(() => window.__DOM_LOG.filter((e) => e.kind === 'mole-up').length >= 1, null, { timeout: 6000 }).then(() => true).catch(() => false)
   const up = await page.evaluate(() => window.__DOM_LOG.filter((e) => e.kind === 'mole-up')[0] || null)
-  ok(upReady && !!a && !!up && a.t < up.t, '时序：口诀音频先于地鼠探头', `audio=${Math.round(a.t)} < up=${up ? Math.round(up.t) : '-'}`)
+  ok(upReady && !!a && !!up && a.t < up.t, '时序：谜面音频先于地鼠探头', `audio=${Math.round(a.t)} < up=${up ? Math.round(up.t) : '-'}`)
   ok(upReady && !!a && !!up && up.t - a.t >= 250, '时序：探头挂声音开播 300ms 闸门后', `gap=${up && a ? Math.round(up.t - a.t) : '-'}ms`)
   const kjUI = await page.evaluate(() => ({
-    kj: document.querySelector('[data-prompt]')?.getAttribute('data-kj'),
-    chip: !!document.querySelector('[data-kjchip]'),
+    rj: document.querySelector('[data-prompt]')?.getAttribute('data-riddle'),
+    chip: !!document.querySelector('[data-riddlechip]'),
   }))
-  ok(kjUI.kj === '1' && kjUI.chip, '口诀标识：prompt data-kj=1 + 口诀 chip 在')
+  ok(kjUI.rj === '1' && kjUI.chip, '谜面标识：prompt data-riddle=1 + 谜面 chip 在')
   /* 敲对得分：等目标鼠探头真实触摸 */
   let whacked = false
   for (let i = 0; i < 3 && !whacked; i++) {
@@ -413,8 +415,7 @@ async function enterDrill(page) {
     await page.waitForTimeout(800)
   }
   ok(cleared, '敲错：清连击（data-combo=0）')
-  /* 🔊=重听口诀。v4.2c 适配（验收腿，只改脚本）：配对"tap 时刻目标"——400ms 窗内若回合到期
-     miss 换目标，新目标音会接在重听后面，拿窗末目标配对第一条音频会错位（实录 kj_t,kj_b） */
+  /* 🔊=重听谜面（v4.5 练习制无超时换题——tap 时刻目标即稳态目标，无错位问题） */
   const cnt0 = await page.evaluate(() => window.__AUDIO_LOG.length)
   const tgtAtTap = await page.evaluate(() => document.querySelector('[data-prompt]').getAttribute('data-target'))
   await page.tap('[data-listen]')
@@ -423,7 +424,7 @@ async function enterDrill(page) {
     n: window.__AUDIO_LOG.length,
     names: window.__AUDIO_LOG.map((e) => e.name),
   }))
-  ok(now2.n > cnt0 && now2.names[cnt0] === kjAudioName(tgtAtTap), '🔊 重听=口诀音频再发', now2.names.slice(cnt0).join(',') + ` tgtAtTap=${tgtAtTap}`)
+  ok(now2.n > cnt0 && now2.names[cnt0] === 'riddle/' + letterAudioName(tgtAtTap), '🔊 重听=谜面音频再发', now2.names.slice(cnt0).join(',') + ` tgtAtTap=${tgtAtTap}`)
   ok(errs.length === 0, '口诀地鼠：零 pageerror', errs[0] || '')
   await page.context().close()
 }

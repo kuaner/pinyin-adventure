@@ -186,20 +186,17 @@ describe('buildDailyQs 每日 10 题', () => {
     expect(qs).toHaveLength(10)
     for (const q of qs) expect(['blisten', 'bkj', 'zi']).toContain(q.type)
   })
-  it('同日两次生成：题型+目标键序列一致（种子契约）；镜像字母题与 zi 题逐字节面一致', () => {
+  it('同日两次生成：10 题逐字节面稳定（种子契约，Bug#38 修复后全题型——T2）', () => {
+    /* Bug#38（tests/README T2 队列项）：修复前非镜像字母的干扰项 gameDistractor 走
+       Math.random 不进日期种子 → 同日重开该类题的选项搭档可漂移。
+       本用例先于修复写成（fullySeeded 条件已去除）= 失败测试先行；修复 = gameDistractor
+       加可选 rng 注入参数并由 letterQ 传入种子 rng（产品码 diff 已在提交说明逐条列明）。 */
     passLessons(4)
     const q1 = eng.buildDailyQs()
     const q2 = eng.buildDailyQs()
     const key = (q: any) => q.type + ':' + (q.A || q.z?.h)
     expect(q1.map(key)).toEqual(q2.map(key))
-    const pool = eng.learnedLetters()
-    for (let i = 0; i < q1.length; i++) {
-      const m = eng.mirrorOf(q1[i].A)
-      const fullySeeded = q1[i].type === 'zi' || (!!m && pool.includes(m))
-      if (fullySeeded) expect(q2[i]).toEqual(q1[i])
-    }
-    /* 已知缺口（Bug#38 候选，T2 修）：非镜像字母的干扰项 gameDistractor 走 Math.random
-       不进日期种子 → 同日重开这类题的选项搭档可漂移（v40-accept 只断言 type:A 层未覆盖） */
+    expect(q2).toEqual(q1)
   })
   it('只用已学字母（超纲拦截）：过课 1-2 时字母题 A/opts 全在池内', () => {
     passLessons(2)                                    // a o e i u ü
@@ -238,25 +235,29 @@ describe('buildDailyQs 每日 10 题', () => {
       expect(q.ans).toBe(q.opts.indexOf(q.A))
     }
   })
-  it('口诀题 stmt=该字母口诀（零错误信息：正向回忆）', () => {
+  it('口诀题 stmt=谜面（v4.5 Bug#41 审计：剥字母零答案泄漏；正向回忆）', () => {
     passLessons(1)
     for (const q of eng.buildDailyQs()) {
       if (q.type !== 'bkj') continue
       expect(q.stmt.length).toBeGreaterThan(0)
-      expect(q.stmt).toBe((pinyinData as any).letters[q.A].kj)
+      expect(q.stmt).toBe((pinyinData as any).letters[q.A].kj.replace(/[a-zü]+/gi, ' ').replace(/\s+/g, ' ').trim())
+      expect(q.stmt).not.toMatch(/[a-zA-Zü]/)
     }
   })
 })
 
 describe('duelQ 镜像对决快问题', () => {
-  it('ans 恒指向正确字母；选项二选一；口诀题带 stmt', () => {
+  it('ans 恒指向正确字母；选项二选一；口诀题带谜面 stmt（零字母）', () => {
     const pool = ['b', 'd', 'p', 'q']
     for (let i = 0; i < 50; i++) {
       const q = eng.duelQ(pool)
       expect(q.opts).toHaveLength(2)
       expect(q.opts[q.ans]).toBe(q.A)
       expect(pool).toContain(q.A)
-      if (q.kj) expect(q.stmt).toBe((pinyinData as any).letters[q.A].kj)
+      if (q.kj) {
+        expect(q.stmt).toBe((pinyinData as any).letters[q.A].kj.replace(/[a-zü]+/gi, ' ').replace(/\s+/g, ' ').trim())
+        expect(q.stmt).not.toMatch(/[a-zA-Zü]/)
+      }
     }
   })
 })

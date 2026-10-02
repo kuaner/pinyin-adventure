@@ -4,7 +4,7 @@
      结算=得分+星星+今日最佳（破纪录礼花）；星星入小鸡成长体系 */
   import { DC, dailyArm, quitDaily, startDaily, comboMult } from '../stores/game.svelte'
   import { GD } from '../stores/game.svelte'
-  import { playAudio, letterAudio, kjAudio } from '../lib/audio'
+  import { playAudio, letterAudio, riddleAudio } from '../lib/audio'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
@@ -13,10 +13,11 @@
   const rec = $derived(GD.daily)
   const acc = $derived(DC.ok * 10)
 
-  /* 🔊=重听当前题读音（v4.1：出题已自动播，这里只做重听；zi 题无读音可重听） */
+  /* 🔊=重听当前题读音（v4.1：出题已自动播，这里只做重听；zi 题无读音可重听；
+     v4.5 谜面制：bkj 重听=谜面音频——整句口诀含答案读音不作出题通道） */
   function hear() {
     if (!q || q.type === 'zi') return
-    playAudio(q.type === 'bkj' ? kjAudio(q.A) : letterAudio(q.sound))
+    playAudio(q.type === 'bkj' ? riddleAudio(q.A) : letterAudio(q.sound))
   }
 </script>
 
@@ -39,7 +40,7 @@
   {#if !DC.done && q}
     <div class="qcard" id="dqcard" data-qtype={q.type} data-target={q.type === 'zi' ? '' : q.A}>
       {#key DC.i}
-        <div class="qhint">
+        <div class="qhint qslide">   <!-- v4.5 Bug#38：切题滑入过渡（{#key} 重挂触发） -->
           {#if q.type === 'blisten'}
             <Speak k="listenChoose" />
           {:else if q.type === 'bkj'}

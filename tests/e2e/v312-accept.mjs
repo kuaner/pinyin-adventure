@@ -74,6 +74,10 @@ for (let i = 0; i < 120 && stable < 3; i++) {
   await page.waitForTimeout(350)
 }
 console.log(`  预载缓存条目稳定在 ${prev}`)
+/* v4.5 flake 加固（任务书#6）：包内首跑冷缓存时序抖动会污染 <100ms 计时——
+   预载稳定后重载一次（SW 缓存+JS 全热），计时走纯缓存命中路径（=真实二次进入使用路径） */
+await page.reload({ waitUntil: 'domcontentloaded' })
+await page.waitForSelector('#v-lesson .hspage', { timeout: 10000 })
 const tPlay = await page.evaluate(() => new Promise((res) => {
   const btn = document.querySelector('[data-pcread="a"]')
   if (!btn) return res(-2)

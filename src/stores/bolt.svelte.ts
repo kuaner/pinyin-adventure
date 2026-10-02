@@ -5,7 +5,7 @@ import { show, ui } from './ui.svelte'
 import { S, save, todayStr } from './progress.svelte'
 import { markResult } from './weights.svelte'
 import { recordLetter } from './game.svelte'
-import { sndOk, sndNo, sndStar, playAudio, letterAudio, kjAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
+import { sndOk, sndNo, sndStar, playAudio, letterAudio, hasRiddle, riddleAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
 import { makeBoltQ, BT_KEYS } from '../lib/quizEngine'
 import { t } from '../text/strings'
 import { onBoltEnd } from './growth.svelte'
@@ -56,18 +56,18 @@ export function startBolt(freeze: boolean) {
      进入动作的手势栈内解锁媒体+并行预载字母池读音，首播零网络等待 */
   unlockMedia()
   try {
-    preloadAudioList(learnedLetters().flatMap((k) => [letterAudio(k), kjAudio(k)]))
+    preloadAudioList(learnedLetters().filter(hasRiddle).flatMap((k) => [letterAudio(k), riddleAudio(k)]))
   } catch { /* 预载失败静默 */ }
   boltSpeak()
   if (!freeze) BT.tid = setInterval(boltTick, 1000)
 }
 
-/* v4.2 出题自动读音：听写 blisten=呼读音、口诀 bkj=口诀朗读（🔊 重听保留） */
+/* v4.2 出题自动读音：听写 blisten=呼读音、口诀 bkj=谜面朗读（v4.5 Bug#41 审计：原整句口诀含答案读音） */
 function boltSpeak() {
   const q = BT.q
   if (!q) return
   stopAll()
-  if (q.type === 'bkj') playAudio(kjAudio(q.A))
+  if (q.type === 'bkj') playAudio(riddleAudio(q.A))
   else playAudio(letterAudio(q.sound))
 }
 

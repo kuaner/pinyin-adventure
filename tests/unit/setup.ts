@@ -18,3 +18,18 @@ if (jsdomWin) {
     Object.defineProperty(globalThis, k, { value: (jsdomWin as any)[k], configurable: true, writable: true })
   }
 }
+
+/* ---------- T2 组件测（tests/components/）需要的 DOM 补齐（对单测无害） ----------
+   · SVGPathElement.getTotalLength/getPointAtLength：jsdom 未实现（StrokeAnim 跟笔圆点/节奏计算用）；
+     返回定值——动画时序断言走假 rAF+假 timer，几何真值由 scripts/stroke-verify.mjs 在真实浏览器验。
+   · ResizeObserver：jsdom 没有（HSteps 容器宽测量）。 */
+if (typeof (window.SVGElement.prototype as any).getTotalLength !== 'function') {
+  ;(window.SVGElement.prototype as any).getTotalLength = function () { return 100 }
+  ;(window.SVGElement.prototype as any).getPointAtLength = function () { return { x: 0, y: 0 } }
+}
+class ROStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+if (!(window as any).ResizeObserver) (window as any).ResizeObserver = ROStub

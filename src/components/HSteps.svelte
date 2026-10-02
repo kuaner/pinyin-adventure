@@ -5,6 +5,8 @@
      被重定向到父级 wrap，挂在 track 上的 move/up 永不触发 → 触屏/鼠标滑动全死。
      现改双路径：触屏走 touch 事件（真机主路径，无 capture 依赖）；
      鼠标/笔走 pointer 事件且 capture 在 track 自身。轴锁防纵向滚动误翻页。 */
+  import { pickAxis, flipsPage, dragOffset } from '../lib/hsteps'
+
   let { n, cur = $bindable(0), onchange, swipeOn = true, children }:
     { n: number; cur?: number; onchange?: (i: number) => void; swipeOn?: boolean; children?: any } = $props()
 
@@ -53,22 +55,19 @@
     const ddx = x - x0
     const ddy = y - y0
     if (!axis) {
-      if (Math.abs(ddx) < 6 && Math.abs(ddy) < 6) return
-      axis = Math.abs(ddx) >= Math.abs(ddy) ? 'x' : 'y'
+      axis = pickAxis(ddx, ddy)
+      if (axis === '') return
       if (axis === 'y') { x0 = null; track.style.transition = ''; return }   // 纵向 → 还给滚动
     }
     dx = ddx
-    let off = -cur * W + dx
-    if (off > 0) off /= 3
-    if (off < -(n - 1) * W) off = (-(n - 1) * W) + (off + (n - 1) * W) / 3
-    track.style.transform = `translateX(${off}px)`
+    track.style.transform = `translateX(${dragOffset(cur, dx, W, n)}px)`
   }
   function dragEnd(flip: boolean) {
     if (x0 === null) { dx = 0; return }
     x0 = null
     axis = ''
     ptrId = null
-    if (flip && Math.abs(dx) > 55) go(cur + (dx < 0 ? 1 : -1))
+    if (flipsPage(dx, flip)) go(cur + (dx < 0 ? 1 : -1))
     else go(cur)
     dx = 0
   }

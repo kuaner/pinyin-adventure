@@ -199,6 +199,9 @@ const tapIfTarget = (page, qsel, letter) => page.evaluate(({ qs, k }) => {
   await page.waitForSelector('#gstage', { timeout: 8000 })
   /* 先答对 2 题（绳 50→约 65，远离敌方线避免中途获胜），再验答错被推，最后连推验证 */
   const pos0 = await page.evaluate(() => parseFloat(document.querySelector('[data-rope]').style.left))
+  /* v4.5 Bug#42 输入闸：newQ 后 320ms 宽假期忽略输入——出题后等 700ms 再答（脚本适配，只改脚本） */
+  await page.waitForSelector('[data-q]', { timeout: 6000 })
+  await page.waitForTimeout(700)
   let ansOk = 0
   for (let i = 0; i < 2; i++) {
     const done = await page.evaluate(() => {
@@ -212,7 +215,7 @@ const tapIfTarget = (page, qsel, letter) => page.evaluate(({ qs, k }) => {
     })
     if (!done) break
     ansOk++
-    await page.waitForTimeout(650)
+    await page.waitForTimeout(800)   /* 答对换题 +320 + 宽假期 320 = 640ms 后开门 */
   }
   const pos1 = await page.evaluate(() => parseFloat(document.querySelector('[data-rope]').style.left))
   const ds = await page.evaluate(() => ({ score: window.__PJ.GS().score, combo: window.__PJ.GS().combo }))
@@ -229,7 +232,7 @@ const tapIfTarget = (page, qsel, letter) => page.evaluate(({ qs, k }) => {
       const hit = letters.find((e) => e.getAttribute('data-letter') !== t)
       hit?.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
     })
-    await page.waitForTimeout(1400)
+    await page.waitForTimeout(1650)   /* 答错换题 +1050 + 宽假期 320 = 1370ms 后开门 */
   }
   const p3 = await page.evaluate(() => parseFloat(document.querySelector('[data-rope]').style.left))
   ok(p3 < p2 - 5, '拔河：答错被推向我方（绳回撤）', `${p2}%→${p3}%`)

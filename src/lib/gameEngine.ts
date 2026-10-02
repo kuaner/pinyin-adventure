@@ -1,6 +1,7 @@
 /* v4.0 游戏岛出题引擎：已学字母派生 + 错误账本加权抽样 + 每日挑战（日期种子，每日一换）
    铁律：只用已学字母（学习进度派生，绝不超纲）；读音全部 hyp 真人库；零错误信息（选项全为正确形态） */
 import { LETTERS, ZI } from '../data'
+import { hasRiddle, riddleText } from './audio'
 import lessonsData from '../data/lessons.json'
 import { quizPassed } from '../stores/learn.svelte'
 import { GD, dayNum, type LetterStat } from '../stores/game.svelte'
@@ -77,18 +78,23 @@ export function seededShuffle<T>(arr: T[], rng: () => number): T[] {
   return a
 }
 
-/* ---------- 干扰项：镜像搭档优先，不足回落同 cat（都是正确形态——零错误信息铁律） ---------- */
-export function gameDistractor(k: string, pool: string[]): string {
+/* ---------- 干扰项：镜像搭档优先，不足回落同 cat（都是正确形态——零错误信息铁律）
+   rng 注入（Bug#38 修，T2）：每日挑战走日期种子 rng（同日题面逐字节稳定）；
+   缺省 Math.random —— 游戏/对决每轮不同，行为与注入前逐字节一致。
+   Bug#40（T2 单测红出）：üe/er/ong/yi/wu/yu 是课内复合单元、不在 LETTERS——
+   裸读 LETTERS[k].cat 对它们 TypeError（过 L10 后每日挑战必崩）。缺表单元跳过同 cat 过滤，
+   池内搭档直接可用（LETTTERS 成员路径行为逐字节不变）。 */
+export function gameDistractor(k: string, pool: string[], rng: () => number = Math.random): string {
   const m = MIRROR[k]
   if (m && pool.includes(m) && m !== k) return m
-  const cat = LETTERS[k].cat
-  const same = pool.filter((x) => x !== k && LETTERS[x] && LETTERS[x].cat === cat)
-  if (same.length) return same[Math.floor(Math.random() * same.length)]
+  const cat = LETTERS[k]?.cat ?? null
+  const same = cat ? pool.filter((x) => x !== k && LETTERS[x] && LETTERS[x].cat === cat) : []
+  if (same.length) return same[Math.floor(rng() * same.length)]
   const any = pool.filter((x) => x !== k)
-  if (any.length) return any[Math.floor(Math.random() * any.length)]
+  if (any.length) return any[Math.floor(rng() * any.length)]
   /* 池里只有自己：从全字母表同 cat 捞一个（仍是正确形态，且不超纲风险=干扰项仅在选项中） */
-  const all = Object.keys(LETTERS).filter((x) => x !== k && LETTERS[x].cat === cat)
-  return all[Math.floor(Math.random() * all.length)] || k
+  const all = Object.keys(LETTERS).filter((x) => x !== k && (!cat || LETTERS[x].cat === cat))
+  return all[Math.floor(rng() * all.length)] || k
 }
 
 /* 游戏内加权抽目标（Math.random——游戏每轮不同） */
@@ -213,11 +219,14 @@ function ziQ(rng: () => number): DailyQ {
   return { type: 'zi', key: 'Z:' + z.h, A: '', sound: '', stmt: '', opts, ans: opts.indexOf(z.p), z: { h: z.h, p: z.p } }
 }
 
-/* 字母听写/口诀题（混淆搭档做干扰项，与闪电 blisten/bkj 同构） */
+/* 字母听写/口诀题（混淆搭档做干扰项，与闪电 blisten/bkj 同构；干扰项走同一种子 rng——Bug#38）。
+   Bug#40：无口诀的单元（üe/er/yi…）不出口诀题（回退听写）——stmt 恒非空，零错误信息不破。
+   v4.5 Bug#41 审计：bkj 题面谜面化（剥字母零答案泄漏）；组合式口诀（ai/un 等）回退听写 */
 function letterQ(type: 'blisten' | 'bkj', A: string, pool: string[], rng: () => number): DailyQ {
-  const B = gameDistractor(A, pool)
+  const B = gameDistractor(A, pool, rng)
   const opts = seededShuffle([A, B], rng)
-  return { type, key: A, A, sound: A, stmt: LETTERS[A].kj, opts, ans: opts.indexOf(A) }
+  if (type === 'bkj' && !hasRiddle(A)) type = 'blisten'
+  return { type, key: A, A, sound: A, stmt: type === 'bkj' ? riddleText(A) : '', opts, ans: opts.indexOf(A) }
 }
 
 export function buildDailyQs(): DailyQ[] {
@@ -270,11 +279,14 @@ function dayStr(): string {
   return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (dd < 10 ? '0' + dd : '' + dd)
 }
 
-/* 镜像对决快问题（listen 看形态二选一 / 口诀正向回忆，错误账本加权出题） */
+/* 镜像对决快问题（listen 看形态二选一 / 口诀正向回忆，错误账本加权出题）。
+   Bug#40：无口诀单元恒出 listen 形态（kj=false），stmt 只在有口诀时读取 */
 export function duelQ(pool: string[]): { A: string; opts: string[]; ans: number; kj: boolean; stmt: string } {
   const A = ledgerPick(pool, Math.random)
   const B = gameDistractor(A, pool)
-  const kj = Math.random() < 0.35
+  /* v4.5 Bug#41 审计：kj 题谜面化——题面文字剥字母+音频用谜面（原整句口诀含答案字母=看字即答）；
+     组合式口诀（谜面即答案构成）不出 kj 形态 */
+  const kj = hasRiddle(A) && Math.random() < 0.35
   const opts = Math.random() < 0.5 ? [A, B] : [B, A]
-  return { A, opts, ans: opts.indexOf(A), kj, stmt: LETTERS[A].kj }
+  return { A, opts, ans: opts.indexOf(A), kj, stmt: kj ? riddleText(A) : '' }
 }

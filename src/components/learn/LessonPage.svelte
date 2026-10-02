@@ -101,11 +101,13 @@
   let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean }>({
     q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false,
   })
-  /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮 → 再点同项=作答（armPick=试听中的选项值） */
+  /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮 → 再点同项=作答（armPick=试听中的选项值）。
+     v4.5 两段式适用矩阵（Bug#38）：listen 题（小耳朵，选项=已学单字母，视觉即身份）一点即答；
+     look（音节串）/tone（调号）选项孩子读不出 → 保留两段式 */
   let armPick = $state<string | number>('')
   function armQuiz(v: string | number, audioFile: string | null) {
     if (quiz.pick) return   /* 已作答（reveal 态）不再试听 */
-    if (armPick === v) { answer(v); return }
+    if (quiz.q[quiz.i]?.type === 'listen' || armPick === v) { answer(v); return }
     armPick = v
     if (audioFile) playAudio(audioFile, { hint: tRaw('notReady') })
   }
@@ -389,6 +391,7 @@
               <div class="qbody" data-qkey={probeOn ? String(q.key) : null}>
                 <!-- BUGS#18⑨：圆点与"第 X 题"严格同步——X-1 个已完成点 + 1 个当前点 -->
                 <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={i < quiz.i} class:cur={i === quiz.i}></span>{/each}</div>
+                {#key quiz.i}<!-- v4.5 Bug#38：切题滑入过渡（重挂触发；进度点同步=上方 qdot 派生自同一 quiz.i） -->
                 {#if q.type === 'listen'}
                   <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
                   <div class="qhint"><Speak k="listenChoose" /></div>
@@ -434,6 +437,7 @@
                     {/each}
                   </div>
                 {/if}
+                {/key}
               </div>
             {:else if quiz.passed}
               <div class="res">

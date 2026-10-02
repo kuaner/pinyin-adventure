@@ -52,12 +52,10 @@
     if (a) playAudio(letterAudio(a))
   }
 
-  /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮（不计分不推进）→ 再点同项=作答 */
+  /* v4.5 两段式适用矩阵（Bug#38）：听写选项=已学单字母（视觉即身份）→ 一点即答 */
   function arm(idx: number) {
-    if (armed === idx) { answer(idx); return }
     if (reveal || !a) return
-    armed = idx
-    playAudio(letterAudio(opts[idx]))
+    answer(idx)
   }
 
   function answer(idx: number) {
@@ -108,7 +106,8 @@
     <span data-streak class:hot={streak >= 5}><Icon name="flame" size={18} /> {streak}</span>
   </div>
 
-  <div class="qcard" data-q data-target={a} data-reveal={reveal ? '1' : '0'}>
+  {#key a}<!-- v4.5 Bug#38：切题滑入过渡（题目键重挂触发） -->
+  <div class="qcard qslide" data-q data-target={a} data-reveal={reveal ? '1' : '0'}>
     <button class="bigsound" data-listen onclick={replay}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
     <div class="optrow" data-opts>
       {#each opts as k, idx}
@@ -119,6 +118,7 @@
       {/each}
     </div>
   </div>
+  {/key}
 
   <button class="weaktoggle pressable" data-weaktoggle class:on={weakOnly} onclick={toggleWeak}
     aria-pressed={weakOnly}>

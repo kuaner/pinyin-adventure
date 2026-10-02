@@ -323,51 +323,32 @@ const liveFish = (page) => page.evaluate(() => document.querySelectorAll('#gstag
 /* ================= ② 两段式试听：每日挑战 + 听写专练 + 识字表 + 闯关听音 ================= */
 {
   console.log('\n— 两段式试听（Bug#37）：四题目面状态机 —')
-  { /* 每日挑战（blisten/bkj 题）。脚本适配：每日=日期种子（重掷同序），首题类型每日一抽——
-       zi 题就顺序作答推进到听音题成为当前题再断言（zi 设计上不自动读音=播了报答案；只改脚本） */
+  { /* 每日挑战（blisten/bkj 题）。v4.5 适用矩阵（Bug#38）：字母选项题一点即答——
+       本块断言反转为"首点即判分"；两段式保留面（zi 题）的回归由 regression-bug37-two-phase.mjs 承担 */
     const { page, errs } = await mk()
     await page.goto(`${BASE}/?open=daily`, { waitUntil: 'networkidle' })
     await page.waitForSelector('#v-daily [data-qtype]', { timeout: 8000 })
     let qt = await page.getAttribute('#v-daily [data-qtype]', 'data-qtype')
     let tries = 0
     while (qt === 'zi' && tries++ < 11) {
-      /* 故意答错推进：错题不加分（后面首点/切点断言以 score===0 为基线），反馈后照常换题 */
+      /* 故意答错推进到听音题（错题不加分=首点判分断言以 score===10 为基线），反馈后照常换题 */
       const w = await page.evaluate(() => {
         const D = window.__PJ.DC()
         return (D.qs[D.i].ans + 1) % D.qs[D.i].opts.length
       })
       await page.tap(`#v-daily [data-opts] .opt:nth-of-type(${w + 1})`)
-      await page.waitForTimeout(1900)   /* 错反馈 1500ms + 换题 */
+      await page.waitForTimeout(1900)   /* 错反馈 + 换题 */
       qt = await page.getAttribute('#v-daily [data-qtype]', 'data-qtype')
     }
     ok(qt !== 'zi', '每日挑战：听音题就位', `qtype=${qt}`)
-    const audio0 = await page.evaluate(() => window.__AUDIO_LOG.length)
     const ans = await page.evaluate(() => window.__PJ.DC().qs[window.__PJ.DC().i].ans)
-    const wrongIdx = (ans + 1) % 2
-    const letterOf = (i) => page.evaluate((ix) => window.__PJ.DC().qs[window.__PJ.DC().i].opts[ix], i)
-    /* 用序号选择：选项 DOM 顺序=opts 顺序 */
     const tapOpt = async (i) => page.tap(`#v-daily [data-opts] .opt:nth-of-type(${i + 1})`)
-    /* 首点错误项=试听：播音+高亮+不判分 */
-    const wl = await letterOf(wrongIdx)
-    await tapOpt(wrongIdx)
-    await page.waitForTimeout(250)
-    const st1 = await page.evaluate((wi) => ({
-      log: window.__AUDIO_LOG.length, score: window.__PJ.DC().score, reveal: window.__PJ.DC().reveal,
-      armed: document.querySelector('#v-daily [data-opts] .opt:nth-of-type(' + (wi + 1) + ')').classList.contains('armed'),
-    }), wrongIdx)
-    ok(st1.log > audio0, '每日挑战首点：发起该选项音频（__AUDIO_LOG 增量）', `wl=${wl} +${st1.log - audio0}`)
-    ok(st1.score === 0 && st1.reveal === null && st1.armed, '每日挑战首点：不计分不推进+试听高亮态', JSON.stringify({ score: st1.score, reveal: !!st1.reveal, armed: st1.armed }))
-    /* 切点正确项=切试听：仍不判分 */
-    const audio1 = await page.evaluate(() => window.__AUDIO_LOG.length)
+    /* 一点即答：首点=判分（矩阵），且零选项试听音 */
+    const audio0 = await page.evaluate(() => window.__AUDIO_LOG.length)
     await tapOpt(ans)
-    await page.waitForTimeout(250)
-    const st2 = await page.evaluate(() => ({ log: window.__AUDIO_LOG.length, score: window.__PJ.DC().score, reveal: window.__PJ.DC().reveal }))
-    ok(st2.log > audio1 && st2.score === 0 && st2.reveal === null, '每日挑战切点别项：切试听（播新项音，仍不计分）', `+${st2.log - audio1}`)
-    /* 再点同项=作答 */
-    await tapOpt(ans)
-    await page.waitForTimeout(400)
+    await page.waitForTimeout(300)
     const st3 = await page.evaluate(() => ({ score: window.__PJ.DC().score, reveal: window.__PJ.DC().reveal }))
-    ok(st3.reveal !== null && st3.score === 10, '每日挑战二点同项：才判分（reveal+得分 10）', JSON.stringify(st3))
+    ok(st3.reveal !== null && st3.score === 10, '每日挑战一点即答：首点即判分（v4.5 矩阵，reveal+得分 10）', JSON.stringify(st3))
     ok(errs.length === 0, '每日挑战：零 pageerror', errs.join('|') || 'clean')
     await page.close()
   }
@@ -382,24 +363,18 @@ const liveFish = (page) => page.evaluate(() => document.querySelectorAll('#gstag
       const i = await optIdxOf(k)
       await page.tap(`#v-ldrill [data-opts] .opt:nth-of-type(${i + 1})`)
     }
+    /* v4.5 适用矩阵（Bug#38）：听写选项=已学单字母 → 一点即答（错答也计，答对计数推进） */
     const wrong = (await page.evaluate(() => Array.from(document.querySelectorAll('#v-ldrill [data-opts] .opt')).map((e) => e.getAttribute('data-opt')))).find((k) => k !== target)
     await tapK(wrong)
     await page.waitForTimeout(250)
     const st1 = await page.evaluate(() => ({
       log: window.__AUDIO_LOG.length, n: document.querySelector('#v-ldrill [data-answered]').getAttribute('data-answered'),
-      armed: Array.from(document.querySelectorAll('#v-ldrill [data-opts] .opt')).some((e) => e.getAttribute('data-opt') !== document.querySelector('#v-ldrill [data-q]').getAttribute('data-target') && e.classList.contains('armed')),
     }))
-    ok(st1.log > audio0, '听写专练首点：播错误项读音', `wrong=${wrong} +${st1.log - audio0}`)
-    ok(st1.n === '0' && st1.armed, '听写专练首点：不推进+试听高亮', JSON.stringify(st1))
-    const audio1 = await page.evaluate(() => window.__AUDIO_LOG.length)
+    ok(st1.log === audio0, '听写专练一点即答：错答零选项试听音（矩阵）', `+${st1.log - audio0}`)
     await tapK(target)
-    await page.waitForTimeout(250)
-    const st2 = await page.evaluate(() => ({ log: window.__AUDIO_LOG.length, n: document.querySelector('#v-ldrill [data-answered]').getAttribute('data-answered') }))
-    ok(st2.log > audio1 && st2.n === '0', '听写专练切点：切试听（播目标项音，不判分）', `+${st2.log - audio1}`)
-    await tapK(target)
-    await page.waitForTimeout(700)
+    await page.waitForTimeout(900)
     const st3 = await page.evaluate(() => document.querySelector('#v-ldrill [data-answered]').getAttribute('data-answered'))
-    ok(st3 === '1', '听写专练二点同项：才判分（已答 1）', `answered=${st3}`)
+    ok(st3 === '1', '听写专练一点即答：点对即判分（已答 1）', `answered=${st3}`)
     ok(errs.length === 0, '听写专练：零 pageerror', errs.join('|') || 'clean')
     await page.close()
   }
@@ -453,15 +428,13 @@ const liveFish = (page) => page.evaluate(() => document.querySelectorAll('#gstag
     await page.waitForSelector('#optbox .opt', { timeout: 8000 })
     const q = await page.evaluate(() => { const Q = window.__PJ.Q(); return { type: Q.q.type, ans: Q.q.ans } })
     ok(q.type === 'listen', '闯关：听音选字题就位', `type=${q.type}`)
+    /* v4.5 适用矩阵（Bug#38）：闯关听音选项=已学单字母 → 一点即答 */
     const audio0 = await page.evaluate(() => window.__AUDIO_LOG.length)
     await page.tap(`#optbox .opt:nth-of-type(${q.ans + 1})`)
-    await page.waitForTimeout(250)
-    const st1 = await page.evaluate(() => ({ log: window.__AUDIO_LOG.length, reveal: window.__PJ.Q().reveal, score: window.__PJ.Q().score }))
-    ok(st1.log > audio0 && st1.reveal === null && st1.score === 0, '闯关听音首点：播选项读音+不判分', `+${st1.log - audio0} reveal=${st1.reveal}`)
-    await page.tap(`#optbox .opt:nth-of-type(${q.ans + 1})`)
-    await page.waitForTimeout(400)
-    const st2 = await page.evaluate(() => ({ reveal: window.__PJ.Q().reveal, score: window.__PJ.Q().score }))
-    ok(st2.reveal !== null && st2.score === 1, '闯关听音二点：才作答', JSON.stringify(st2))
+    await page.waitForTimeout(300)
+    const st2 = await page.evaluate(() => ({ reveal: window.__PJ.Q().reveal, score: window.__PJ.Q().score, log: window.__AUDIO_LOG.length }))
+    ok(st2.reveal !== null && st2.score === 1, '闯关听音一点即答：首点即作答（v4.5 矩阵）', JSON.stringify(st2))
+    ok(st2.log === audio0, '闯关听音一点即答：零选项试听音', `+${st2.log - audio0}`)
     ok(errs.length === 0, '闯关：零 pageerror', errs.join('|') || 'clean')
     await page.close()
   }

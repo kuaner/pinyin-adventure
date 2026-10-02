@@ -2,6 +2,7 @@
    v4.2 练习馆：字母题出题叠加 pinyin_game_v1 错误账本加权（GD.letters err 高/久未练
    的字母更高频——四练习模式全部接游戏账本） */
 import { LETTERS, PAIRS, LEVELS, DETSET, ZI, ZWORDS, PH, keysOf } from '../data'
+import { hasRiddle, riddleText } from './audio'
 import { getW, wpick, pairW, pickDet } from '../stores/weights.svelte'
 import { levelUnlocked } from '../stores/progress.svelte'
 import { GD } from '../stores/game.svelte'
@@ -110,8 +111,13 @@ function makeQ(level: QuizScope, key: string, type: string): Question {
   if (type === 'listen' || type === 'look') {
     q.opts = shuffle([A, B].concat(sameCatOthers(A, 2, [A, B], level.pool)))
     q.ans = q.opts.indexOf(A)
-  } else { /* kj 口诀正向回忆：正确口诀 → 三/四选一选字母，答案永远是正确形态 */
-    q.stmt = LETTERS[A].kj
+  } else if (hasRiddle(A)) { /* kj 口诀正向回忆：v4.5 谜面化（Bug#41 审计）——题面剥字母零答案泄漏 */
+    q.stmt = riddleText(A)
+    q.opts = shuffle([A, B].concat(sameCatOthers(A, 2, [A, B], level.pool)))
+    q.ans = q.opts.indexOf(A)
+  } else { /* 组合式口诀（ai/un 等谜面即答案构成）→ 回退听写，不展示泄漏题面 */
+    q.type = 'listen'
+    q.hint = H.listen
     q.opts = shuffle([A, B].concat(sameCatOthers(A, 2, [A, B], level.pool)))
     q.ans = q.opts.indexOf(A)
   }
@@ -304,10 +310,11 @@ export function makeBoltQ(): BoltQ {
   }
   const opts = shuffle([A, B])
   const ans = opts.indexOf(A)
-  if (r < 0.7) {
+  if (r < 0.7 || !hasRiddle(A)) { /* 组合式口诀（ai/un 等谜面即答案）回退听写——零答案泄漏 */
     return { type: 'blisten', key: isPair ? key : 'L:' + A, A, sound: A, opts, ans, hint: HV5.blisten }
   }
-  return { type: 'bkj', key: isPair ? key : 'L:' + A, A, B, stmt: LETTERS[A].kj, opts, ans, hint: HV5.bkj }
+  /* v4.5 谜面化（Bug#41 审计）：题面剥字母（"右下半圆"），音频/文字都不含答案读音 */
+  return { type: 'bkj', key: isPair ? key : 'L:' + A, A, B, stmt: riddleText(A), opts, ans, hint: HV5.bkj }
 }
 
 /* bolt 会话的已答题键序列（供连续上限判定；由 bolt store 重置） */

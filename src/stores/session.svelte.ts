@@ -89,9 +89,12 @@ export function startPairGroup(grp: string) {
 
 /* ---------- 答题（v4.2c Bug#37：两段式试听回归——v1 正本行为） ----------
    首点=播该选项读音+高亮"试听"态（不计对错不推进）→ 再点同项=作答；
-   点别的选项=切试听那项。无音频（hyp 缺失）首点退化为仅高亮，仍不计分 */
+   点别的选项=切试听那项。无音频（hyp 缺失）首点退化为仅高亮，仍不计分。
+   v4.5 两段式适用矩阵（Bug#38）：listen 题（选项=已学单字母，视觉即身份）**一点即答**——
+   试听=挨个点听暴力匹配，毁掉检索练习；look/kj/zi（带调音节串选项，孩子读不出）保留两段式 */
 export function armOpt(idx: number) {
-  if (QZ.armed === idx) { answer(idx); return }
+  const q0 = QZ.q as any
+  if (q0?.type === 'listen' || QZ.armed === idx) { answer(idx); return }
   QZ.armed = idx
   const q = QZ.q as any
   if (!q) return
@@ -107,6 +110,8 @@ export function armOpt(idx: number) {
 export function answer(idx: number) {
   const q = QZ.q as any
   if (!q) return
+  if (QZ.reveal) return   /* v4.5 单答锁（#42 同族）：reveal 态忽略一切作答——
+                             一点即答（Bug#38 矩阵）后反馈期的连点/幽灵点不得重复计分 */
   QZ.armed = -1   /* 试听态交还给 reveal 态（correct/wrong 高亮） */
   const ok = idx === q.ans
   const wrong: number[] = []
@@ -174,7 +179,7 @@ function showFeedback(ok: boolean, q: any) {
     desc,
   }
   if (ok) QZ.star++
-  QZ.fbt = setTimeout(() => { QZ.fbt = null; hideFeedback(); nextQ() }, ok ? 900 : 1500)
+  QZ.fbt = setTimeout(() => { QZ.fbt = null; hideFeedback(); nextQ() }, ok ? 800 : 1600)   /* v4.5 Bug#38：对~0.8s 错~1.6s 自动推进 */
 }
 
 export function hideFeedback() { QZ.fb = null }

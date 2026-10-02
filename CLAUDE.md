@@ -23,12 +23,14 @@ node scripts/acceptance.mjs   # v1 时代验收链（历史档案，现行回归
 node scripts/visual-check.mjs # 视觉度量校验
 ```
 
-## 测试体系（T1 基建，2026-10-02 起）
+## 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0，2026-10-02）
 
-- `tests/unit/`：Vitest 单测（jsdom+runes 直测）——账本/连击/每日挑战/出题引擎/权重/成长/学习进度；核心逻辑模块行覆盖 92-100%（`npm run test:coverage` 看全表）
+- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——T1 四模块 → T2 全逻辑模块 448 测试；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
+- `tests/components/`：@testing-library/svelte 组件测（**vitest 需 resolve.conditions:['browser']**，否则 svelte 解析到 server 构建全挂）——PinyinCard 三档/Speak 注音点播/HSteps 轴锁阈值接线/StrokeAnim glyph+假 rAF 播放链/ToneDrill+LookQ 两段式
 - `tests/e2e/`：存量 v*-accept 收编的统一回归包（断言原样+独立可跑）+ `run-all.mjs` runner + Bug#36/37 命名回归样例
 - **CI 测试门**：deploy.yml `test`+`e2e` job 前置，`build.needs:[test,e2e]`——红灯阻断 tag 部署；PR/push main 也跑
-- 规矩见 `tests/README.md`：修 bug 先写失败测试；新功能腿必带单测+e2e；覆盖率只升不降
+- **覆盖率硬门槛（T2）**：vitest coverage.thresholds `src/{lib,stores,data,text}/**` 聚合 lines ≥95%（v4.5.0 起点 98.5%）——低于门槛=exit 1=CI 红（负面测试实证）
+- 规矩见 `tests/README.md`：修 bug 先写失败测试（T2 实证：Bug#38 种子覆盖/Bug#39 $state 首建孤儿写/Bug#40 复合单元崩题/Bug#41 pyAudio 错序——全部先红后绿）；新功能腿必带单测+组件测+e2e；覆盖率只升不降
 
 ## 结构
 
@@ -86,7 +88,7 @@ src/
     pinyin-cards.json     # v2.5 PinyinCard 数据正本（一拼音一条记录，gen-pinyin-cards.mjs 从 pinyin/lessons/strokes 聚合生成，勿手改）
 public/audio/             # 根 mimo 305 + hyp/ 441（studycli 真人音）+ lessons/ 146（学习岛 mimo）
 scripts/                  # 一次性/验收脚本（gen-audio.ts=v2.6 配音清单生成器：扫描 strings+数据→diff→补生成，mimo 冰糖/hyp 拼接铁律）（extract-data 抽取留档、gen-icons、acceptance、visual-check、stroke-verify、learn-shots）；v30-v431 现行验收已收编 tests/e2e/（T1），scripts/ 里 acceptance-v2x/v29x 系列为历史档案
-tests/                    # T1 测试基建（2026-10-02）：unit/ vitest 单测 + e2e/ 统一回归包（run-all.mjs+存量收编+命名回归样例），见 tests/README.md
+tests/                    # T1+T2 测试体系（2026-10-02）：unit/ vitest 单测（1:1 镜像 src：lib/stores/data/text）+ components/ 组件测（testing-library）+ e2e/ 统一回归包（run-all.mjs+存量收编+命名回归样例），见 tests/README.md
 ```
 
 ## 数据格式

@@ -73,10 +73,13 @@
 
   /* 蛋半阵容：目标声母/韵母各 1 + 干扰各 3（全部正确形态——零错误信息铁律）。
      v4.2c 共存立法（Bug#36）：半堆必含错半块（不能只给对的两块）——
-     已学池唯一声母/韵母时从全字母表同 cat 借正确形态干扰（gameDistractor 回落同款） */
+     已学池唯一声母/韵母时从全字母表同 cat 借正确形态干扰（gameDistractor 回落同款）。
+     Bug#40（v4.5）：第一分支缺截断——已学声母多时整池返回，一行挤 7-8 块（"看不清点不好点"），
+     干扰数上限硬条款 n=3（块数 ≤4+4） */
   function decoyKeys(kind: 'ini' | 'fin', exclude: string, n: number): string[] {
     const src = [...new Set(pool.map((x) => (kind === 'ini' ? x.ini : x.fin)))].filter((k) => k !== exclude)
-    if (src.length >= n) return src
+    shuffle(src)
+    if (src.length >= n) return src.slice(0, n)
     const cat = kind === 'ini' ? 'sm' : 'ym'
     const all = Object.keys(LETTERS).filter((k) => k !== exclude && !src.includes(k) && (LETTERS as any)[k] && (LETTERS as any)[k].cat === cat)
     return src.concat(all.slice(0, n - src.length))
@@ -226,15 +229,18 @@
 
   .halves { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; justify-content: space-evenly;
     padding: var(--sp-1) var(--sp-2) var(--sp-2); gap: var(--sp-2); }
-  .hrow { flex: 1 1 0; min-height: 0; display: flex; align-items: stretch; gap: var(--sp-2); }
-  .htag { flex: none; width: 30px; display: flex; align-items: center; justify-content: center;
+  /* Bug#40 两行网格（声母一档+韵母一档）：4 列 grid、间距 ≥10px、块 ≥56px 见方、热区=整块——
+     390 窄屏每块 (374−30 标签−4×10 间距)/4 ≈ 76px 宽，字模 ≥30px */
+  .hrow { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 30px repeat(4, 1fr);
+    gap: 10px; align-items: stretch; }
+  .htag { grid-column: 1; display: flex; align-items: center; justify-content: center;
     font-size: var(--fs-xs); font-weight: 900; color: var(--animal-text-2);
     writing-mode: vertical-rl; letter-spacing: 2px; }
   .htag :global(rt) { font-size: 10px; }
-  .hhalf { position: relative; flex: 1 1 0; min-width: 0; border: none; background: none; padding: 0;
+  .hhalf { position: relative; min-width: 56px; border: none; background: none; padding: 0;
     cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
   .hsvg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 3px 2px rgba(61, 52, 40, .12)); }
-  .hk { position: relative; z-index: 1; font-size: 26px; font-weight: 900; color: #fff;
+  .hk { position: relative; z-index: 1; font-size: 30px; font-weight: 900; color: #fff;
     text-shadow: 0 2px 0 rgba(61, 52, 40, .18); }
   .hhalf.fin .hk { color: #4b3f2d; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
   .hhalf.sel { transform: translateY(-4px); }

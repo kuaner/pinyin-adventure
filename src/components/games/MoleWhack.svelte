@@ -1,17 +1,20 @@
 <script lang="ts">
-  /* 🔨 口诀打地鼠（v4.2 Bug#35 上半）：认知路径=口诀→形——每轮自动播口诀音频
-     （"右下半圆 b b b"，kj 真人库 63 条），播完 320ms 后地鼠举字母探头，打口诀说的那只；
-     与气球（呼读音→形）真正区分。镜像对当陷阱（目标有镜像搭档时搭档必探头）。
-     超时未击=miss 清连击绝不静默推进；🔊=随时重听口诀。回合链 setTimeout 全部带会话代数守卫 */
+  /* 🔨 口诀打地鼠（v4.2 Bug#35 上半 → v4.5 Bug#39 谜面制）：认知路径=谜面→形——
+     每轮自动播【谜面】音频（口诀剥离全部字母的形状描述，mimo 中文合成，零答案读音），
+     播完 320ms 后地鼠举字母探头，猜谜打对的那只；点对后播【整句口诀原声】奖励（回忆→确认→强化）。
+     v4.5 练习制：无 60s 计时（✕=结算答对数），点对才换题——错点=晃动提示+地鼠不走+可重听谜面，
+     无超时强制推进。干扰共存立法（Bug#36）保持：目标鼠+镜像陷阱+≥2 干扰鼠同场。
+     回合链 setTimeout 全部带会话代数守卫 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
+  import { hasRiddle, riddleAudio, kjAudio, playAudio } from '../../lib/audio'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
 
   interface Mole { hole: number; k: string; up: boolean; hit: boolean; bad: boolean }
   let moles = $state<Mole[]>([])
   let roundTid: ReturnType<typeof setTimeout> | null = null
-  const pool = learnedLetters()
+  const pool = learnedLetters().filter(hasRiddle)   /* 谜面制：只从有谜面的字母出题（组合式口诀跳过） */
   const playing = $derived(GS.phase === 'play')
 
   $effect(() => {
@@ -22,14 +25,15 @@
     return () => { if (roundTid) { clearTimeout(roundTid); roundTid = null } }
   })
 
-  /* 一个回合：目标音自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头，限时敲。
-     v4.2c 共存立法（Bug#36）：禁止单鼠出场轮——已学池 ≥3 时干扰鼠保底 2 只 */
+  /* 一个回合：谜面自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头。
+     v4.2c 共存立法（Bug#36）：禁止单鼠出场轮——已学池 ≥3 时干扰鼠保底 2 只。
+     v4.5 无下落计时：地鼠常驻等对的一击（点对才换题，Bug#39） */
   function round() {
     if (GS.phase !== 'play') return
     const target = pickGameTarget(pool, moles.length ? [GS.target] : [])
-    askTarget(target)
+    askTarget(target, riddleAudio(target))   /* 谜面先行（afile 直通→🔊重听同款） */
     /* 干扰鼠：镜像陷阱必上，其余从池里随机补（有限次——gameDistractor 镜像优先会重复返回搭档，禁无限循环）；
-       保底 2 只（池允许时）——目标永远与 ≥2 干扰同探，正确答案只能由"口诀↔字母"匹配得出 */
+       保底 2 只（池允许时）——目标永远与 ≥2 干扰同探，正确答案只能由"谜面↔字母"匹配得出 */
     const maxDecoys = Math.min(4, pool.length - 1)
     const want = Math.min(maxDecoys, 2 + Math.floor(Math.random() * 2))
     const decoys: string[] = []
@@ -45,32 +49,29 @@
     roundTid = setTimeout(() => {
       if (GS.epoch !== e) return
       for (const m of moles) m.up = true   /* 声音开播 320ms 后才探头——元素挂在声音之后 */
-      const upMs = Math.max(950, 1550 - Math.min(GS.combo, 8) * 65)
-      roundTid = setTimeout(() => {
-        if (GS.epoch !== e) return
-        let escaped = false
-        for (const m of moles) {
-          m.up = false
-          if (m.k === target && !m.hit) escaped = true
-        }
-        if (escaped) gameHit(target, false)   /* v4.1：超时未击=miss（清连击记错题），绝不静默推进 */
-        roundTid = setTimeout(() => { if (GS.epoch === e) round() }, 420)
-      }, upMs)
     }, 320)
   }
 
   function whack(m: Mole) {
-    if (!playing || !m.up || m.hit || m.bad) return
+    if (!playing || !m.up || m.hit) return
     if (m.k === GS.target) {
       m.hit = true
       gameHit(GS.target, true)
       if (roundTid) { clearTimeout(roundTid); roundTid = null }
       const e = GS.epoch
       for (const x of moles) x.up = false
-      roundTid = setTimeout(() => { if (GS.epoch === e) round() }, 380)
+      /* 点对奖励：整句口诀原声（"右下半圆 b b b"——回忆→确认→强化闭环）；
+         播完换下一题（onend 主路 + 3.5s 兜底防 onend 缺席卡死） */
+      let advanced = false
+      const advance = () => { if (!advanced && GS.epoch === e && GS.phase === 'play') { advanced = true; round() } }
+      playAudio(kjAudio(GS.target), { onend: advance })
+      roundTid = setTimeout(advance, 3500)
     } else {
+      /* 错点：晃动提示+地鼠不走+可再敲（点对才换题）；清连击记错题照旧 */
       m.bad = true
       gameHit(m.k, false)
+      const me = m
+      setTimeout(() => { me.bad = false }, 500)
     }
   }
 
@@ -85,11 +86,11 @@
 </script>
 
 <div class="fill" id="v-mole">
-  <div class="prompt" data-prompt data-kj={GS.kj ? '1' : '0'} data-target={GS.target}>
+  <div class="prompt" data-prompt data-riddle={GS.kj ? '1' : '0'} data-target={GS.target}>
     <button class="bigsound small" class:live={GS.listened} data-listen onclick={listenTarget}>
       <Icon name="headphones" size={34} />
     </button>
-    {#if GS.kj}<span class="kjchip" data-kjchip><Icon name="music" size={16} /><Speak k="kjTag" plain /></span>{/if}
+    {#if GS.kj}<span class="kjchip" data-riddlechip><Icon name="music" size={16} /><Speak k="riddleTag" plain /></span>{/if}
     <div class="ptip"><Speak k="listenThenAct" plain={GS.listened} /></div>
   </div>
   <div class="lawn">

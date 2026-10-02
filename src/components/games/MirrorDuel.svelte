@@ -5,7 +5,7 @@
      敌方定时拉绳制造时间压力；推绳过敌方线=提前胜利；rAF/interval unmount 全清 */
   import { GS, gameHit, endGame } from '../../stores/game.svelte'
   import { learnedLetters, duelQ } from '../../lib/gameEngine'
-  import { playAudio, letterAudio, kjAudio, stopAll } from '../../lib/audio'
+  import { playAudio, letterAudio, riddleAudio, stopAll } from '../../lib/audio'
   import { stageOf, G } from '../../stores/growth.svelte'
   import { untrack } from 'svelte'
   import Icon from '../Icon.svelte'
@@ -16,6 +16,13 @@
   let q = $state<DQ | null>(null)
   let pos = $state(50)          /* 绳结位置 0(我方线)~100(敌方线)，50=中线 */
   let reveal = $state(false)
+  let picked = $state(-1)       /* 本次作答点过的选项（feedback 只亮点过的：答对仅绿，不全员刷红——Bug#42 "同时点中对错两个"观感病灶） */
+  /* Bug#42 输入闸（单答锁+动画期锁）：本题已答或切题过渡/宽假期内一律关门——
+     答对仅 320ms 就换题+选项网格位不变，孩子连点的第二点曾漏进下一题（"点对的判我错"），
+     绿/红双钮反馈同屏又被读成"两个都被点中"。闸门时序：newQ 关门 → 320ms 宽假期（盖住
+     double/triple-tap 间隔）→ 开门；作答即落锁直到下一题装好重走闸门。reveal 只管反馈样式 */
+  let inputLock = $state(true)
+  let openTid: ReturnType<typeof setTimeout> | null = null
   let nextTid: ReturnType<typeof setTimeout> | null = null
   let pullTid: ReturnType<typeof setInterval> | null = null
   const pool = learnedLetters().filter((k) => k.length === 1)
@@ -39,6 +46,7 @@
     }, 1600)
     return () => {
       if (nextTid) { clearTimeout(nextTid); nextTid = null }
+      if (openTid) { clearTimeout(openTid); openTid = null }
       if (pullTid) { clearInterval(pullTid); pullTid = null }
       void e
     }
@@ -46,12 +54,18 @@
 
   function newQ() {
     reveal = false
+    picked = -1
+    inputLock = true
+    if (openTid) { clearTimeout(openTid); openTid = null }
     if (pool.length >= 2) {
       q = duelQ(pool)
-      /* v4.1 声音先行：题面出现即自动读音（stopAll 防连播重叠），🔊=重听 */
+      /* v4.1 声音先行：题面出现即自动读音（stopAll 防连播重叠），🔊=重听；
+         v4.5 谜面制（Bug#41 审计）：kj 题播谜面音频（原整句口诀含答案读音） */
       stopAll()
-      if (q.kj) playAudio(kjAudio(q.A))
+      if (q.kj) playAudio(riddleAudio(q.A))
       else playAudio(letterAudio(q.A))
+      /* 宽假期满开门：过渡动画（绳结位移 .3s）+连点余波都被关在外面 */
+      openTid = setTimeout(() => { inputLock = false }, 320)
     } else q = null
   }
 
@@ -62,9 +76,13 @@
   }
 
   function answer(idx: number) {
-    if (!playing || !q || reveal) return
+    /* pointerdown 一次性判定：命中=按下那一刻的 currentTarget 元素，不等 click（Bug#42①）；
+       inputLock 覆盖单答锁②（本题已答忽略后续）+动画期锁③（反馈/切题/宽假期零新作答） */
+    if (!playing || !q || inputLock) return
     const ok = idx === q.ans
     reveal = true
+    picked = idx
+    inputLock = true
     gameHit(q.A, ok)
     if (ok) {
       pos = Math.min(100, pos + 7 + Math.min(GS.combo, 5))
@@ -75,7 +93,7 @@
     }
   }
 
-  function hear() { if (q) playAudio(q.kj ? kjAudio(q.A) : letterAudio(q.A), { hint: '' }) }
+  function hear() { if (q) playAudio(q.kj ? riddleAudio(q.A) : letterAudio(q.A), { hint: '' }) }
 </script>
 
 <div class="fill" id="v-duel">
@@ -110,7 +128,7 @@
       {/if}
       <div class="opts" data-opts>
         {#each q.opts as k, idx (idx)}
-          <button class="duelopt" class:correct={reveal && idx === q!.ans} class:wrong={reveal && idx !== q!.ans}
+          <button class="duelopt" class:correct={reveal && idx === q!.ans} class:wrong={reveal && picked === idx && picked !== q!.ans}
             data-letter={k} data-qkey={q.ans === idx ? k : ''} onpointerdown={() => answer(idx)}>
             <span class="dg">{k}</span>
           </button>

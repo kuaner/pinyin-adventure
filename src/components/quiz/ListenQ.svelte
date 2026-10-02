@@ -14,7 +14,7 @@
   const armed = $derived(QZ.armed)
 </script>
 
-<div class="glyphbox" id="glyphbox">
+<div class="glyphbox qslide" id="glyphbox">
   <div style="position:relative">
     <button class="bigsound" type="button" onclick={() => say(q.A)}><Icon name="headphones" size={44} /><span class="bslabel"><Speak k="listenAgain" plain /></span></button>
   </div>

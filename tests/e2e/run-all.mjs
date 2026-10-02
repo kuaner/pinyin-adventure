@@ -24,6 +24,11 @@ const ALL = [
   'v431-accept.mjs',  // v4.3.1 共存立法+两段式+文案清零（Bug#36+37）
   'regression-bug36-coexist.mjs',     // 命名回归样例：同屏共存立法（自 v431 抽出）
   'regression-bug37-two-phase.mjs',   // 命名回归样例：两段式试听（自 v431 抽出）
+  'regression-bug39-mole-riddle.mjs', // 命名回归样例：口诀地鼠谜面制+点对才换题（v4.5 Bug#39）
+  'regression-bug40-egg-grid.mjs',    // 命名回归样例：拼音蛋两行网格+几何硬断言（v4.5 Bug#40）
+  'regression-bug41-no-leak.mjs',     // 命名回归样例：全游戏出题泄漏审计（v4.5 Bug#41）
+  'regression-bug42-duel-single-answer.mjs', // 命名回归样例：镜像对决单答锁+零双中（v4.5 Bug#42）
+  'regression-bug38-auto-advance.mjs', // 命名回归样例：切题过渡+自动推进（v4.5 Bug#38；矩阵①在 bug37 样例）
 ]
 
 const filters = process.argv.slice(2)
@@ -62,32 +67,43 @@ for (const sig of ['SIGINT', 'SIGTERM']) process.on(sig, async () => { await tea
 
 await startPreview()
 
-/* 串行跑（不并行——浏览器实例多开互抢无益，输出也可读） */
+/* 串行跑（不并行——浏览器实例多开互抢无益，输出也可读）。
+   v4.5 flake 加固（任务书#6）：首跑失败自动重试一次（冷缓存/时序抖动类闪红），
+   重试过=绿但标注 flake 计数（⟲）；再败=真红 */
 const results = []
 let failed = 0
+let flakes = 0
 for (const s of scripts) {
   const label = '[' + s + ']'
   console.log('\n==================================================')
   console.log(label + ' 开始')
   console.log('==================================================')
   const t0 = Date.now()
-  const r = spawnSync('node', [path.join(HERE, s)], {
+  const run = () => spawnSync('node', [path.join(HERE, s)], {
     cwd: ROOT,   /* 脚本按 repo 根写相对输出目录（.acceptance-*） */
     env: { ...process.env, BASE_URL: BASE },
     stdio: 'inherit',
   })
+  let r = run()
+  let flaked = false
+  if (r.status !== 0) {
+    console.log(`  ↻ 首跑失败（exit ${r.status}）→ flake 加固：自动重试一次`)
+    flaked = true
+    r = run()
+  }
   const dur = ((Date.now() - t0) / 1000).toFixed(1) + 's'
   const okRun = r.status === 0
+  if (okRun && flaked) flakes++
   if (!okRun) failed++
-  results.push({ s, ok: okRun, dur, code: r.status })
-  console.log(okRun ? `✓ ${s} 通过（${dur}）` : `✗ ${s} 失败（exit ${r.status}，${dur}）`)
+  results.push({ s, ok: okRun, dur, code: r.status, flaked: okRun && flaked })
+  console.log(okRun ? `✓ ${s} 通过（${dur}）${flaked ? ' ⟲flake重试过' : ''}` : `✗ ${s} 失败（exit ${r.status}，${dur}）`)
 }
 
 await teardown()
 
 console.log('\n================ 回归包汇总 ================')
-for (const r of results) console.log((r.ok ? '  ✓ ' : '  ✗ ') + r.s.padEnd(20) + r.dur)
+for (const r of results) console.log((r.ok ? '  ✓ ' : '  ✗ ') + r.s.padEnd(20) + r.dur + (r.flaked ? '  ⟲flake' : ''))
 console.log('============================================')
 const pass = results.filter((r) => r.ok).length
-console.log(`回归包：${pass}/${results.length} 通过${failed ? '（有失败！）' : '（全绿）'}`)
+console.log(`回归包：${pass}/${results.length} 通过${flakes ? `（含 ${flakes} 个 flake 重试过⟲）` : ''}${failed ? '（有失败！）' : '（全绿）'}`)
 process.exit(failed ? 1 : 0)

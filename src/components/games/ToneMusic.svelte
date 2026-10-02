@@ -35,6 +35,10 @@
   let alive = true
 
   const playing = $derived(GS.phase === 'play')
+  /* Bug#41 视觉去答：🔊 旁只显示不带调基础音节（"ma"）——带调符号是答案本身，
+     显示在目标侧=看标记接音符不用听。声调信息只在音频里（听→辨调→接）。
+     结算/反馈侧不受限（接对音符本身显示带调形态=合法反馈） */
+  const baseSyl = (file: string) => file.replace(/\d+$/, '')
 
   $effect(() => {
     /* 依赖仅 phase+epoch；账本/notes 读取 untrack（答题写账本不得重置舞台） */
@@ -158,7 +162,7 @@
     <button class="bigsound small" class:live={GS.listened} data-listen onclick={listenTarget}>
       <Icon name="headphones" size={34} />
     </button>
-    <div class="tchip" data-tchip>{target ? target.t.display : ''}</div>
+    <div class="tchip" data-tchip data-syl={target ? baseSyl(target.t.file) : ''}>{target ? baseSyl(target.t.file) : ''}</div>
   </div>
 
   <div class="hall">
