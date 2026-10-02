@@ -18,8 +18,9 @@ export default defineConfig({
       // App.svelte 挂 onNeedRefresh 链路 + visibilitychange 回前台主动 SW.update()）
       registerType: 'prompt',
       workbox: {
-        // mp3 不进 precache（305 条逐个预载太慢），改 CacheFirst 边播边缓存；外壳/数据全量离线可用
-        globPatterns: ['**/*.{js,css,html,svg,png,json}'],
+        // mp3 不进 precache（305 条逐个预载太慢），改 CacheFirst 边播边缓存；外壳/数据/字体全量离线可用
+        // （woff2 入 precache=T3 offline spec 红出的缺口：断网时自托管字体加载失败→系统字体回退闪烁）
+        globPatterns: ['**/*.{js,css,html,svg,png,json,woff2}'],
         maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
         runtimeCaching: [
           {

@@ -1,8 +1,13 @@
 name: Build & Deploy to Pages
 
-# T1 测试门（2026-10-02）：test（单测+coverage）与 e2e（回归包）前置；
-# build needs 两个测试 job——npm test 或回归包红灯 = tag 部署被阻断。
-# PR / push main 只跑测试不部署；部署仍仅 v* tag / 手动触发。
+# T3 测试门重构（2026-10-02）：
+#   unit（单测+coverage 硬门槛）恒跑——main push / PR / tag 三流水全覆盖；
+#   e2e（specs 五域+cross 矩阵）**仅 tag 触发**——main push 不再重复跑（省 ~12 分钟/次）；
+#   build needs [unit, e2e]：tag 流水任一红灯=部署阻断。
+# e2e 按域分片（备用开关，串行先保证绿）：CI 时间不可接受时，把 e2e job 换成
+#   strategy: { matrix: { domain: [learn, games, drills, growth, pwa, cross] } }
+#   并把 Run e2e matrix 步骤改为 `node tests/e2e/run-all.mjs ${{ matrix.domain }}`，
+#   build.needs 加 `e2e`（matrix job 名不变，needs 语义=全 shard 绿）。
 on:
   push:
     tags:
@@ -22,7 +27,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
+  unit:
     name: Unit tests (vitest)
     runs-on: ubuntu-latest
     steps:
@@ -62,9 +67,11 @@ jobs:
           retention-days: 14
 
   e2e:
-    name: E2E regression pack
+    name: E2E matrix (specs×5 domains + cross)
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
+    # 仅 tag / 手动触发：main push 只跑 unit（e2e 全矩阵 ~20 分钟，无变更面不重复烧）
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v7
 
@@ -81,19 +88,17 @@ jobs:
       - name: Build (base=/)
         run: npx vite build
 
-      - name: Run regression pack (12 scripts)
+      - name: Run e2e matrix (28 specs serial)
         run: npm run e2e
 
-      - name: Upload acceptance artifacts
+      - name: Upload e2e summary
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: acceptance-artifacts
-          path: .acceptance-*/
-          retention-days: 14
+        run: |
+          echo "### E2E matrix（五域+横切面）" >> "$GITHUB_STEP_SUMMARY"
+          echo "串行全绿=部署门通过；失败域见上方日志" >> "$GITHUB_STEP_SUMMARY"
 
   build:
-    needs: [test, e2e]
+    needs: [unit, e2e]
     if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:

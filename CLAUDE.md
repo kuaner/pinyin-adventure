@@ -23,14 +23,14 @@ node scripts/acceptance.mjs   # v1 时代验收链（历史档案，现行回归
 node scripts/visual-check.mjs # 视觉度量校验
 ```
 
-## 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0，2026-10-02）
+## 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0 → **T3 e2e 工程化矩阵 v4.6.0**，2026-10-02）
 
-- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——T1 四模块 → T2 全逻辑模块 448 测试；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
-- `tests/components/`：@testing-library/svelte 组件测（**vitest 需 resolve.conditions:['browser']**，否则 svelte 解析到 server 构建全挂）——PinyinCard 三档/Speak 注音点播/HSteps 轴锁阈值接线/StrokeAnim glyph+假 rAF 播放链/ToneDrill+LookQ 两段式
-- `tests/e2e/`：存量 v*-accept 收编的统一回归包（断言原样+独立可跑）+ `run-all.mjs` runner + Bug#36/37 命名回归样例
-- **CI 测试门**：deploy.yml `test`+`e2e` job 前置，`build.needs:[test,e2e]`——红灯阻断 tag 部署；PR/push main 也跑
+- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——454 测试；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
+- `tests/components/`：@testing-library/svelte 组件测（**vitest 需 resolve.conditions:['browser']**）——PinyinCard/Speak/HSteps/StrokeAnim/ToneDrill/LookQ 六组件 448 测试
+- `tests/e2e/`（**T3 工程化矩阵**）：`flows/`（page-object 操作层：bootApp/seedState/gotoLesson/playGame/answerQuiz，导航只写一次零断言）+ `specs/{learn,games,drills,growth,pwa}/`（28 个 spec，断言只住这里：12课×全步骤矩阵/6游戏/6专练/升级事件链/PWA 三面）+ `cross/`（横切面：零滚动/零pageerror/nowrap/ruby 遍历 `screens.ts` 屏幕清单）+ `fixtures/seeds.mjs`（新生/中期/毕业三档种子）——存量 v*-accept 与 regression-bug3x 断言全部迁入 specs 后**已删除**（无双轨）
+- **CI 测试门（T3 重构）**：deploy.yml `unit`（恒跑）+`e2e`（**仅 tag/手动触发**，main push 只跑 unit 省 ~12 分钟）两 job 独立，`build.needs:[unit,e2e]`——tag 流水红灯阻断部署
 - **覆盖率硬门槛（T2）**：vitest coverage.thresholds `src/{lib,stores,data,text}/**` 聚合 lines ≥95%（v4.5.0 起点 98.5%）——低于门槛=exit 1=CI 红（负面测试实证）
-- 规矩见 `tests/README.md`：修 bug 先写失败测试（T2 实证：Bug#38 种子覆盖/Bug#39 $state 首建孤儿写/Bug#40 复合单元崩题/Bug#41 pyAudio 错序——全部先红后绿）；新功能腿必带单测+组件测+e2e；覆盖率只升不降
+- 规矩见 `tests/README.md`：断言只写 specs/flows 只管操作；状态一律经 fixtures 种子；新屏幕登记 screens.ts 即被横切面覆盖；修 bug 先写失败测试（T2:Bug#38-41 先红后绿；T3：woff2 缺出 SW precache 断网字体闪退→vite globPatterns 补 woff2）；新功能腿必带单测+组件测+e2e；覆盖率只升不降
 
 ## 结构
 

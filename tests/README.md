@@ -1,29 +1,37 @@
-# tests/ — 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0，2026-10-02）
+# tests/ — 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0 → **T3 e2e 工程化矩阵 v4.6.0**）
 
 质量底线（kuaner 立法）：**bug 对孩子不是 bug，是"我答错了"的挫败——任何逻辑错误都不可接受。**
 
-## 目录
+## 目录（终态）
 
 ```
 tests/
   unit/            # Vitest 单测（jsdom，runes store 直测；目录 1:1 镜像 src）
     setup.ts       #   全局 stub（媒体静默/jsdom localStorage 接回/SVG getTotalLength/ResizeObserver）
-    *.test.ts      #   T1 存量：账本/连击/每日/出题引擎/权重/成长/学习进度
-    lib/           #   T2：quizEngine/ruby/audio/storage/lessonUnits/ziGate/hsteps/probe/icons/toneMarks/types/gameEngineEdges
-    stores/        #   T2：bolt/flash/session/ui/gameSession/weightsEdges/learnEdges
-    data/          #   T2：数据完整性（63 单元三方一致/PAIRS/180 字/关卡引用/hyp 映射）
-    text/          #   T2：strings 取值出口 + manifest 配音清单可溯源
-  components/      # T2 组件测（@testing-library/svelte，浏览器构建）
-    PinyinCard.test.ts   # 三档形态（full/card/mini）+ 点读链
-    Speak.test.ts        # 注音渲染 + 可点播示能 + __AUDIO_LOG 发声证据
-    HSteps.test.ts       # 轴锁/死区/阈值翻页事件接线（纯逻辑在 unit/lib/hsteps）
-    StrokeAnim.test.ts   # glyph 字模/静态帧/idleDone/播放链（假 rAF）
-    ToneDrill.test.ts    # 声调小练两段式（arm→answer）+ 4 题结算
-    LookQ.test.ts        # 看字选音两段式（session store 状态流）
-  e2e/             # 系统回归包（playwright，真实 preview 全流程）
-    run-all.mjs    #   统一 runner（自起 preview，串行全跑）
-    v30..v431      #   存量验收收编（断言原样，独立可跑）
-    regression-*   #   命名回归样例（Bug#36/37）
+    lib/ stores/ data/ text/   # lib 12 模块 / stores 9 / 数据完整性 / 文案层
+  components/      # T2 组件测（@testing-library/svelte，browser condition）
+    PinyinCard / Speak / HSteps / StrokeAnim / ToneDrill / LookQ   # 6 组件 448 测试
+  e2e/             # T3 工程化矩阵（playwright，真实 preview 全流程）
+    run-all.mjs    #   统一 runner（自起 preview 4173 → 串行驱动 specs+cross → flake 加固重试 → 汇总）
+    screens.ts     #   屏幕清单注册表：每屏=入口路由+关键断言(ready)+滚动根+ruby 下限——新屏登记即被横切面覆盖
+    flows/         #   page-object 操作层（导航与操作只写一次，零断言）
+      bootApp.mjs      # 浏览器/页面工厂：种子开页+验收观察者(__AUDIO_LOG/__DOM_LOG/__TLOG)+gotoScreen
+      seedState.mjs    # fixtures 种子注入应用侧（用例内禁手工拼 localStorage）+ 账本读取器
+      gotoLesson.mjs   # 学习岛：openLesson/swipeLeft/curScope/glyphState/参与证据/拦截卡/ToneDrill
+      playGame.mjs     # 游戏岛：真实开局 enterGame/enterDrill/打中当前目标四游戏/HUD/可视区等待
+      answerQuiz.mjs   # 各题面作答（两段式适用矩阵在此固化：字母题一点即答/带调题两段式）
+      assert.mjs       # Tally 断言报告原语（断言本体只住 specs/）
+    specs/         #   断言层（按域组织，测试名=用户可见行为）
+      learn/       lessonMatrix（12课×全步骤矩阵） participation（拦截/放行） stroke（字模+四线格） navigation（导航流+sweep）
+      games/       hub audioFirst（音序先行） coexist（共存立法） playScoring（计分连击+退场结算）
+                   moleRiddle（谜面制+练习制） duelLock（单答锁） eggTone（蛋+音乐会） noLeak（零泄漏审计）
+      drills/      bolt listen pairs zi blendTone twoPhase（两段式矩阵） autoAdvance（自动推进+过渡）
+      growth/      quizChain album evolve badges daily（每日种子链）
+      pwa/         swUpdate（SW更新链） offline（断网重进） audioAssets（音频可达含 riddle/）
+    cross/         crossScreens.spec.mjs —— 横切面参数化：遍历 screens.ts 逐屏断言
+                   零滚动（doc+tab 容器级）/零横向溢出/零 pageerror/nowrap 短标签单行（rt 豁免）/ruby 注音下限
+  fixtures/        # 确定性状态种子（三档 localStorage 快照，全部 e2e 共享）
+    seeds.mjs      #   newbie 新生 / mid 中期（L1-4 课+若干星）/ grad 毕业（12课全通）+ 覆盖项 + 课结构推导
 ```
 
 ## 怎么跑
@@ -31,91 +39,53 @@ tests/
 ```bash
 npm test                # 全部单测+组件测（vitest run，CI 同款）
 npm run test:coverage   # +覆盖率报告 → coverage/（低于门槛=退出码非零）
-npm run e2e             # 回归包：自起 preview 4173 → 串行跑 12 个脚本 → 汇总退出码
-npm run e2e -- v43      # 只跑名字前缀匹配的腿
-BASE_URL=https://… npm run e2e   # 打线上跑（不起本地 preview）
+npm run e2e             # e2e 矩阵：自起 preview 4173 → 串行跑 specs/五域 + cross/ → 汇总退出码
+npm run e2e -- learn    # 按域跑（learn/games/drills/growth/pwa/cross）
+npm run e2e -- mole     # 按文件名子串跑
+BASE_URL=https://… npm run e2e   # 打线上跑（不起本地 preview；pwa/swUpdate 需磁盘控制权会自动跳过）
 ```
 
-单条 e2e 脚本独立可跑（保持存量习惯）：`node tests/e2e/v40-accept.mjs`（preview 需已在 4173）。
+单条 spec 独立可跑：`node tests/e2e/specs/learn/lessonMatrix.spec.mjs`（preview 需已在 4173）。
+
+## 工程规矩（T3 立法，2026-10-02 生效）
+
+1. **断言只写在 specs/（含 cross/）**：flows/ 只管操作复用——同一导航逻辑禁止在两处出现；
+   新增操作先问 flows 里有没有，没有才加 flows。
+2. **测试名=用户可见行为**（"答对后 0.8s 自动出下一题"），不测内部实现细节（实现重构测试不红）。
+3. **状态一律经 fixtures 三档种子注入**（tests/fixtures/seeds.mjs），用例内禁手工拼 localStorage；
+   弱项/账本覆盖走 seedState 的 ledger 覆盖项。
+4. **新屏幕必须登记 screens.ts**：入口路由+ready 断言+seed 档+ruby 下限——登记即自动被横切面
+   （零滚动/零 pageerror/nowrap/ruby）覆盖，不需要手写横切断言。
+5. **存量 v*-accept 断言已全部迁入 specs 对应域并删除脚本**（T3 收编，无双轨）：
+   v30→learn/{lessonMatrix,navigation} · v31→learn/stroke · v312→learn/stroke+pwa/audioAssets ·
+   v32→growth/{quizChain,album,evolve,badges} · v40→games/{hub,playScoring}+growth/daily ·
+   v401→learn/participation · v41→games/audioFirst · v42→games/{hub,moleRiddle}+drills/{bolt,listen,pairs,zi} ·
+   v43→games/{eggTone,hub}+drills/blendTone · v431→games/{coexist,hub}+drills/{twoPhase,listen} ·
+   bug36→games/coexist · bug37→drills/twoPhase · bug38→drills/{autoAdvance,twoPhase} ·
+   bug39→games/moleRiddle · bug40→games/eggTone · bug41→games/noLeak · bug42→games/duelLock。
+   更早的 v1-v2.9 脚本仍在 scripts/ 作历史档案（断言面是已删除的 v2 时代 UI）。
+6. **修 bug 先写失败测试**：任何 bug 修复前先写红灯复现用例（本目录规矩沿用 T1/T2；
+   T3 红出并修掉的：woff2 不入 SW precache=断网字体闪退→globPatterns 补 woff2）。
 
 ## 覆盖率门槛（T2 落地，只升不降棘轮）
 
 `vitest.config.ts` coverage.thresholds：**src/{lib,stores,data,text} 聚合行覆盖 ≥95%**——
-低于门槛=退出码非零=CI 红灯（负面测试实证：抬到 99.9% → exit 1）。v4.5.0 起点实测：
-
-| 层 | 行覆盖 |
-|---|---|
-| src/lib | 98.0%（quizEngine 97.8 / audio 95 / probe 95.7 / gameEngine 98.2 / 其余 100） |
-| src/stores | 98.4%（bolt 98.5 / flash 97.1 / game 99.2 / 其余 100） |
-| src/data | 100% |
-| src/text | 100% |
-| **聚合（门槛组）** | **98.5%** |
-
-.svelte 组件不入阈值组（组件面由 components/ 测试与 e2e 回归包守护），但保留在报告可见
-（components/ 现状 ~16%，PinyinCard/HSteps/StrokeAnim/ToneDrill/LookQ/Speak 已挂测）。
-
-## 规矩（2026-10-02 起生效）
-
-1. **修 bug 先写失败测试**：任何 bug 修复前，先在 tests/unit 或 tests/e2e 写一个红灯的复现用例
-   （命名回归样例格式见 `regression-bug36-coexist.mjs` 头注），修复后该用例转绿并永久进套件。
-   T2 实证三连：Bug#39（gameRec 首建孤儿写丢 best）、Bug#40（过 L10 后每日挑战/对决 TypeError）、
-   Bug#41（pyAudio 基母串错序→两段式试听播错键）——全部先红后绿收编。
-2. **新功能腿**：acceptance 必含新模块单测 + 关键路径 e2e；新 store/逻辑模块进 `tests/unit/`（1:1 镜像），
-   新交互组件进 `tests/components/`，新屏幕进回归包。
-3. **覆盖率只升不降**：CI 跑 `npm run test:coverage`，门槛在 vitest 配置里硬执行（见上表）。
-4. **e2e 零 pageerror 是硬门槛**：回归包任何脚本出现 pageerror 即失败。
-5. 断言即文档：单测用例名写"行为+边界+为什么"（照 `tests/unit/combo.test.ts` 的风格）。
+低于门槛=退出码非零=CI 红灯。v4.5.0 起点实测：聚合 98.5%（lib 98.0 / stores 98.4 / data 100 / text 100）。
 
 ## CI 测试门
 
-`.github/workflows/deploy.yml`：`test`（全部测试+coverage 硬门槛）与 `e2e`（回归包）两个 job 前置，
-`build` job `needs: [test, e2e]`——**任何红灯=tag 部署被阻断**（needs 链实证）。
-PR / push main 只跑 test+e2e 不部署；release 仍仅 tag 触发。
+`.github/workflows/deploy.yml`（T3 重构）：`unit`（单测+coverage 硬门槛）与 `e2e`（矩阵，**仅 tag 触发**）
+两个 job 独立——**main push / PR 只跑 unit（省 e2e 12 分钟重复）**；tag 流水 `build.needs:[unit, e2e]`
+红灯阻断部署。e2e job 按域分片（unit→build 前的 5 域并行 shard）可选启用，默认串行全跑。
 
 ## T2 修掉的产品 bug（先红后绿，单测收编）
 
-- **Bug#38（每日挑战种子覆盖缺口）**：`gameDistractor` 加可选 rng 参数（缺省 Math.random=行为不变），
-  `letterQ` 传入日期种子 rng——同日两次生成 10 题逐字节面稳定（用例去掉 fullySeeded 条件后转绿）。
-- **Bug#39（$state 首建孤儿写）**：`gameRec` 首建后二次读取存内记录再续写/返回——修前 fakeResult 的
-  best 抬升写在不回传的孤儿对象上（Svelte5 $state 首建分支 raw 视图坑）。
-- **Bug#40（复合单元崩题）**：üe/er/ong/yi/wu/yu 是课内单元但不在 LETTERS——过 L10 后
-  buildDailyQs 100% TypeError、镜像对决 ~10% 崩。修=gameDistractor/letterQ/duelQ 防御读 +
-  无口诀单元不出口诀题（回退听写，stmt 恒非空）。
-- **Bug#41（两段式试听播错键）**：pyAudio 基母串 'aeiouü'（a,e,i,o,u 序）与 TONE_VOWELS
-  （a,o,e,i,u 序）错位 → e/i/o 调族整体错键（shí→sho4）。修=基母串改 'aoeiuv'（与 ziGate BASEV 同款）。
+Bug#38 每日种子覆盖缺口 / Bug#39 $state 首建孤儿写 / Bug#40 复合单元崩题 / Bug#41 pyAudio 基母错序——
+详见 git 历史 v4.5.0 提交说明。
 
-## 产品码可测性改动清单（T2，行为零变化逐条）
+## T3 新增覆盖面（v*-accept 没有、本腿补齐）
 
-1. `src/lib/hsteps.ts` 新建：HSteps 的轴锁/阈值/橡皮筋抽纯函数（pickAxis/flipsPage/dragOffset），
-   HSteps.svelte 改为调用——逐行等价抽取，组件测=纯函数单测+事件接线两层。
-2. `src/lib/gameEngine.ts`：gameDistractor 第三可选参数 rng（缺省 Math.random）；letterQ/duelQ/letterQ
-   防御读（Bug#38/#40 修复面，见上）。
-3. `src/lib/audio.ts`：pyAudio 基母串一字修正（Bug#41）。
-4. `src/stores/game.svelte.ts`：gameRec 首建分支改二次读取（Bug#39）。
-
-## 存量收编说明
-
-v30/v31/v312/v32/v40/v401/v41/v42/v43/v431 十腿验收脚本 `git mv` 进 tests/e2e/（历史保留），
-**脚本本体零改动**（playwright 导入的 npx 回退路径为本地历史遗产，devDependency 装了 playwright 后
-永不触发）。更早的 acceptance-v23/v24/v261/v290/v292/v293/v294 留在 scripts/ 作 v1-v2.9 历史档案
-（其断言面是已删除的 v2 时代 UI，不再具备回归意义——repo CLAUDE.md 已注 v293 系列归档）。
-
-## v4.5 游戏五连修（2026-10-02，Bug#38-#42 + 测试修复腿）
-
-- **Bug#42 镜像对决双中**：`inputLock` 输入闸（单答锁+切题宽假期 320ms+动画期锁）+反馈只亮点过的
-  选项（picked，答对不全员刷红）。回归=`regression-bug42-duel-single-answer.mjs`（真实 CDP 触摸连答
-  10 题+页内定时探针枪+账本恰好 10 记）。
-- **Bug#39 口诀地鼠谜面制**：出题播谜面（`riddle/*` mimo 中文 51 条，`scripts/gen-riddles.mjs` 派生+
-  组合式口诀跳过）；点对播整句口诀奖励再换题；练习制（无 60s 计时、✕=结算、错点晃动+地鼠不走+可重听）。
-  回归=`regression-bug39-mole-riddle.mjs`。
-- **Bug#40 蛋半两行网格**：decoyKeys 首分支缺截断（整池上屏挤 7-8 块）修复+grid 布局
-  （块 ≥56px/字模 30px/间距 10px）。回归=`regression-bug40-egg-grid.mjs`（3 轮几何硬断言）。
-- **Bug#41 视觉去答**：音乐会 🔊 旁只显基础音节；**全游戏泄漏审计**——对决/每日/闯关/闪电口诀题面
-  谜面化（`riddleText` 剥字母）+口诀题音频改谜面（`riddleAudio`）。回归=`regression-bug41-no-leak.mjs`
-  （四面板文字零字母+音乐会无调号）。
-- **Bug#38 两段式适用矩阵**：listen 类（选项=已学单字母）一点即答（session.armOpt/dailyArm/
-  ListenDrill/LessonPage.armQuiz 四入口）；zi/look/tone 保留两段式；连续出题面切题滑入（.qslide）+
-  session 反馈自动推进定档对 0.8s/错 1.6s。回归=`regression-bug38-auto-advance.mjs`+bug37 样例（矩阵版）。
-- **v312 flake 加固**：A2 计时前预热重载；run-all 首败自动重试一次（重试过=绿+⟲flake 标注）。
-- 单测 448→**453**（Bug#15 spy 用例修复 2 条：AbortError/NotAllowedError 静默走 toastOn 可观察断言；
-  riddle 函数 4 条；矩阵/谜面契约更新 5 条）。
+- **12 课×全步骤矩阵全量化**：全部 12 课页数/步数（fixtures 推导对拍）+ 代表课全步骤走查（参与证据→声调→自动推进→chip ✓）
+- **PWA 三面**：SW 更新链（prompt 立法：提示条不自动刷→点击→ready 后 reload）、断网重进（缓存命中零网络+外壳可用）、音频可达（预载缓存+点击<100ms+riddle 谜面库 51 条点名）
+- **横切面参数化**：23 屏清单遍历（零滚动/零横向溢出/零 pageerror/nowrap/ruby）——新屏登记即覆盖
+- **升级体系事件链**：小测过关→庆祝+星+徽章→卡片图鉴口径→进化记账→签到阈值→徽章兑现
