@@ -8,10 +8,6 @@
   import { ui, show } from '../../stores/ui.svelte'
   import { startGame, startDaily, dailyView, gameBest } from '../../stores/game.svelte'
   import { startBolt } from '../../stores/bolt.svelte'
-  import { S } from '../../stores/progress.svelte'
-  import { GD } from '../../stores/game.svelte'
-  import { PAIRS, ZI } from '../../data'
-  import { ziUnlocked } from '../../lib/ziGate'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
 
@@ -46,20 +42,6 @@
     startDaily()
   }
 
-  /* ---- 练习馆角标（真实进度，账本/权重派生） ---- */
-  const boltBadge = $derived(S.bolt.tacc > 0 ? 'boltBestN' : 'fiveMinutes')
-  const listenWeak = $derived.by(() => {
-    let n = 0
-    for (const k in GD.letters) if (GD.letters[k].err > 0) n++
-    return n
-  })
-  const weakPairs = $derived.by(() => {
-    const bad = new Set<string>()
-    for (const p of PAIRS) { const w = GD.letters[p.a]; const w2 = GD.letters[p.b]
-      if ((w && w.err > 0) || (w2 && w2.err > 0)) bad.add(p.a + '|' + p.b) }
-    return bad.size
-  })
-  const ziProg = $derived(ziUnlocked())
 </script>
 
 <section id="v-island" class="view on" data-screen="practice" data-hall={ui.hall}>
@@ -169,9 +151,8 @@
           </div>
           <div class="sinfo">
             <div class="sname"><Speak k={s.nameKey} /></div>
-            <div class="sbest" data-best={bestOf(s.id)}>
-              {#if bestOf(s.id) > 0}<Speak k="bestN" vars={{ n: bestOf(s.id) }} plain />{:else}<Speak k="newGame" plain />{/if}
-            </div>
+            <!-- P1-9 立法：摊位卡=名+插画；最佳>0 才显副标，「新游戏」meta 副标删除 -->
+            {#if bestOf(s.id) > 0}<div class="sbest" data-best={bestOf(s.id)}><Speak k="bestN" vars={{ n: bestOf(s.id) }} plain /></div>{/if}
           </div>
         </button>
       {/each}
@@ -180,31 +161,21 @@
     <!-- 📚 练习馆：四入口正经练习（老机制回归+错误账本加权） -->
     <div id="drillgrid">
       <button class="dcard d-bolt pressable" data-drill="bolt" onclick={() => startBolt(false)}>
-        <div class="dbadge">
-          {#if S.bolt.tacc > 0}<Speak k={boltBadge} vars={{ n: S.bolt.tacc }} plain />{:else}<Speak k={boltBadge} plain />{/if}
-        </div>
         <div class="mic"><svg viewBox="0 0 24 24" fill="#fff"><path d="M13 2L4.5 13.5H11L9.5 22 19 9.5h-6.5L13 2z" /></svg></div>
         <div class="dname"><Speak k="boltSprint" /></div>
       </button>
 
       <button class="dcard d-listen pressable" data-drill="listen" onclick={() => show('listendrill')}>
-        <div class="dbadge">
-          {#if listenWeak > 0}<Speak k="drillWeakN" vars={{ n: listenWeak }} plain />{:else}<Speak k="newGame" plain />{/if}
-        </div>
         <div class="mic"><Icon name="ear" size={24} /></div>
         <div class="dname"><Speak k="drillListen" /></div>
       </button>
 
       <button class="dcard d-pairs pressable" data-drill="pairs" onclick={() => show('pairs')}>
-        <div class="dbadge">
-          {#if weakPairs > 0}<Speak k="weakPairsN" vars={{ n: weakPairs }} plain />{:else}<Speak k="pairsFourteen" plain />{/if}
-        </div>
         <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="5.5" /><circle cx="15.5" cy="12" r="5.5" /></svg></div>
         <div class="dname"><Speak k="pairsDrill" /></div>
       </button>
 
       <button class="dcard d-zi pressable" data-drill="zi" onclick={() => show('zihall')}>
-        <div class="dbadge"><Speak k="ziBadge" vars={{ a: ziProg.length, b: ZI.length }} plain /></div>
         <div class="mic"><Icon name="book" size={24} /></div>
         <div class="dname"><Speak k="drillZi" /></div>
       </button>

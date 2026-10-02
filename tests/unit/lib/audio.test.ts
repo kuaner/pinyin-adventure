@@ -2,7 +2,7 @@
    mp3 播放器（缓存/hyp 映射/BUGS#23 .mp3 后缀/Bug#15 静默矩阵/mimo 回落一次/R3 单通道锁）
    + WebAudio 反馈音（mute 总开关/合成路径）+ 预载（幂等/Cache API 直写/降级 fetch）。
    硬约束 1：全仓禁 speechSynthesis——本模块是纯 mp3 层，jsdom 用真降级路径（无 AudioContext）。 */
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 type AudioMod = typeof import('../../../src/lib/audio')
 let A!: AudioMod
@@ -273,5 +273,35 @@ describe('preload 家族（BUGS#23 智能预载）', () => {
     const r = await A.preloadAudioList(['c'])
     expect(r[0].status).toBe('fulfilled')
     expect(f).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('playSerial 串行播放（v4.7 P1-4：声调名→音节，绝不叠播）', () => {
+  beforeEach(() => {
+    (window as any).__AUDIO_LOG = []
+  })
+  afterEach(() => { delete (window as any).__AUDIO_LOG })
+
+  it('两段串行：第一段 onended 后第二段才起播（顺序断言）', async () => {
+    A.playSerial(['tone-name1', 'a1'])
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['tone-name1'])
+    /* 手动触发第一段 ended（jsdom 无真实媒体）→ 第二段起播 */
+    A.AUDIO_CACHE['tone-name1']!.onended!(new Event('ended'))
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['tone-name1', 'a1'])
+  })
+  it('首段缺失（manifest/hyp 无值）→ 直接播次段不空转', () => {
+    A.playSerial(['', 'a2'])
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['a2'])
+  })
+  it('次段缺失 → 只播首段（缺失静默，不抛错）', () => {
+    A.playSerial(['a3', ''])
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['a3'])
+    expect(() => A.AUDIO_CACHE['a3']!.onended!(new Event('ended'))).not.toThrow()
+  })
+  it('静音总开关注：playSerial 整链静默', () => {
+    progress.S.mute = true
+    A.playSerial(['tone-name1', 'a1'])
+    expect((window as any).__AUDIO_LOG).toHaveLength(0)
+    progress.S.mute = false
   })
 })

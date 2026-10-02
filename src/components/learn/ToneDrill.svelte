@@ -1,6 +1,8 @@
 <script lang="ts">
   /* 声调练习（五步之③）：四声演示（真人音 + 声调符号方向动画）+ 听调辨调小练（听音选声调符号） */
-  import { playAudio, sndOk, sndNo, sndStar } from '../../lib/audio'
+  import { playAudio, playSerial, sndOk, sndNo, sndStar } from '../../lib/audio'
+  import { openQuestion, judgeHold, markArm, confirmOk, answerOpen } from '../../lib/inputGuard'
+  import { manifest } from '../../text/manifest'
   import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import { toast } from '../../stores/ui.svelte'
   import { tRaw } from '../../text/strings'
@@ -50,19 +52,27 @@
   function nextQ() {
     qPick = 0; qArm = 0; lastPickTone = 0
     qTone = 1 + Math.floor(Math.random() * 4)
+    openQuestion()   /* P1-2 进题宽限：判定反馈期连点不外泄进下一题 */
     /* v2.6 零自动播放：出题不自动播音，孩子点 🔊 replay 听题 */
   }
   /* v4.2c Bug#37 两段式试听（与课内小测听调题同一模式）：首点=播当前音节该调读音（hyp 库）
      +试听高亮（不计对错不推进）→ 再点同项=作答；点别项=切试听那调 */
   function pick(t: number) {
-    if (qPick) return   /* 已作答（reveal 态）不再试听 */
-    if (qArm === t) { answerTone(t); return }
+    if (qPick || !answerOpen()) return   /* 已作答/守卫窗内不收 */
+    if (qArm === t) {
+      if (!confirmOk()) return   /* P1-3：确认间隔 ≥400ms（77ms 双击不穿透） */
+      answerTone(t)
+      return
+    }
     qArm = t
-    playAudio(row.tones[t - 1].file, { hint: tRaw('notReady') })
+    markArm()
+    /* P1-4 串行：调名 → 音节（toneNameN onended 后音节起，绝不叠播） */
+    playSerial([manifest['toneName' + t] || '', row.tones[t - 1].file], { hint: tRaw('notReady') })
   }
   function answerTone(t: number) {
     qArm = 0   /* 试听态交还给 reveal 态（right/wrong 高亮） */
     qPick = 1; lastPickTone = t
+    judgeHold()   /* P1-2 判定冷却 */
     if (t === qTone) { qRight++; sndOk() } else { sndNo() /* v2.6 零自动播放：答错只留嘟声，重听走 replay 键 */ }
     setTimeout(() => {
       qIdx++
@@ -103,7 +113,7 @@
       {#each MARKS as m, i (m.t)}
         <button class="topt" class:armed={qArm === i + 1 && !qPick} class:right={qPick && i + 1 === qTone} class:wrong={qPick && i + 1 === lastPickTone && i + 1 !== qTone} onclick={() => pick(i + 1)}>
           <svg viewBox="0 0 56 30"><path d={m.d} stroke={COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
-          <span><Speak text={m.name} /></span>
+          <span><Speak text={m.name} plain /></span>
         </button>
       {/each}
     </div>

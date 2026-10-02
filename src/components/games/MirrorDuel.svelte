@@ -6,6 +6,7 @@
   import { GS, gameHit, endGame } from '../../stores/game.svelte'
   import { learnedLetters, duelQ } from '../../lib/gameEngine'
   import { playAudio, letterAudio, riddleAudio, stopAll } from '../../lib/audio'
+  import { openQuestion, holdAnswer, releaseAnswer, answerOpen } from '../../lib/inputGuard'
   import { stageOf, G } from '../../stores/growth.svelte'
   import { untrack } from 'svelte'
   import Icon from '../Icon.svelte'
@@ -62,8 +63,12 @@
       /* v4.1 声音先行：题面出现即自动读音（stopAll 防连播重叠），🔊=重听；
          v4.5 谜面制（Bug#41 审计）：kj 题播谜面音频（原整句口诀含答案读音） */
       stopAll()
-      if (q.kj) playAudio(riddleAudio(q.A))
-      else playAudio(letterAudio(q.A))
+      openQuestion()   /* P1-2 进题宽限 */
+      /* P1-2 谜面门：谜面/题面音播完才接受作答（onend 主路 + 3.5s 兜底）——
+         此前答案可先于谜面被提交且判对（挑刺实测：o.mp3 晚于点击播出） */
+      if (q.kj) playAudio(riddleAudio(q.A), { onend: releaseAnswer })
+      else playAudio(letterAudio(q.A), { onend: releaseAnswer })
+      holdAnswer(3500)
       /* 宽假期满开门：过渡动画（绳结位移 .3s）+连点余波都被关在外面 */
       openTid = setTimeout(() => { inputLock = false }, 320)
     } else q = null
@@ -78,7 +83,7 @@
   function answer(idx: number) {
     /* pointerdown 一次性判定：命中=按下那一刻的 currentTarget 元素，不等 click（Bug#42①）；
        inputLock 覆盖单答锁②（本题已答忽略后续）+动画期锁③（反馈/切题/宽假期零新作答） */
-    if (!playing || !q || inputLock) return
+    if (!playing || !q || inputLock || !answerOpen()) return   /* P1-2：谜面未播完/冷却窗内不收 */
     const ok = idx === q.ans
     reveal = true
     picked = idx
@@ -86,9 +91,11 @@
     gameHit(q.A, ok)
     if (ok) {
       pos = Math.min(100, pos + 7 + Math.min(GS.combo, 5))
+      releaseAnswer()
       nextTid = setTimeout(() => { if (GS.phase === 'play') { checkEnd(); if (GS.phase === 'play') newQ() } }, 320)
     } else {
       pos = Math.max(0, pos - 9)
+      releaseAnswer()
       nextTid = setTimeout(() => { if (GS.phase === 'play') { checkEnd(); if (GS.phase === 'play') newQ() } }, 1050)
     }
   }

@@ -37,8 +37,8 @@
               >
                 <div class="lvnum">{#if un}<Icon name={L.icon} size={26} />{:else}<Icon name="lock" size={24} />{/if}</div>
                 <div class="lvinfo">
+                  <!-- P1-9 立法：机制注解行（「预埋/最易混」写给大人的设计术语）不上屏 -->
                   <div class="lvname"><Speak k="levelN" vars={{ n: L.n }} /> · <Speak text={L.name} />{#if L.boss} <span class="bosstag"><Speak k="graduate" /></span>{/if}</div>
-                  <div class="lvsub"><Speak text={L.sub} /></div>
                 </div>
                 <div class="lvstars">{#each Array(st) as _, i}<Icon name="star" size={16} />{/each}{#each Array(3 - st) as _, i}<span class="starempty"><Icon name="star-empty" size={16} /></span>{/each}</div>
               </button>
@@ -85,14 +85,13 @@
   /* v2.6 打磨：未解锁卡=暖灰底+奶油描边（去死灰 grayscale） */
   .lvlcard.locked { background: #f3efe6; border-color: #eee4d3; box-shadow: 0 3px 0 #e3d9c8; opacity: 1; filter: none; }
   .lvlcard.locked .lvnum { background: #eae3d5; color: #b7ab97; }
-  .lvlcard.locked .lvname, .lvlcard.locked .lvsub { color: #b7ab97; }
+  .lvlcard.locked .lvname { color: #b7ab97; }
   .lvlcard.locked .lvstars { opacity: .45; }
   .lvlcard .lvnum { flex: 0 0 46px; height: 46px; border-radius: 13px; display: flex; align-items: center; justify-content: center; background: var(--animal-bg-2); }
   .lvlcard.boss .lvnum { background: #fde4e8; }
   .lvlcard .lvinfo { flex: 1; display: flex; flex-direction: column; gap: 0; min-width: 0; }
   /* v2.8：关名/副题换行不截断（孩子必须看到完整关名），ruby 行高 1.6 预算 */
   .lvlcard .lvname { font-size:var(--fs-md); font-weight: 900; color: var(--animal-text); line-height: 1.6; white-space: nowrap; }    /* 关卡名零换行 */
-  .lvlcard .lvsub { font-size:var(--fs-xs); color: var(--animal-text-2); font-weight: 700; line-height: 1.6; }    /* 关卡副题=成句说明允许换行 */
   .lvlcard .lvstars { display: flex; gap: var(--sp-1); flex: none; }
   .bosstag { font-size:var(--fs-xs); color: var(--animal-error); font-weight: 900; }
 </style>

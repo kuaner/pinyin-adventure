@@ -18,7 +18,9 @@ afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks(); delete (w
 
 function start(qs: Question[] = [lookQ]) {
   ;(window as any).__AUDIO_LOG = []
+  vi.useFakeTimers()
   newSession({ name: '测试', qs })
+  vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限 450ms 后输入可收
   return render(LookQ, { q: qs[0] })
 }
 
@@ -44,13 +46,13 @@ describe('两段式（arm→answer 状态流）', () => {
     expect(AUDIO_CACHE['d']).toBeTruthy()   // say('d') 真实播放请求
   })
   it('点别项=切试听；再点正确项=作答（score+1、correct 高亮、fb 弹出）', async () => {
-    vi.useFakeTimers()
     const { container } = start()
     const opts = () => container.querySelectorAll('#optbox .opt')
     fireEvent.click(opts()[2])   // 试听 p
     fireEvent.click(opts()[0])   // 切到正确项
     await tick()
     expect(opts()[0].className).toContain('armed')
+    vi.advanceTimersByTime(500)   // P1-3 确认间隔 ≥400ms
     fireEvent.click(opts()[0])   // 再点=作答
     await tick()
     expect(QZ.score).toBe(1)
@@ -58,10 +60,10 @@ describe('两段式（arm→answer 状态流）', () => {
     expect(QZ.fb!.good).toBe(true)
   })
   it('答错：wrong 高亮 + 答案正确项同时亮（零错误信息：只强化正确形态）', async () => {
-    vi.useFakeTimers()
     const { container } = start()
     const opts = () => container.querySelectorAll('#optbox .opt')
     fireEvent.click(opts()[3])
+    vi.advanceTimersByTime(500)
     fireEvent.click(opts()[3])
     await tick()
     expect(opts()[3].className).toContain('wrong')

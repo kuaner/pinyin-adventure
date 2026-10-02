@@ -105,6 +105,7 @@ await app.closePage(page)
     const cells = await pz.$$eval('#v-zihall .zcell[data-locked="0"]', (els) => els.length)
     await pz.tap(`#v-zihall .zcell[data-locked="0"]:nth-of-type(${(tries % cells) + 1})`).catch(async () => pz.tap('#v-zihall .zcell[data-locked="0"]'))
     await pz.waitForSelector('#v-zihall [data-q][data-reveal="0"]', { timeout: 6000 })
+    await pz.waitForTimeout(520)   /* P1-2 进题宽限 */
     ans = await pz.evaluate(() => window.__PJ.ziQ().ans)
     wrongIdx = (ans + 1) % 4
     audio0 = await pz.evaluate(() => window.__AUDIO_LOG.length)
@@ -125,11 +126,11 @@ await app.closePage(page)
   t.ok(st1.armed && st1.reveal === '0' && st1.n === '0', '识字表首点：试听高亮+不计分不推进', JSON.stringify({ n: st1.n, reveal: st1.reveal, armed: st1.armed }))
   t.ok(got && st1.log > audio0, '识字表首点：播该选项拼音（hyp 音节，轮换选字验证）', `+${st1.log - audio0}`)
   await pz.tap(`#v-zihall [data-opts] .opt:nth-of-type(${ans + 1})`)
-  await pz.waitForTimeout(300)
+  await pz.waitForTimeout(470)
   const st2 = await pz.evaluate(() => document.querySelector('#v-zihall [data-q]').getAttribute('data-reveal'))
   t.ok(st2 === '0', '识字表切点别项：切试听（仍不判分）')
   await pz.tap(`#v-zihall [data-opts] .opt:nth-of-type(${ans + 1})`)
-  await pz.waitForTimeout(400)
+  await pz.waitForTimeout(470)
   const st3 = await pz.evaluate(() => ({
     reveal: document.querySelector('#v-zihall [data-q]').getAttribute('data-reveal'),
     n: document.querySelector('#v-zihall [data-answered]').getAttribute('data-answered'),

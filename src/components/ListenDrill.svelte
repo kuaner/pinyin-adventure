@@ -10,6 +10,7 @@
   import { markResult } from '../stores/weights.svelte'
   import { show } from '../stores/ui.svelte'
   import { playAudio, letterAudio, stopAll, sndOk, sndNo } from '../lib/audio'
+  import { openQuestion, judgeHold, answerOpen } from '../lib/inputGuard'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
@@ -43,6 +44,7 @@
       ansIdx = opts.indexOf(a)
       armed = -1
       reveal = null
+      openQuestion()              /* P1-2 进题宽限 */
       stopAll()
       playAudio(letterAudio(a))   /* 出题自动读音（失败/静音静默） */
     })
@@ -54,12 +56,13 @@
 
   /* v4.5 两段式适用矩阵（Bug#38）：听写选项=已学单字母（视觉即身份）→ 一点即答 */
   function arm(idx: number) {
-    if (reveal || !a) return
+    if (reveal || !a || !answerOpen()) return
     answer(idx)
   }
 
   function answer(idx: number) {
     if (reveal || !a) return
+    judgeHold()
     armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }

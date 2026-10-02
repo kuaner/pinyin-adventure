@@ -65,8 +65,13 @@ for (let i = 0; i < 10; i++) {
   const pick = wantRight ? pre.qkeyIdx : 1 - pre.qkeyIdx
   const before = await knotLeft()
   await sleep(200)
-  await page.tap(`[data-opts] .duelopt >> nth=${pick}`)
-  await sleep(180)
+  /* P1-2 谜面门：谜面播完前作答被守卫拒绝——重试至本题判分生效（≤4.5s 兜底开） */
+  for (let r = 0; r < 15; r++) {
+    await page.tap(`[data-opts] .duelopt >> nth=${pick}`)
+    await sleep(300)
+    const mid = await qInfo()
+    if (mid.st.some((b) => b.c || b.w)) break
+  }
   const post = await qInfo()
   const left = await knotLeft()
   const qkey = post.st[pre.qkeyIdx], other = post.st[1 - pre.qkeyIdx]

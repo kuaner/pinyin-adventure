@@ -84,12 +84,16 @@ const app = new BootApp()
   t.ok(!!a, '开局自动播目标音', `target=${target}`)
   t.ok(elReady && !!a && !!el && a.t < el.t, '时序：目标音先于鱼入场', `audio=${a && Math.round(a.t)} < fish=${el && Math.round(el.t)}`)
   let hooked = false
+  let after = null
   for (let i = 0; i < 3 && !hooked; i++) {
     hooked = await catchTargetFish(page)
+    /* 紧贴 hook 读数：gameHit 同步落账（共存立法允许多目标鱼在池，晚读会撞上另一条
+       同标鱼到岸的 miss 清连击——断言对象是「钓中这一杆」的即时入账） */
+    after = await readHud(page)
+    if (hooked && after.score === '10' && after.combo === '1') break
     await page.waitForTimeout(300)
   }
-  const after = await readHud(page)
-  t.ok(hooked && after.score === '10' && after.combo === '1', '正例：钓中目标鱼 → 得分10+连击1', JSON.stringify(after))
+  t.ok(hooked && after && after.score === '10' && after.combo === '1', '正例：钓中目标鱼 → 得分10+连击1', JSON.stringify(after))
   await app.closePage(page)
 }
 
@@ -164,14 +168,17 @@ const app = new BootApp()
       await page.waitForFunction(() => window.__AUDIO_LOG.length > 0, null, { timeout: 6000 })
       await sleep(1500)
       const s0 = await page.evaluate(() => ({ n: window.__AUDIO_LOG.length, up: document.querySelectorAll('#gstage .mole.up').length }))
-      await sleep(7000)
+      await sleep(4000)
       const s1 = await page.evaluate(() => ({
         n: window.__AUDIO_LOG.length, up: document.querySelectorAll('#gstage .mole.up').length,
         result: !!document.querySelector('#gresult'), score: document.querySelector('#gscore')?.textContent,
       }))
-      t.ok(!s1.result, '反例mole：练习制零操作对局不结束（无超时强制推进）')
-      t.ok(s1.n === s0.n, '反例mole：7 秒零输入零新题（音频计数冻结=绝不自动换题）', `${s0.n}→${s1.n}`)
-      t.ok(s1.up > 0 && s1.score === '0', '反例mole：地鼠常驻待击+零分', `up=${s1.up} score=${s1.score}`)
+      t.ok(!s1.result, '反例mole：零操作对局不结束（✕ 才结算）')
+      t.ok(s1.n === s0.n, '反例mole：驻留期内零新题（音频计数冻结）', `${s0.n}→${s1.n}`)
+      t.ok(s1.up > 0 && s1.score === '0', '反例mole：驻留期内地鼠常驻+零分', `up=${s1.up} score=${s1.score}`)
+      /* v4.7 P2-9：驻留上限 7s → 缩回+清连击，新回合谜面重发（不再永不缩回） */
+      const ret = await page.waitForFunction((n0) => window.__AUDIO_LOG.length > n0, s0.n, { timeout: 16000 }).then(() => true).catch(() => false)
+      t.ok(ret, '反例mole：驻留超时缩回→新回合重发（驻留上限生效）')
       await app.closePage(page)
     })())
   }

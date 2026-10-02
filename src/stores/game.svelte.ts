@@ -9,6 +9,7 @@ import { HYP } from '../data'
 import { G, saveG, checkBadges, celebrateGame } from './growth.svelte'
 import { t } from '../text/strings'
 import { buildDailyQs, learnedLetters, learnedBlends, learnedToneRows, type DailyQ } from '../lib/gameEngine'
+import { openQuestion, judgeHold, markArm, confirmOk, answerOpen, holdAnswer, releaseAnswer } from '../lib/inputGuard'
 import { markResult } from './weights.svelte'
 
 const KEY = 'pinyin_game_v1'
@@ -308,12 +309,12 @@ export function quitGame() {
    自动播即算"已听过"——等待窗超时未击一律 miss 清连击，绝不静默推进。
    v4.2 口诀地鼠：GS.kj=true 时播口诀朗读（kj_{k} 真人库）而非呼读音——认知路径=口诀→形。
    播放失败/静音静默降级（hint 置空不弹 toast），游戏照常不阻塞。 */
-export function askTarget(k: string, file = '') {
+export function askTarget(k: string, file = '', onend?: () => void) {
   GS.target = k
   GS.afile = file
   GS.listened = true
   stopAll()                          /* 连续自动播防重叠：新目标音开播前停旧音频 */
-  playAudio(file || (GS.kj ? kjAudio(k) : letterAudio(k)))   /* hyp 真人库，失败静默 */
+  playAudio(file || (GS.kj ? kjAudio(k) : letterAudio(k)), onend ? { onend } : undefined)   /* hyp 真人库，失败静默 */
 }
 
 export function listenTarget() {
@@ -353,6 +354,7 @@ export function startDaily() {
   DC.stars = 0
   dailyRec()
   show('daily')
+  openQuestion()   /* P1-2 进题宽限 */
   dailySpeak()
 }
 
@@ -368,9 +370,10 @@ function dailySpeak() {
 }
 
 export function dailyAnswer(idx: number) {
-  if (DC.done || DC.reveal) return
+  if (DC.done || DC.reveal || !answerOpen()) return
   const q = DC.qs[DC.i]
   if (!q) return
+  judgeHold()
   DC.armed = -1
   const ok = idx === q.ans
   DC.reveal = { correct: q.ans, wrong: ok ? [] : [idx] }
@@ -400,6 +403,7 @@ export function dailyNext() {
   DC.reveal = null
   DC.armed = -1
   DC.i++
+  openQuestion()   /* P1-2 进题宽限 */
   if (DC.i >= DC.qs.length) { endDaily() } else { dailySpeak() }
 }
 
@@ -408,10 +412,13 @@ export function dailyNext() {
    v4.5 两段式适用矩阵（Bug#38）：字母选项题（blisten/bkj）一点即答；zi（带调拼音，读不出）保留两段式 */
 export function dailyArm(idx: number) {
   const q0 = DC.qs[DC.i]
-  if ((q0 && q0.type !== 'zi') || DC.armed === idx) { dailyAnswer(idx); return }
+  if (!answerOpen() || DC.reveal) return
+  if ((q0 && q0.type !== 'zi') || (DC.armed === idx && confirmOk())) { dailyAnswer(idx); return }
+  if (DC.armed === idx) return   /* P1-3 确认间隔未到 */
   const q = DC.qs[DC.i]
-  if (!q || DC.reveal) return
+  if (!q) return
   DC.armed = idx
+  markArm()
   if (q.type === 'zi') {
     const f = pyAudio(q.opts[idx])
     if (HYP[f]) playAudio(f)

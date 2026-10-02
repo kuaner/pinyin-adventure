@@ -4,6 +4,7 @@
 import { show, ui } from './ui.svelte'
 import { S, save, todayStr } from './progress.svelte'
 import { markResult } from './weights.svelte'
+import { openQuestion, judgeHold, answerOpen } from '../lib/inputGuard'
 import { recordLetter } from './game.svelte'
 import { sndOk, sndNo, sndStar, playAudio, letterAudio, hasRiddle, riddleAudio, stopAll, unlockMedia, preloadAudioList } from '../lib/audio'
 import { makeBoltQ, BT_KEYS } from '../lib/quizEngine'
@@ -72,9 +73,10 @@ function boltSpeak() {
 }
 
 export function boltAnswer(idx: number) {
-  if (BT.done) return
+  if (BT.done || !answerOpen()) return   /* P1-2 守卫：进题宽限/判定冷却内不收（短窗 300ms 保冲刺节奏） */
   const q = BT.q!
   const ok = idx === q.ans
+  judgeHold(undefined, 300)   /* 街机短窗（立法 300-500 带内下限） */
   const wrong: number[] = []
   if (!ok) wrong.push(idx)
   BT.reveal = { correct: q.ans, wrong }
@@ -99,6 +101,7 @@ export function boltAnswer(idx: number) {
       BT.q = makeBoltQ()
       BT.q0 = Date.now()
       BT.reveal = null
+      openQuestion(undefined, 300)
       boltSpeak()   /* v4.2：出题自动读音 */
       void qRef
     }

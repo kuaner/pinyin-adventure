@@ -49,7 +49,9 @@ const app = new BootApp()
       if (tg && letters.get(String(newest.bid)) === tg) bad.push(tg)
     }
     return { waves: full.length, bad }
-  }, null, { timeout: 30000 }).then((h) => h.jsonValue()).catch(() => null)
+  }, null, { timeout: 50000 }).then((h) => h.jsonValue()).catch(() => null)
+  /* 窗口校准注（v4.7）：P1-11 密度帽（≤6 球/6 泳道）下整波回收=整波退场，
+     rAF 节流时退场周期最长 ~20s——50s 窗口容纳 ≥4 全波（批性质断言不变） */
   t.ok(!!blind && blind.waves >= 4 && blind.bad.length === 0, '盲点策略：≥4 波观察——最新升空球从来不是当时目标（出现时机零信号）', blind ? `waves=${blind.waves} bad=${blind.bad.join(',')}` : '波数不足')
   await app.closePage(page)
 

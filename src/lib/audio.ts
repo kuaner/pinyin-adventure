@@ -243,6 +243,20 @@ export function say(k: string) {
   playAudio(letterAudio(k), { hint: t('fallbackHint', { han: L.han }) })
 }
 
+/* v4.7 P1-4 串行播放：names 顺序播，前一段 onended 后一段才起（R3 单通道不叠音）。
+   空名/缺失段跳过；onend 缺席（文件缺失/静音/jsdom）时由调用方兜底——
+   本函数自身保证：任一段 play 失败即尝试下一段（不空转卡链） */
+export function playSerial(names: (string | null | undefined)[], opts: PlayOpts = {}): void {
+  const list = names.filter((n): n is string => !!n)
+  const step = (i: number) => {
+    if (i >= list.length) return
+    const a = playAudio(list[i], { ...opts, onend: () => step(i + 1), onerror: () => step(i + 1) })
+    /* playAudio 同步返回 null（静音/构造失败）→ 立即走下一段，链不断 */
+    if (!a) step(i + 1)
+  }
+  step(0)
+}
+
 export function preloadAudios() {
   for (const n of ['star', 'duila', 'fanla']) {
     if (!AUDIO_CACHE[n]) {

@@ -193,14 +193,16 @@ export function splitPy(py: string): [string, string] {
 
 const TONEV = 'āáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ'
 
-function toneFlip(py: string): string | null {
+export function toneFlip(py: string): string | null {
   for (let i = 0; i < py.length; i++) {
     const idx = TONEV.indexOf(py[i])
     if (idx >= 0) {
       const vi = Math.floor(idx / 4), t0 = idx % 4
       let t = t0
       while (t === t0) t = Math.floor(Math.random() * 4)
-      return py.slice(0, i) + TONEV[t * 4 + vi] + py.slice(i + 1)
+      /* P1-10 根修（v4.7）：TONEV 是「韵母族×4」布局——族基址 vi*4 + 声调槽 t。
+       原式 t*4+vi 把族/槽写反：liù(vi=4) 翻调跨族产出 liō/liē/liī 乱码（挑刺 P1-10 实证） */
+      return py.slice(0, i) + TONEV[vi * 4 + t] + py.slice(i + 1)
     }
   }
   return null

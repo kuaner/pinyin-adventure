@@ -24,7 +24,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   const wrongIdx = (ans0 + 1) % 4
   const wrongKey = await page.evaluate(() => document.querySelector('#v-bquiz [data-q]').getAttribute('data-target'))
   await page.tap(`#v-bquiz [data-opt][data-idx="${wrongIdx}"]`)
-  await page.waitForTimeout(350)
+  await page.waitForTimeout(470)
   await page.tap(`#v-bquiz [data-opt][data-idx="${wrongIdx}"]`)
   await page.waitForTimeout(1400)
   const rec = (await ledgerOf(page)).items[wrongKey]
@@ -77,7 +77,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   const wrongIdx = (ans0 + 1) % 4
   const wrongKey = await page.evaluate(() => document.querySelector('#v-tquiz [data-q]').getAttribute('data-target'))
   await page.tap(`#v-tquiz [data-toneopt="${wrongIdx + 1}"]`)
-  await page.waitForTimeout(350)
+  await page.waitForTimeout(470)
   await page.tap(`#v-tquiz [data-toneopt="${wrongIdx + 1}"]`)
   await page.waitForTimeout(1400)
   const rec = (await ledgerOf(page)).items[wrongKey]

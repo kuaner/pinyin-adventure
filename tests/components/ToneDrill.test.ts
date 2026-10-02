@@ -57,12 +57,19 @@ describe('听调辨调两段式（Bug#37 状态流）', () => {
     expect(audioLog()).toHaveLength(0)
   })
   it('首点=试听：播该调读音 + armed 高亮，不计对错', async () => {
+    vi.useFakeTimers()
     const { container } = mount()
     await startQuiz(container)
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限后首击可收
     const topts = container.querySelectorAll('.topt')
     fireEvent.click(topts[1])   // 试听二声
     await tick()
-    expect(audioLog().some((e) => e.name === ROWS[0].tones[1].file)).toBe(true)   // a2
+    /* P1-4 串行：首点先播调名（tone-name2），其 onended 后才播音节（a2）——绝不叠播 */
+    expect(audioLog()[0].name).toContain('tone-name')
+    const AUDIO_CACHE = (await import('../../src/lib/audio')).AUDIO_CACHE
+    AUDIO_CACHE[audioLog()[0].name]!.onended!(new Event('ended'))
+    await tick()
+    expect(audioLog().some((e) => e.name === ROWS[0].tones[1].file)).toBe(true)   // a2 串行在调名后
     expect(topts[1].className).toContain('armed')
     expect(container.querySelectorAll('.dot.ok')).toHaveLength(0)   // 未计分
   })
@@ -70,11 +77,13 @@ describe('听调辨调两段式（Bug#37 状态流）', () => {
     vi.useFakeTimers()
     const { container } = mount()
     await startQuiz(container)
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const topts = () => container.querySelectorAll('.topt')
     fireEvent.click(topts()[2])   // 试听三声
     fireEvent.click(topts()[0])   // 切到一声（=qTone，Math.random 固定 0）
     await tick()
     expect(topts()[0].className).toContain('armed')
+    vi.advanceTimersByTime(500)   // P1-3 确认间隔 ≥400ms
     fireEvent.click(topts()[0])   // 再点=作答
     await tick()
     expect(container.querySelectorAll('.dot.ok')).toHaveLength(1)
@@ -85,8 +94,10 @@ describe('听调辨调两段式（Bug#37 状态流）', () => {
     vi.useFakeTimers()
     const { container } = mount()
     await startQuiz(container)
+    vi.advanceTimersByTime(500)
     const topts = () => container.querySelectorAll('.topt')
     fireEvent.click(topts()[3])   // 试听四声
+    vi.advanceTimersByTime(500)
     fireEvent.click(topts()[3])   // 作答=错
     await tick()
     expect(topts()[3].className).toContain('wrong')
@@ -100,8 +111,10 @@ describe('听调辨调两段式（Bug#37 状态流）', () => {
     await startQuiz(container)
     const topts = () => [...container.querySelectorAll('.topt')]
     for (let i = 0; i < 4; i++) {
+      vi.advanceTimersByTime(500)   // v4.7 守卫：每题进题宽限+确认间隔
       const opts = topts()
       fireEvent.click(opts[0])
+      vi.advanceTimersByTime(500)
       fireEvent.click(opts[0])   // 全对（qTone 恒 1 → 第 0 个选项=一声）
       await tick()
       vi.advanceTimersByTime(760)

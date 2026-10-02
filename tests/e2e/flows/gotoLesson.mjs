@@ -104,12 +104,12 @@ export async function flagTones(page, scope, n = 3) {
 /* 声调页「读完了」+ 听调小练 4 题×两段式走通 → 自动推进下一字母 */
 export async function finishToneDrill(page, scope) {
   await page.locator(`${scope} .tonedrill .trow .btn.green`).click()
-  await page.waitForTimeout(400)
+  await page.waitForTimeout(520)   /* P1-2 进题宽限 */
   for (let i = 0; i < 4; i++) {
-    await page.locator(`${scope} .tonedrill .topt`).first().click()
-    await page.waitForTimeout(350)
-    await page.locator(`${scope} .tonedrill .topt`).first().click()
-    await page.waitForTimeout(2000)
+    await page.locator(`${scope} .tonedrill .topt`).first().click()   /* 试听击 */
+    await page.waitForTimeout(470) /* P1-3 确认间隔 ≥400ms */
+    await page.locator(`${scope} .tonedrill .topt`).first().click()   /* 确认击 */
+    await page.waitForTimeout(2200)   /* 错 1500 反馈+推进+450 进题宽限全部落定（对答同裕度） */
   }
   await page.locator(`${scope} .qresult .trow .btn.green`).click()
   await page.waitForTimeout(700)

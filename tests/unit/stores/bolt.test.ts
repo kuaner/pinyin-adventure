@@ -28,7 +28,9 @@ afterEach(() => {
 
 function answer(q: { ans: number }, correct: boolean) {
   bolt.boltAnswer(correct ? q.ans : 1 - q.ans)
+  vi.advanceTimersByTime(310)   // v4.7 守卫：判定冷却 300ms（立法 300-500 带内短窗）
   vi.advanceTimersByTime(correct ? 220 : 1000)   // 反馈窗→下一题
+  vi.advanceTimersByTime(310)   // 进题宽限 300ms
 }
 
 describe('startBolt 开局', () => {

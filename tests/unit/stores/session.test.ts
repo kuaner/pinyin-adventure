@@ -80,12 +80,14 @@ describe('newSession / 各模式入口', () => {
 describe('两段式试听（armOpt）——v4.5 适用矩阵版（Bug#38）', () => {
   it('listen 题（选项=已学单字母）一点即答：首点即判分', () => {
     startWith([listenQ()])
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限 450ms 后首击可收
     session.armOpt(0)   // 一点即答（不再有试听段）
     expect(session.QZ.reveal).not.toBeNull()
     expect(session.QZ.score).toBe(1)
   })
   it('look 题（音节串选项，读不出）两段式保留：首点=试听高亮不判分', () => {
     startWith([lookQ()])
+    vi.advanceTimersByTime(500)
     session.armOpt(1)
     expect(session.QZ.armed).toBe(1)
     expect(session.QZ.score).toBe(0)
@@ -93,10 +95,12 @@ describe('两段式试听（armOpt）——v4.5 适用矩阵版（Bug#38）', ()
   })
   it('look 题再点同项=作答（arm→answer）；点别项=切试听', () => {
     startWith([lookQ()])
+    vi.advanceTimersByTime(500)
     session.armOpt(1)
     session.armOpt(2)   // 切试听
     expect(session.QZ.armed).toBe(2)
     session.armOpt(0)   // 切到正确项
+    vi.advanceTimersByTime(500)   // P1-3 确认间隔 ≥400ms
     session.armOpt(0)   // 再点=作答
     expect(session.QZ.score).toBe(1)
     expect(session.QZ.armed).toBe(-1)   // 试听态交还 reveal 态
@@ -107,8 +111,10 @@ describe('两段式试听（armOpt）——v4.5 适用矩阵版（Bug#38）', ()
       opts: ['bà', 'mā', 'pà', 'dà'], ans: 0,
     } as Question
     startWith([ziQ])
+    vi.advanceTimersByTime(500)
     session.armOpt(1)   // 'mā' → ma1 在 hyp 库
     expect(session.QZ.armed).toBe(1)
+    vi.advanceTimersByTime(500)
     session.armOpt(1)
     expect(session.QZ.score).toBe(0)   // 答错不计分
     expect(session.QZ.reveal!.correct).toBe(0)

@@ -10,6 +10,9 @@
   import { learnedBlends, pickWeighted, itemWeight, type Blend } from '../../lib/gameEngine'
   import { LETTERS } from '../../data'
   import { sndStar } from '../../lib/audio'
+  /* P1-8 目标 chip 去调（与声调音乐会统一）：chip 只显声母+韵母字母组合（不带调号），
+     听音定调——完整带调形态只在答对反馈（合并动画的目标卡原 display 语义归反馈侧） */
+  const baseSyl = (b: Blend) => b.file.replace(/\d+$/, '')
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
 
@@ -25,6 +28,10 @@
   let selF = $state('')              /* 已选中的韵母半 */
   let stage = $state<'pick' | 'merge' | 'crack' | 'chick'>('pick')
   let shakeId = $state(0)            /* 拼错晃动的蛋半 id */
+  /* P0-2 首局引导（产品裁定=点选配对为主，5-6 岁拖拽太难）：
+     「先点声母，再点韵母」只在首次配对前出现；完成一次成功配对后持久标记不再出 */
+  const EGG_HINT_KEY = 'pinyin_egg_hint_v1'
+  let showHint = $state(false)
   let uid = 0
   let tids: ReturnType<typeof setTimeout>[] = []
   let alive = true
@@ -64,6 +71,7 @@
     selF = ''
     stage = 'pick'
     shakeId = 0
+    try { showHint = !localStorage.getItem(EGG_HINT_KEY) } catch { showHint = false }
     askTarget(b.syl, b.file)          /* 自动播拼读合成音（hyp 真人库） */
     later(() => {
       ready = true                    /* 闸门放行：蛋半出现在声音之后 */
@@ -120,6 +128,8 @@
 
   function success() {
     if (!target) return
+    try { localStorage.setItem(EGG_HINT_KEY, '1') } catch { /* ignore */ }
+    showHint = false
     stage = 'merge'
     /* 双记账：字母账本记声母+韵母（连击/得分走 gameHit 一次），条目账本记拼读对 */
     gameHit(target.ini, true)
@@ -136,8 +146,11 @@
     <button class="bigsound small" class:live={GS.listened} data-listen onclick={listenTarget}>
       <Icon name="headphones" size={34} />
     </button>
-    <div class="tcard" data-tcard>{target ? target.display : ''}</div>
+    <div class="tcard" data-tcard>{target ? baseSyl(target) : ''}</div>
   </div>
+  {#if showHint && stage === 'pick'}
+    <div class="howhint" data-egghint><Speak k="eggHowHint" /></div>
+  {/if}
 
   <div class="nestzone">
     <!-- 巢窝：空蛋虚影 → 合体蛋 → 裂纹 → 小鸡破壳 -->
@@ -211,6 +224,12 @@
   .tcard { min-width: 72px; height: 52px; border-radius: 14px; background: #fff; border: 2.5px solid #e9d8ae;
     box-shadow: 0 2px 0 rgba(61, 52, 40, .08); display: flex; align-items: center; justify-content: center;
     font-size: 30px; font-weight: 900; color: var(--animal-text); padding: 0 var(--sp-2); }
+  /* P0-2 首局点选引导 */
+  .howhint { flex: none; text-align: center; font-size: var(--fs-xs); font-weight: 900; color: #b07a1f;
+    background: #fff3d6; border: 2px solid #ffd98e; border-radius: 999px; padding: 4px var(--sp-3);
+    margin: var(--sp-1) auto 0; width: fit-content; white-space: nowrap; animation: hintin .4s cubic-bezier(.25,1.4,.4,1); }
+  .howhint :global(rt) { font-size: var(--fs-rt); }
+  @keyframes hintin { from { transform: scale(.7); opacity: 0; } }
 
   .nestzone { flex: none; display: flex; justify-content: center; padding: var(--sp-1) 0; }
   .nest { position: relative; width: 96px; height: 76px; display: flex; align-items: center; justify-content: center;
@@ -240,9 +259,12 @@
   .hhalf { position: relative; min-width: 56px; border: none; background: none; padding: 0;
     cursor: pointer; -webkit-tap-highlight-color: transparent; display: flex; align-items: center; justify-content: center; }
   .hsvg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 3px 2px rgba(61, 52, 40, .12)); }
-  .hk { position: relative; z-index: 1; font-size: 30px; font-weight: 900; color: #fff;
-    text-shadow: 0 2px 0 rgba(61, 52, 40, .18); }
-  .hhalf.fin .hk { color: #4b3f2d; text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
+  /* P2-3 字母落在半蛋色块中心（不再居中骑缝——右半字压白底被"吃掉"，n 呈 r 状残形）：
+     ini 色块 x∈[12,36]/64 → 中心 37.5%；fin x∈[28,52]/64 → 中心 62.5% */
+  .hk { position: absolute; top: 48%; z-index: 1; font-size: 30px; font-weight: 900; color: #4b3f2d;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .5); }
+  .hhalf.ini .hk { left: 37.5%; transform: translate(-50%, -50%); color: #fff; text-shadow: 0 2px 0 rgba(61, 52, 40, .25); }
+  .hhalf.fin .hk { left: 62.5%; transform: translate(-50%, -50%); }
   .hhalf.sel { transform: translateY(-4px); }
   .hhalf.sel::after { content: ''; position: absolute; inset: 8% 14%; border: 3px solid #2a9d8f; border-radius: 50% 50% 46% 46%; }
   .hhalf.shake { animation: hshake .6s; }

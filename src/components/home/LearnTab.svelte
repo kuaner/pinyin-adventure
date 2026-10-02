@@ -4,10 +4,12 @@
   import { onMount } from 'svelte'
   import lessonsData from '../../data/lessons.json'
   import { LETTERS } from '../../data'
-  import { L as LRN, quizPassed, currentLesson } from '../../stores/learn.svelte'
+  import { L as LRN, quizPassed, currentLesson, hasEvidence } from '../../stores/learn.svelte'
+  import { toast } from '../../stores/ui.svelte'
   import { openLesson, show } from '../../stores/ui.svelte'
   import { totalStars } from '../../stores/progress.svelte'
   import { say } from '../../lib/audio'
+import { tRaw } from '../../text/strings'
   import { lessonHasBlend, unitCountOf, unitIndexOf, type LessonLike } from '../../lib/lessonUnits'
   import Speak from '../Speak.svelte'
   import { t } from '../../text/strings'
@@ -25,6 +27,14 @@
   const bpLetter = $derived(bpUnit < lesson.letters.length ? lesson.letters[bpUnit].k : '')
   const passedCur = $derived(quizPassed(cur))
 
+  /* P1-7：单元 i 是否「有效完成」——字母=互动证据在档；课级单元（拼读/小测）=课过关 */
+  const unitDone = (i: number) => {
+    if (passedCur) return true
+    if (i < lesson.letters.length) return hasEvidence(cur, lesson.letters[i].k)
+    return false
+  }
+
+  let shakeN = $state(0)                                          // P2-6 抖动中的课号
   let li = $state(0)                                             // 大卡当前字母
   let capsEl: HTMLDivElement
   const letters = $derived(lesson.letters)
@@ -63,9 +73,11 @@
       {/each}
     </div>
     <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
+    <!-- P1-7 进度语义：只计有效完成——字母单元点=互动证据（两旗齐，recordEvidence 入档），
+         拼读/小测点=课过关；「滑到」不再点亮（此前滑动推进断点即亮，进度误导） -->
     <div id="steps5">
       {#each Array(unitN) as _, i (i)}
-        <i class:d={i < bpUnit || passedCur} class:c={i === bpUnit && !passedCur}></i>
+        <i class:d={unitDone(i)} class:c={i === bpUnit && !passedCur}></i>
       {/each}
     </div>
     <button id="cta" data-cta onclick={() => openLesson(cur, li)}>
@@ -84,10 +96,17 @@
         {@const done = quizPassed(ls.n)}
         {@const isCur = ls.n === cur}
         <button
-          class="cap" class:done class:cur={isCur} class:locked={ls.n > LRN.u}
-          data-lesson={ls.n}
-          onclick={() => { if (ls.n <= LRN.u) openLesson(ls.n) }}
+          class="cap" class:done class:cur={isCur} class:locked={ls.n > LRN.u} class:shake={shakeN === ls.n}
+          data-lesson={ls.n} data-locked={ls.n > LRN.u ? '1' : '0'}
+          onclick={() => {
+            if (ls.n <= LRN.u) { openLesson(ls.n); return }
+            /* P2-6 锁定课：🔒+抖动+温和提示（此前零反馈零图标） */
+            shakeN = ls.n
+            setTimeout(() => { if (shakeN === ls.n) shakeN = 0 }, 500)
+            toast(tRaw('levelLockedToast'))
+          }}
         >
+          {#if ls.n > LRN.u}<span class="lockic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path d="M8 10.5V7.6a4 4 0 018 0v2.9" /></svg></span>{/if}
           <b>{#if done}✓{:else if isCur}{t('lessonN', { n: ls.n })}{:else}{ls.n}{/if}</b>
           <i>{ls.label}</i>
         </button>
@@ -162,6 +181,11 @@
   .cap i { font-style: normal; font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); white-space: nowrap; }
   .cap.locked { background: #f3efe6; border: 2px solid #eee4d3; box-shadow: 0 2px 0 #e3d9c8; }
   .cap.locked b, .cap.locked i { color: #b7ab97; }
+  /* P2-6：未解锁课=🔒 图标 + 点击抖动（与闯关冒险锁卡同一表达语言） */
+  .cap .lockic { display: inline-flex; color: #b7ab97; }
+  .cap .lockic svg { width: 15px; height: 15px; }
+  .cap.shake { animation: capshake .45s; }
+  @keyframes capshake { 20% { transform: translateX(-4px) rotate(-2deg); } 45% { transform: translateX(4px) rotate(2deg); } 70% { transform: translateX(-3px); } }
   .cap.done { background: var(--animal-primary-bg); }
   .cap.done b, .cap.done i { color: var(--animal-primary-active); }
   .cap.cur { min-width: 96px; background: var(--animal-primary); box-shadow: 0 4px 0 var(--press-teal), var(--animal-shadow-lg); }

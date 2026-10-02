@@ -5,6 +5,7 @@ import { S, save, addHist } from './progress.svelte'
 import { markResult, getW } from './weights.svelte'
 import { recordLetter } from './game.svelte'
 import { say, sndOk, sndNo, sndStar, playAudio, pyAudio } from '../lib/audio'
+import { openQuestion, judgeHold, markArm, confirmOk, answerOpen } from '../lib/inputGuard'
 import { HYP } from '../data'
 import { buildQuestions, buildDetQs, ziQs, partnerOf, practiceScope } from '../lib/quizEngine'
 import { LETTERS, PAIRS, PMAP, ZIBY, LEVELS, GRPNAME, PH, ANCHORS } from '../data'
@@ -54,6 +55,7 @@ export function newSession(cfg: SessionCfg) {
   QZ.fb = null
   QZ.result = null
   QZ.seq++
+  openQuestion()   /* P1-2 进题宽限：切题首击忽略（判定反馈期连点不泄漏进新题） */
   show('quiz')
 }
 
@@ -94,8 +96,12 @@ export function startPairGroup(grp: string) {
    试听=挨个点听暴力匹配，毁掉检索练习；look/kj/zi（带调音节串选项，孩子读不出）保留两段式 */
 export function armOpt(idx: number) {
   const q0 = QZ.q as any
-  if (q0?.type === 'listen' || QZ.armed === idx) { answer(idx); return }
+  /* P1-2 守卫：判定/进题窗口内一切输入不收 */
+  if (QZ.reveal || !answerOpen()) return
+  if (q0?.type === 'listen' || (QZ.armed === idx && confirmOk())) { answer(idx); return }
+  if (QZ.armed === idx) return   /* P1-3：确认间隔未到，保持试听态（77ms 双击不穿透） */
   QZ.armed = idx
+  markArm()   /* P1-3：试听击打点（确认击 ≥400ms 后才可判定） */
   const q = QZ.q as any
   if (!q) return
   if (q.type === 'zi' || q.type === 'zword') {
@@ -113,6 +119,7 @@ export function answer(idx: number) {
   if (QZ.reveal) return   /* v4.5 单答锁（#42 同族）：reveal 态忽略一切作答——
                              一点即答（Bug#38 矩阵）后反馈期的连点/幽灵点不得重复计分 */
   QZ.armed = -1   /* 试听态交还给 reveal 态（correct/wrong 高亮） */
+  judgeHold()   /* P1-2 判定冷却：反馈窗（自动推进 0.8/1.6s）内连点不外泄 */
   const ok = idx === q.ans
   const wrong: number[] = []
   if (!ok) {
@@ -192,6 +199,7 @@ export function nextQ() {
   QZ.armed = -1
   QZ.reveal = null
   QZ.seq++
+  openQuestion()   /* P1-2 进题宽限 */
 }
 
 export function fbSkip() {

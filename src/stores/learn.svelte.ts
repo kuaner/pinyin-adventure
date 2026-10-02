@@ -9,21 +9,35 @@ export interface LearnData {
   stars: Record<string, number> /* 课号 → 星（5对=3星，4对=2星） */
   best: Record<string, number>  /* 课号 → 小测最好成绩 */
   step: Record<string, number>  /* 课号 → 五步断点（学习 tab「继续学习 · 步名」） */
+  ev: Record<string, string[]>  /* v4.7 P1-7 互动证据（持久）：课号 → 两旗齐的字母键——首页进度点只计有效完成 */
 }
 
 function load(): LearnData {
   try {
     const o = JSON.parse(localStorage.getItem(KEY) || '')
     if (o && typeof o === 'object')
-      return { u: o.u || 1, stars: o.stars || {}, best: o.best || {}, step: o.step || {} }
+      return { u: o.u || 1, stars: o.stars || {}, best: o.best || {}, step: o.step || {}, ev: o.ev || {} }
   } catch { /* ignore */ }
-  return { u: 1, stars: {}, best: {}, step: {} }
+  return { u: 1, stars: {}, best: {}, step: {}, ev: {} }
 }
 
 export const L: LearnData = $state(load())
 
 export function saveLearn() {
-  try { localStorage.setItem(KEY, JSON.stringify({ u: L.u, stars: L.stars, best: L.best, step: L.step })) } catch { /* ignore */ }
+  try { localStorage.setItem(KEY, JSON.stringify({ u: L.u, stars: L.stars, best: L.best, step: L.step, ev: L.ev })) } catch { /* ignore */ }
+}
+
+/* v4.7 P1-7：互动证据入档（settleLetter 两旗齐时调）——首页课程进度点只计有效完成，
+   「滑到」不再点亮进度（此前 step 断点推进=滑过即亮，进度语义误导） */
+export function recordEvidence(n: number, k: string) {
+  const cur = L.ev[n] || []
+  if (cur.includes(k)) return
+  L.ev[n] = [...cur, k]
+  saveLearn()
+}
+
+export function hasEvidence(n: number, k: string): boolean {
+  return !!(L.ev[n] || []).includes(k)
 }
 
 /* 记录五步断点（断点续学 CTA 文案用） */

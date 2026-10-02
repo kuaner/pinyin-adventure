@@ -16,9 +16,10 @@
   interface Note { id: number; t: number; display: string; file: string; lane: number; y: number; state: '' | 'caught' | 'wrong' }
   const LANES = 3
   const GATE = 320                 /* 声音先行闸门 */
-  const FALL0 = 0.085              /* 初始落速（舞台高度比例/秒） */
-  const FALL_MIN = 0.055
-  const FALL_MAX = 0.15
+  /* P2-4 落速 ×3.5（0.085→0.30）：「节奏游戏」要有节奏（旧速 22px/s 全程 2-3 音符） */
+  const FALL0 = 0.30               /* 初始落速（舞台高度比例/秒） */
+  const FALL_MIN = 0.20
+  const FALL_MAX = 0.45
   const rows = learnedToneRows()
   const flat = rows.flatMap((r) => r.tones.map((x) => ({ row: r, t: x })))
 
@@ -73,10 +74,12 @@
       if (!alive || GS.phase !== 'play') return
       ready = true
       /* v4.2c 共存立法（Bug#36）：目标符与 ≥2 干扰符同发（3 轨齐落：1 目标+2 同音节异调）——
-         目标出现时刻干扰已在同屏，正确答案只能由"听到的调↔符上调号"匹配得出 */
+         目标出现时刻干扰已在同屏，正确答案只能由"听到的调↔符上调号"匹配得出。
+         P2-4 去重：两个干扰取【互异】声调（旧随机可撞出两个一模一样的 hā——三选一退化二选一） */
+      const others = [...target.row.tones].filter((x) => x.t !== target!.t.t).sort(() => Math.random() - 0.5)
       spawnTargetNote()
-      spawnDistractor()
-      spawnDistractor()
+      spawnDistractorOf(others[0])
+      spawnDistractorOf(others[1])
     }, GATE)
   }
 
@@ -97,16 +100,19 @@
     notes = [...notes, { id: ++uid, t: target.t.t, display: target.t.display, file: target.t.file, lane, y: -0.12, state: '' }]
   }
 
-  /* 干扰音符=同音节其他声调（都是正确形态——零错误信息铁律） */
-  function spawnDistractor() {
-    if (!target) return
+  /* 干扰音符=同音节其他声调（都是正确形态——零错误信息铁律）；P2-4：可指定声调（一轮三音互异） */
+  function spawnDistractorOf(d?: { t: number; display: string; file: string }) {
+    if (!target || !d) return
     const free = freeLanes()
     if (!free.length) return
-    const others = target.row.tones.filter((x) => x.t !== target!.t.t)
-    const d = others[Math.floor(Math.random() * others.length)]
-    if (!d) return
     const lane = free[Math.floor(Math.random() * free.length)]
     notes = [...notes, { id: ++uid, t: d.t, display: d.display, file: d.file, lane, y: -0.12, state: '' }]
+  }
+  /* 周期补位用：随机干扰（不指定调——共存立法允许多目标期同调再现，开局三连发才锁互异） */
+  function spawnDistractor() {
+    if (!target) return
+    const others = target.row.tones.filter((x) => x.t !== target!.t.t)
+    spawnDistractorOf(others[Math.floor(Math.random() * others.length)])
   }
 
   function tick(now: number) {

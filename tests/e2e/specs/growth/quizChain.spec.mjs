@@ -15,17 +15,21 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
 const page = await app.newPage({ tier: 'newbie' })
 await page.goto(`${BASE}/?open=lesson&learn=1&qkey`, { waitUntil: 'networkidle' })
 await page.waitForSelector('#v-lesson', { timeout: 8000 })
-/* 直落小测页：URL page 参数（v32 同款深链）+ forcequiz 放行（未集旗=拦截卡，走家长通道） */
-await page.evaluate(() => { const q = new URLSearchParams(location.search); q.set('page', '6'); history.replaceState(null, '', '?' + q.toString()) })
-await sleep(800)
-await page.evaluate(() => { document.querySelector('[data-bootquiz],[data-forcequiz]')?.click() })
+/* 直落小测页：点小测 chip（真实用户路径，不依赖深链 effect 时序）+ forcequiz 放行（未集旗=拦截卡，走家长通道） */
+await page.waitForSelector('#v-lesson .lchip.pchip[data-punit="quiz"]', { timeout: 6000 })
+await page.evaluate(() => document.querySelector('#v-lesson .lchip.pchip[data-punit="quiz"]')?.click())
+await page.waitForSelector('#v-lesson [data-forcequiz], #v-lesson [data-bootquiz]', { timeout: 6000 })
+await page.evaluate(() => document.querySelector('[data-bootquiz],[data-forcequiz]')?.click())
 await sleep(400)
 for (let i = 0; i < 5; i++) {
   await page.waitForSelector('#v-lesson .qbody[data-qkey]', { timeout: 5000 })
+  /* look 题 950ms 延迟反馈：reveal 未清时下一击会被单答锁吞——等反馈散场（reveal 清除=已推进）再答 */
+  await page.waitForFunction(() => !document.querySelector('#v-lesson .opt.right, #v-lesson .opt.wrong, #v-lesson .topt.right, #v-lesson .topt.wrong'), null, { timeout: 9000 }).catch(() => {})
+  await sleep(520)   /* reveal 清除点=进题宽限落点——首击须在宽限后（P1-2） */
   await answerLessonQuiz(page, { correct: true })
-  await sleep(1400)
+  await sleep(800)
 }
-await page.waitForSelector('#celebrate[data-ce="quiz"]', { timeout: 6000 })
+await page.waitForSelector('#celebrate[data-ce="quiz"]', { timeout: 15000 })   /* 重载下 look 反馈 950ms+推进 650ms 有节流余量 */
 t.ok(true, '小测过关 → 全屏庆祝 overlay（quiz 模式）')
 const g1 = await growthOf(page)
 t.ok(g1.stars === 5, '成长星星 +5（0→5）', 'stars=' + g1.stars)

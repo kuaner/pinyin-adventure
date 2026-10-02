@@ -25,9 +25,9 @@ node scripts/visual-check.mjs # 视觉度量校验
 
 ## 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0 → **T3 e2e 工程化矩阵 v4.6.0**，2026-10-02）
 
-- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——454 测试；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
+- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——476 测试（v4.7 +22：inputGuard 守卫 12/toneFlip 合法性 3/playSerial 4/互动证据持久化 3/文案新键 2…）；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
 - `tests/components/`：@testing-library/svelte 组件测（**vitest 需 resolve.conditions:['browser']**）——PinyinCard/Speak/HSteps/StrokeAnim/ToneDrill/LookQ 六组件 448 测试
-- `tests/e2e/`（**T3 工程化矩阵**）：`flows/`（page-object 操作层：bootApp/seedState/gotoLesson/playGame/answerQuiz，导航只写一次零断言）+ `specs/{learn,games,drills,growth,pwa}/`（28 个 spec，断言只住这里：12课×全步骤矩阵/6游戏/6专练/升级事件链/PWA 三面）+ `cross/`（横切面：零滚动/零pageerror/nowrap/ruby 遍历 `screens.ts` 屏幕清单）+ `fixtures/seeds.mjs`（新生/中期/毕业三档种子）——存量 v*-accept 与 regression-bug3x 断言全部迁入 specs 后**已删除**（无双轨）
+- `tests/e2e/`（**T3 工程化矩阵**）：`flows/`（page-object 操作层：bootApp/seedState/gotoLesson/playGame/answerQuiz，导航只写一次零断言）+ `specs/{learn,games,drills,growth,pwa}/`（35 个 spec，断言只住这里：12课×全步骤矩阵/6游戏/6专练/升级事件链/PWA 三面；v4.7 +7=ziChain 多输入全链/eggGuide 蛋引导/quizGuard 输入守卫/progressSemantics 进度语义/firstTap 首击锁定/toneSpeed 音符/balloonField 场界）+ `cross/`（横切面：零滚动/零pageerror/nowrap/ruby 遍历 `screens.ts` 屏幕清单）+ `fixtures/seeds.mjs`（新生/中期/毕业三档种子）——存量 v*-accept 与 regression-bug3x 断言全部迁入 specs 后**已删除**（无双轨）
 - **CI 测试门（T3 重构）**：deploy.yml `unit`（恒跑）+`e2e`（**仅 tag/手动触发**，main push 只跑 unit 省 ~12 分钟）两 job 独立，`build.needs:[unit,e2e]`——tag 流水红灯阻断部署
 - **覆盖率硬门槛（T2）**：vitest coverage.thresholds `src/{lib,stores,data,text}/**` 聚合 lines ≥95%（v4.5.0 起点 98.5%）——低于门槛=exit 1=CI 红（负面测试实证）
 - 规矩见 `tests/README.md`：断言只写 specs/flows 只管操作；状态一律经 fixtures 种子；新屏幕登记 screens.ts 即被横切面覆盖；修 bug 先写失败测试（T2:Bug#38-41 先红后绿；T3：woff2 缺出 SW precache 断网字体闪退→vite globPatterns 补 woff2）；新功能腿必带单测+组件测+e2e；覆盖率只升不降

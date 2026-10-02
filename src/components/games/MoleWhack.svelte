@@ -8,6 +8,7 @@
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
   import { hasRiddle, riddleAudio, kjAudio, playAudio } from '../../lib/audio'
+  import { holdAnswer, releaseAnswer } from '../../lib/inputGuard'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
 
@@ -25,13 +26,31 @@
     return () => { if (roundTid) { clearTimeout(roundTid); roundTid = null } }
   })
 
-  /* 一个回合：谜面自动播（声音先行）→ 320ms 后目标+陷阱（镜像搭档）+干扰鼠探头。
-     v4.2c 共存立法（Bug#36）：禁止单鼠出场轮——已学池 ≥3 时干扰鼠保底 2 只。
-     v4.5 无下落计时：地鼠常驻等对的一击（点对才换题，Bug#39） */
+  /* 一个回合（v4.7 P1-5 确定性起局）：谜面自动播 → 【谜面播完】→ 目标+陷阱+干扰鼠一起探头。
+     此前探头挂在「开播后 320ms」——谜面 2-4s，孩子对着已探头的不认识的地鼠发呆，
+     且两次观测序相反（地鼠先/谜面先均有）。onend 主路 + 3.6s 兜底（缺失/静音不卡局）。
+     v4.2c 共存立法（Bug#36）保持：干扰鼠 ≥2 与目标同探。
+     v4.7 P2-9 驻留上限：探头后 7s 未击=缩回+miss（清连击）→ 900ms 后新回合谜面重发 */
   function round() {
     if (GS.phase !== 'play') return
+    const e = GS.epoch
     const target = pickGameTarget(pool, moles.length ? [GS.target] : [])
-    askTarget(target, riddleAudio(target))   /* 谜面先行（afile 直通→🔊重听同款） */
+    moles = []   /* 换题清场：起局时序=谜面→探头，无一帧裸鼠场 */
+    up_ = false
+    const molesUp = () => {
+      if (GS.epoch !== e || GS.phase !== 'play' || up_) return
+      up_ = true
+      releaseAnswer()   /* 谜面播完 → 作答门开 */
+      for (const m of moles) m.up = true
+      if (roundTid) clearTimeout(roundTid)
+      roundTid = setTimeout(() => {
+        if (GS.epoch !== e || GS.phase !== 'play' || !up_) return
+        up_ = false
+        for (const m of moles) m.up = false   /* P2-9：驻留 7s 上限，缩回 */
+        gameHit(GS.target, false)             /* 超时未击=miss（清连击记错题） */
+        roundTid = setTimeout(() => { if (GS.epoch === e && GS.phase === 'play') round() }, 900)
+      }, 7000)
+    }
     /* 干扰鼠：镜像陷阱必上，其余从池里随机补（有限次——gameDistractor 镜像优先会重复返回搭档，禁无限循环）；
        保底 2 只（池允许时）——目标永远与 ≥2 干扰同探，正确答案只能由"谜面↔字母"匹配得出 */
     const maxDecoys = Math.min(4, pool.length - 1)
@@ -45,12 +64,26 @@
     const next: Mole[] = [{ hole: holes[0], k: target, up: false, hit: false, bad: false }]
     decoys.forEach((k, i) => next.push({ hole: holes[i + 1], k, up: false, hit: false, bad: false }))
     moles = next
-    const e = GS.epoch
-    roundTid = setTimeout(() => {
-      if (GS.epoch !== e) return
-      for (const m of moles) m.up = true   /* 声音开播 320ms 后才探头——元素挂在声音之后 */
-    }, 320)
+    askTarget(target, riddleAudio(target), molesUp)   /* 谜面先行；播完探头（P1-5 确定性） */
+    holdAnswer(3600)   /* P1-2 谜面门（兜底=探头上限） */
+    if (roundTid) clearTimeout(roundTid)
+    roundTid = setTimeout(molesUp, 3600)
   }
+
+  /* P2-9 驻留计时重置：错点/🔊重听=孩子仍在参与，重算 7s（驻留上限罚的是无操作，不是参与） */
+  function bumpDwell() {
+    if (!up_) return
+    const e = GS.epoch
+    if (roundTid) clearTimeout(roundTid)
+    roundTid = setTimeout(() => {
+      if (GS.epoch !== e || GS.phase !== 'play' || !up_) return
+      up_ = false
+      for (const m of moles) m.up = false
+      gameHit(GS.target, false)
+      roundTid = setTimeout(() => { if (GS.epoch === e && GS.phase === 'play') round() }, 900)
+    }, 7000)
+  }
+  let up_ = false
 
   function whack(m: Mole) {
     if (!playing || !m.up || m.hit) return
@@ -70,6 +103,7 @@
       /* 错点：晃动提示+地鼠不走+可再敲（点对才换题）；清连击记错题照旧 */
       m.bad = true
       gameHit(m.k, false)
+      bumpDwell()   /* 参与即重置驻留（罚无操作不罚尝试） */
       const me = m
       setTimeout(() => { me.bad = false }, 500)
     }
@@ -87,7 +121,7 @@
 
 <div class="fill" id="v-mole">
   <div class="prompt" data-prompt data-riddle={GS.kj ? '1' : '0'} data-target={GS.target}>
-    <button class="bigsound small" class:live={GS.listened} data-listen onclick={listenTarget}>
+    <button class="bigsound small" class:live={GS.listened} data-listen onclick={() => { listenTarget(); bumpDwell() }}>
       <Icon name="headphones" size={34} />
     </button>
     {#if GS.kj}<span class="kjchip" data-riddlechip><Icon name="music" size={16} /><Speak k="riddleTag" plain /></span>{/if}

@@ -24,7 +24,9 @@ function play(n: number, wrongAt: number[] = []) {
     const q = m.DC.qs[m.DC.i]
     const wrong = wrongAt.includes(i)
     m.dailyAnswer(wrong ? (q.ans + 1) % q.opts.length : q.ans)
+    vi.advanceTimersByTime(500)   // v4.7 守卫：判定冷却
     vi.advanceTimersByTime(wrong ? 1400 : 750)   // 反馈窗（错=1.4s 对=0.75s）后 dailyNext
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
   }
 }
 
@@ -32,6 +34,7 @@ describe('每日挑战流程', () => {
   it('开局 10 题、零起点、当日 dailyRec 记账', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     expect(m.DC.qs).toHaveLength(10)
     expect(m.DC.i).toBe(0)
     expect(m.DC.score).toBe(0)
@@ -42,6 +45,7 @@ describe('每日挑战流程', () => {
   it('连对计分走倍率 + maxCombo；答错清零', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     play(3)
     expect(m.DC.ok).toBe(3)
     expect(m.DC.combo).toBe(3)
@@ -56,10 +60,12 @@ describe('每日挑战流程', () => {
   it('答错账本记 err，答对记 ok（字母题）', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const q0 = m.DC.qs[0]
     const q1 = m.DC.qs[1]
     m.dailyAnswer(q0.ans)
     vi.advanceTimersByTime(750)
+    vi.advanceTimersByTime(500)
     m.dailyAnswer((q1.ans + 1) % q1.opts.length)
     vi.advanceTimersByTime(1400)
     if (q0.type !== 'zi') expect(m.GD.letters[q0.A].ok).toBe(1)
@@ -69,6 +75,7 @@ describe('每日挑战流程', () => {
   it('答完 10 题自动结算：全对=5 星入成长+done+签到', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     play(10)
     expect(m.DC.done).toBe(true)
     expect(m.DC.ok).toBe(10)
@@ -80,6 +87,7 @@ describe('每日挑战流程', () => {
   it('星档：9 对=4 星', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     play(10, [8])           // 10 答错 1 → 9 对
     expect(m.DC.ok).toBe(9)
     expect(m.DC.stars).toBe(4)
@@ -88,6 +96,7 @@ describe('每日挑战流程', () => {
   it('星档：4 对=1 星（不满 6 对无 2 星）', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     play(10, [0, 1, 2, 3, 4, 5])   // 10 答错 6 → 4 对
     expect(m.DC.ok).toBe(4)
     expect(m.DC.stars).toBe(1)
@@ -96,6 +105,7 @@ describe('每日挑战流程', () => {
   it('星档：3 对=0 星且不入成长', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     play(10, [0, 1, 2, 3, 4, 5, 6])
     expect(m.DC.ok).toBe(3)
     expect(m.DC.stars).toBe(0)
@@ -105,6 +115,7 @@ describe('每日挑战流程', () => {
   it('reveal 窗口内再答无效（防连点双计）', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const q = m.DC.qs[0]
     m.dailyAnswer(q.ans)
     const score = m.DC.score
@@ -115,6 +126,7 @@ describe('每日挑战流程', () => {
   it('quitDaily 立即终局且回练习视图', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     m.quitDaily()
     expect(m.DC.done).toBe(true)
   })
@@ -124,8 +136,12 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
   it('字母选项题（blisten/bkj）一点即答：首点即判分', () => {
     vi.useFakeTimers()
     m.startDaily()
-    const q = m.DC.qs[0]
-    expect(q.type).not.toBe('zi')   /* 本种子首题为字母题——矩阵：一点即答 */
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
+    /* 日期敏感禁令（Bug#37 先例）：种子题型分布随日期变——动态定位非 zi 题作答 */
+    const li = m.DC.qs.findIndex((qq: any) => qq.type !== 'zi')
+    expect(li).toBeGreaterThanOrEqual(0)
+    m.DC.i = li
+    const q = m.DC.qs[li]
     m.dailyArm(q.ans)
     expect(m.DC.reveal).not.toBeNull()  /* 一点即判分（不再有试听段） */
     expect(m.DC.reveal!.correct).toBe(q.ans)
@@ -135,6 +151,7 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
   it('zi 题两段式保留：首点=高亮试听不判分；再点同项才作答', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
     expect(ziIdx).toBeGreaterThanOrEqual(0)
     m.DC.i = ziIdx
@@ -143,6 +160,7 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
     expect(m.DC.armed).toBe(q.ans)
     expect(m.DC.reveal).toBeNull()      /* 未判分 */
     expect(m.DC.score).toBe(0)          /* 未计分 */
+    vi.advanceTimersByTime(500)          /* P1-3 确认间隔 ≥400ms */
     m.dailyArm(q.ans)                    /* 再点同项 → 判分 */
     expect(m.DC.reveal).not.toBeNull()
     expect(m.DC.reveal!.correct).toBe(q.ans)
@@ -151,6 +169,7 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
   it('zi 题切点别项=切试听（armed 换位），仍不判分', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
     m.DC.i = ziIdx
     const q = m.DC.qs[ziIdx]
@@ -165,6 +184,7 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
   it('zi 题两段式：试听走拼音音节路径（无音频仅高亮不炸）', () => {
     vi.useFakeTimers()
     m.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const ziIdx = m.DC.qs.findIndex((qq) => qq.type === 'zi')
     expect(ziIdx).toBeGreaterThanOrEqual(0)
     // 直达该题
@@ -173,6 +193,7 @@ describe('Bug#37 两段式试听（dailyArm）——v4.5 适用矩阵版（Bug#3
     m.dailyArm(q.ans)
     expect(m.DC.armed).toBe(q.ans)
     expect(m.DC.reveal).toBeNull()
+    vi.advanceTimersByTime(500)   /* P1-3 确认间隔 ≥400ms */
     m.dailyArm(q.ans)
     expect(m.DC.reveal!.correct).toBe(q.ans)
   })

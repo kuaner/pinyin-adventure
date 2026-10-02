@@ -92,3 +92,28 @@ describe('progress 解锁链/历史/闪卡', () => {
     expect(prog.S.weights).toEqual({})
   })
 })
+
+describe('互动证据持久化（v4.7 P1-7：首页进度只计有效完成）', () => {
+  it('recordEvidence 写入 L.ev[课号]（去重），hasEvidence 可查', () => {
+    learn.recordEvidence(1, 'a')
+    learn.recordEvidence(1, 'a')   // 去重
+    learn.recordEvidence(1, 'o')
+    expect(learn.hasEvidence(1, 'a')).toBe(true)
+    expect(learn.hasEvidence(1, 'o')).toBe(true)
+    expect(learn.hasEvidence(1, 'e')).toBe(false)
+    expect(learn.L.ev['1']).toEqual(['a', 'o'])
+  })
+  it('ev 持久化：写后重载模块仍在（localStorage pinyin_learn）', async () => {
+    learn.recordEvidence(2, 'b')
+    vi.resetModules()
+    learn = await import('../../src/stores/learn.svelte')
+    expect(learn.hasEvidence(2, 'b')).toBe(true)
+  })
+  it('旧档无 ev 字段：读取归一化为空表（向后兼容）', async () => {
+    localStorage.setItem('pinyin_learn', JSON.stringify({ u: 3, stars: {}, best: {}, step: {} }))
+    vi.resetModules()
+    learn = await import('../../src/stores/learn.svelte')
+    expect(learn.L.ev).toBeDefined()
+    expect(learn.hasEvidence(1, 'a')).toBe(false)
+  })
+})

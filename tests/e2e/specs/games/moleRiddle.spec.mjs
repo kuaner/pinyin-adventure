@@ -53,17 +53,21 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   }))
   t.ok(kjUI.rj === '1' && kjUI.chip, '谜面标识：prompt data-riddle=1 + 谜面 chip 在')
 
-  /* ③ 练习制零推进 */
+  /* ③ 练习制+驻留上限（v4.7 P2-9）：7s 内地鼠常驻零新题；超时缩回清连击+新回合谜面重发 */
   await sleep(1500)
   const s0 = await page.evaluate(() => ({ n: window.__AUDIO_LOG.length, up: document.querySelectorAll('#gstage .mole.up').length }))
-  await sleep(7000)
+  await sleep(4000)
   const s1 = await page.evaluate(() => ({
     n: window.__AUDIO_LOG.length, up: document.querySelectorAll('#gstage .mole.up').length,
     result: !!document.querySelector('#gresult'), score: document.querySelector('#gscore')?.textContent,
   }))
-  t.ok(!s1.result, '练习制：零输入对局不结束（无超时强制推进）')
-  t.ok(s1.n === s0.n, '练习制：7 秒零输入零新题（音频计数冻结）', `${s0.n}→${s1.n}`)
-  t.ok(s1.up === s0.up && s1.up > 0, '练习制：地鼠常驻不走（窗口 ≥6s 实证）', `up ${s0.up}→${s1.up}`)
+  t.ok(!s1.result, '练习制：零输入对局不结束（✕ 才结算）')
+  t.ok(s1.n === s0.n, '练习制：驻留期内零新题（音频计数冻结）', `${s0.n}→${s1.n}`)
+  t.ok(s1.up === s0.up && s1.up > 0, 'P2-9：地鼠驻留期内常驻不走（≥5s 实证）', `up ${s0.up}→${s1.up}`)
+  /* 驻留上限：超时缩回 → 新回合（谜面重发），零分零星（超时=miss 罚） */
+  const s2 = await page.waitForFunction(() => window.__AUDIO_LOG.length > 0 && window.__AUDIO_LOG[window.__AUDIO_LOG.length - 1].name.startsWith('riddle/'), null, { timeout: 12000 }).then(() => true).catch(() => false)
+  t.ok(s2, 'P2-9：驻留超时→新回合谜面重发（缩回后声音先行重来）')
+  t.ok(await page.evaluate(() => document.querySelector('#gscore')?.textContent) === '0', 'P2-9：超时缩回零得分（miss 罚不清分但零产出）')
 
   /* ④ 错点：晃动+不走+不换题+清连击 */
   const decoyLetter = await page.evaluate(() => {

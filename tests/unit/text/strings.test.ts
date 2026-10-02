@@ -13,7 +13,7 @@ describe('t / tRaw / tDef 取值出口', () => {
   })
   it('t：{x} 占位格式化（多占位/数字/缺参保位）', () => {
     expect(t('lessonN', { n: 3 })).toBe('第 3 课')
-    expect(t('ziBadge', { a: 12, b: 180 })).toBe('12 / 180 字')
+    expect(t('cardCountN', { a: 12, b: 63 })).toContain('12')   // ziBadge 已随 P1-9 徽章删除
     expect(t('deckCardN', { a: 2, b: 57 })).toContain('2')
   })
   it('tDef：格式化文本 + py 逃生口一并返回（Speak 渲染依据）', () => {
@@ -84,5 +84,16 @@ describe('LESSON_SHORT 课组短名（学习 tab 胶囊）', () => {
       }
       expect(toned, k + ':' + LESSON_SHORT[k].py).toBe(true)
     }
+  })
+})
+
+describe('v4.7 新键（挑刺修复腿）', () => {
+  it('课页头「第 X 步」语义键（P1-7：门槛页头不再是 n/N 完成式）', () => {
+    expect(tRaw('lessonStepN')).toContain('步')
+    expect(t('lessonStepN', { n: 4 })).toContain('4')
+  })
+  it('拼音蛋首局引导键（P0-2：先点声母，再点韵母）', () => {
+    expect(tRaw('eggHowHint')).toContain('声母')
+    expect(tRaw('eggHowHint')).toContain('韵母')
   })
 })

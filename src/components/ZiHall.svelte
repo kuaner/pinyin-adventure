@@ -13,6 +13,7 @@
   import { HYP } from '../data'
   import { makeZiQ } from '../lib/quizEngine'
   import { t } from '../text/strings'
+  import { openQuestion, judgeHold, markArm, confirmOk, answerOpen } from '../lib/inputGuard'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
   import HSteps from './HSteps.svelte'
@@ -66,19 +67,26 @@
     q = makeZiQ(zitem!, false)
     armed = -1
     reveal = null
+    openQuestion()   /* P1-2 进题宽限 */
   }
 
   /* v4.2c Bug#37 两段式试听：首点=播该选项拼音（hyp 音节，缺失仅高亮）→ 再点同项=作答 */
   function arm(idx: number) {
-    if (armed === idx) { answer(idx); return }
-    if (reveal || !q) return
+    if (reveal || !answerOpen()) return
+    if (armed === idx) {
+      if (!confirmOk()) return   /* P1-3：确认间隔 ≥400ms（77ms 双击不穿透） */
+      answer(idx)
+      return
+    }
     armed = idx
+    markArm()
     const f = pyAudio(q.opts[idx])
     if (HYP[f]) playAudio(f)
   }
 
   function answer(idx: number) {
     if (reveal || !q) return
+    judgeHold()   /* P1-2 判定冷却 */
     armed = -1
     const good = idx === q.ans
     reveal = { correct: q.ans, wrong: good ? [] : [idx] }
@@ -169,7 +177,8 @@
           {#each q.opts as py, idx}
             <button class="opt" class:armed={armed === idx} class:correct={reveal && idx === reveal.correct} class:wrong={reveal && reveal.wrong.includes(idx)}
               data-opt={py} data-idx={idx} onclick={() => arm(idx)}>
-              <span class="og">{py}</span>
+              <!-- P0-1 armed 换文案（不外溢）：试听中=拼音让位给「再点一次确认」，再点即作答 -->
+              {#if armed === idx}<span class="oarm"><Speak k="confirmAgain" plain /></span>{:else}<span class="og">{py}</span>{/if}
             </button>
           {/each}
         </div>
@@ -232,6 +241,11 @@
     justify-content: center; min-height: 104px; padding: var(--sp-1); }
   .opt:active { transform: translateY(2px); box-shadow: none; }
   .opt.armed { border-color: #6c86e8; background: #eef1ff; box-shadow: 0 4px 0 #c3cdf5; }
+  /* P0-1 可发现性：两段式首击=显性确认层（armed 选项内换文案，不外溢不遮拼音） */
+  .opt .oarm { font-size: 13px; font-weight: 900; color: #5b6fd8; line-height: 1.9; text-align: center;
+    padding: 0 6px; animation: confpop .25s cubic-bezier(.25,1.4,.4,1); }
+  .opt .oarm :global(rt) { font-size: 9px; }
+  @keyframes confpop { from { transform: scale(.6); opacity: 0; } }
   .opt .og { font-size: var(--fs-xl); font-weight: 900; color: var(--animal-text); line-height: 1.4; }
   .opt.correct { border-color: var(--animal-success); background: #e8f5e8; }
   .opt.wrong { border-color: var(--animal-error); background: #fdeeee; animation: zshake .4s; }

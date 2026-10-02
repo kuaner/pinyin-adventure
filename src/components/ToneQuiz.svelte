@@ -9,7 +9,9 @@
   import { learnedToneRows, pickWeighted, itemWeight, type ToneRow } from '../lib/gameEngine'
   import { TONE_MARKS, TONE_COLORS } from '../lib/toneMarks'
   import { show } from '../stores/ui.svelte'
-  import { playAudio, stopAll, sndOk, sndNo } from '../lib/audio'
+  import { playAudio, playSerial, stopAll, sndOk, sndNo } from '../lib/audio'
+  import { openQuestion, judgeHold, markArm, confirmOk, answerOpen } from '../lib/inputGuard'
+  import { manifest } from '../text/manifest'
   import { tRaw } from '../text/strings'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
@@ -41,6 +43,7 @@
       ansIdx = it.t - 1                 /* 选项固定=四个调类本体（ˉ´ˇ`），答案位=调号-1 */
       armed = -1
       reveal = null
+      openQuestion()                    /* P1-2 进题宽限 */
       if (qtype === 'l2t') {
         stopAll()
         playAudio(it.file)              /* 出题自动读音（听音题专属） */
@@ -54,15 +57,22 @@
 
   /* v4.2c Bug#37 两段式试听：首点=播当前音节该调的读音（孩子对比听到的调）→ 再点同项=作答 */
   function arm(idx: number) {
-    if (armed === idx) { answer(idx); return }
-    if (reveal || !a) return
-    const toneFile = a.row.tones.find((x) => x.t === idx + 1)
+    if (reveal || !a || !answerOpen()) return
+    if (armed === idx) {
+      if (!confirmOk()) return   /* P1-3 确认间隔 ≥400ms */
+      answer(idx)
+      return
+    }
     armed = idx
-    if (toneFile) playAudio(toneFile.file)
+    markArm()
+    const toneFile = a.row.tones.find((x) => x.t === idx + 1)
+    /* P1-4 串行：调名 → 音节（toneNameN onended 后音节起，绝不叠播） */
+    if (toneFile) playSerial([manifest['toneName' + (idx + 1)] || '', toneFile.file])
   }
 
   function answer(idx: number) {
     if (reveal || !a) return
+    judgeHold()
     armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }

@@ -49,8 +49,9 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
     const st2 = await page.evaluate(() => ({ score: window.__PJ.DC().score, reveal: window.__PJ.DC().reveal }))
     t.ok(st2.score === score0 && st2.reveal === null, 'zi 切点别项：只切试听仍不判分')
     t.ok(await armedCls(ans), 'zi 切点：armed 换位到新项')
-    await tapOpt(ans)
-    await sleep(300)
+    await sleep(520)   /* P1-3 确认间隔 ≥400ms */
+    await page.evaluate((i) => document.querySelectorAll('#v-daily [data-opts] .opt')[i]?.click(), ans)   /* 确认击：判定即换题，tap 的可操作性重试会撞 detach——用无重试派发 */
+    await sleep(470)
     const st3 = await page.evaluate(() => ({ score: window.__PJ.DC().score, reveal: window.__PJ.DC().reveal }))
     t.ok(st3.reveal !== null, 'zi 再点同项：两段式第二段才判分', JSON.stringify(st3))
   }
@@ -99,15 +100,25 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
     }
   }, SC)
   const audio0 = (await st()).log
+  await sleep(520)   /* P1-2 进题宽限 */
   await page.tap(`${SC} .tonedrill .topts .topt:nth-of-type(1)`)
-  await sleep(300)
+  /* P1-4 串行：调名先播（tone-name1），onended 后音节（a1）跟进——等串行链落定再断言 */
+  const serial = await page.waitForFunction((n0) => {
+    const L = window.__AUDIO_LOG
+    return L.length >= n0 + 2 && L[n0].name.includes('tone-name') && L[n0 + 1].name === 'a1'
+  }, audio0, { timeout: 4000 }).then(() => true).catch(() => false)
   const s1 = await st()
-  t.ok(s1.log > audio0 && s1.lastName === 'a1', '声调首点：播该调读音（hyp a1）', `+${s1.log - audio0} name=${s1.lastName}`)
-  t.ok(s1.armed === 0 && !s1.reveal && s1.dotsOk === 0, '声调首点：试听高亮+零判分零推进', `armed=${s1.armed} reveal=${s1.reveal} dotsOk=${s1.dotsOk}`)
+  t.ok(serial && s1.log > audio0, '声调首点：串行播调名→音节（tone-name1 → a1，绝不叠播）', `names=${(await page.evaluate(() => window.__AUDIO_LOG.slice(-2).map((e) => e.name).join(',')))}`)
+  const st1b = await st()
+  t.ok(st1b.log > audio0 && !st1b.reveal && st1b.dotsOk === 0, '声调首点：零判分零推进（串行后）', `dotsOk=${st1b.dotsOk}`)
+  t.ok(s1.armed === 0, '声调首点：试听高亮', `armed=${s1.armed}`)
   await page.tap(`${SC} .tonedrill .topts .topt:nth-of-type(2)`)
-  await sleep(300)
+  const serial2 = await page.waitForFunction((n0) => {
+    const L = window.__AUDIO_LOG
+    return L.length >= n0 + 2 && L[n0].name.includes('tone-name') && L[n0 + 1].name === 'a2'
+  }, s1.log, { timeout: 4000 }).then(() => true).catch(() => false)
   const s2 = await st()
-  t.ok(s2.log > s1.log && s2.lastName === 'a2', '声调切点别项：切试听（播新调 a2）', `+${s2.log - s1.log} name=${s2.lastName}`)
+  t.ok(serial2 && s2.log > s1.log, '声调切点别项：切试听（串行 tone-name2 → a2）', `+${s2.log - s1.log}`)
   t.ok(s2.armed === 1 && !s2.reveal, '声调切点：armed 随切换+仍零判分', `armed=${s2.armed} reveal=${s2.reveal}`)
   await page.tap(`${SC} .tonedrill .topts .topt:nth-of-type(2)`)
   await sleep(450)
@@ -129,8 +140,9 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   const q = await page.evaluate(() => { const Q = window.__PJ.Q(); return { type: Q.q.type, ans: Q.q.ans } })
   t.ok(q.type === 'listen', '闯关：听音选字题就位', `type=${q.type}`)
   const audio0 = await page.evaluate(() => window.__AUDIO_LOG.length)
+  await sleep(520)   /* P1-2 进题宽限 */
   await page.tap(`#optbox .opt:nth-of-type(${q.ans + 1})`)
-  await sleep(300)
+  await sleep(470)
   const st2 = await page.evaluate(() => ({ reveal: window.__PJ.Q().reveal, score: window.__PJ.Q().score, log: window.__AUDIO_LOG.length }))
   t.ok(st2.reveal !== null && st2.score === 1, '闯关听音一点即答：首点即作答（v4.5 矩阵）', JSON.stringify(st2))
   t.ok(st2.log === audio0, '闯关听音一点即答：零选项试听音', `+${st2.log - audio0}`)

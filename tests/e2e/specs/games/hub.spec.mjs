@@ -99,7 +99,10 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
     })),
   }))
   t.ok(isl.ddesc === 0, '游戏岛：DOM 无 .ddesc/描述行')
-  t.ok(isl.stalls.length === 6 && isl.stalls.every((s) => s.name && s.best && s.extra === 0), '游戏岛：摊位卡只留 游戏名+最佳成绩+插画', isl.stalls.map((s) => `${s.id}:${s.name}/${s.best}`).join(' '))
+  /* v4.7 P1-9 立法收紧：摊位卡=名+插画，最佳>0 才有副标（「新游戏」meta 副标删除） */
+  const allText = isl.stalls.map((s) => `${s.name}${s.best}`).join(' ')
+  t.ok(isl.stalls.length === 6 && isl.stalls.every((s) => s.name && s.extra === 0 && (s.best === '' || /最佳/.test(s.best))), '游戏岛：摊位卡只留 游戏名+（有最佳才显）最佳+插画', isl.stalls.map((s) => `${s.id}:${s.name}/${s.best || '∅'}`).join(' '))
+  t.ok(!allText.includes('新游戏') && !isl.stalls.some((s) => s.best && s.best.includes('新')), 'P1-9：摊位卡「新游戏」meta 副标清零')
   await page.evaluate(() => document.querySelector('[data-hallbtn="drill"]')?.click())
   await page.waitForSelector('#drillgrid', { timeout: 5000 })
   const hallDom = await page.evaluate(() => ({
@@ -111,7 +114,10 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
     })),
   }))
   t.ok(hallDom.ddesc === 0, '练习馆：DOM 无 .ddesc/描述行')
-  t.ok(hallDom.cards.length === 6 && hallDom.cards.every((c) => c.name && !c.rows.some((r) => r.includes('ddesc'))), '练习馆：入口卡只留 名称+角标+图标', hallDom.cards.map((c) => c.id).join(','))
+  /* v4.7 P1-9 立法收紧：入口卡=名+图标，描述性/meta 徽章（新游戏/5分钟/14组/弱项N/n-180）全删 */
+  const badges = await page.evaluate(() => document.querySelectorAll('#drillgrid .dbadge').length)
+  t.ok(hallDom.cards.length === 6 && hallDom.cards.every((c) => c.name), '练习馆：入口卡只留 名称+图标', hallDom.cards.map((c) => c.id).join(','))
+  t.ok(badges === 0, 'P1-9：入口卡 meta 徽章清零（5分钟/14组/新游戏等）', `badges=${badges}`)
   /* 自由练习页（原 desc 渲染点） */
   await page.goto(`${BASE}/?open=free`, { waitUntil: 'networkidle' })
   await page.waitForSelector('#v-practice', { timeout: 8000 })

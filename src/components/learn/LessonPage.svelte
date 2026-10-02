@@ -9,12 +9,13 @@
   import { untrack } from 'svelte'
   import lessonsData from '../../data/lessons.json'
   import { LETTERS, PAIRS } from '../../data'
-  import { letterAudio, playAudio, sndOk, sndNo, sndStar, preloadAudioList } from '../../lib/audio'
-  import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed } from '../../stores/learn.svelte'
+  import { letterAudio, playAudio, playSerial, sndOk, sndNo, sndStar, preloadAudioList } from '../../lib/audio'
+  import { openQuestion, judgeHold, markArm, confirmOk, answerOpen, releaseAnswer } from '../../lib/inputGuard'
+  import { manifest } from '../../text/manifest'
+  import { L as LRN, submitQuiz, setStep, lessonShort, quizPassed, recordEvidence } from '../../stores/learn.svelte'
   import { onLearnQuizPass, addToneCorrect, celebrateLetter, allLessonsPassed } from '../../stores/growth.svelte'
   import { lessonPages, lessonHasBlend, toneRowOf, unitIndexOf, unitCountOf, type LessonLike } from '../../lib/lessonUnits'
   import { tRaw, cnNum, NUM_PY } from '../../text/strings'
-  import { manifest } from '../../text/manifest'
   import { TONE_MARKS, TONE_COLORS } from '../../lib/toneMarks'
   import Speak from '../Speak.svelte'
   import Icon from '../Icon.svelte'
@@ -98,18 +99,28 @@
       chipsEl.scrollTo({ left: Math.max(0, target), behavior: 'smooth' })
     }
   })
-  let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean }>({
-    q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false,
+  let quiz = $state<{ q: any[]; i: number; score: number; pick: string; lastPick: string; lastPickN: number; done: boolean; passed: boolean; marks: number[] }>({
+    q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false, marks: [],
   })
   /* v4.2c Bug#37 两段式试听：首点=播该选项读音+高亮 → 再点同项=作答（armPick=试听中的选项值）。
      v4.5 两段式适用矩阵（Bug#38）：listen 题（小耳朵，选项=已学单字母，视觉即身份）一点即答；
      look（音节串）/tone（调号）选项孩子读不出 → 保留两段式 */
   let armPick = $state<string | number>('')
   function armQuiz(v: string | number, audioFile: string | null) {
-    if (quiz.pick) return   /* 已作答（reveal 态）不再试听 */
-    if (quiz.q[quiz.i]?.type === 'listen' || armPick === v) { answer(v); return }
+    if (quiz.pick || !answerOpen()) return   /* 已作答/进题宽限/判定冷却内不收输入（P1-2） */
+    if (quiz.q[quiz.i]?.type === 'listen' || (armPick === v && confirmOk())) { answer(v); return }
+    if (armPick === v) return   /* P1-3：确认间隔未到，保持试听态（77ms 双击不穿透） */
     armPick = v
-    if (audioFile) playAudio(audioFile, { hint: tRaw('notReady') })
+    markArm()
+    if (!audioFile) return
+    /* P1-4 串行（选串行修法）：声调选项先播调名再播音节（toneNameN onended 后音节起）；
+       非声调题（look 选项音）照旧单播 */
+    if (quiz.q[quiz.i]?.type === 'tone' && typeof v === 'number') {
+      const nameFile = manifest['toneName' + v] || ''
+      playSerial([nameFile, audioFile], { hint: tRaw('notReady') })
+    } else {
+      playAudio(audioFile, { hint: tRaw('notReady') })
+    }
   }
 
   /* v3.0：页为断点（1 起存 LRN.step，学习 tab CTA 同源解读）。通过课=从头复习（页0） */
@@ -177,7 +188,8 @@
         qs.push({ type, k, opts: shuffle([k, ...pickDistractors(k, 3)]), key: k })
       }
     }
-    quiz = { q: qs, i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false }
+    quiz = { q: qs, i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false, marks: [] }
+    openQuestion()   /* P1-2 进题宽限 */
     /* v2.6 零自动播放：小测出题不再自动读音，题面 🔊 点播 */
   }
 
@@ -193,6 +205,8 @@
     const q = quiz.q[quiz.i]
     const right = v === q.key
     armPick = ''
+    judgeHold()   /* P1-2 判定冷却：反馈/自动推进窗内连点不外泄 */
+    quiz.marks[quiz.i] = right ? 1 : 0   /* P1-7 进度点两态：错题=miss 描边，不再一律亮绿 */
     quiz.pick = right ? '✓' : '✗'
     if (right && q.type === 'tone') addToneCorrect()   /* v3.2 声调大师徽章计数 */
     /* look 题选项音刚起播，等读音落地再叮/嘟（R3 一次一路，反馈音会打断在播读音） */
@@ -226,12 +240,13 @@
   function settleLetter(li: number) {
     if (!letterDone[li] && letterReady(li)) {
       letterDone[li] = true
+      recordEvidence(n, letters[li].k)   /* P1-7：两旗齐=有效完成，入档供首页进度只计有效 */
       celebrateLetter(letters[li].k)
     }
   }
   /* 小测残卷复位（进小测步被门拦下时回 boot 态，渲染拦截卡） */
   function resetQuiz() {
-    quiz = { q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false }
+    quiz = { q: [], i: 0, score: 0, pick: '', lastPick: '', lastPickN: 0, done: false, passed: false, marks: [] }
     armPick = ''
   }
   /* 参与旗采集：旗A=读音点播（主按钮/浮层键都算，PinyinCard onread）；
@@ -320,7 +335,7 @@
       <Speak k="lessonN" vars={{ n: cn(n) }} py={{ 第: 'dì', ...npy(n), 课: 'kè' }} />
       {#if short.zh}&nbsp;·&nbsp;<Speak text={short.zh} py={{ [short.zh]: short.py || '' }} />{:else}&nbsp;·&nbsp;{short.raw}{/if}
     </div>
-    <div class="lprog" id="lprog">{curUnit + 1}/{UNIT_N}</div>
+    <div class="lprog" id="lprog"><Speak k="lessonStepN" vars={{ n: curUnit + 1 }} py={{ 第: 'dì', 步: 'bù' }} /></div>
   </div>
 
   <!-- 进度 chip 条（v3.0）：字母进度（✓ 完成 teal / on 当前）+ 分隔线 + 课级拼读/小测。
@@ -390,7 +405,7 @@
               <div class="ptag hot"><Speak k="stepQuiz" plain /> · <Speak k="quizQn" vars={{ n: cn(quiz.i + 1) }} py={{ 第: 'dì', ...npy(quiz.i + 1), 题: 'tí' }} /></div>
               <div class="qbody" data-qkey={probeOn ? String(q.key) : null}>
                 <!-- BUGS#18⑨：圆点与"第 X 题"严格同步——X-1 个已完成点 + 1 个当前点 -->
-                <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={i < quiz.i} class:cur={i === quiz.i}></span>{/each}</div>
+                <div class="qprog">{#each quiz.q as _, i (i)}<span class="qdot" class:ok={quiz.marks[i] === 1} class:miss={quiz.marks[i] === 0} class:cur={i === quiz.i}></span>{/each}</div>
                 {#key quiz.i}<!-- v4.5 Bug#38：切题滑入过渡（重挂触发；进度点同步=上方 qdot 派生自同一 quiz.i） -->
                 {#if q.type === 'listen'}
                   <button class="qplay" data-qplay onclick={() => playQuestionAudio(q)} aria-label="listen"><Icon name="play" size={40} /></button>
@@ -416,7 +431,7 @@
                         aria-label={o}
                         data-qkey={probeOn ? o : null}
                         onclick={() => { quiz.lastPick = o; armQuiz(o, letterAudio(o)) }}
-                      ><Icon name="play" size={34} /></button>
+                      ><Icon name="play" size={34} />{#if armPick === o && !quiz.pick}<span class="oconf"><Speak k="confirmAgain" plain /></span>{/if}</button>
                     {/each}
                   </div>
                 {:else}
@@ -432,7 +447,8 @@
                         onclick={() => { quiz.lastPickN = m.t; armQuiz(m.t, q.tones ? (q.tones[m.t - 1] as any).file : q.file) }}
                       >
                         <svg viewBox="0 0 56 30"><path d={m.d} stroke={TONE_COLORS[i]} stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" /></svg>
-                        <span><Speak text={tRaw('toneName' + m.t)} /></span>
+                        <span><Speak text={tRaw('toneName' + m.t)} plain /></span>
+                        {#if armPick === m.t && !quiz.pick}<span class="oconf"><Speak k="confirmAgain" plain /></span>{/if}
                       </button>
                     {/each}
                   </div>
@@ -584,7 +600,16 @@
   .qprog { display: flex; gap: var(--sp-2); }
   .qdot { width: 11px; height: 11px; border-radius: 50%; background: var(--animal-border-light); transition: background .2s, box-shadow .2s; }
   .qdot.ok { background: var(--animal-primary); }
+  /* P1-7 进度点两态：答错=描边半态（不再一律亮绿——孩子连错仍见两颗绿点的误导根除） */
+  .qdot.miss { background: #fff; border: 3px solid var(--animal-error); width: 13px; height: 13px; }
   .qdot.cur { background: #fff; border: 3px solid var(--animal-primary); width: 13px; height: 13px; }
+  /* P1-1/P0-1 两段式显性确认提示（look/tone 选项 armed 时的「再点一次确认」小签） */
+  .qbody .optear, .qbody .topt { position: relative; }
+  .qbody .oconf { position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%);
+    font-size: var(--fs-rt); font-weight: 900; color: #5b6fd8; background: #fff; border: 2px solid #c3cdf5;
+    border-radius: 999px; padding: 1px 8px; white-space: nowrap; pointer-events: none;
+    animation: confpop .25s cubic-bezier(.25,1.4,.4,1); }
+  @keyframes confpop { from { transform: translateX(-50%) scale(.6); opacity: 0; } }
   .qplay { width: 84px; height: 84px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 4px 0 #e3d9c8;
     color: var(--animal-primary-active); display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
   .qplay:active { transform: translateY(3px); box-shadow: 0 1px 0 #e3d9c8; }

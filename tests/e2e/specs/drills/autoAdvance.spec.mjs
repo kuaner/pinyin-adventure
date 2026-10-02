@@ -22,6 +22,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   await page.waitForSelector('#optbox .opt', { timeout: 8000 })
   const ans = await page.evaluate(() => window.__PJ.Q().q.ans)
   const i0 = await page.evaluate(() => window.__PJ.Q().i)
+  await sleep(520)   /* P1-2 进题宽限 */
   await page.evaluate((a) => document.querySelectorAll('#optbox .opt')[a]?.click(), ans)
   await sleep(500)
   const mid = await page.evaluate((i) => ({ i: window.__PJ.Q().i, fb: !!window.__PJ.Q().fb }), i0)

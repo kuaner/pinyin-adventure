@@ -10,6 +10,7 @@
   import { markResult } from '../stores/weights.svelte'
   import { show } from '../stores/ui.svelte'
   import { playAudio, stopAll, sndOk, sndNo } from '../lib/audio'
+  import { openQuestion, judgeHold, markArm, confirmOk, answerOpen } from '../lib/inputGuard'
   import Speak from './Speak.svelte'
   import Icon from './Icon.svelte'
 
@@ -65,6 +66,7 @@
       ansIdx = all.indexOf(correct)
       armed = -1
       reveal = null
+      openQuestion()                 /* P1-2 进题宽限 */
       if (qtype === 'l2s') {
         stopAll()
         playAudio(b.file)            /* 出题自动读音（听音题专属） */
@@ -78,9 +80,14 @@
 
   /* v4.2c Bug#37 两段式试听：首点=播该选项拼出的音节（hyp，缺失仅高亮）→ 再点同项=作答 */
   function arm(idx: number) {
-    if (armed === idx) { answer(idx); return }
-    if (reveal || !a) return
+    if (reveal || !a || !answerOpen()) return
+    if (armed === idx) {
+      if (!confirmOk()) return   /* P1-3 确认间隔 ≥400ms */
+      answer(idx)
+      return
+    }
     armed = idx
+    markArm()
     const o = opts[idx]
     const b = pool.find((x) => (qtype === 'l2s' ? split(x) === o : x.display === o))
     if (b) playAudio(b.file)
@@ -88,6 +95,7 @@
 
   function answer(idx: number) {
     if (reveal || !a) return
+    judgeHold()
     armed = -1
     const good = idx === ansIdx
     reveal = { correct: ansIdx, wrong: good ? [] : [idx] }

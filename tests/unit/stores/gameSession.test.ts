@@ -232,6 +232,7 @@ describe('每日挑战会话（DC）', () => {
   })
   it('v4.5 适用矩阵：字母选项题一点即答；zi 题两段式保留（首点试听高亮、再点作答、切换试听）', () => {
     game.startDaily()
+    vi.advanceTimersByTime(500)   // v4.7 守卫：进题宽限
     const q0 = game.DC.qs[0]
     if (q0.type !== 'zi') {
       /* 字母选项（blisten/bkj）→ 一点即答 */
@@ -243,6 +244,7 @@ describe('每日挑战会话（DC）', () => {
       expect(game.DC.reveal).toBeNull()
       game.dailyArm(1)
       expect(game.DC.armed).toBe(1)
+      vi.advanceTimersByTime(500)   // P1-3 确认间隔
       game.dailyArm(0)
       expect(game.DC.armed).toBe(0)
       game.dailyAnswer(0)
@@ -252,24 +254,28 @@ describe('每日挑战会话（DC）', () => {
   })
   it('答题计分连击走倍率；答错清连击+记账（字母题走游戏账本；reveal 态需 dailyNext 交还）', () => {
     game.startDaily()
+    vi.advanceTimersByTime(500)
     const q0 = game.DC.qs[0]
     game.dailyAnswer(q0.ans)
     expect(game.DC.ok).toBe(1)
     expect(game.DC.score).toBe(10)
     if (q0.type !== 'zi') expect(game.GD.letters[q0.A].ok).toBe(1)
     game.dailyNext()   // 清 reveal → 下一题
+    vi.advanceTimersByTime(500)   // 进题宽限
     const q1 = game.DC.qs[1]
     game.dailyAnswer((q1.ans + 1) % q1.opts.length)
     expect(game.DC.combo).toBe(0)
   })
   it('reveal 态忽略再答；dailyNext 推进到 endDaily（done+stars 档+换日重置）', () => {
     game.startDaily()
+    vi.advanceTimersByTime(500)
     game.dailyAnswer(game.DC.qs[0].ans)
     game.dailyAnswer(0)   // reveal 中忽略
     expect(game.DC.ok).toBe(1)
     // 推完全部 10 题
     game.dailyNext()
     for (let i = 1; i < 10; i++) {
+      vi.advanceTimersByTime(500)   // 每题进题宽限
       game.dailyAnswer(game.DC.qs[i].ans)
       game.dailyNext()
     }
@@ -280,6 +286,7 @@ describe('每日挑战会话（DC）', () => {
   })
   it('quitDaily：作废反馈定时器回练习 tab', () => {
     game.startDaily()
+    vi.advanceTimersByTime(500)
     game.dailyAnswer(game.DC.qs[0].ans)
     game.quitDaily()
     expect(ui.ui.view).toBe('practice')
