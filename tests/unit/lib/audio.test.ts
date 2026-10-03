@@ -305,3 +305,93 @@ describe('playSerial 串行播放（v4.7 P1-4：声调名→音节，绝不叠�
     progress.S.mute = false
   })
 })
+
+/* v4.8.1 ended 只做加速，绝不做唯一闸门（真机卡死 hotfix 的回归锁）：
+   iOS Safari/PWA 缓存元素 ended 不触发时，看门狗（时长+400ms/未知 2500ms）兜底放行 */
+describe('ended 看门狗（v4.8.1：onend 永不悬挂）', () => {
+  beforeEach(() => {
+    (window as any).__AUDIO_LOG = []
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+    delete (window as any).__AUDIO_LOG
+  })
+
+  it('ended 永不触发（iOS 缓存元素故障模式）→ 看门狗 2500ms 兜底放行 onend', () => {
+    const onend = vi.fn()
+    A.playAudio('a', { onend })
+    expect(onend).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(2499)
+    expect(onend).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(onend).toHaveBeenCalledTimes(1)
+  })
+
+  it('ended 先到 → onend 立即一次，看门狗不再补发（ended=加速主路）', () => {
+    const onend = vi.fn()
+    const a = A.playAudio('a', { onend })
+    a!.onended!(new Event('ended'))
+    expect(onend).toHaveBeenCalledTimes(1)
+    vi.advanceTimersByTime(5000)
+    expect(onend).toHaveBeenCalledTimes(1)
+  })
+
+  it('同元素重播：旧看门狗不得误发新轮回调（seq 守卫）', () => {
+    const onend1 = vi.fn()
+    const onend2 = vi.fn()
+    A.playAudio('a', { onend: onend1 })
+    A.playAudio('a', { onend: onend2 })   /* 重播同元素（缓存复用） */
+    vi.advanceTimersByTime(2500)
+    expect(onend2).toHaveBeenCalledTimes(1)
+    expect(onend1).not.toHaveBeenCalled()
+  })
+
+  it('无 onend 的播放清除 onended 属性（ended 事件不再触发旧回调）；看门狗仍保底推进不悬挂', () => {
+    const onend = vi.fn()
+    A.playAudio('a', { onend })
+    A.playAudio('a')   /* 🔊重听类：无 onend——不得取消旧看门狗（否则 iOS 上地鼠永不探头） */
+    expect(A.AUDIO_CACHE['a']!.onended).toBeNull()
+    vi.advanceTimersByTime(2500)
+    expect(onend).toHaveBeenCalledTimes(1)   /* 看门狗兜底=游戏继续的保证 */
+  })
+
+  it('audioDurMs：jsdom 无元数据=0（未知时长走 2500 封顶；真时长由 loadedmetadata 登记）', () => {
+    expect(A.audioDurMs('neverloaded')).toBe(0)
+  })
+
+  it('被 stopAll 中途暂停（paused 且已播过且非近结尾）→ 看门狗不放行（RadioPage 停止/跳播不顶链）', () => {
+    const onend = vi.fn()
+    const fake: any = {
+      play: () => Promise.resolve(), paused: false, currentTime: 0, duration: 2.0,
+      addEventListener() {}, dataset: {},
+    }
+    A.AUDIO_CACHE['stopcase'] = fake
+    A.playAudio('stopcase', { onend })
+    fake.paused = true            /* 播放中途 stopAll()：暂停在半途 */
+    fake.currentTime = 0.8
+    vi.advanceTimersByTime(5000)
+    expect(onend).not.toHaveBeenCalled()
+  })
+
+  it('播完但 ended 丢失（iOS 形态：currentTime≈duration）→ 看门狗照常放行', () => {
+    const onend = vi.fn()
+    const fake: any = {
+      play: () => Promise.resolve(), paused: false, currentTime: 0, duration: 1.824,
+      addEventListener() {}, dataset: {},
+    }
+    A.AUDIO_CACHE['lostend'] = fake
+    A.playAudio('lostend', { onend })
+    fake.paused = true            /* 播放自然跑完：paused 自动转 true，ended 事件却丢了 */
+    fake.currentTime = 1.82
+    vi.advanceTimersByTime(2500)
+    expect(onend).toHaveBeenCalledTimes(1)
+  })
+
+  it('playSerial 链：ended 不到也由看门狗逐段推进（调名→音节链不悬挂）', () => {
+    A.playSerial(['tone-name1', 'a1'])
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['tone-name1'])
+    vi.advanceTimersByTime(2500)
+    expect((window as any).__AUDIO_LOG.map((x: any) => x.name)).toEqual(['tone-name1', 'a1'])
+  })
+})

@@ -5,7 +5,7 @@
      敌方定时拉绳制造时间压力；推绳过敌方线=提前胜利；rAF/interval unmount 全清 */
   import { GS, gameHit, endGame } from '../../stores/game.svelte'
   import { learnedLetters, duelQ } from '../../lib/gameEngine'
-  import { playAudio, letterAudio, riddleAudio, stopAll } from '../../lib/audio'
+  import { playAudio, letterAudio, riddleAudio, stopAll, audioDurMs } from '../../lib/audio'
   import { openQuestion, holdAnswer, releaseAnswer, answerOpen } from '../../lib/inputGuard'
   import { stageOf, G } from '../../stores/growth.svelte'
   import { untrack } from 'svelte'
@@ -64,11 +64,14 @@
          v4.5 谜面制（Bug#41 审计）：kj 题播谜面音频（原整句口诀含答案读音） */
       stopAll()
       openQuestion()   /* P1-2 进题宽限 */
-      /* P1-2 谜面门：谜面/题面音播完才接受作答（onend 主路 + 3.5s 兜底）——
-         此前答案可先于谜面被提交且判对（挑刺实测：o.mp3 晚于点击播出） */
-      if (q.kj) playAudio(riddleAudio(q.A), { onend: releaseAnswer })
-      else playAudio(letterAudio(q.A), { onend: releaseAnswer })
-      holdAnswer(3500)
+      /* P1-2 谜面门：谜面/题面音播完才接受作答（onend 主路 + 时长感知兜底）——
+         此前答案可先于谜面被提交且判对（挑刺实测：o.mp3 晚于点击播出）。
+         v4.8.1：ended 只做加速（audio.ts 看门狗=时长+400ms 主兜底），这里第二道
+         保险=真时长+600ms（未知时长 2.6s 死值）——iOS ended 丢失时不再全题 3.5s 点按死窗 */
+      const src = q.kj ? riddleAudio(q.A) : letterAudio(q.A)
+      playAudio(src, { onend: releaseAnswer })
+      const gd = audioDurMs(src)
+      holdAnswer(gd ? gd + 600 : 2600)
       /* 宽假期满开门：过渡动画（绳结位移 .3s）+连点余波都被关在外面 */
       openTid = setTimeout(() => { inputLock = false }, 320)
     } else q = null

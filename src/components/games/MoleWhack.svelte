@@ -7,7 +7,7 @@
      回合链 setTimeout 全部带会话代数守卫 */
   import { GS, askTarget, listenTarget, gameHit } from '../../stores/game.svelte'
   import { learnedLetters, pickGameTarget } from '../../lib/gameEngine'
-  import { hasRiddle, riddleAudio, kjAudio, playAudio } from '../../lib/audio'
+  import { hasRiddle, riddleAudio, kjAudio, playAudio, audioDurMs } from '../../lib/audio'
   import { holdAnswer, releaseAnswer } from '../../lib/inputGuard'
   import Icon from '../Icon.svelte'
   import Speak from '../Speak.svelte'
@@ -65,9 +65,14 @@
     decoys.forEach((k, i) => next.push({ hole: holes[i + 1], k, up: false, hit: false, bad: false }))
     moles = next
     askTarget(target, riddleAudio(target), molesUp)   /* 谜面先行；播完探头（P1-5 确定性） */
-    holdAnswer(3600)   /* P1-2 谜面门（兜底=探头上限） */
+    /* v4.8.1 时长感知兜底：ended 只做加速（audio.ts 看门狗=时长+400ms 主兜底），
+       这里是第二道保险——谜面真时长+600ms，未知时长才用旧 3.6s 死值（iOS ended
+       丢失时探头不再迟到 3.6s：谜面 1.2-1.9s → 兜底 ≈1.8-2.5s） */
+    const rd = audioDurMs(riddleAudio(target))
+    const gate = rd ? rd + 600 : 3600
+    holdAnswer(gate)   /* P1-2 谜面门（兜底=探头上限） */
     if (roundTid) clearTimeout(roundTid)
-    roundTid = setTimeout(molesUp, 3600)
+    roundTid = setTimeout(molesUp, gate)
   }
 
   /* P2-9 驻留计时重置：错点/🔊重听=孩子仍在参与，重算 7s（驻留上限罚的是无操作，不是参与） */
@@ -94,11 +99,14 @@
       const e = GS.epoch
       for (const x of moles) x.up = false
       /* 点对奖励：整句口诀原声（"右下半圆 b b b"——回忆→确认→强化闭环）；
-         播完换下一题（onend 主路 + 3.5s 兜底防 onend 缺席卡死） */
+         播完换下一题（onend 主路 + 时长感知兜底）。v4.8.1：旧 3.5s 死值比整句口诀
+         （实测 ~5s）还短——正常设备上也截断奖励；改真时长+600ms，ended 丢失时
+         看门狗（时长+400ms）先放行，两道保险都不截断不悬挂 */
       let advanced = false
       const advance = () => { if (!advanced && GS.epoch === e && GS.phase === 'play') { advanced = true; round() } }
       playAudio(kjAudio(GS.target), { onend: advance })
-      roundTid = setTimeout(advance, 3500)
+      const kd = audioDurMs(kjAudio(GS.target))
+      roundTid = setTimeout(advance, kd ? kd + 600 : 3500)
     } else {
       /* 错点：晃动提示+地鼠不走+可再敲（点对才换题）；清连击记错题照旧 */
       m.bad = true

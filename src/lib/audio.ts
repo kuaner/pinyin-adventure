@@ -107,6 +107,54 @@ export function audioURL(name: string): string {
 
 export interface PlayOpts { hint?: string; onerror?: () => void; onend?: () => void; nobreak?: boolean }
 
+/* ---------- v4.8.1 ended 只做加速，绝不做唯一闸门 ----------
+   病灶（kuaner 2026-10-03 真机实报：游戏点按卡死/元素迟迟不出）：iOS Safari/PWA 上
+   缓存音频元素的 ended 有已知不可靠性（currentTime 未重置/复用元素不触发 ended）——
+   v4.7 把「谜面播完门/探头/串行链」挂上 onended 主路后，事件链一断游戏即悬挂。
+   修法：挂 onend 的播放同步挂看门狗——ended 先到用 ended（加速），超时（已知时长
+   +400ms，未知封顶 2500ms）看门兜底放行——设备上永不悬挂。时长表 DUR 在元素
+   创建/预载时经 loadedmetadata 登记（预载先行 ⇒ 首播即有真时长）。 */
+const DUR: Record<string, number> = {}
+
+export function audioDurMs(name: string): number {
+  const d = DUR[name]
+  return d && isFinite(d) && d > 0 ? Math.round(d * 1000) : 0
+}
+
+function registerDur(name: string, a: HTMLAudioElement) {
+  if (DUR[name]) return
+  try {
+    if (isFinite(a.duration) && a.duration > 0) { DUR[name] = a.duration; return }
+    a.addEventListener('loadedmetadata', () => {
+      if (isFinite(a.duration) && a.duration > 0) DUR[name] = a.duration
+    }, { once: true })
+  } catch { /* ignore */ }
+}
+
+/* onend 挂载统一口（playAudio / playMimo 共用）：ended 主路 + 看门狗兜底 + 同元素
+   重播 seq 守卫（旧看门狗不得误发新轮回调）；无 onend 的播放清除陈旧 onended。
+   看门狗放行前核查中断态：被 stopAll 中途暂停（paused 且已播过且非近结尾）≠ 播完，
+   不放行（RadioPage 停止/跳播不顶链）；「播完但 ended 丢失」的 iOS 形态
+   currentTime≈duration 照常放行；完全没出声的坏元素（currentTime=0）也放行（进度保证） */
+function attachOnend(name: string, el: HTMLAudioElement, onend?: () => void) {
+  if (!onend) { el.onended = null; return }
+  const anyEl = el as any
+  const seq = (anyEl.__pq = (anyEl.__pq || 0) + 1)
+  let fired = false
+  const once = () => {
+    if (fired || anyEl.__pq !== seq) return
+    try {
+      const nearEnd = isFinite(el.duration) && el.duration > 0 && el.currentTime >= el.duration - 0.05
+      if (el.paused && el.currentTime > 0.05 && !nearEnd) return
+    } catch { /* ignore */ }
+    fired = true
+    if (CUR === el) { CUR = null; OnStop = null }
+    onend()
+  }
+  el.onended = once
+  setTimeout(once, audioDurMs(name) ? audioDurMs(name) + 400 : 2500)
+}
+
 function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
   /* hyp 播放失败 → 回落现有 mimo 同名文件（audio/{name}.mp3，只回落一次） */
   try {
@@ -117,7 +165,7 @@ function playMimo(name: string, opts: PlayOpts): HTMLAudioElement | null {
       if (opts.hint) toast(opts.hint)
       if (opts.onerror) opts.onerror()
     })
-    if (opts.onend) m.onended = () => { if (opts.onend) opts.onend() }
+    attachOnend(name, m, opts.onend)
     return m
   } catch {
     if (opts.hint) toast(opts.hint)
@@ -133,6 +181,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
   try {
     let a = AUDIO_CACHE[name]
     if (!a) { a = new Audio(audioURL(name)); AUDIO_CACHE[name] = a }
+    registerDur(name, a)
     try { a.currentTime = 0 } catch { /* ignore */ }
     markAudio(name)
     const p = a.play()
@@ -148,10 +197,7 @@ export function playAudio(name: string, opts: PlayOpts = {}): HTMLAudioElement |
         if (opts.onerror) opts.onerror()
       }
     })
-    if (opts.onend) a.onended = () => {
-      if (CUR === a) { CUR = null; OnStop = null }
-      opts.onend!()
-    }
+    attachOnend(name, a, opts.onend)   /* v4.8.1：ended 主路 + 看门狗兜底（永不悬挂） */
     CUR = a
     return a
   } catch {
@@ -265,6 +311,7 @@ export function preloadAudios() {
         a.preload = 'auto'
         a.load()
         AUDIO_CACHE[n] = a
+        registerDur(n, a)
       } catch { /* ignore */ }
     }
   }
@@ -290,6 +337,7 @@ async function preloadOne(name: string): Promise<void> {
       el.preload = 'auto'
       el.load()
       AUDIO_CACHE[name] = el
+      registerDur(name, el)   /* v4.8.1：预载即登记时长——首播看门狗就有真时长 */
     } catch { /* ignore */ }
   }
   /* ② Cache API 直写 SW 运行时缓存（CacheFirst 的读取源）——元素被浏览器回收后重载也零网络 */
