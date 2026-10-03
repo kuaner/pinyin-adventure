@@ -48,6 +48,8 @@ for (const id of GAMES) {
   else if (id === 'tone') hit = await catchTargetNote(page)
   else if (id === 'egg') { try { await playEggRound(page); hit = true } catch { hit = false } }
   else {
+    /* 作答门预等：进题宽限 450ms+谜面门（真时长+600ms）内点按被守卫正确吞掉——先等门开 */
+    await page.waitForTimeout(1900)
     hit = await page.evaluate(() => !!document.querySelector('#gstage .duelopt[data-qkey]:not([data-qkey=""])'))
     if (hit) { await pd(page, '#gstage .duelopt[data-qkey]:not([data-qkey=""])'); await page.waitForTimeout(500) }
   }
