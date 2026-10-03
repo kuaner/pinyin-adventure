@@ -20,6 +20,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
 
   /* 首题故意答错（账本写入+加权素材） */
   await page.waitForFunction(() => document.querySelector('#v-bquiz [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
+  await page.waitForTimeout(520)   /* P1-2 进题宽限：首击在宽限后（CI 快机器上裸 tap 会落窗内被守卫正确拒绝） */
   const ans0 = await page.evaluate(() => +document.querySelector('#v-bquiz [data-q]').getAttribute('data-ans'))
   const wrongIdx = (ans0 + 1) % 4
   const wrongKey = await page.evaluate(() => document.querySelector('#v-bquiz [data-q]').getAttribute('data-target'))
@@ -73,6 +74,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   await page.waitForSelector('#v-tquiz [data-q]', { timeout: 8000 })
 
   await page.waitForFunction(() => document.querySelector('#v-tquiz [data-q]')?.getAttribute('data-reveal') === '0', null, { timeout: 6000 })
+  await page.waitForTimeout(520)   /* P1-2 进题宽限 */
   const ans0 = await page.evaluate(() => +document.querySelector('#v-tquiz [data-q]').getAttribute('data-ans'))
   const wrongIdx = (ans0 + 1) % 4
   const wrongKey = await page.evaluate(() => document.querySelector('#v-tquiz [data-q]').getAttribute('data-target'))

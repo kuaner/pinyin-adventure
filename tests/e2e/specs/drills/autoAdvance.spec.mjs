@@ -38,6 +38,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   const page = await app.newPage({ tier: 'mid' })
   await page.goto(`${BASE}/?open=ldrill`, { waitUntil: 'networkidle' })
   await page.waitForSelector('#v-ldrill [data-q][data-target]', { timeout: 8000 })
+  await sleep(520)   /* P1-2 进题宽限：首击在宽限后 */
   const t0 = await page.getAttribute('#v-ldrill [data-q]', 'data-target')
   const optK = async () => page.evaluate(() => Array.from(document.querySelectorAll('#v-ldrill [data-opts] .opt')).map((e) => e.getAttribute('data-opt')))
   const tapK = async (k) => {
@@ -48,6 +49,7 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
   await sleep(800)
   const t1 = await page.getAttribute('#v-ldrill [data-q]', 'data-target')
   t.ok(!!t1, '听写：答对自动出下一题（零手点）')
+  await sleep(520)   /* P1-2 进题宽限：新题首击在宽限后（CI 快机器裸 tap 落窗内被守卫拒绝） */
   const ks1 = await optK()
   await tapK(ks1.find((k) => k !== t1))   /* 答错 */
   await sleep(1500)
