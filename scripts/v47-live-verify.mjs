@@ -18,7 +18,8 @@ await page.addInitScript(() => { window.__AUDIO_LOG = [] })
 await page.goto(BASE, { waitUntil: 'networkidle' })
 await page.waitForTimeout(800)
 
-/* ① 首页可达 + 版本号 */
+/* ① 首页可达 + 版本号（设置页才显示版本） */
+await page.goto(BASE + '?open=settings', { waitUntil: 'networkidle' })
 const ver = await page.evaluate(() => document.body.textContent.includes('4.7.0'))
 ok(ver, '线上版本=4.7.0')
 
