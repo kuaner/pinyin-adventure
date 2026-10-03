@@ -38,6 +38,7 @@ export const strings = {
   continueLearning: s('继续学习', { 继续学习: 'jì xù xué xí' }),
   courseMapN: s('课程地图 · {n} 课', { 课程地图: 'kè chéng dì tú', 课: 'kè' }),
   swipeHintH: s('横向滑动', { 横向滑动: 'héng xiàng huá dòng' }),
+  heroUnitCount: s('{n} 个拼音', { 个: 'gè', 拼音: 'pīn yīn' }),
   radioTitle: s('口诀小广播', { 口诀小广播: 'kǒu jué xiǎo guǎng bō' }),
   radioSlogan: s('想听哪句，点哪句'),
 

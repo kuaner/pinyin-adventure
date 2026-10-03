@@ -10,7 +10,7 @@
   import { totalStars } from '../../stores/progress.svelte'
   import { say } from '../../lib/audio'
 import { tRaw } from '../../text/strings'
-  import { lessonHasBlend, unitCountOf, unitIndexOf, type LessonLike } from '../../lib/lessonUnits'
+  import { lessonHasBlend, unitCountOf, unitIndexOf, heroLetterIndexOf, type LessonLike } from '../../lib/lessonUnits'
   import Speak from '../Speak.svelte'
   import { t } from '../../text/strings'
 
@@ -35,10 +35,15 @@ import { tRaw } from '../../text/strings'
   }
 
   let shakeN = $state(0)                                          // P2-6 抖动中的课号
-  let li = $state(0)                                             // 大卡当前字母
+  let li = $state(0)                                             // 大卡当前字母（<3 字母课的网格切换态）
   let capsEl: HTMLDivElement
   const letters = $derived(lesson.letters)
-  const letter = $derived(letters[Math.min(li, letters.length - 1)])
+  /* v4.8 Bug#43（kuaner 08:02 截图）：≥3 字母课字模区改「单主角」——只显当前在学单元放大 +
+     单元数角标 chip（"N 个拼音"）；全字母一览住课页 chip 条，首页不堆（16 字全挤四线格互相叠压的根治）。
+     <3 字母课保持旧网格不回退。 */
+  const heroMode = $derived(letters.length >= 3)
+  const heroLi = $derived(heroLetterIndexOf(lesson as unknown as LessonLike, bpPage))
+  const letter = $derived(letters[Math.min(heroMode ? heroLi : li, letters.length - 1)])
 
   /* 口诀「张大嘴巴 a a a」拆 汉字 + 字母两段 */
   const kjParts = $derived.by(() => {
@@ -62,17 +67,35 @@ import { tRaw } from '../../text/strings'
   </div>
 
   <div class="card" id="hero">
-    <div class="lchip">
-      <Speak k="lessonN" vars={{ n: cur }} /> · <Speak text={lesson.title} />
+    <div class="lrow">
+      <div class="lchip">
+        <Speak k="lessonN" vars={{ n: cur }} /> · {#if heroMode}<Speak text={lesson.label} />{:else}<Speak text={lesson.title} />{/if}
+      </div>
+      {#if heroMode}
+        <!-- v4.8 Bug#43：单元数角标（儿童文案+注音）——与课名同行右上，字模区整段让给单主角 -->
+        <div class="hbadge" data-hero-badge={letters.length}><Speak k="heroUnitCount" vars={{ n: letters.length }} /></div>
+      {/if}
     </div>
-    <div id="letters" class="grid4" class:n4={letters.length >= 4} class:n5={letters.length >= 5}>
-      {#each letters as l, i (l.k)}
-        <button class="letterbtn" data-ler={l.k} onclick={() => { li = i; say(l.k) }} aria-label={l.k}>
-          <span class="letter" class:curo={i === li}>{l.k}</span>
+    {#if heroMode}
+      <div id="letters" class="grid4 hero1">
+        <button class="letterbtn" data-ler={letter.k} onclick={() => say(letter.k)} aria-label={letter.k}>
+          <span class="letter curo">{letter.k}</span>
         </button>
-      {/each}
-    </div>
-    <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
+      </div>
+    {:else}
+      <div id="letters" class="grid4" class:n4={letters.length >= 4} class:n5={letters.length >= 5}>
+        {#each letters as l, i (l.k)}
+          <button class="letterbtn" data-ler={l.k} onclick={() => { li = i; say(l.k) }} aria-label={l.k}>
+            <span class="letter" class:curo={i === li}>{l.k}</span>
+          </button>
+        {/each}
+      </div>
+    {/if}
+    {#if !heroMode}
+      <!-- 口诀行只属于旧网格模式；单主角模式（修法正本：字模区=当前单元+角标）让出高度给大字模，
+           口诀完整体验在课页与口诀小广播 -->
+      <div id="koujue">{#if kjParts[0]}<Speak text={kjParts[0]} />{/if}{#if kjParts[1]}<span class="kj-en">{kjParts[1]}</span>{/if}</div>
+    {/if}
     <!-- P1-7 进度语义：只计有效完成——字母单元点=互动证据（两旗齐，recordEvidence 入档），
          拼读/小测点=课过关；「滑到」不再点亮（此前滑动推进断点即亮，进度误导） -->
     <div id="steps5">
@@ -80,7 +103,7 @@ import { tRaw } from '../../text/strings'
         <i class:d={unitDone(i)} class:c={i === bpUnit && !passedCur}></i>
       {/each}
     </div>
-    <button id="cta" data-cta onclick={() => openLesson(cur, li)}>
+    <button id="cta" data-cta onclick={() => openLesson(cur, heroMode ? heroLi : li)}>
       {#if passedCur}
         <Speak k="restudy" plain /> · <Speak k="stepKnow" plain />
       {:else}
@@ -125,9 +148,11 @@ import { tRaw } from '../../text/strings'
 </section>
 
 <style>
-  #v-learntab { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); gap: 0; }
-  .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
-  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; }
+  #v-learntab { padding: calc(var(--sat) + var(--sp-3)) var(--sp-4) var(--sp-3); gap: 0; }
+  /* Bug#43③：行头改 min-height 自适应——「拼音岛」ruby 注音（rt 高约 18px 叠在字面上方）
+     曾被 34px 定高挤出行盒、在真机字体度量下被页面顶缘裁上半；行盒装得下注音 + 顶距 --sp-3 双保险 */
+  .rowhead { display: flex; align-items: center; justify-content: space-between; min-height: 40px; flex: none; }
+  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; line-height: 1.7; }
   .rowhead .h1 small { font-size:var(--fs-xs); font-weight: 700; color: var(--animal-text-dis); margin-left: var(--sp-2); }
   .chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-3); border-radius: 999px;
     font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); white-space: nowrap; }
@@ -135,14 +160,31 @@ import { tRaw } from '../../text/strings'
 
   #hero { flex: 1; min-height: 0; margin-top: var(--sp-3); padding: var(--sp-4) var(--sp-4) var(--sp-4); display: flex; flex-direction: column; position: relative;
     overflow: hidden; }   /* BUGS#24：卡内内容（字模条）再怎么高也压在卡内，绝不涂到课程地图条 */
+  /* 课名 chip 行（v4.8 Bug#43）：课名（单主角模式用课目短名）+ 单元数角标同行两端——
+     角标独立成行会吃掉 ~36px 卡内高度、把字模舞台压塌（复现实证），同行=零碰撞零挤压 */
+  .lrow { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); flex: none; min-width: 0; }
   /* 课名 chip（v2.9.4 换行立法修订）：一行显示不换行（旧"超宽自动两行"废除——换行撑高=滚动条根源） */
-  #hero .lchip { align-self: flex-start; background: var(--animal-primary-bg); color: var(--animal-primary-active);
+  #hero .lchip { background: var(--animal-primary-bg); color: var(--animal-primary-active);
     font-size:var(--fs-xs); font-weight: 900; padding: var(--sp-1) var(--sp-3); border-radius: var(--animal-r); line-height: 1.6;
     max-width: 100%; text-align: left; white-space: nowrap; }
+  .hbadge { display: inline-flex; align-items: center; background: #fff; box-shadow: var(--animal-shadow);
+    border-radius: 999px; padding: 2px var(--sp-3); font-size: var(--fs-xs); font-weight: 800; color: var(--animal-text-2);
+    white-space: nowrap; flex: none; max-width: 100%; line-height: 1.6; }
   .grid4 { position: relative; }
   .grid4::before { content: ''; position: absolute; left: 0; right: 0; top: 12%; bottom: 14%; pointer-events: none;
     background-image: linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6), linear-gradient(#e3d3b6, #e3d3b6);
     background-size: 100% 1.5px; background-position: 0 0, 0 33.33%, 0 66.66%, 0 100%; background-repeat: no-repeat; opacity: .55; border-radius: 4px; }
+  /* v4.8 Bug#43：单主角模式——四线格整段属于当前在学单元大字模；
+     字号双保险：vw clamp 兜底 + 容器高自适应（cqh，ink≈1.37em → 68cqh 恒装得下），
+     任何视口高度下字模既「放大做主角」又绝不越格越卡 */
+  #letters.hero1 .letterbtn { min-width: 72px; min-height: 72px; display: flex; align-items: center; justify-content: center; }
+  #letters.hero1 .letter { font-size: clamp(var(--fs-glyph-lg), 24vw, var(--fs-hero)); color: var(--animal-primary); opacity: 1;
+    text-shadow: 0 6px 0 rgba(18,157,143,.18); }
+  @supports (width: 1cqh) {
+    #letters.hero1 { container-type: size; }
+    #letters.hero1 .letter { font-size: min(24vw, 68cqh); }
+  }
+  #letters.hero1 .letter.curo::after { display: none; }   /* 单主角无「第几个」语义，指示点退场 */
   /* v2.8：字模条按字母数适配（4~5 个字母自动降档，零溢出） */
   #letters { flex: 1; display: flex; align-items: center; justify-content: center; gap: var(--sp-4); min-height: 0; padding-bottom: var(--sp-2); }
   #letters.n4 { gap: var(--sp-3); }
@@ -155,9 +197,9 @@ import { tRaw } from '../../text/strings'
   .letter.curo { color: var(--animal-primary); opacity: 1; text-shadow: 0 6px 0 rgba(18,157,143,.18); }
   .letter.curo::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: -14px;
     width: 12px; height: 12px; border-radius: 50%; background: var(--animal-warning); box-shadow: 0 2px 0 var(--animal-warning-active); }
-  #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 2.1; flex: none; }    /* 口诀全文=长内容允许换行 */
+  #koujue { display: flex; align-items: center; justify-content: center; gap: var(--sp-2); font-size:var(--fs-md); font-weight: 800; line-height: 1.9; flex: none; }    /* 口诀全文=长内容允许换行 */
   #koujue .kj-en { font-weight: 900; color: var(--animal-primary-active); font-size:var(--fs-md); letter-spacing: 2px; }
-  #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-3) 0 var(--sp-3); flex: none; min-width: 0; }
+  #steps5 { display: flex; justify-content: center; gap: var(--sp-2); margin: var(--sp-2) 0; flex: none; min-width: 0; }
   #steps5 i { flex: 0 1 34px; min-width: 8px; max-width: 34px; height: 7px; border-radius: 7px; background: var(--animal-border-light); }    /* v3.0 单元点（L12=18 个）弹性收缩防溢出 */
   #steps5 i.d { background: var(--animal-primary); }
   #steps5 i.c { background: var(--animal-warning); }

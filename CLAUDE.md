@@ -25,9 +25,9 @@ node scripts/visual-check.mjs # 视觉度量校验
 
 ## 测试体系（T1 基建 v4.4.0 → T2 全量单测+组件测 v4.5.0 → **T3 e2e 工程化矩阵 v4.6.0**，2026-10-02）
 
-- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——476 测试（v4.7 +22：inputGuard 守卫 12/toneFlip 合法性 3/playSerial 4/互动证据持久化 3/文案新键 2…）；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
+- `tests/unit/`：Vitest 单测（jsdom+runes 直测，**目录 1:1 镜像 src**：lib/stores/data/text 四层铺满）——478 测试（v4.8 +2：lessonUnits.heroLetterIndexOf 单主角下标；v4.7 +22：inputGuard 守卫 12/toneFlip 合法性 3/playSerial 4/互动证据持久化 3/文案新键 2…）；lib/stores 行覆盖 98%+、data/text 100%（`npm run test:coverage` 看全表）
 - `tests/components/`：@testing-library/svelte 组件测（**vitest 需 resolve.conditions:['browser']**）——PinyinCard/Speak/HSteps/StrokeAnim/ToneDrill/LookQ 六组件 448 测试
-- `tests/e2e/`（**T3 工程化矩阵**）：`flows/`（page-object 操作层：bootApp/seedState/gotoLesson/playGame/answerQuiz，导航只写一次零断言）+ `specs/{learn,games,drills,growth,pwa}/`（35 个 spec，断言只住这里：12课×全步骤矩阵/6游戏/6专练/升级事件链/PWA 三面；v4.7 +7=ziChain 多输入全链/eggGuide 蛋引导/quizGuard 输入守卫/progressSemantics 进度语义/firstTap 首击锁定/toneSpeed 音符/balloonField 场界）+ `cross/`（横切面：零滚动/零pageerror/nowrap/ruby 遍历 `screens.ts` 屏幕清单）+ `fixtures/seeds.mjs`（新生/中期/毕业三档种子）——存量 v*-accept 与 regression-bug3x 断言全部迁入 specs 后**已删除**（无双轨）
+- `tests/e2e/`（**T3 工程化矩阵**）：`flows/`（page-object 操作层：bootApp/seedState/gotoLesson/playGame/answerQuiz，导航只写一次零断言）+ `specs/{learn,games,drills,growth,pwa}/`（36 个 spec，断言只住这里：12课×全步骤矩阵/6游戏/6专练/升级事件链/PWA 三面；v4.8 +1=heroCard 首页课程卡单主角+角标+几何不变量全 12 课矩阵[Bug#43]；v4.7 +7=ziChain 多输入全链/eggGuide 蛋引导/quizGuard 输入守卫/progressSemantics 进度语义/firstTap 首击锁定/toneSpeed 音符/balloonField 场界）+ `cross/`（横切面：零滚动/零pageerror/nowrap/ruby 遍历 `screens.ts` 屏幕清单）+ `fixtures/seeds.mjs`（新生/中期/毕业三档种子）——存量 v*-accept 与 regression-bug3x 断言全部迁入 specs 后**已删除**（无双轨）
 - **CI 测试门（T3 重构）**：deploy.yml `unit`（恒跑）+`e2e`（**仅 tag/手动触发**，main push 只跑 unit 省 ~12 分钟）两 job 独立，`build.needs:[unit,e2e]`——tag 流水红灯阻断部署
 - **覆盖率硬门槛（T2）**：vitest coverage.thresholds `src/{lib,stores,data,text}/**` 聚合 lines ≥95%（v4.5.0 起点 98.5%）——低于门槛=exit 1=CI 红（负面测试实证）
 - 规矩见 `tests/README.md`：断言只写 specs/flows 只管操作；状态一律经 fixtures 种子；新屏幕登记 screens.ts 即被横切面覆盖；修 bug 先写失败测试（T2:Bug#38-41 先红后绿；T3：woff2 缺出 SW precache 断网字体闪退→vite globPatterns 补 woff2）；新功能腿必带单测+组件测+e2e；覆盖率只升不降
@@ -41,7 +41,7 @@ src/
   App.svelte              # v2.4 壳路由：tab×3（LearnTab/GameIsland/MineTab）+ 专注态视图（含 v4.0 game/daily）+ TabBar
   components/
     TabBar / HSteps（横向翻页容器：拖拽+阈值吸附+页点）   # v2.4 壳件
-    home/LearnTab（大卡+12课胶囊条+广播入口） MineTab（小鸡+周历+家长区）
+    home/LearnTab（大卡[≥3 字母课=单主角当前单元+「N 个拼音」角标 chip，cqh 字号自适配] +12课胶囊条+广播入口） MineTab（小鸡+周历+家长区）
     games/（v4.0 嘉年华游戏岛，v4.3 终态 6 摊位）GameIsland（练习 tab=hub：🎪游戏岛/📚练习馆分段切换[ui.hall]；游戏岛=每日挑战卡+6 摊位 2×3 全实装[气球/口诀地鼠/镜像/钓鱼/拼音蛋/声调音乐会，零占位]+闯关/自由练习保留入口；练习馆=六入口卡） GameView+GameShell（3-2-1 倒计时/60 秒计时/连击 HUD/结算层共用骨架） BalloonPop（气球听音 pop） MoleWhack（v4.2 口诀打地鼠：3×3 地鼠+kj 口诀先行+镜像陷阱） MirrorDuel（b/d/p/q 拔河） FishCatch（双泳道钓鱼） EggMerge（v4.3 拼音蛋合并：两半拼读构造+裂壳小鸡） ToneMusic（v4.3 声调音乐会：3 轨道落音节接调） DailyChallenge（每日 10 题混编页） ListenDrill（v4.2 听写专练：无限刷+只练弱项开关） ZiHall（v4.2 识字表闯关：分层解锁网格+看字选拼音） BlendQuiz（v4.3 拼读专练：听音选拆分/看拆分选读音+结算） ToneQuiz（v4.3 声调专练：听音选调/同调归类+结算）
     RadioPage（口诀小广播） parents/SoundEtiquette + SettingsPage   # v2.4 新页
     HomePage.svelte / learn/LearnIsland.svelte             # v2.4 删除（模块入口页作废）

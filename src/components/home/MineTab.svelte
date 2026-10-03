@@ -122,8 +122,8 @@
 
 <style>
   #v-minetab { padding: calc(var(--sat) + var(--sp-2)) var(--sp-4) var(--sp-3); }
-  .rowhead { display: flex; align-items: center; justify-content: space-between; height: 34px; flex: none; }
-  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; }
+  .rowhead { display: flex; align-items: center; justify-content: space-between; min-height: 40px; flex: none; }   /* v4.8: 定高→min-height（同 Bug#43③：行盒装得下 ruby 注音，真机顶缘不裁） */
+  .rowhead .h1 { font-size:var(--fs-lg); font-weight: 900; letter-spacing: .5px; line-height: 1.7; }
   .chip { display: inline-flex; align-items: center; gap: var(--sp-1); padding: var(--sp-1) var(--sp-2); border-radius: 999px;
     font-size:var(--fs-xs); font-weight: 800; background: #fff; box-shadow: var(--animal-shadow); white-space: nowrap; flex: none;
     border: none; font-family: inherit; cursor: pointer; color: #c77800; }

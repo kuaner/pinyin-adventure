@@ -5,7 +5,7 @@
 import { describe, it, expect } from 'vitest'
 import lessonsJson from '../../../src/data/lessons.json'
 import {
-  lessonHasBlend, toneRowOf, lessonPages, unitCountOf, unitIndexOf,
+  lessonHasBlend, toneRowOf, lessonPages, unitCountOf, unitIndexOf, heroLetterIndexOf,
   type LessonLike,
 } from '../../../src/lib/lessonUnits'
 
@@ -101,5 +101,23 @@ describe('unitCountOf / unitIndexOf（进度指示口径）', () => {
     const l = byN(3)
     expect(unitIndexOf(l, -5)).toBe(0)
     expect(unitIndexOf(l, 999)).toBe(5)
+  })
+})
+
+describe('heroLetterIndexOf（v4.8 Bug#43：首页课程卡单主角=当前在学单元）', () => {
+  it('断点在字母单元 → 该字母下标；多字母课逐课（L1/L7/L12 点名）', () => {
+    expect(heroLetterIndexOf(byN(1), 0)).toBe(0)
+    expect(heroLetterIndexOf(byN(7), 0)).toBe(0)
+    expect(heroLetterIndexOf(byN(7), 2)).toBe(1)   /* L7 z 的声调页仍是 z；第 2 页起=c */
+    expect(heroLetterIndexOf(byN(12), 0)).toBe(0)  /* zhi */
+    expect(heroLetterIndexOf(byN(12), 3)).toBe(2)  /* 断点推进 → shi（无声调行字母直进） */
+  })
+  it('断点到课级单元（拼读/小测）或越界 → 回落首字母', () => {
+    const l = byN(3)
+    const pages = lessonPages(l)
+    expect(heroLetterIndexOf(l, pages.findIndex((p) => p.t === 'blend'))).toBe(0)
+    expect(heroLetterIndexOf(l, pages.length - 1)).toBe(0)
+    expect(heroLetterIndexOf(l, 999)).toBe(0)
+    expect(heroLetterIndexOf(l, -5)).toBe(0)
   })
 })

@@ -53,3 +53,10 @@ export function unitIndexOf(l: LessonLike, pageIdx: number): number {
   if (p.t === 'quiz') return l.letters.length + (lessonHasBlend(l) ? 1 : 0)
   return p.li
 }
+
+/* v4.8 Bug#43：首页课程卡单主角 = 「当前在学单元」——断点所在字母单元；
+   断点已到课级单元（拼读/小测）或越界（重学/已过关）→ 回落首字母 */
+export function heroLetterIndexOf(l: LessonLike, pageIdx: number): number {
+  const ui = unitIndexOf(l, pageIdx)
+  return ui < l.letters.length ? ui : 0
+}
