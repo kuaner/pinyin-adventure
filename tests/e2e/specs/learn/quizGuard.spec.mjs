@@ -91,7 +91,9 @@ const BASE = process.env.BASE_URL || 'http://localhost:4173'
     const el = opts[hit >= 0 ? hit : 0]
     el?.click()
     setTimeout(() => el?.click(), 470)
-    setTimeout(() => document.querySelector('#v-lesson [data-opts] .opt')?.click(), 1250)   /* 下一题已切入：进题宽限期内 */
+    /* 追加击=判定反馈窗内（560ms：judgeHold 450ms+reveal 未散）——单答锁+守卫双重必拒；
+       （此前固定 1250ms 在 CI 快机器上已出宽限窗，armed 落位=合法试听，断言失义） */
+    setTimeout(() => document.querySelector('#v-lesson [data-opts] .opt')?.click(), 560)
   })
   await sleep(2800)   /* look 题反馈延迟 950ms+推进 650ms 全部落定 */
   const st = await page.evaluate(() => ({
